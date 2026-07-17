@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理填空题刷题</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #555; }
+        .question-body img { max-width: 100%; height: auto; }
+    </style>
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      chtml: {
+        fontURL: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2'
+      }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div id="app" class="max-w-4xl mx-auto p-4 md:p-6 pb-24">
+        <div id="quiz-view" class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800" id="question-header"></h2>
+                <div class="text-sm text-gray-600" id="question-counter"></div>
+            </div>
+            <div id="question-body" class="text-gray-700 text-lg leading-relaxed mb-4"></div>
+            <div id="answer-area" class="space-y-2"></div>
+            <div class="flex justify-between mt-5">
+                <button id="prev-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors">上一题</button>
+                <button id="finish-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">完成练习</button>
+                <button id="next-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors">下一题</button>
+            </div>
+        </div>
+        <div id="result-view" class="hidden bg-white rounded-lg shadow-md p-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">练习完成！</h2>
+            <p id="score-text" class="text-xl text-gray-700 mb-8"></p>
+            <button id="restart-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors">重新开始</button>
+        </div>
+    </div>
+    <div id="bottom-navbar" class="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-2 border-t border-gray-200">
+        <div id="navbar-container" class="flex items-center space-x-2 overflow-x-auto whitespace-nowrap custom-scrollbar pb-2"></div>
+    </div>
+    <script>
+        function normalizeAnswer(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/\$/g, '')
+                .replace(/\\mathrm\{([^}]*)\}/g, '$1')
+                .replace(/\\,/g, '')
+                .replace(/\\;/g, '')
+                .replace(/[\u3000\s]+/g, '')
+                .replace(/；/g, ';')
+                .replace(/，/g, ',')
+                .replace(/（/g, '(')
+                .replace(/）/g, ')')
+                .toLowerCase();
+        }
+
+        function mainApp() {
+            const state = {
+                questions: [],
+                userAnswers: [],
+                currentIndex: 0,
+            };
+
+            const quizView = document.getElementById('quiz-view');
+            const resultView = document.getElementById('result-view');
+            const questionHeader = document.getElementById('question-header');
+            const questionCounter = document.getElementById('question-counter');
+            const questionBody = document.getElementById('question-body');
+            const answerArea = document.getElementById('answer-area');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const scoreText = document.getElementById('score-text');
+            const navbarContainer = document.getElementById('navbar-container');
+
+            const questionBankData = [{"question": "一质点沿 $x$ 方向运动，其加速度随时间变化关系为 $a = 3 + 2t$，如果初始时质点的速度 $v_0$ 为 $5\\,\\mathrm{m/s}$，则当 $t$ 为 $3\\,\\mathrm{s}$ 时，质点的速度 $v =$ ________。", "answer": "$23\\,\\mathrm{m/s}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "质点以加速度 $a = kt$ 作直线运动，式中 $k$ 为常数，设初速度为 $v_0$，求质点速度 $v$ 与时间 $t$ 的函数关系_____________。", "answer": "$v = v_0 + \\frac{1}{2}kt^2$", "category": "力学", "type": "fillInTheBlank"}, {"question": "质点沿半径为 $R$ 的圆周运动，运动学方程为 $\\theta = 2 + 3t^2$，则时刻质点的法向加速度大小 $a_n =$ ________；角加速度 $\\beta =$ ________。", "answer": "$36Rt^2$；$6\\,\\mathrm{rad/s^2}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "在半径为 $R$ 的圆周上运动的质点，其速率与时间关系为 $v = ct^2$（式中 $c$ 为常量），则从 $t = 0$ 到 $t$ 时刻质点走过的路程 $S(t) =$ ________；$t$ 时刻质点的切向加速度 $a_\\tau =$ ________；$t$ 时刻质点的法向加速度 $a_n =$ ________。", "answer": "$\\frac{1}{3}ct^3$；$2ct$；$\\frac{c^2t^4}{R}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "在水平飞行的飞机上向前发射一颗炮弹，发射后飞机的速度为 $v_0$，炮弹相对于飞机的速度为 $v$，略去空气阻力，则（1）以地球为参考系，炮弹的轨迹方程为________；（2）以飞机为参考系，炮弹的轨迹方程为________。（设两种参考系中坐标原点均在发射处，$x$ 轴沿速度方向向前，$y$ 轴竖直向下）", "answer": "$y = \\dfrac{gx^2}{2(v_0+v)^2}$；$y = \\dfrac{gx^2}{2v^2}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "飞轮作加速转动时，轮边缘上一点的运动学方程为 $S = 0.1t^3$。飞轮半径为 $2\\,\\mathrm{m}$。当此点的速率 $v = 30\\,\\mathrm{m/s}$ 时，其切向加速度为________，法向加速度为________。", "answer": "$6\\,\\mathrm{m/s^2}$；$450\\,\\mathrm{m/s^2}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "已知一质量为 $m$ 的质点在 $x$ 轴上运动，质点只受到指向原点的引力的作用，引力大小与质点离原点的距离 $x$ 的平方成反比，即 $f = -\\dfrac{k}{x^2}$，$k$ 是比例常数。设质点在 $x = 8.00\\,\\mathrm{m}$ 时的速度为零，则质点在 $x = 2.00\\,\\mathrm{m}$ 处的速率 $v =$ ________。", "answer": "$\\dfrac{1}{2}\\sqrt{\\dfrac{3k}{m}}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "如图所示，$A$、$B$ 两物体质量均为 $m$，用质量不计的定滑轮和细绳连接，并不计摩擦，则 $A$ 获得的加速度大小为________，$B$ 获得的加速度大小为________。", "answer": "$\\dfrac{g}{2}$；$\\dfrac{g}{2}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "一物体质量 $M = 2\\,\\mathrm{kg}$，在合外力 $\\vec{F} = (3 + 2t)\\vec{i}$（SI）的作用下，从静止开始运动，式中 $\\vec{i}$ 为方向一定的单位矢量，则当 $t = 1\\,\\mathrm{s}$ 时物体的速度 $\\vec{v}_1 =$ ________。", "answer": "$2\\vec{i}\\,\\mathrm{m/s}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "一质量为 $m_0$ 的斜面原来静止于水平光滑平面上，将一质量为 $m$ 的木块轻轻放于斜面上，如图，如果此后木块能静止于斜面上，则斜面将________。", "answer": "沿水平方向做加速运动（与木块水平运动方向相反）", "category": "力学", "type": "fillInTheBlank"}, {"question": "人造地球卫星绕地球作椭圆运动，近地点为 $A$，远地点为 $B$，$A$、$B$ 两点距地心分别为 $r_1$、$r_2$，设卫星质量为 $m$，地球质量为 $M$，万有引力常数为 $G$。则卫星在 $A$、$B$ 两点处的万有引力势能之差 $E_{pB} - E_{pA} =$ ________，动能之差 $E_{kB} - E_{kA} =$ ________。", "answer": "$GmM\\left(\\dfrac{1}{r_1} - \\dfrac{1}{r_2}\\right)$；$GmM\\left(\\dfrac{1}{r_2} - \\dfrac{1}{r_1}\\right)$", "category": "力学", "type": "fillInTheBlank"}, {"question": "质量为 $m = 2.00\\,\\mathrm{kg}$ 的质点开始时静止，在如图所示合力 $F$ 的作用下沿直线运动，已知 $F = F_0\\sin(2\\pi t/T)$，方向与直线平行，若 $F_0 = 3\\,\\mathrm{N}$，周期 $T = 1\\,\\mathrm{s}$，则在 $0$ 到 $2T$ 时间内，力 $F$ 所作的总功 $W =$ _____$\\mathrm{J}$。（两位有效数字）", "answer": "$0.0$", "category": "力学", "type": "fillInTheBlank"}, {"question": "一根均匀棒，长为 $l$，质量为 $m$，可绕通过其一端且与其垂直的固定轴在竖直面内自由转动。开始时棒静止在水平位置，当它自由下摆时，它的初角速度等于________，初角加速度等于________。已知均匀棒对于通过其一端垂直于棒的轴的转动惯量为 $\\dfrac{1}{3}ml^2$。", "answer": "$0$；$\\dfrac{3g}{2l}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "如图，质量为 $m$ 和 $2m$ 的两个质点 $A$ 和 $B$，用一长为 $L$ 的轻质细杆相连，系统绕通过杆上 $O$ 点且与杆垂直的水平轴转动，已知 $O$ 点与 $A$ 点相距 $\\dfrac{2L}{3}$，$B$ 点的线速度为 $v$，且与杆垂直，则该系统对转轴的转动惯量大小为________，杆的角速度为________，在图示位置时刻，杆受的合力矩为________，杆的角加速度为________。", "answer": "$\\dfrac{2}{3}mL^2$；$\\dfrac{3v}{L}$；$0$；$0$", "category": "力学", "type": "fillInTheBlank"}, {"question": "如图所示，$A$、$B$ 两飞轮的轴杆在一条直线上，并可用摩擦啮合器 $C$ 使它们连结。开始时 $B$ 轮静止，$A$ 轮以角速度 $\\omega_A$ 转动，设在啮合过程中两飞轮不受其它力矩的作用。当两轮连结在一起后，共同的角速度为 $\\omega$。若 $A$ 轮的转动惯量为 $J_A$，则 $B$ 轮的转动惯量 $J_B =$ _______。", "answer": "$\\dfrac{J_A(\\omega_A - \\omega)}{\\omega}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "一半径为 $0.1\\,\\mathrm{m}$ 的飞轮能绕水平轴在铅直面内作无摩擦的自由转动，其转动惯量 $J = 2\\times10^{-2}\\,\\mathrm{kg\\cdot m^2}$，由静止开始受一作用在轮缘上，方向始终与切线一致的变力作用，其大小为 $F = 0.5t$（N），则受力后一秒末的角速度为________。", "answer": "$1.25\\,\\mathrm{rad/s}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "质点的运动方程 $\\vec{r} = (3t - 5t^3 + 2)\\vec{i} + 3t^2\\vec{j}$（SI），当 $t = 2\\,\\mathrm{s}$ 时，其加速度 $\\vec{a} =$ ________。", "answer": "$-60\\vec{i} + 6\\vec{j}\\,\\mathrm{m/s^2}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "在如图所示的装置中，两个定滑轮与绳的质量以及滑轮与其轴之间的摩擦都可忽略不计，绳子不可伸长，$m_1$ 与平面之间的摩擦也可不计，在水平外力 $F$ 的作用下，物体 $m_1$ 与 $m_2$ 的加速度 $a =$___________，绳中的张力 $T =$_____________。", "answer": "$\\dfrac{F - m_2g}{m_1 + m_2}$；$\\dfrac{m_2(F + m_1g)}{m_1 + m_2}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "质量为 $m$ 的子弹以速度 $v_0$ 水平射入沙土中，设子弹所受阻力与速度成正比，比例系数为 $k$，忽略子弹的重力，求：（1）子弹射入沙土后，速度随时间变化的函数关系式________；（2）子弹射入沙土的最大深度________。", "answer": "$v = v_0 e^{-kt/m}$；$\\dfrac{mv_0}{k}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "一颗子弹在枪筒里前进时所受的合力大小为 $F = 400 - \\dfrac{4}{3}\\times10^5 t$（SI），子弹从枪口射出时的速率为 $300\\,\\mathrm{m/s}$。假设子弹离开枪口处合力刚好为零，则（1）子弹走完枪筒全长所用的时间 $t =$ ________；（2）子弹在枪筒中所受力的冲量 $I =$ ________；（3）子弹的质量 $m =$ ________。", "answer": "$3.0\\times10^{-3}\\,\\mathrm{s}$；$0.60\\,\\mathrm{N\\cdot s}$；$2.0\\times10^{-3}\\,\\mathrm{kg}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "在半径为 $R$ 的圆周上运动的质点，其速率与时间关系为 $v = ct^2$（式中 $c$ 为常量），则从 $t = 0$ 到 $t$ 时刻质点走过的路程 $S(t) =$ ________；$t$ 时刻质点的切向加速度 $a_\\tau =$ ________；$t$ 时刻质点的法向加速度 $a_n =$ ________。", "answer": "$\\dfrac{1}{3}ct^3$；$2ct$；$\\dfrac{c^2t^4}{R}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "一质量为 $m$ 的小球 $A$，在距离地面某一高度处以速度 $\\vec{v}$ 水平抛出，触地后反跳。在抛出 $t$ 秒后小球 $A$ 跳回原高度，速度仍沿水平方向，速度大小也与抛出时相同，如图。则小球 $A$ 与地面碰撞过程中，地面给它的冲量的方向为__________，冲量的大小为____________________。", "answer": "竖直向上；$mgt$", "category": "力学", "type": "fillInTheBlank"}, {"question": "如图所示，一质量为 $m = 2\\,\\mathrm{kg}$、半径为 $R = 2\\,\\mathrm{m}$ 的薄圆盘，可绕通过其一直径的光滑固定轴 $AA'$ 转动，转动惯量 $J = \\dfrac{1}{4}mR^2$。该圆盘从静止开始在恒力矩 $M = 100\\,\\mathrm{N\\cdot m}$ 作用下转动，则 $t = 3\\,\\mathrm{s}$ 后位于圆盘边缘上与轴 $AA'$ 的垂直距离为 $R$ 的 $B$ 点的切向加速度的大小 $a_\\tau =$ ________ $\\mathrm{m/s^2}$。（两位有效数字）", "answer": "$100\\,\\mathrm{m/s^2}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "如图，质量为 $m$、长为 $l = 0.2\\,\\mathrm{m}$ 的均匀细杆，放在倾角为 $\\alpha = 30^\\circ$ 的光滑斜面上，可以绕通过杆上端且与斜面垂直的光滑轴 $O$ 在斜面上转动。要使此杆能绕轴转动一周，则杆的最小初始角速度 $\\omega_0 =$ ________$\\mathrm{rad/s}$。（重力加速度 $g = 9.8\\,\\mathrm{m/s^2}$，结果保留两位有效数字）", "answer": "$12\\,\\mathrm{rad/s}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "在光滑的水平面上，一根长 $L = 2\\,\\mathrm{m}$ 的绳子，一端固定于 $O$ 点，另一端系一质量 $m = 0.5\\,\\mathrm{kg}$ 的物体。开始时，物体位于位置 $A$，$OA$ 间距离 $d = 0.5\\,\\mathrm{m}$，绳子处于松弛状态。现在使物体以初速度 $v_A = 4\\,\\mathrm{m/s}$ 垂直于 $OA$ 向右滑动，如图所示。设以后的运动中物体到达位置 $B$，此时物体速度的方向与绳垂直。则此时刻物体对 $O$ 点的角动量的大小 $L_B =$__________，物体速度的大小 $v =$__________。", "answer": "$1.0\\,\\mathrm{kg\\cdot m^2/s}$；$1.0\\,\\mathrm{m/s}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "用一根长度为 $L = 3.2\\,\\mathrm{m}$ 的细线悬挂一质量为 $m$ 的小球，线所能承受的最大张力为 $T = 1.5mg$。现在把线拉至水平位置然后由静止放开，若线断后小球的落地点 $C$ 恰好在悬点 $O$ 的正下方，如图所示。则高度 $OC =$ ________。（两位有效数字）", "answer": "$4.8\\,\\mathrm{m}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "在地面上固定一半径为 $R = 0.5\\,\\mathrm{m}$ 的光滑球面，球面顶点 $A$ 处放一质量为 $M = 7.0\\,\\mathrm{kg}$ 的滑块。一质量为 $m = 0.2\\,\\mathrm{kg}$ 的油灰球，以水平速度 $v_0 = 10.5\\,\\mathrm{m/s}$ 射向滑块，并粘附在滑块上一起沿球面下滑。则他们脱离球面时所成的角度 $\\theta =$ ________ $\\mathrm{rad}$，（重力加速度 $g = 9.8\\,\\mathrm{m/s^2}$，结果保留两位有效数字）", "answer": "$0.83\\,\\mathrm{rad}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "一长为 $l$、质量可以忽略的直杆，两端分别固定有质量为 $2m$ 和 $m$ 的小球，杆可绕通过其中心 $O$ 且与杆垂直的水平光滑固定轴在铅直平面内转动。开始杆与水平方向成某一角度 $\\theta$，处于静止状态，如图所示。释放后，杆绕 $O$ 轴转动。则当杆转到水平位置时，该系统所受到的合外力矩的大小 $M =$________________，此时该系统角加速度的大小 $\\beta =$__________________。", "answer": "$\\dfrac{1}{2}mgl$；$\\dfrac{2g}{3l}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "长为 $l$ 的杆如图悬挂。$O$ 为水平光滑固定转轴，平衡时杆竖直下垂，一子弹水平地射入杆中。则在此过程中，________系统对转轴 $O$ 的________守恒。", "answer": "子弹和杆；角动量", "category": "力学", "type": "fillInTheBlank"}, {"question": "一水平的匀质圆盘，可绕通过盘心的竖直光滑固定轴自由转动。圆盘质量为 $M$，半径为 $R$，对轴的转动惯量 $J = \\dfrac{1}{2}MR^2$。当圆盘以角速度 $\\omega_0$ 转动时，有一质量为 $m$ 的子弹沿盘的直径方向射入而嵌在盘的边缘上。子弹射入后，圆盘的角速度 $\\omega =$______________。", "answer": "$\\dfrac{M\\omega_0}{M + 2m}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "一长为 $l$、质量可以忽略的直杆，可绕通过其一端的水平光滑轴在竖直平面内作定轴转动，在杆的另一端固定着一质量为 $m$ 的小球，如图所示。现将杆由水平位置无初转速地释放。则杆刚被释放时的角加速度 $\\beta_0 =$ ____________，杆与水平方向夹角为 $60^\\circ$ 时的角加速度 $\\beta =$ ________________。", "answer": "$\\dfrac{g}{l}$；$\\dfrac{g}{2l}$", "category": "力学", "type": "fillInTheBlank"}, {"question": "在双缝干涉实验中，若两缝的间距为所用光波波长的 $N$ 倍，观察屏到双缝的距离为 $D$，则屏上相邻明纹的间距为________。", "answer": "$D/N$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "在双缝干涉实验中，双缝间距为 $d$，双缝到屏的距离为 $D$（$D\\gg d$），测得中央零级明纹与第五级明纹之间的距离为 $x$，则入射光的波长为________。", "answer": "$\\dfrac{xd}{5D}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "在双缝干涉实验中，所用单色光波长为 $\\lambda=562.5\\,\\mathrm{nm}$（$5.625\\times10^{-7}\\,\\mathrm{m}$），双缝与观察屏的距离 $D=1.2\\,\\mathrm{m}$，若测得屏上相邻明条纹间距为 $\\Delta x=1.5\\,\\mathrm{mm}$，则双缝的间距 $d=$________。", "answer": "$0.45\\,\\mathrm{mm}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "如图所示，假设有两个同相的相干点光源 $S_1$ 和 $S_2$，发出波长为 $\\lambda$ 的光。$A$ 是它们连线的中垂线上的一点。若在 $S_1$ 与 $A$ 之间插入厚度为 $e$、折射率为 $n$ 的薄玻璃片，则两光源发出的光在 $A$ 点的相位差 $\\Delta\\varphi=$________。若已知 $\\lambda=500\\,\\mathrm{nm}$，$n=1.5$，$A$ 点恰为第四级明纹中心，则 $e=$________$\\,\\mathrm{nm}$。", "answer": "$\\dfrac{2\\pi(n-1)e}{\\lambda}$；$4000$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "一束波长为 $\\lambda=600\\,\\mathrm{nm}$（$1\\,\\mathrm{nm}=10^{-9}\\,\\mathrm{m}$）的平行单色光垂直入射到折射率为 $n=1.33$ 的透明薄膜上，该薄膜是放在空气中的。要使反射光得到最大限度的加强，薄膜最小厚度应为________$\\,\\mathrm{nm}$。", "answer": "$\\dfrac{\\lambda}{4n}\\approx113$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "波长为 $\\lambda$ 的平行单色光垂直照射到折射率为 $n$ 的劈形膜上，相邻的两明纹所对应的薄膜厚度之差是________。", "answer": "$\\dfrac{\\lambda}{2n}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "一平凸透镜，凸面朝下放在一平玻璃板上。透镜刚好与玻璃板接触。波长分别为 $\\lambda_1=600\\,\\mathrm{nm}$ 和 $\\lambda_2=500\\,\\mathrm{nm}$ 的两种单色光垂直入射，观察反射光形成的牛顿环。从中心向外数的两种光的第五个明环所对应的空气膜厚度之差为________$\\,\\mathrm{nm}$。", "answer": "$225$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "已知在迈克耳孙干涉仪中使用波长为 $\\lambda$ 的单色光。在干涉仪的可动反射镜移动距离 $d$ 的过程中，干涉条纹将移动________条。", "answer": "$\\dfrac{2d}{\\lambda}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "用迈克耳孙干涉仪产生等厚干涉条纹，设入射光的波长为 $\\lambda$，在反射镜 $M_2$ 转动过程中，在总的观测区域宽度 $L$ 内，观测到总的干涉条纹数从 $N_1$ 条增加到 $N_2$ 条。在此过程中 $M_2$ 转过的角度 $\\Delta\\theta$ 是________。", "answer": "$\\dfrac{(N_2-N_1)\\lambda}{2L}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "将波长为 $\\lambda$ 的平行单色光垂直投射于一狭缝上，若对应于衍射图样的第一级暗纹位置的衍射角的绝对值为 $\\theta$，则缝的宽度等于________。", "answer": "$\\dfrac{\\lambda}{\\sin\\theta}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "波长为 $600\\,\\mathrm{nm}$ 的单色平行光，垂直入射到缝宽为 $a=0.60\\,\\mathrm{mm}$ 的单缝上，缝后有一焦距 $f'=60\\,\\mathrm{cm}$ 的透镜，在透镜焦平面上观察衍射图样。则：中央明纹的宽度为________，两个第三级暗纹之间的距离为________。（$1\\,\\mathrm{nm}=10^{-9}\\,\\mathrm{m}$）", "answer": "$1.2\\,\\mathrm{mm}$；$3.6\\,\\mathrm{mm}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "在单缝的夫琅禾费衍射实验中，屏上第三级暗纹对应于单缝处波面可划分为________个半波带，若将缝宽缩小一半，原来第三级暗纹处将是________纹。", "answer": "$6$；第一级明", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "用波长为 $\\lambda$ 的单色平行红光垂直入射在光栅常数 $d=2.0\\times10^{-6}\\,\\mathrm{m}$ 的光栅上，用焦距 $f=0.5\\,\\mathrm{m}$ 的透镜将光聚在屏上，测得第一级谱线与透镜主焦点的距离 $l=0.1667\\,\\mathrm{m}$。则可知该入射的红光波长 $\\lambda=$________$\\,\\mathrm{nm}$。（$1\\,\\mathrm{nm}=10^{-9}\\,\\mathrm{m}$）", "answer": "$\\approx633$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "某单色光垂直入射到一个每毫米有 $800$ 条刻线的光栅上，如果第一级谱线的衍射角为 $30°$，则入射光的波长应为________。", "answer": "$625\\,\\mathrm{nm}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "用平行的白光垂直入射在平面透射光栅上时，波长为 $\\lambda_1=440\\,\\mathrm{nm}$ 的第 $3$ 级光谱线将与波长为 $\\lambda_2=$________$\\,\\mathrm{nm}$ 的第 $2$ 级光谱线重叠。（$1\\,\\mathrm{nm}=10^{-9}\\,\\mathrm{m}$）", "answer": "$660$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "某一块火石玻璃的折射率是 $1.65$，现将这块玻璃浸没在水中（$n=1.33$）。欲使从这块玻璃表面反射到水中的光是完全偏振的，则光由水射向玻璃的入射角应为________。", "answer": "$\\arctan\\dfrac{1.65}{1.33}\\approx51.1°$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "应用布儒斯特定律可以测介质的折射率。今测得此介质的起偏振角 $i_0=56°$，这种物质的折射率为________。", "answer": "$\\tan56°\\approx1.48$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "光强为 $I_0$ 的自然光垂直通过两个偏振片后，出射光强 $I=I_0/8$，则两个偏振片的偏振化方向之间的夹角为________。", "answer": "$60°$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "如果从一池静水（$n=1.33$）的表面反射出来的太阳光是线偏振的，那么太阳的仰角大致等于________。在这反射光中的 $\\vec E$ 矢量的方向应________。", "answer": "$90°-\\arctan1.33\\approx36.9°$；垂直于入射面", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "空气中一玻璃劈形膜其一端厚度为零另一端厚度为 $0.005\\,\\mathrm{cm}$，折射率为 $1.5$。现用波长为 $600\\,\\mathrm{nm}$（$1\\,\\mathrm{nm}=10^{-9}\\,\\mathrm{m}$）的单色平行光，沿入射角为 $30°$ 的方向射到劈的上表面，则在劈形膜上形成的干涉条纹数目为________。", "answer": "$\\approx236$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "如图，在双缝干涉实验中，若把一厚度为 $e$、折射率为 $n$ 的薄云母片覆盖在 $S_1$ 缝上，中央明条纹将向________移动；覆盖云母片后，两束相干光至原中央明纹 $O$ 处的光程差为________。", "answer": "$S_1$ 一侧（上）；$(n-1)e$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "平行单色光垂直入射在缝宽为 $a=0.15\\,\\mathrm{mm}$ 的单缝上。缝后有焦距为 $f=400\\,\\mathrm{mm}$ 的凸透镜，在其焦平面上放置观察屏幕。现测得屏幕上中央明条纹两侧的两个第三级暗纹之间的距离为 $8\\,\\mathrm{mm}$，则入射光的波长为 $\\lambda=$________。", "answer": "$500\\,\\mathrm{nm}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "如图所示的杨氏双缝干涉装置，若用单色自然光照射狭缝 $S$，在屏幕上能看到干涉条纹。若在双缝 $S_1$ 和 $S_2$ 的一侧分别加一同质同厚的偏振片 $P_1$、$P_2$，则当 $P_1$ 与 $P_2$ 的偏振化方向相互________时，在屏幕上仍能看到很清晰的干涉条纹。", "answer": "平行", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "一束平行的自然光，以 $60°$ 角入射到平玻璃表面上。若反射光束是完全偏振的，则透射光束的折射角是________；玻璃的折射率为________。", "answer": "$30°$；$\\sqrt{3}\\approx1.73$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "若对应于衍射角 $\\varphi=30°$，单缝处的波面可划分为 $4$ 个半波带，则单缝的宽度 $a=$________$\\lambda$（$\\lambda$ 为入射光波长）。", "answer": "$4$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "一束单色光垂直入射在光栅上，衍射光谱中共出现 $5$ 条明纹。若已知此光栅缝宽度与不透明部分宽度相等，那么在中央明纹一侧的两条明纹分别是________级和第________级谱线。", "answer": "$1$；$3$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "$\\mathrm{He}$-$\\mathrm{Ne}$ 激光器发出 $\\lambda=632.8\\,\\mathrm{nm}$（$1\\,\\mathrm{nm}=10^{-9}\\,\\mathrm{m}$）的平行光束，垂直照射到一单缝上，在距单缝 $3\\,\\mathrm{m}$ 远的屏上观察夫琅禾费衍射图样，测得两个第二级暗纹间的距离是 $10\\,\\mathrm{cm}$，则单缝的宽度 $a=$________。", "answer": "$7.6\\times10^{-5}\\,\\mathrm{m}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "在单缝夫琅禾费衍射实验中，设第一级暗纹的衍射角很小，若钠黄光（$\\lambda_1\\approx589\\,\\mathrm{nm}$）中央明纹宽度为 $4.0\\,\\mathrm{mm}$，则 $\\lambda_2=442\\,\\mathrm{nm}$ 的蓝紫色光的中央明纹宽度为________。", "answer": "$\\approx3.0\\,\\mathrm{mm}$", "category": "波动光学", "type": "fillInTheBlank"}, {"question": "可见光的波长范围是 $400\\,\\mathrm{nm}$—$760\\,\\mathrm{nm}$。用平行的白光垂直入射在平面透射光栅上时，它产生的不与另一级光谱重叠的完整的可见光光谱是第________级光谱。（$1\\,\\mathrm{nm}=10^{-9}\\,\\mathrm{m}$）", "answer": "$1$", "category": "波动光学", "type": "fillInTheBlank"}];
+
+            function init() {
+                state.questions = questionBankData;
+                state.userAnswers = new Array(state.questions.length).fill(null);
+                renderQuestion();
+                renderNavbar();
+                prevBtn.addEventListener('click', showPrev);
+                nextBtn.addEventListener('click', showNext);
+                finishBtn.addEventListener('click', showResults);
+                restartBtn.addEventListener('click', restartQuiz);
+            }
+
+            function renderQuestion() {
+                if (state.questions.length === 0) {
+                    questionBody.innerHTML = '<p>题库加载失败或为空。</p>';
+                    return;
+                }
+                const question = state.questions[state.currentIndex];
+                questionHeader.textContent = question.category || '综合';
+                questionCounter.textContent = `第 ${state.currentIndex + 1} / ${state.questions.length} 题`;
+                questionBody.innerHTML = question.question.replace(/\\n/g, '<br>');
+                answerArea.innerHTML = '';
+                renderFillInTheBlank(question);
+                prevBtn.disabled = state.currentIndex === 0;
+                nextBtn.disabled = state.currentIndex === state.questions.length - 1;
+                if (window.MathJax) {
+                    MathJax.typesetPromise([questionBody, answerArea]);
+                }
+            }
+
+            function renderFillInTheBlank(question) {
+                const container = document.createElement('div');
+                container.className = 'flex items-center space-x-2';
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = 'fill-in-blank-input';
+                input.className = 'flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400';
+                input.placeholder = '请输入答案...';
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = '提交答案';
+                submitBtn.className = 'bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors';
+                submitBtn.onclick = () => handleSubmitFillIn();
+                container.appendChild(input);
+                container.appendChild(submitBtn);
+                answerArea.appendChild(container);
+                input.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSubmitFillIn(); });
+                if (state.userAnswers[state.currentIndex] !== null) {
+                    restoreAnswerState();
+                }
+            }
+
+            function handleSubmitFillIn() {
+                if (state.userAnswers[state.currentIndex] !== null) return;
+                const question = state.questions[state.currentIndex];
+                const input = document.getElementById('fill-in-blank-input');
+                const userAnswer = input.value.trim();
+                if (userAnswer === '') return;
+                const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(question.answer);
+                state.userAnswers[state.currentIndex] = { selected: userAnswer, isCorrect: isCorrect };
+                updateNavbar();
+                applyAnswerStyles();
+            }
+
+            function restoreAnswerState() {
+                applyAnswerStyles();
+            }
+
+            function applyAnswerStyles() {
+                const answerData = state.userAnswers[state.currentIndex];
+                if (answerData === null) return;
+                const question = state.questions[state.currentIndex];
+                const input = document.getElementById('fill-in-blank-input');
+                const submitBtn = input.nextElementSibling;
+                input.value = answerData.selected;
+                input.disabled = true;
+                submitBtn.disabled = true;
+                const oldFeedback = answerArea.querySelector('.feedback-text');
+                if (oldFeedback) oldFeedback.remove();
+                if (answerData.isCorrect) {
+                    input.className = 'flex-grow p-2 border-2 border-green-500 bg-green-100 rounded-lg';
+                } else {
+                    input.className = 'flex-grow p-2 border-2 border-red-500 bg-red-100 rounded-lg';
+                    const feedbackText = document.createElement('div');
+                    feedbackText.className = 'text-red-600 mt-2 feedback-text';
+                    feedbackText.innerHTML = '正确答案：' + question.answer;
+                    answerArea.appendChild(feedbackText);
+                    if (window.MathJax) MathJax.typesetPromise([feedbackText]);
+                }
+            }
+
+            function renderNavbar() {
+                navbarContainer.innerHTML = '';
+                state.questions.forEach((_, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = index + 1;
+                    button.className = 'w-10 h-10 flex-shrink-0 rounded-md font-mono transition-colors focus:outline-none';
+                    updateButtonStatus(button, index);
+                    button.onclick = () => goToQuestion(index);
+                    navbarContainer.appendChild(button);
+                });
+            }
+
+            function updateNavbar() {
+                const buttons = navbarContainer.querySelectorAll('button');
+                buttons.forEach((button, index) => updateButtonStatus(button, index));
+            }
+
+            function updateButtonStatus(button, index) {
+                const answer = state.userAnswers[index];
+                let baseStyle = 'border ';
+                if (index === state.currentIndex) {
+                    baseStyle += 'bg-blue-500 text-white border-blue-500';
+                } else if (answer === null) {
+                    baseStyle += 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100';
+                } else if (answer.isCorrect) {
+                    baseStyle += 'bg-green-200 text-green-800 border-green-300';
+                } else {
+                    baseStyle += 'bg-red-200 text-red-800 border-red-300';
+                }
+                button.className = `w-10 h-10 flex-shrink-0 rounded-md font-mono transition-colors focus:outline-none ${baseStyle}`;
+            }
+
+            function goToQuestion(index) {
+                if (index >= 0 && index < state.questions.length) {
+                    state.currentIndex = index;
+                    renderQuestion();
+                    updateNavbar();
+                    const currentBtn = navbarContainer.children[index];
+                    if (currentBtn) {
+                        currentBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                }
+            }
+
+            function showNext() { goToQuestion(state.currentIndex + 1); }
+            function showPrev() { goToQuestion(state.currentIndex - 1); }
+
+            function showResults() {
+                const correctAnswers = state.userAnswers.filter(a => a && a.isCorrect).length;
+                const totalQuestions = state.questions.length;
+                const percentage = totalQuestions > 0 ? ((correctAnswers / totalQuestions) * 100).toFixed(1) : 0;
+                scoreText.textContent = `答对题数 ${correctAnswers} / ${totalQuestions} (正确率 ${percentage}%)`;
+                quizView.classList.add('hidden');
+                resultView.classList.remove('hidden');
+            }
+
+            function restartQuiz() {
+                state.currentIndex = 0;
+                state.userAnswers.fill(null);
+                resultView.classList.add('hidden');
+                quizView.classList.remove('hidden');
+                renderQuestion();
+                updateNavbar();
+            }
+
+            init();
+        }
+
+        if (window.MathJax && window.MathJax.startup) {
+            window.MathJax.startup.promise.then(mainApp);
+        } else {
+            document.addEventListener('DOMContentLoaded', mainApp);
+        }
+    </script>
+</body>
+</html>
