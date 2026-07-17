@@ -1,8 +1,11 @@
 ﻿import json
 import re
+import sys
 from pathlib import Path
 
-html = Path(r"c:\Users\vitoriga\Downloads\物理试题\index（综合混合）.html").read_text(encoding="utf-8")
+DEFAULT_HTML = r"c:\Users\vitoriga\Downloads\物理试题\index（综合混合）.html"
+html_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(DEFAULT_HTML)
+html = html_path.read_text(encoding="utf-8")
 m = re.search(r"const questionBankData = (\[.*?\]);", html, re.S)
 if not m:
     print("no match")

@@ -371,6 +371,26 @@ c:\Users\vitoriga\AppData\Local\Temp\physics_questions\
 - `build_mechanics_test_html.py`（新增）- 力学综合测试快速实测脚本。
 - `index（力学综合测试）.html`（新增）- 43 道力学综合测试刷题页。
 
+### 阶段 17: 为 build_mixed_html.py 恢复炭黑/宣纸双主题切换
+
+**日期**: 2026-07-18
+
+**操作**:
+- 在 `build_mixed_html.py` 的 HTML 模板中新增 `[data-theme="light"]` CSS 变量覆盖，实现宣纸白主题（`#f8f8f6` 背景、`#2a2a2a` 文字、`#d4d4d4` 边框）。
+- 在控制栏新增「主题：炭黑/宣纸」切换按钮，固定于字体/背景按钮左侧。
+- 添加 `loadTheme()` / `toggleTheme()` / `setTheme()` JS 函数，主题状态写入 `localStorage`。
+- 重新生成 `index（综合混合）.html`（76 题）与 `index（力学综合测试）.html`（43 题）。
+- 将 `check_latex.py` 改为可接收 HTML 路径参数，统一验证综合混合页与力学综合测试页，bad count 均为 0。
+
+**关键决策**:
+- 颜色全部使用 CSS 变量，切换主题时无需改动 DOM 元素，只改 `html` 的 `data-theme` 属性。
+- 浅色主题的正确/错误反馈色从荧光绿/红调整为更克制的深绿/深红，保持黑白优雅风格。
+
+**产出文件**:
+- `build_mixed_html.py`（更新）- 支持炭黑/宣纸双主题切换。
+- `index（综合混合）.html`（更新）- 双主题版本。
+- `index（力学综合测试）.html`（更新）- 双主题版本。
+
 
 
 ### 问题 1: PDF 原始文本中的数学符号乱码
@@ -428,8 +448,8 @@ c:\Users\vitoriga\AppData\Local\Temp\physics_questions\
 - [ ] 仍可能存在 subtle OCR 公式错误（如数字错位、符号遗漏），需在刷题过程中继续收集并修复。
 - [x] `grind_promblems` Skill 已通过 darwin-skill 9 维 rubric 优化并记录（baseline 67.5 → final 81.1）。
 - [ ] 未来实际调用新 PDF 时，可补一次端到端 full_test 以替换 dry_run 评估。
-- [ ] `build_mixed_html.py` 当前仅输出深色主题，与 grind_promblems Skill 的双主题要求不一致；如需完全对齐，需恢复浅色（宣纸）主题与切换按钮。
+- [x] `build_mixed_html.py` 已恢复炭黑/宣纸双主题切换（阶段 17）。
 
 ## 最后更新时间
 
-2026-07-18 01:05
+2026-07-18 02:05
