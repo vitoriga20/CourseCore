@@ -350,6 +350,27 @@ c:\Users\vitoriga\AppData\Local\Temp\physics_questions\
 - `.trae/skills/grind_promblems/test-prompts.json`（新增）- darwin-skill 测试 prompts。
 - `.trae/skills/grind_promblems/results.tsv`（新增）- 优化记录。
 
+### 阶段 16: 用 力学综合测试.pdf 实测 grind_promblems skill
+
+**日期**: 2026-07-18
+
+**操作**:
+- 确认测试参数：源文件 `力学综合测试.pdf`、题目类型混合、答案来自现有 `comprehensive_mixed.json` 中的人工校对答案、输出 `index（力学综合测试）.html`、黑白几何主题、支持随机打乱。
+- 编写临时脚本 `build_mechanics_test_html.py`：从 `comprehensive_mixed.json` 过滤出 43 道力学题，临时替换源 JSON，调用 `build_mixed_html.py` 生成页面，输出重命名为 `index（力学综合测试）.html`，最后恢复源 JSON。
+- 运行 `check_latex.py` 扫描生成的 HTML：43 题，bad count 0。
+- 验证页面包含：顺序/随机切换、上一题/下一题、底部题号导航、提交判题、结果页、重新开始、MathJax 公式、题目配图相对路径 `assets/q{id}.jpg`。
+
+**关键决策**:
+- 复用已人工校对的 `comprehensive_mixed.json` 答案，不重新生成，避免自动答案错误。
+- 临时替换源 JSON 的方式避免改动 `build_mixed_html.py`，保持现有生成链路稳定。
+
+**发现的问题**:
+- 生成的 `index（力学综合测试）.html` 当前只有深色主题；`build_mixed_html.py` 在阶段 9 按用户要求移除了浅色主题切换。这与优化后 grind_promblems Skill 中「默认黑白几何 + 双主题（炭黑 / 宣纸）」的要求存在差距。
+
+**产出文件**:
+- `build_mechanics_test_html.py`（新增）- 力学综合测试快速实测脚本。
+- `index（力学综合测试）.html`（新增）- 43 道力学综合测试刷题页。
+
 
 
 ### 问题 1: PDF 原始文本中的数学符号乱码
@@ -407,7 +428,8 @@ c:\Users\vitoriga\AppData\Local\Temp\physics_questions\
 - [ ] 仍可能存在 subtle OCR 公式错误（如数字错位、符号遗漏），需在刷题过程中继续收集并修复。
 - [x] `grind_promblems` Skill 已通过 darwin-skill 9 维 rubric 优化并记录（baseline 67.5 → final 81.1）。
 - [ ] 未来实际调用新 PDF 时，可补一次端到端 full_test 以替换 dry_run 评估。
+- [ ] `build_mixed_html.py` 当前仅输出深色主题，与 grind_promblems Skill 的双主题要求不一致；如需完全对齐，需恢复浅色（宣纸）主题与切换按钮。
 
 ## 最后更新时间
 
-2026-07-18 00:55
+2026-07-18 01:05
