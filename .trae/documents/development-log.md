@@ -4,7 +4,7 @@
 
 | 项目 | 内容 |
 |------|------|
-| 当前状态 | 已生成填空/解答/综合混合三类刷题页，并通过 Playwright 验证 |
+| 当前状态 | 已生成填空/解答/综合混合三类刷题页，并通过 Playwright 验证；已用 darwin-skill 优化 grind_promblems Skill |
 | 技术栈 | 静态 HTML + Tailwind CSS CDN + MathJax 3 (CHTML)；综合混合页使用 CSS 变量双主题 |
 | 数据来源 | `力学练习一~七.pdf`、`力学综合测试.pdf`、`波动光学练习一~六.pdf`、`波动光学综合测试.pdf` |
 | 输出页面 | `index（填空题）.html`（60 题）、`index（解答题）.html`（46 题）、`index（综合混合）.html`（76 题） |
@@ -19,7 +19,9 @@ c:\Users\vitoriga\Downloads\物理试题\
 │   ├── technical-architecture.md       # 技术架构说明
 │   └── prd.md                          # 产品需求文档
 ├── .trae\skills\grind_promblems\
-│   └── SKILL.md                        # 通用刷题生成器 Skill 定义
+│   ├── SKILL.md                        # 通用刷题生成器 Skill 定义
+│   ├── test-prompts.json               # darwin-skill 测试 prompts
+│   └── results.tsv                     # darwin-skill 优化记录
 ├── index（顺序） (3).html               # 现有单选刷题页（未改动）
 ├── index（填空题）.html                 # 填空题刷题页（力学 33 + 波动光学 27）
 ├── index（解答题）.html                 # 解答题刷题页（力学 25 + 波动光学 21）
@@ -322,6 +324,32 @@ c:\Users\vitoriga\AppData\Local\Temp\physics_questions\
 **产出文件**:
 - `.trae/skills/grind_promblems/SKILL.md`（更新）- 补充 LaTeX 质量检查与源 JSON 优先修复策略。
 
+### 阶段 15: 用 darwin-skill 优化 grind_promblems Skill
+
+**日期**: 2026-07-17
+
+**操作**:
+- 初始化 git 分支 `auto-optimize/20260717-0000`，建立 baseline commit。
+- 为 grind_promblems 编写 `test-prompts.json`，覆盖 PDF 填空题、人工校对 JSON 综合混合页、无答案解答题三类场景。
+- 按 darwin-skill 9 维 rubric 做基线评估：总分 67.5，短板为 dim4 检查点(4)、dim9 反例黑名单(3)、dim3 失败模式(5)、dim5 可执行具体性(6)。
+- 执行 4 轮优化：
+  1. 新增「反例与黑名单」章节，dim9 从 3 → 8，总分 67.5 → 68.2。
+  2. 输入确认增加 🛑 STOP / 🔴 CHECKPOINT 视觉标记，dim4 从 4 → 8，总分 68.2 → 70.6。
+  3. PDF/答案/LaTeX 三段补充 if-then 三段式失败处理总表，dim3 从 5 → 8，总分 70.6 → 70.8。
+  4. 删除「建议/可保留」等软化措辞，LaTeX 检查改为强制，dim5 从 6 → 8，总分 70.8 → 83.4；随后合并失败处理表以满足 150% 体积限制，最终总分 81.1。
+- 所有改进均通过独立子 agent 的 dry-run 效果评估，未引入新的 scripts/references 依赖。
+- 更新 `.trae/skills/grind_promblems/results.tsv` 记录优化日志。
+
+**关键决策**:
+- 每轮只改一个维度，便于归因；总分严格高于旧版才保留（体积约束导致的最后一轮 dim8 微调除外）。
+- 失败处理从分散的三张小表合并为一张总表，在保持 dim3 得分的同时满足 SKILL.md 不超过原始大小 150% 的约束。
+- 效果评估使用独立子 agent 干跑（dry_run），未做端到端 full_test，因为 full_test 需要真实 PDF 提取与 HTML 生成链路。
+
+**产出文件**:
+- `.trae/skills/grind_promblems/SKILL.md`（更新）- 加入反例黑名单、显性检查点、失败处理总表、去除软化措辞。
+- `.trae/skills/grind_promblems/test-prompts.json`（新增）- darwin-skill 测试 prompts。
+- `.trae/skills/grind_promblems/results.tsv`（新增）- 优化记录。
+
 
 
 ### 问题 1: PDF 原始文本中的数学符号乱码
@@ -377,8 +405,9 @@ c:\Users\vitoriga\AppData\Local\Temp\physics_questions\
 - [x] 综合混合页题干/选项已改用 MinerU 提取文本（阶段 11），保留人工答案与解析。
 - [x] MinerU OCR 对部分选择题选项的 LaTeX 花括号识别不完整（如 id 2），导致 MathJax 渲染失败并显示原始文本；已在阶段 13 批量修复综合混合页中检测到的 17 处明显残缺。
 - [ ] 仍可能存在 subtle OCR 公式错误（如数字错位、符号遗漏），需在刷题过程中继续收集并修复。
-- [ ] `grind_promblems` Skill 为第一版，PDF 识别与答案自动生成功能待后续实际调用时验证并迭代。
+- [x] `grind_promblems` Skill 已通过 darwin-skill 9 维 rubric 优化并记录（baseline 67.5 → final 81.1）。
+- [ ] 未来实际调用新 PDF 时，可补一次端到端 full_test 以替换 dry_run 评估。
 
 ## 最后更新时间
 
-2026-07-18 00:05
+2026-07-18 00:55
