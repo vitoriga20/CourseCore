@@ -1,0 +1,7 @@
+timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
+2026-07-17T00:30	baseline	grind_promblems	-	67.5	baseline	-	dim1=8 dim2=7 dim3=5 dim4=4 dim5=6 dim6=7 dim7=8 dim8=9 dim9=3	dry_run
+2026-07-17T00:35	5d31d5d	grind_promblems	67.5	68.2	keep	dim9	新增反例与黑名单章节	dry_run
+2026-07-17T00:40	4adfb74	grind_promblems	68.2	70.6	keep	dim4	输入确认增加 STOP/CHECKPOINT 视觉标记	dry_run
+2026-07-17T00:45	f8250d7	grind_promblems	70.6	70.8	keep	dim3	PDF/答案/LaTeX 三段加 if-then fallback 表	dry_run
+2026-07-17T00:50	92407b5	grind_promblems	70.8	83.4	keep	dim5	删除建议/可保留等软化措辞，LaTeX检查改为强制	dry_run
+2026-07-17T00:55	f71d545	grind_promblems	83.4	81.1	keep	size-constraint	合并失败处理表以满足150%体积限制，dim8从10调整为9	dry_run
