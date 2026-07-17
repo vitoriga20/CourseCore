@@ -57,7 +57,7 @@ PDF 识别失败处理：
 ### 3.3 答案处理
 - 若用户未提供答案：
   1. 用多模型/多平台交叉求解（至少 2 种独立来源）。
-  2. 对物理/数学题建议：符号计算（sympy）+ 数值代入验证。
+  2. 对物理/数学题使用符号计算（sympy）+ 数值代入验证。
   3. 记录置信度，低置信度题目标 `[待核对]`。
 - 若用户已提供答案：直接采用，但仍做格式归一化。
 
@@ -80,10 +80,10 @@ PDF 识别失败处理：
   - 完成练习结果页
   - 重新开始
 
-### 3.5 LaTeX 质量检查（可选但建议）
+### 3.5 LaTeX 质量检查
 - 生成 HTML 后，对 `$...$` 段做全量扫描，检查花括号是否闭合。
 - 发现公式显示异常时，优先回到源 JSON 修复，再重新生成 HTML，避免直接改 HTML 后下次生成被覆盖。
-- 可保留 `check_latex.py`、`scan_latex.py`、`fix_xxx_latex.py` 等脚本作为后续维护工具。
+- 保留 `check_latex.py`、`scan_latex.py`、`fix_xxx_latex.py` 等脚本作为后续维护工具。
 
 LaTeX 检查失败处理：
 
@@ -125,7 +125,7 @@ function normalizeAnswer(str) {
 - 几何元素：
   - 卡片使用直角细边框（`border: 1px solid`）
   - 题号按钮使用等宽字体、正方形
-  - 背景可叠加 faint dot grid（CSS `radial-gradient`）
+  - 背景叠加 faint dot grid（CSS `radial-gradient`）
 - 主题切换按钮固定右上角
 - 公式：MathJax 3 CHTML
 
