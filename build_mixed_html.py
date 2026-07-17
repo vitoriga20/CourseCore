@@ -35,21 +35,6 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
             --font-serif: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", serif;
             --font-mono: "JetBrains Mono", "SFMono-Regular", "SF Mono", Consolas, monospace;
         }
-        [data-theme="light"] {
-            --bg-color: #f8f8f6;
-            --text-color: #2a2a2a;
-            --border-color: #d4d4d4;
-            --accent-color: #111111;
-            --muted-color: #666666;
-            --dot-color: rgba(0,0,0,0.04);
-            --grid-color: rgba(0,0,0,0.03);
-            --card-bg: #ffffff;
-            --correct-bg: #e8f5e9;
-            --correct-border: #2e7d32;
-            --hover-text-color: var(--correct-border);
-            --wrong-bg: #ffebee;
-            --wrong-border: #c62828;
-        }
         * { box-sizing: border-box; }
         body {
             margin: 0;
@@ -210,7 +195,6 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
                 <span id="mode-badge" class="font-mono text-xs px-2 py-1 border shrink-0" style="border-color:var(--border-color);color:var(--muted-color)">顺序</span>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-                <button id="theme-btn" class="theme-chip">主题：炭黑</button>
                 <button id="font-btn" class="theme-chip hidden sm:inline-flex">字体：宋体</button>
                 <button id="bg-btn" class="theme-chip hidden sm:inline-flex">背景：网点</button>
                 <button id="order-btn" class="theme-chip">切换随机</button>
@@ -327,7 +311,6 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
             const scoreText = document.getElementById('score-text');
             const navbarContainer = document.getElementById('navbar-container');
             const bottomNavbarContainer = document.getElementById('bottom-navbar-container');
-            const themeBtn = document.getElementById('theme-btn');
             const fontBtn = document.getElementById('font-btn');
             const bgBtn = document.getElementById('bg-btn');
             const modeBadge = document.getElementById('mode-badge');
@@ -343,7 +326,6 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
                 state.allQuestions = questionBankData;
                 resetOrder();
                 state.userAnswers = new Array(state.allQuestions.length).fill(null);
-                loadTheme();
                 loadBg();
                 loadFont();
                 renderQuestion();
@@ -355,7 +337,6 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
                 sidebarFinishBtn.addEventListener('click', showResults);
                 orderBtn.addEventListener('click', toggleOrder);
                 restartBtn.addEventListener('click', restartQuiz);
-                themeBtn.addEventListener('click', toggleTheme);
                 fontBtn.addEventListener('click', toggleFont);
                 bgBtn.addEventListener('click', toggleBg);
             }
@@ -615,25 +596,6 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
                 renderQuestion();
                 renderNavbar();
                 updateProgress();
-            }
-
-            function loadTheme() {
-                const saved = localStorage.getItem('grind-theme');
-                const theme = saved || 'dark';
-                setTheme(theme);
-            }
-
-            function toggleTheme() {
-                const current = document.documentElement.getAttribute('data-theme') || 'dark';
-                const next = current === 'dark' ? 'light' : 'dark';
-                setTheme(next);
-            }
-
-            function setTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                themeBtn.textContent = theme === 'dark' ? '主题：炭黑' : '主题：宣纸';
-                localStorage.setItem('grind-theme', theme);
-                if (window.MathJax) MathJax.typesetPromise();
             }
 
             function loadFont() {

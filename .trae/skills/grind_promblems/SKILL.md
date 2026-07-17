@@ -1,6 +1,6 @@
 ---
 name: "grind_promblems"
-description: "Builds elegant black/white geometry-themed quiz HTML pages from uploaded question banks (PDF). Extracts text/images with Miner, accepts or generates answers with cross-validation, supports dual themes and shuffle. Invoke when user uploads a PDF/JSON question bank and asks for a quiz/practice/drill page."
+description: "Builds elegant black/white geometry-themed quiz HTML pages from uploaded question banks (PDF). Extracts text/images with Miner, accepts or generates answers with cross-validation, supports shuffle. Invoke when user uploads a PDF/JSON question bank and asks for a quiz/practice/drill page."
 ---
 
 # Grind Problems 刷题生成器
@@ -11,7 +11,7 @@ description: "Builds elegant black/white geometry-themed quiz HTML pages from up
 - 做成刷题网页 / 刷题工具
 - 生成 HTML 页面
 - 自动识别题目、生成答案
-- 需要随机打乱 / 双主题 / 几何黑白风格
+- 需要随机打乱 / 几何黑白风格
 
 ## 2. 输入确认
 
@@ -23,7 +23,7 @@ description: "Builds elegant black/white geometry-themed quiz HTML pages from up
    - 用户已提供答案（随 PDF 或单独文件）
    - 需要智能体生成答案（需交叉验证）
 4. **输出文件名/路径**：默认 `index（<类型>）.html` 在工作目录。
-5. **主题偏好**：默认黑白几何 + 双主题（炭黑 / 宣纸）。
+5. **主题偏好**：默认黑白几何炭黑主题，不生成浅色主题切换。
 6. **是否打乱顺序**：默认支持。
 
 🔴 CHECKPOINT：若用户已提供人工校对 JSON 或答案文件，再次确认「是否覆盖/更新已有答案与解析」，避免误删人工成果。
@@ -55,7 +55,7 @@ description: "Builds elegant black/white geometry-themed quiz HTML pages from up
 
 ### 3.4 HTML 生成
 - 生成单文件 HTML，内嵌题库 JSON。
-- 样式：几何构型、黑白优雅、双主题切换。
+- 样式：几何构型、黑白优雅、炭黑主题。
 - 功能：
   - 顺序/随机切换
   - 上一题/下一题
@@ -104,17 +104,13 @@ function normalizeAnswer(str) {
 
 ## 5. 样式规范
 
-- 主背景：
-  - 浅色主题 `#f8f8f6`（宣纸白）
-  - 深色主题 `#111111`（炭黑）
-- 强调色：
-  - 浅色 `#2a2a2a` 文字 + `#d4d4d4` 边框
-  - 深色 `#e5e5e5` 文字 + `#333333` 边框
+- 主背景：`#111111`（炭黑）
+- 强调色：`#e5e5e5` 文字 + `#333333` 边框
 - 几何元素：
   - 卡片使用直角细边框（`border: 1px solid`）
   - 题号按钮使用等宽字体、正方形
   - 背景叠加 faint dot grid（CSS `radial-gradient`）
-- 主题切换按钮固定右上角
+- 不生成主题切换按钮，保持单一炭黑主题
 - 公式：MathJax 3 CHTML
 
 ## 6. 输出与交付
@@ -135,7 +131,7 @@ function normalizeAnswer(str) {
 | 3 | 发现 LaTeX 显示异常时直接改 HTML | 下次重新生成又被覆盖 | 回到源 JSON 修复，再重新生成 HTML |
 | 4 | PDF 提取失败就终止流程 | 无法交付 | 无法安装 `marker`/`MinerU` 时回退到 `pypdf` + 正则 |
 | 5 | 未确认源文件路径/题目类型/答案来源就开始处理 | 输出与用户预期不符 | 按第 2 章清单逐项确认后再执行 |
-| 6 | 默认单主题且不提供切换 | 不满足双主题需求 | 默认生成炭黑/宣纸双主题切换按钮 |
+| 6 | 默认生成浅色主题或主题切换按钮 | 与用户要求的单一炭黑风格冲突 | 默认仅炭黑主题，不生成浅色切换 |
 | 7 | 答案归一化时保留 `$`、空白、全角标点差异 | 正确答案被判错 | 严格使用第 4 章 `normalizeAnswer()` |
 | 8 | 未向用户说明图片/公式/答案置信度限制 | 用户误判产物完整性 | 交付时显式列出已知限制 |
 

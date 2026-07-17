@@ -5,7 +5,7 @@
 | 项目 | 内容 |
 |------|------|
 | 当前状态 | 已生成填空/解答/综合混合三类刷题页，并通过 Playwright 验证；已用 darwin-skill 优化 grind_promblems Skill |
-| 技术栈 | 静态 HTML + Tailwind CSS CDN + MathJax 3 (CHTML)；综合混合页使用 CSS 变量双主题 |
+| 技术栈 | 静态 HTML + Tailwind CSS CDN + MathJax 3 (CHTML)；综合混合页使用 CSS 变量炭黑主题 |
 | 数据来源 | `力学练习一~七.pdf`、`力学综合测试.pdf`、`波动光学练习一~六.pdf`、`波动光学综合测试.pdf` |
 | 输出页面 | `index（填空题）.html`（60 题）、`index（解答题）.html`（46 题）、`index（综合混合）.html`（76 题） |
 
@@ -25,7 +25,7 @@ c:\Users\vitoriga\Downloads\物理试题\
 ├── index（顺序） (3).html               # 现有单选刷题页（未改动）
 ├── index（填空题）.html                 # 填空题刷题页（力学 33 + 波动光学 27）
 ├── index（解答题）.html                 # 解答题刷题页（力学 25 + 波动光学 21）
-├── index（综合混合）.html               # 综合混合刷题页（76 题，黑白几何双主题）
+├── index（综合混合）.html               # 综合混合刷题页（76 题，黑白几何炭黑主题）
 ├── build_html_pages.py                 # 生成填空/解答 HTML 的脚本
 ├── build_mixed_html.py                 # 生成综合混合 HTML 的脚本
 ├── build_comprehensive_mixed.py        # 合并力学/光学综合测试题为混合 JSON
@@ -391,6 +391,30 @@ c:\Users\vitoriga\AppData\Local\Temp\physics_questions\
 - `index（综合混合）.html`（更新）- 双主题版本。
 - `index（力学综合测试）.html`（更新）- 双主题版本。
 
+### 阶段 18: 按用户要求移除浅色主题，仅保留炭黑主题
+
+**日期**: 2026-07-18
+
+**操作**:
+- 用户明确反馈页面只需炭黑主题，不需要浅色主题。
+- 从 `build_mixed_html.py` 的 HTML 模板中移除 `[data-theme="light"]` CSS 变量覆盖。
+- 移除控制栏「主题：炭黑/宣纸」切换按钮。
+- 移除 `loadTheme()` / `toggleTheme()` / `setTheme()` 及 `localStorage` 主题相关逻辑。
+- 更新 `.trae/skills/grind_promblems/SKILL.md`：将默认主题改为单一炭黑主题，删除双主题相关描述与反例。
+- 重新生成 `index（综合混合）.html`（76 题）与 `index（力学综合测试）.html`（43 题）。
+- 使用 `check_latex.py` 校验两个页面，bad count 均为 0。
+
+**关键决策**:
+- 单一炭黑主题减少 UI 复杂度，与用户当前偏好一致。
+- Skill 文档同步更新，避免后续新 PDF 生成时再次引入浅色主题。
+- 保留字体（宋体/黑体）与背景（网点/方格/斜线/纯色）切换，这些不属于主题色变更。
+
+**产出文件**:
+- `build_mixed_html.py`（更新）- 仅炭黑主题。
+- `.trae/skills/grind_promblems/SKILL.md`（更新）- 去除双主题要求。
+- `index（综合混合）.html`（更新）- 炭黑主题版本。
+- `index（力学综合测试）.html`（更新）- 炭黑主题版本。
+
 
 
 ### 问题 1: PDF 原始文本中的数学符号乱码
@@ -448,8 +472,8 @@ c:\Users\vitoriga\AppData\Local\Temp\physics_questions\
 - [ ] 仍可能存在 subtle OCR 公式错误（如数字错位、符号遗漏），需在刷题过程中继续收集并修复。
 - [x] `grind_promblems` Skill 已通过 darwin-skill 9 维 rubric 优化并记录（baseline 67.5 → final 81.1）。
 - [ ] 未来实际调用新 PDF 时，可补一次端到端 full_test 以替换 dry_run 评估。
-- [x] `build_mixed_html.py` 已恢复炭黑/宣纸双主题切换（阶段 17）。
+- [x] `build_mixed_html.py` 已按用户要求移除浅色主题，仅保留炭黑主题（阶段 18）。
 
 ## 最后更新时间
 
-2026-07-18 02:05
+2026-07-18 02:20
