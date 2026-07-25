@@ -1,0 +1,27 @@
+{
+  "name": "coursecore",
+  "version": "1.0.0",
+  "description": "大学基础课学习平台 - Vite 重构版",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "build:data": "node builders/question-builder.js",
+    "validate:data": "node builders/question-builder.js --validate",
+    "predev": "npm run build:data",
+    "dev": "vite",
+    "prebuild": "npm run build:data",
+    "build": "vite build && node scripts/prerender.js",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "gray-matter": "^4.0.3",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "vite": "^5.3.0"
+  }
+}
