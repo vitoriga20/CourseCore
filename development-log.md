@@ -162,6 +162,37 @@ coursecore/
 - 继续沿用“提交 / 下一节”共用同一按钮的方案，验证符合用户预期。
 - inline 答题状态仍不持久化，进入新小节后自动清空。
 
+## 阶段 4: 修复知识库题目卡片重叠/截断问题
+
+**日期**: 2026-07-25
+
+**操作**:
+- 复现 `/kb` 知识库页面题目卡片显示异常：题目标题左侧被截断，卡片出现多余竖条。
+- 定位根因：`<a class="card">` 默认 `display: inline`，内部包含 block 级 div 时浏览器将其拆分为多个 inline box，导致布局错乱、文字被截断。
+- 在 `src/style.css` 的 `.card` 中显式声明 `display: block`，统一所有卡片为块级元素。
+- 验证 `/kb`、`/bank`、`/exams`、首页课程卡片、试卷详情等页面均正常显示。
+
+**关键决策**:
+- 在 `.card` 基类统一加 `display: block` → 一次性修复所有 `<a class="card">` 卡片，避免逐个文件修补贴 `block`/`flex`。
+- 保持卡片 hover 动效、圆角、边框不变。
+
+**产出文件**:
+- `src/style.css` - `.card` 增加 `display: block`
+
+**关联问题**: 知识库页面题目卡片文字被截断、题目“打在一起”。
+
+## 问题与解决方案
+
+### 问题 3: 知识库题目卡片标题被截断
+
+**日期**: 2026-07-25
+
+**现象**: `/kb` 页面已解锁题目卡片左侧出现深色竖条，题目标题如“函数的定义域”显示为“的定义域”，文字被截断。
+
+**原因**: `<a>` 标签默认 `display: inline`，当使用 `<a class="card">` 包裹 block 级子元素时，浏览器将 inline 元素拆分为多个 inline box，产生多余的窄 inline box 并遮挡/挤压内部标题。
+
+**解决**: 在 `.card` 基类中设置 `display: block`，使所有卡片（包括 `<a>` 卡片）正确渲染为块级容器。
+
 ## 更新记录 - 2026-07-25
 
 ### 新增
@@ -174,10 +205,12 @@ coursecore/
 - `course.js` 小节入口由 button 改为 a 链接。
 - `inlinePractice.js` 完全重写为多题展示模式。
 - `answer-collector.js` 支持非 document 根节点。
+- `style.css` 的 `.card` 增加 `display: block`。
 
 ### 修复
 - 提交时 `getElementById` 报错。
 - `renderSidebarContent` 未定义报错。
+- 知识库 `/kb` 题目卡片标题被截断、出现多余竖条的问题。
 
 ## 最后更新时间
 

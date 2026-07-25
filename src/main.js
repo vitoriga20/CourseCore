@@ -39,15 +39,13 @@ function renderAppShell() {
   if (!app) return;
   app.innerHTML = `
     <header class="sticky top-0 z-30 header-glass border-b">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <a href="/" class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full border flex items-center justify-center" style="border-color: var(--accent);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
-            </div>
-            <span class="text-xl font-bold tracking-tight">${escapeHtml(PLATFORM.name)}</span>
-          </a>
-        </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full border flex items-center justify-center" style="border-color: var(--accent);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+          </div>
+          <span class="text-xl font-bold tracking-tight">${escapeHtml(PLATFORM.name)}</span>
+        </a>
         <div class="hidden md:flex items-center gap-6">
           <div class="search-wrap w-56">
             <span class="search-icon">
@@ -101,6 +99,41 @@ function renderAppShell() {
         </div>
       </div>
     </footer>
+
+    <div class="staggered-menu-wrapper" id="staggered-menu" data-open="false">
+      <div class="sm-prelayers" aria-hidden="true">
+        <div class="sm-prelayer" style="background: #1a1a2e;"></div>
+        <div class="sm-prelayer" style="background: #4a2c6a;"></div>
+        <div class="sm-prelayer" style="background: #2dd288;"></div>
+      </div>
+      <button class="sm-toggle" data-action="toggle-menu" aria-label="打开菜单" aria-expanded="false" aria-controls="sm-panel">
+        <span class="sm-toggle-text">Menu</span>
+        <span class="sm-icon" aria-hidden="true">
+          <span class="sm-icon-line"></span>
+          <span class="sm-icon-line sm-icon-line-v"></span>
+        </span>
+      </button>
+      <aside class="sm-panel" id="sm-panel" aria-hidden="true">
+        <nav class="sm-panel-inner">
+          <ul class="sm-panel-list">
+            <li class="sm-panel-itemWrap">
+              <a href="/" class="sm-panel-item" data-index="01"><span class="sm-panel-label">首页</span></a>
+            </li>
+            <li class="sm-panel-itemWrap sm-panel-group">
+              <button type="button" class="sm-panel-item sm-panel-parent" data-action="toggle-course-submenu" aria-expanded="false" data-index="02">
+                <span class="sm-panel-label">课程</span>
+              </button>
+              <ul class="sm-submenu">
+                ${COURSES.map((c, i) => `<li class="sm-submenu-itemWrap"><a href="/course/${c.id}" class="sm-submenu-item" data-subindex="0${i + 1}"><span class="sm-submenu-label">${escapeHtml(c.title)}</span></a></li>`).join('')}
+              </ul>
+            </li>
+            <li class="sm-panel-itemWrap">
+              <a href="/kb" class="sm-panel-item" data-index="03"><span class="sm-panel-label">知识库</span></a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+    </div>
   `;
 }
 
@@ -133,6 +166,48 @@ function updateSearch(value) {
   else if (state.view === 'bank') showPracticeBank();
 }
 
+function closeStaggeredMenu() {
+  const wrapper = document.getElementById('staggered-menu');
+  const btn = wrapper?.querySelector('.sm-toggle');
+  const panel = document.getElementById('sm-panel');
+  if (wrapper) wrapper.setAttribute('data-open', 'false');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+  if (panel) panel.setAttribute('aria-hidden', 'true');
+  document.querySelectorAll('.sm-panel-group.open').forEach(g => g.classList.remove('open'));
+  document.querySelectorAll('.sm-panel-parent[aria-expanded="true"]').forEach(p => p.setAttribute('aria-expanded', 'false'));
+}
+
+function openStaggeredMenu() {
+  const wrapper = document.getElementById('staggered-menu');
+  const btn = wrapper?.querySelector('.sm-toggle');
+  const panel = document.getElementById('sm-panel');
+  if (wrapper) wrapper.setAttribute('data-open', 'true');
+  if (btn) btn.setAttribute('aria-expanded', 'true');
+  if (panel) panel.setAttribute('aria-hidden', 'false');
+}
+
+function toggleStaggeredMenu() {
+  const wrapper = document.getElementById('staggered-menu');
+  if (wrapper?.getAttribute('data-open') === 'true') {
+    closeStaggeredMenu();
+  } else {
+    openStaggeredMenu();
+  }
+}
+
+function toggleCourseSubmenu(button) {
+  const group = button.closest('.sm-panel-group');
+  if (!group) return;
+  const isOpen = group.classList.contains('open');
+  if (isOpen) {
+    group.classList.remove('open');
+    button.setAttribute('aria-expanded', 'false');
+  } else {
+    group.classList.add('open');
+    button.setAttribute('aria-expanded', 'true');
+  }
+}
+
 function initEventDelegation() {
   const app = document.getElementById('app');
   if (!app) return;
@@ -143,13 +218,18 @@ function initEventDelegation() {
       const href = link.getAttribute('href');
       if (href && href.startsWith('/') && isInternalPath(href)) {
         e.preventDefault();
+        closeStaggeredMenu();
         navigateTo(href);
         return;
       }
     }
 
     const el = e.target.closest('[data-action]');
-    if (!el) return;
+    if (!el) {
+      const menuWrap = document.getElementById('staggered-menu');
+      if (menuWrap && !menuWrap.contains(e.target)) closeStaggeredMenu();
+      return;
+    }
     const action = el.dataset.action;
     const itemId = el.dataset.itemId;
     const qid = el.dataset.qid;
@@ -172,6 +252,8 @@ function initEventDelegation() {
       case 'exam-papers':
         navigateTo('/exams');
         break;
+      case 'toggle-menu': toggleStaggeredMenu(); break;
+      case 'toggle-course-submenu': toggleCourseSubmenu(el); break;
       case 'toggle-item': handleToggleItem(itemId); break;
       case 'toggle-module': handleToggleModule(moduleId); break;
       case 'toggle-item-expand': handleToggleItemExpand(itemId); break;
