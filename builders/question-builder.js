@@ -138,8 +138,12 @@ function validateQuestion(q, sourcePath) {
   }
 }
 
+function normalizeLineEndings(text) {
+  return text.replace(/\r\n/g, '\n');
+}
+
 function parseQuestionMarkdown(filePath) {
-  const raw = fs.readFileSync(filePath, 'utf-8');
+  const raw = normalizeLineEndings(fs.readFileSync(filePath, 'utf-8'));
   const { data: frontmatter, content } = matter(raw);
   if (frontmatter.type === 'theory') {
     return null;
@@ -151,7 +155,7 @@ function parseQuestionMarkdown(filePath) {
 }
 
 function parseTheoryMarkdown(filePath) {
-  const raw = fs.readFileSync(filePath, 'utf-8');
+  const raw = normalizeLineEndings(fs.readFileSync(filePath, 'utf-8'));
   const { data: frontmatter, content } = matter(raw);
   if (frontmatter.type !== 'theory') return null;
   const sections = parseSections(content, 2);
@@ -166,7 +170,7 @@ function parseTheoryMarkdown(filePath) {
 }
 
 function parseExamMarkdown(filePath) {
-  const raw = fs.readFileSync(filePath, 'utf-8');
+  const raw = normalizeLineEndings(fs.readFileSync(filePath, 'utf-8'));
   const { data: frontmatter, content } = matter(raw);
   const sectionList = parseRepeatedSections(content, 2);
 
