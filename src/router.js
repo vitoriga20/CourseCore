@@ -14,10 +14,13 @@ import { renderCourse } from './views/course.js';
 import { renderKnowledgeBase } from './views/knowledgeBase.js';
 import { renderPracticeBank } from './views/practiceBank.js';
 import { renderPracticeList } from './views/practiceList.js';
+import { initQuizSession, cleanupQuizSession } from './views/quizSession.js';
 import { renderPracticeDetail } from './views/practiceDetail.js';
 import { renderExamPapers } from './views/examPapers.js';
 import { renderExamDetail } from './views/examDetail.js';
 import { initGooeyNav } from './components/gooeyNav.js';
+
+let activeQuizItemId = null;
 
 function typeset(element) {
   if (window.MathJax && window.MathJax.typesetPromise && element) {
@@ -325,6 +328,11 @@ export function renderMain() {
   const main = document.getElementById("main");
   if (!main) return;
 
+  if (activeQuizItemId) {
+    cleanupQuizSession(activeQuizItemId);
+    activeQuizItemId = null;
+  }
+
   switch (state.view) {
     case "landing": {
       main.innerHTML = renderLanding();
@@ -366,6 +374,14 @@ export function renderMain() {
       break;
     case "practice-list":
       main.innerHTML = renderPracticeList(state.currentPracticeItem);
+      {
+        const course = COURSES.find(c => c.modules.some(m => m.items.some(i => i.id === state.currentPracticeItem)));
+        const item = course?.modules.flatMap(m => m.items).find(i => i.id === state.currentPracticeItem);
+        if (item?.type === 'quiz') {
+          initQuizSession(state.currentPracticeItem);
+          activeQuizItemId = state.currentPracticeItem;
+        }
+      }
       break;
     case "exam":
       main.innerHTML = renderExamPapers();

@@ -1,10 +1,19 @@
 export function normalizedValidator(question, userAnswer) {
-  const normalize = s => String(s)
-    .toLowerCase()
-    .replace(/\s+/g, '')
-    .replace(/，/g, ',')
-    .replace(/。/g, '.')
-    .replace(/\\/g, '');
+  function normalize(s) {
+    return String(s)
+      .toLowerCase()
+      .replace(/\$/g, '')
+      .replace(/\\mathrm\{([^}]*)\}/g, '$1')
+      .replace(/\\,?/g, '')
+      .replace(/\\;/g, '')
+      .replace(/[\u3000\s]+/g, '')
+      .replace(/；/g, ';')
+      .replace(/，/g, ',')
+      .replace(/。/g, '.')
+      .replace(/（/g, '(')
+      .replace(/）/g, ')')
+      .replace(/\\/g, '');
+  }
 
   const passed = normalize(userAnswer) === normalize(question.answer);
   return {

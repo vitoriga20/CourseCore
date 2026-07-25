@@ -1,11 +1,13 @@
 import { escapeHtml } from '../../utils.js';
 import { questionTypes } from '../../config/question-types.js';
 
-export function renderChoice(question, { inline = false, userAnswer = null } = {}) {
+export function renderChoice(question, { inline = false, userAnswer = null, selectAction = 'select-option' } = {}) {
   const isMulti = question.questionType === questionTypes.multipleChoice;
   const inputType = isMulti ? 'checkbox' : 'radio';
   const name = `q-choice-${question.id}`;
-  const actionAttr = inline ? '' : 'data-action="select-option"';
+  const actionAttr = inline
+    ? (selectAction ? `data-action="${selectAction}"` : '')
+    : 'data-action="select-option"';
 
   const isSelected = (idx) => {
     if (userAnswer === null || userAnswer === undefined) return false;

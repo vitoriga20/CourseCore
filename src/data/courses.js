@@ -190,5 +190,46 @@ export const COURSES = [
       ]
     }
   ]
+},
+{
+  id: "physics-b-1",
+  title: "大学物理B（上）",
+  description: "长沙理工大学大学物理B（上），涵盖质点力学、刚体转动、机械振动与波动、波动光学等核心内容，通过章节理论与期末综合测验巩固物理思维能力。",
+  requirements: [
+    "完成各章节理论学习",
+    "完成力学期末综合测验",
+    "完成波动光学期末综合测验"
+  ],
+  modules: [
+    {
+      id: "p1b-m1",
+      title: "力学",
+      items: [
+        { id: "p1b-m1-01", type: "theory", title: "质点运动学基础" },
+        { id: "p1b-m1-02", type: "theory", title: "质点运动学与相对运动" },
+        { id: "p1b-m1-03", type: "theory", title: "牛顿运动定律与非惯性系" },
+        { id: "p1b-m1-04", type: "theory", title: "动量与动量守恒定律" },
+        { id: "p1b-m1-05", type: "theory", title: "功和能与机械能守恒定律" },
+        { id: "p1b-m1-06", type: "theory", title: "角动量与角动量守恒定律" },
+        { id: "p1b-m1-07", type: "theory", title: "刚体的定轴转动" },
+        { id: "p1b-m1-quiz", type: "quiz", title: "力学期末综合测验" }
+      ]
+    },
+    {
+      id: "p1b-m2",
+      title: "波动光学",
+      items: [
+        { id: "p1b-m2-01", type: "theory", title: "光的干涉基础" },
+        { id: "p1b-m2-02", type: "theory", title: "光程差与薄膜干涉" },
+        { id: "p1b-m2-03", type: "theory", title: "薄膜干涉与迈克耳逊干涉仪" },
+        { id: "p1b-m2-04", type: "theory", title: "光的衍射与单缝衍射" },
+        { id: "p1b-m2-05", type: "theory", title: "光栅衍射" },
+        { id: "p1b-m2-06", type: "theory", title: "光学仪器分辨率与X射线衍射" },
+        { id: "p1b-m2-07", type: "theory", title: "光的偏振" },
+        { id: "p1b-m2-08", type: "theory", title: "反射折射偏振与双折射" },
+        { id: "p1b-m2-quiz", type: "quiz", title: "波动光学期末综合测验" }
+      ]
+    }
+  ]
 }
 ];

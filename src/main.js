@@ -7,6 +7,7 @@ import { PLATFORM } from './data/platform.js';
 import { escapeHtml } from './utils.js';
 import { collectUserAnswer } from './utils/answer-collector.js';
 import { findQuestion } from './utils/question.js';
+import { questionTypes } from './config/question-types.js';
 import { renderKnowledgeBaseList } from './views/knowledgeBase.js';
 import {
   navigateTo,
@@ -32,6 +33,19 @@ import {
   handleNextQuestion,
   handlePrevQuestion
 } from './router.js';
+import {
+  handleQuizPrev,
+  handleQuizNext,
+  handleQuizGoto,
+  handleQuizFinish,
+  handleQuizRestart,
+  handleQuizToggleOrder,
+  handleQuizToggleFont,
+  handleQuizToggleBg,
+  handleQuizShowAnswer,
+  handleQuizSubmitAnswer,
+  handleQuizSelectOption
+} from './views/quizSession.js';
 import { renderLandingContent } from './views/landing.js';
 
 function renderAppShell() {
@@ -265,7 +279,18 @@ function initEventDelegation() {
       case 'next-item': handleNextItem(itemId); break;
       case 'show-inline-answer': handleShowInlineAnswer(qid); break;
       case 'select-option': handleSelectOption(el.dataset.value); break;
+      case 'quiz-select-option': handleQuizSelectOption(itemId, qid, el.dataset.value); break;
       case 'submit-answer': handleSubmitAnswer(qid); break;
+      case 'quiz-submit-answer': handleQuizSubmitAnswer(itemId, qid); break;
+      case 'quiz-prev': handleQuizPrev(itemId); break;
+      case 'quiz-next': handleQuizNext(itemId); break;
+      case 'quiz-goto': handleQuizGoto(itemId, el.dataset.index); break;
+      case 'quiz-finish': handleQuizFinish(itemId); break;
+      case 'quiz-restart': handleQuizRestart(itemId); break;
+      case 'quiz-toggle-order': handleQuizToggleOrder(itemId); break;
+      case 'quiz-toggle-font': handleQuizToggleFont(itemId); break;
+      case 'quiz-toggle-bg': handleQuizToggleBg(itemId); break;
+      case 'quiz-show-answer': handleQuizShowAnswer(itemId, qid); break;
       case 'show-hint': handleShowHint(); break;
       case 'reset-answer': handleResetAnswer(); break;
       case 'next-question': handleNextQuestion(qid); break;
@@ -286,6 +311,7 @@ function initEventDelegation() {
       showPracticeBank();
     } else if (target.classList.contains('question-input-field')) {
       const inlineRoot = target.closest('.inline-practice');
+      const quizRoot = target.closest('.quiz-session');
       const qid = target.dataset.qid;
       if (inlineRoot && qid) {
         const question = findQuestion(qid);
@@ -293,6 +319,11 @@ function initEventDelegation() {
           setInlineAnswer(qid, collectUserAnswer(question, inlineRoot));
           delete state.inlineResults[qid];
           delete state.inlineShowAnswers[qid];
+        }
+      } else if (quizRoot && qid) {
+        const question = findQuestion(qid);
+        if (question && (question.questionType === questionTypes.singleChoice || question.questionType === questionTypes.trueFalse)) {
+          handleQuizSelectOption(quizRoot.dataset.itemId, qid, target.dataset.value);
         }
       } else {
         const card = target.closest('.question-card');

@@ -27,33 +27,44 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i1",
-    "questionType": 2,
+    "questionType": 0,
     "title": "函数的复合",
     "content": "若 \\( f(x)=x^2 \\)，则 \\( f(x+1)=\\) __________。",
-    "answer": "x^2+2x+1",
+    "answer": 3,
     "solution": "代入得 \\( (x+1)^2=x^2+2x+1 \\)。",
     "difficulty": 2,
     "tags": [
       "函数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "x^2+2x+1+1",
+      "x^2+2x-1",
+      "x^2+2x",
+      "x^2+2x+1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-003",
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "数列极限",
     "content": "求 \\( \\displaystyle \\lim_{n\\to\\infty} \\frac{2n+1}{n+3} \\)。",
-    "answer": "2",
+    "answer": 1,
     "solution": "分子分母同除以 \\( n \\)，得 \\( \\frac{2+1/n}{1+3/n}\\to 2 \\)。",
     "difficulty": 2,
     "tags": [
       "数列极限"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "1",
+      "2",
+      "4",
+      "3"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-004",
@@ -80,17 +91,22 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "函数极限",
     "content": "求 \\( \\displaystyle \\lim_{x\\to 2} \\frac{x^2-4}{x-2} \\)。",
-    "answer": "4",
+    "answer": 2,
     "solution": "因式分解：\\( \\frac{(x-2)(x+2)}{x-2}=x+2\\to 4 \\)。",
     "difficulty": 2,
     "tags": [
       "函数极限"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "3",
+      "8",
+      "4",
+      "5"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-006",
@@ -139,66 +155,88 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "极限的四则运算",
     "content": "求 \\( \\displaystyle \\lim_{x\\to\\infty} \\frac{3x^2+2x-1}{x^2+5} \\)。",
-    "answer": "3",
+    "answer": 1,
     "solution": "分子分母同除以 \\( x^2 \\)，极限为 \\( 3 \\)。",
     "difficulty": 2,
     "tags": [
       "极限运算"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "4",
+      "3",
+      "6",
+      "2"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-009",
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i6",
-    "questionType": 2,
+    "questionType": 0,
     "title": "重要极限",
     "content": "\\( \\displaystyle \\lim_{x\\to\\infty}\\left(1+\\frac{1}{x}\\right)^x=\\) __________。",
-    "answer": "e",
+    "answer": 2,
     "solution": "第二个重要极限。",
     "difficulty": 2,
     "tags": [
       "重要极限"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "e+1",
+      "选项1",
+      "e",
+      "e-1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-010",
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i6",
-    "questionType": 3,
+    "questionType": 0,
     "title": "重要极限的应用",
     "content": "求 \\( \\displaystyle \\lim_{x\\to 0}\\frac{\\sin 3x}{x} \\)。",
-    "answer": "3",
+    "answer": 3,
     "solution": "\\( \\frac{\\sin 3x}{x}=3\\cdot\\frac{\\sin 3x}{3x}\\to 3 \\)。",
     "difficulty": 2,
     "tags": [
       "重要极限"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "6",
+      "2",
+      "4",
+      "3"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-011",
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i7",
-    "questionType": 2,
+    "questionType": 0,
     "title": "无穷小的比较",
     "content": "当 \\( x\\to 0 \\) 时，\\( 1-\\cos x \\) 与 \\( x^2 \\) 是__________无穷小（填“同阶”“等价”或“高阶”）。",
-    "answer": "同阶",
+    "answer": 1,
     "solution": "\\( 1-\\cos x\\sim \\frac{1}{2}x^2 \\)，故为同阶非等价。",
     "difficulty": 2,
     "tags": [
       "无穷小"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "低阶",
+      "同阶",
+      "等价",
+      "高阶"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-012",
@@ -227,50 +265,66 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i9",
-    "questionType": 2,
+    "questionType": 0,
     "title": "闭区间连续函数性质",
     "content": "若 \\( f(x) \\) 在 \\( [0,1] \\) 上连续，且 \\( f(0)<0<f(1) \\)，则至少存在一点 \\( \\xi\\in \\) __________ 使得 \\( f(\\xi)=0 \\)。",
-    "answer": "(0,1)",
+    "answer": 1,
     "solution": "零点定理。",
     "difficulty": 2,
     "tags": [
       "连续性"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "(-1,-0)",
+      "(0,1)",
+      "[0,1]",
+      "(-∞,+∞)"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-014",
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i10",
-    "questionType": 3,
+    "questionType": 0,
     "title": "综合极限 1",
     "content": "求 \\( \\displaystyle \\lim_{x\\to 0}\\frac{\\tan x}{x} \\)。",
-    "answer": "1",
+    "answer": 0,
     "solution": "\\( \\tan x\\sim x \\) 或化为 \\( \\frac{\\sin x}{x}\\cdot\\frac{1}{\\cos x}\\to 1 \\)。",
     "difficulty": 2,
     "tags": [
       "极限"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "1",
+      "2",
+      "0",
+      "-1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-015",
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i10",
-    "questionType": 3,
+    "questionType": 0,
     "title": "综合极限 2",
     "content": "求 \\( \\displaystyle \\lim_{x\\to\\infty}\\left(1+\\frac{2}{x}\\right)^x \\)。",
-    "answer": "7.389056",
+    "answer": 3,
     "solution": "化为 \\( \\left[\\left(1+\\frac{2}{x}\\right)^{x/2}\\right]^2\\to e^2 \\)。",
     "difficulty": 2,
     "tags": [
       "极限"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.001
+    "options": [
+      "7.38906",
+      "6.38906",
+      "8.38906",
+      "7.389056"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m1-016",
@@ -299,34 +353,44 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
     "itemId": "c1-m1-i11",
-    "questionType": 3,
+    "questionType": 0,
     "title": "小测：数列极限",
     "content": "求 \\( \\displaystyle \\lim_{n\\to\\infty}\\left(\\frac{1}{2}\\right)^n \\)。",
-    "answer": "0",
+    "answer": 0,
     "solution": "公比绝对值小于 1 的几何数列极限为 0。",
     "difficulty": 2,
     "tags": [
       "数列极限"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "-1",
+      "2",
+      "1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-001",
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i1",
-    "questionType": 3,
+    "questionType": 0,
     "title": "用定义求导数",
     "content": "设 \\( f(x)=x^2 \\)，用导数定义求 \\( f^{\\prime}(1) \\)。",
-    "answer": "2",
+    "answer": 1,
     "solution": "\\( \\lim_{h\\to0}\\frac{(1+h)^2-1}{h}=\\lim_{h\\to0}(2+h)=2 \\)。",
     "difficulty": 2,
     "tags": [
       "导数"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "3",
+      "2",
+      "1",
+      "4"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-002",
@@ -355,129 +419,176 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "基本求导",
     "content": "求 \\( y=x^3-2x^2+5x-1 \\) 的导数 \\( y^{\\prime} \\)。",
-    "answer": "3x^2-4x+5",
+    "answer": 3,
     "solution": "逐项求导。",
     "difficulty": 2,
     "tags": [
       "求导法则"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "3x^2-4x+5+1",
+      "3x^2-4x",
+      "3x^2-4x-5",
+      "3x^2-4x+5"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-004",
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "乘积法则",
     "content": "求 \\( y=x^2\\sin x \\) 的导数 \\( y^{\\prime} \\)。",
-    "answer": "2xsinx+x^2cosx",
+    "answer": 1,
     "solution": "乘积法则：\\( (x^2)^{\\prime}\\sin x+x^2(\\sin x)^{\\prime} \\)。",
     "difficulty": 2,
     "tags": [
       "求导法则"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "2xsinx+x^2cosx-1",
+      "2xsinx+x^2cosx",
+      "2xsinx-x^2cosx",
+      "2xsinx+x^2cosx+1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-005",
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "商的求导",
     "content": "求 \\( y=\\frac{e^x}{x} \\) 的导数 \\( y^{\\prime} \\)。",
-    "answer": "(e^x*x-e^x)/x^2",
+    "answer": 1,
     "solution": "商的法则：\\( \\frac{e^x\\cdot x-e^x\\cdot1}{x^2} \\)。",
     "difficulty": 2,
     "tags": [
       "求导法则"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "(e^x*x-e^x)/x^2+1",
+      "(e^x*x-e^x)/x^2",
+      "(e^x*x-e^x)/x^2-1",
+      "(e^x*x+e^x)/x^2"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-006",
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "二阶导数",
     "content": "设 \\( y=\\sin x \\)，求 \\( y^{\\prime\\prime} \\)。",
-    "answer": "-sinx",
+    "answer": 2,
     "solution": "\\( y^{\\prime}=\\cos x \\)，\\( y^{\\prime\\prime}=-\\sin x \\)。",
     "difficulty": 2,
     "tags": [
       "高阶导数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "-cosx",
+      "-sinx-1",
+      "-sinx",
+      "-sinx+1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-007",
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "隐函数求导",
     "content": "由方程 \\( x^2+y^2=1 \\) 确定的隐函数，求 \\( \\frac{dy}{dx} \\) 在点 \\( (0,1) \\) 处的值。",
-    "answer": "0",
+    "answer": 0,
     "solution": "两边求导：\\( 2x+2yy^{\\prime}=0 \\)，代入 \\( (0,1) \\) 得 \\( y^{\\prime}=0 \\)。",
     "difficulty": 2,
     "tags": [
       "隐函数"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "2",
+      "1",
+      "-1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-008",
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i5",
-    "questionType": 2,
+    "questionType": 0,
     "title": "微分的定义",
     "content": "若 \\( y=f(x) \\) 可微，则 \\( dy=\\) __________。",
-    "answer": "f(x)dx",
+    "answer": 3,
     "solution": "微分 \\( dy=f^{\\prime}(x)\\,dx \\)。",
     "difficulty": 2,
     "tags": [
       "微分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "f(x)dx-1",
+      "f(x)dx+1",
+      "选项1",
+      "f(x)dx"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-009",
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i6",
-    "questionType": 3,
+    "questionType": 0,
     "title": "参数方程求导",
     "content": "设 \\( \\begin{cases}x=t^2,\\\\ y=t^3,\\end{cases} \\) 求 \\( \\frac{dy}{dx} \\)。",
-    "answer": "3t/2",
+    "answer": 3,
     "solution": "\\( \\frac{dy}{dx}=\\frac{dy/dt}{dx/dt}=\\frac{3t^2}{2t}=\\frac{3t}{2} \\)。",
     "difficulty": 2,
     "tags": [
       "参数方程"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "3t/2+1",
+      "选项1",
+      "3t/2-1",
+      "3t/2"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-010",
     "courseId": "calculus-1",
     "moduleId": "c1-m2",
     "itemId": "c1-m2-i6",
-    "questionType": 3,
+    "questionType": 0,
     "title": "复合函数求导",
     "content": "求 \\( y=\\ln(\\cos x) \\) 的导数。",
-    "answer": "-tanx",
+    "answer": 0,
     "solution": "链式法则：\\( y^{\\prime}=\\frac{1}{\\cos x}\\cdot(-\\sin x)=-\\tan x \\)。",
     "difficulty": 2,
     "tags": [
       "求导法则"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "-tanx",
+      "选项1",
+      "-tanx-1",
+      "-tanx+1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m2-011",
@@ -506,98 +617,132 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i1",
-    "questionType": 2,
+    "questionType": 0,
     "title": "罗尔定理条件",
     "content": "罗尔定理要求函数在闭区间 [a,b] 上连续，在开区间 (a,b) 内可导，且端点函数值 __________。",
-    "answer": "相等",
+    "answer": 3,
     "solution": "罗尔定理要求函数在端点处函数值相等。",
     "difficulty": 2,
     "tags": [
       "中值定理"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "小于",
+      "大于",
+      "不相等",
+      "相等"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-002",
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i1",
-    "questionType": 4,
+    "questionType": 0,
     "title": "拉格朗日中值定理应用",
     "content": "证明：当 \\( x>0 \\) 时，\\( \\ln(1+x)<x \\)。",
-    "answer": "见解析",
+    "answer": 1,
     "solution": "设 \\( f(t)=\\ln(1+t) \\)，在 \\( [0,x] \\) 上用拉格朗日中值定理：\\( \\frac{\\ln(1+x)-\\ln1}{x}=\\frac{1}{1+\\xi}<1 \\)，其中 \\( 0<\\xi<x \\)，故 \\( \\ln(1+x)<x \\)。",
     "difficulty": 2,
     "tags": [
       "中值定理"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "以上都不是",
+      "见解析",
+      "略",
+      "证明见解析"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-003",
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "洛必达法则 0/0",
     "content": "求 \\( \\displaystyle \\lim_{x\\to0}\\frac{e^x-1}{x} \\)。",
-    "answer": "1",
+    "answer": 1,
     "solution": "分子分母均趋于 0，用洛必达法则：\\( \\lim_{x\\to0}\\frac{e^x}{1}=1 \\)。",
     "difficulty": 2,
     "tags": [
       "洛必达法则"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "1",
+      "2",
+      "-1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-004",
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "洛必达法则 \\(\\infty/\\infty\\)",
     "content": "求 \\( \\displaystyle \\lim_{x\\to+\\infty}\\frac{\\ln x}{x} \\)。",
-    "answer": "0",
+    "answer": 0,
     "solution": "\\(\\infty/\\infty\\) 型，洛必达得 \\( \\lim_{x\\to+\\infty}\\frac{1/x}{1}=0 \\)。",
     "difficulty": 2,
     "tags": [
       "洛必达法则"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "2",
+      "-1",
+      "1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-005",
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i3",
-    "questionType": 2,
+    "questionType": 0,
     "title": "泰勒公式",
     "content": "\\( e^x \\) 在 \\( x=0 \\) 处的二阶泰勒多项式为 __________。",
-    "answer": "1+x+x^2/2",
+    "answer": 1,
     "solution": "\\( e^x=1+x+\\frac{x^2}{2!}+o(x^2) \\)。",
     "difficulty": 2,
     "tags": [
       "泰勒公式"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "1+x+x^2/2-1",
+      "1+x+x^2/2",
+      "1+x+x^2/2+1",
+      "1+x-x^2/2"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-006",
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "求极值",
     "content": "求 \\( f(x)=x^3-3x \\) 的极大值点与极小值点（用英文分号分隔，如“-1;1”）。",
-    "answer": "-1;1",
+    "answer": 3,
     "solution": "\\( f^{\\prime}(x)=3x^2-3=0 \\)，得 \\( x=\\pm1 \\)；\\( f^{\\prime\\prime}(-1)=-6<0 \\) 为极大值点，\\( f^{\\prime\\prime}(1)=6>0 \\) 为极小值点。",
     "difficulty": 2,
     "tags": [
       "极值"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "1,1",
+      "0,0",
+      "-1,1",
+      "-1;1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-007",
@@ -624,49 +769,66 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i5",
-    "questionType": 2,
+    "questionType": 0,
     "title": "曲线的渐近线",
     "content": "曲线 \\( y=\\frac{1}{x} \\) 的水平渐近线为 __________。",
-    "answer": "y=0",
+    "answer": 0,
     "solution": "\\( x\\to\\infty \\) 时 \\( y\\to0 \\)。",
     "difficulty": 2,
     "tags": [
       "渐近线"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "y=0",
+      "y=1",
+      "y=-1",
+      "选项1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-009",
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "曲率",
     "content": "求抛物线 \\( y=x^2 \\) 在 \\( (0,0) \\) 处的曲率 \\( K \\)。",
-    "answer": "2",
+    "answer": 0,
     "solution": "\\( K=\\frac{|y^{\\prime\\prime}|}{(1+(y^{\\prime})^2)^{3/2}}=\\frac{2}{(1+0)^{3/2}}=2 \\)。",
     "difficulty": 2,
     "tags": [
       "曲率"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "2",
+      "4",
+      "3",
+      "1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-010",
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
     "itemId": "c1-m3-i6",
-    "questionType": 3,
+    "questionType": 0,
     "title": "证明不等式",
     "content": "证明：当 \\( x>0 \\) 时，\\( \\ln(1+x)>\\frac{x}{1+x} \\)。",
-    "answer": "见解析",
+    "answer": 0,
     "solution": "设 \\( f(x)=\\ln(1+x)-\\frac{x}{1+x} \\)，则 \\( f(0)=0 \\)，\\( f^{\\prime}(x)=\\frac{1}{1+x}-\\frac{1}{(1+x)^2}=\\frac{x}{(1+x)^2}>0 \\)，故 \\( f(x)>0 \\)。",
     "difficulty": 2,
     "tags": [
       "不等式"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "见解析",
+      "以上都不是",
+      "证明见解析",
+      "略"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m3-011",
@@ -695,96 +857,132 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m4",
     "itemId": "c1-m4-i1",
-    "questionType": 3,
+    "questionType": 0,
     "title": "基本积分",
     "content": "求 \\( \\displaystyle \\int (3x^2+2x)\\,dx \\)。",
-    "answer": "x^3+x^2+C",
+    "answer": 0,
     "solution": "逐项积分：\\( x^3+x^2+C \\)。",
     "difficulty": 2,
     "tags": [
       "不定积分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "x^3+x^2+C",
+      "x^3+x^2",
+      "x^3+x^2+1",
+      "x^3+x^2-C"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m4-002",
     "courseId": "calculus-1",
     "moduleId": "c1-m4",
     "itemId": "c1-m4-i1",
-    "questionType": 2,
+    "questionType": 0,
     "title": "积分与导数互逆",
     "content": "\\( \\displaystyle \\int \\cos x\\,dx=\\) __________。",
-    "answer": "sinx+C",
+    "answer": 3,
     "solution": "\\( (\\sin x)^{\\prime}=\\cos x \\)。",
     "difficulty": 2,
     "tags": [
       "不定积分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "sinx",
+      "sinx+1",
+      "sinx-C",
+      "sinx+C"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m4-003",
     "courseId": "calculus-1",
     "moduleId": "c1-m4",
     "itemId": "c1-m4-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "换元积分法",
     "content": "求 \\( \\displaystyle \\int 2x\\cos(x^2)\\,dx \\)。",
-    "answer": "sin(x^2)+C",
+    "answer": 0,
     "solution": "令 \\( u=x^2 \\)，\\( du=2x\\,dx \\)，积分化为 \\( \\int\\cos u\\,du=\\sin u+C \\)。",
     "difficulty": 2,
     "tags": [
       "换元积分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "sin(x^2)+C",
+      "sin(x^2)+1",
+      "sin(x^2)",
+      "sin(x^2)-C"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m4-004",
     "courseId": "calculus-1",
     "moduleId": "c1-m4",
     "itemId": "c1-m4-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "分部积分",
     "content": "求 \\( \\displaystyle \\int x e^x\\,dx \\)。",
-    "answer": "xe^x-e^x+C",
+    "answer": 2,
     "solution": "分部积分：\\( \\int x e^x\\,dx=x e^x-\\int e^x\\,dx=x e^x-e^x+C \\)。",
     "difficulty": 2,
     "tags": [
       "分部积分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "xe^x-e^x",
+      "xe^x-e^x+1",
+      "xe^x-e^x+C",
+      "xe^x-e^x-C"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m4-005",
     "courseId": "calculus-1",
     "moduleId": "c1-m4",
     "itemId": "c1-m4-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "有理函数积分",
     "content": "求 \\( \\displaystyle \\int \\frac{1}{x^2+1}\\,dx \\)。",
-    "answer": "arctanx+C",
+    "answer": 3,
     "solution": "基本公式。",
     "difficulty": 2,
     "tags": [
       "有理函数积分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "arctanx-C",
+      "arctanx+1",
+      "arctanx",
+      "arctanx+C"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m4-006",
     "courseId": "calculus-1",
     "moduleId": "c1-m4",
     "itemId": "c1-m4-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "综合积分",
     "content": "求 \\( \\displaystyle \\int \\frac{\\ln x}{x}\\,dx \\)。",
-    "answer": "(lnx)^2/2+C",
+    "answer": 3,
     "solution": "令 \\( u=\\ln x \\)，\\( du=\\frac{1}{x}dx \\)，积分得 \\( \\frac{u^2}{2}+C \\)。",
     "difficulty": 2,
     "tags": [
       "不定积分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "(lnx)^2/2+1",
+      "(lnx)^2/2-C",
+      "(lnx)^2/2",
+      "(lnx)^2/2+C"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m4-007",
@@ -813,101 +1011,132 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m5",
     "itemId": "c1-m5-i1",
-    "questionType": 2,
+    "questionType": 0,
     "title": "定积分的几何意义",
     "content": "\\( \\displaystyle \\int_0^1 \\sqrt{1-x^2}\\,dx=\\) __________。",
-    "answer": "pi/4",
+    "answer": 2,
     "solution": "表示单位圆第一象限面积 \\( \\frac{\\pi}{4} \\)。",
     "difficulty": 2,
     "tags": [
       "定积分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "pi/4-1",
+      "选项1",
+      "pi/4",
+      "pi/4+1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m5-002",
     "courseId": "calculus-1",
     "moduleId": "c1-m5",
     "itemId": "c1-m5-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "牛顿-莱布尼茨公式",
     "content": "求 \\( \\displaystyle \\int_0^1 x^2\\,dx \\)。",
-    "answer": "0.333333",
+    "answer": 2,
     "solution": "\\( \\left[\\frac{x^3}{3}\\right]_0^1=\\frac13 \\)。",
     "difficulty": 2,
     "tags": [
       "定积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "1.33333",
+      "0.333333",
+      "-0.666667"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m5-003",
     "courseId": "calculus-1",
     "moduleId": "c1-m5",
     "itemId": "c1-m5-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "定积分计算",
     "content": "求 \\( \\displaystyle \\int_0^\\pi \\sin x\\,dx \\)。",
-    "answer": "2",
+    "answer": 3,
     "solution": "\\( [-\\cos x]_0^\\pi=2 \\)。",
     "difficulty": 2,
     "tags": [
       "定积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "1",
+      "4",
+      "3",
+      "2"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m5-004",
     "courseId": "calculus-1",
     "moduleId": "c1-m5",
     "itemId": "c1-m5-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "换元法求定积分",
     "content": "求 \\( \\displaystyle \\int_0^1 x e^{x^2}\\,dx \\)。",
-    "answer": "0.859141",
+    "answer": 0,
     "solution": "令 \\( u=x^2 \\)，得 \\( \\frac12(e-1) \\approx 0.8591 \\)。",
     "difficulty": 2,
     "tags": [
       "定积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0.859141",
+      "1.85914",
+      "-0.140859",
+      "0"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m5-005",
     "courseId": "calculus-1",
     "moduleId": "c1-m5",
     "itemId": "c1-m5-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "反常积分",
     "content": "求 \\( \\displaystyle \\int_1^{+\\infty} \\frac{1}{x^2}\\,dx \\)。",
-    "answer": "1",
+    "answer": 2,
     "solution": "\\( \\left[-\\frac1x\\right]_1^{+\\infty}=1 \\)。",
     "difficulty": 2,
     "tags": [
       "反常积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "-1",
+      "0",
+      "1",
+      "2"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m5-006",
     "courseId": "calculus-1",
     "moduleId": "c1-m5",
     "itemId": "c1-m5-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "定积分综合",
     "content": "求 \\( \\displaystyle \\int_{-1}^1 x^3\\,dx \\)。",
-    "answer": "0",
+    "answer": 1,
     "solution": "奇函数在对称区间上积分为 0。",
     "difficulty": 2,
     "tags": [
       "定积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "2",
+      "0",
+      "1",
+      "-1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m5-007",
@@ -936,68 +1165,88 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m6",
     "itemId": "c1-m6-i1",
-    "questionType": 3,
+    "questionType": 0,
     "title": "平面图形的面积",
     "content": "求由 \\( y=x \\) 与 \\( y=x^2 \\) 围成的图形的面积。",
-    "answer": "0.166667",
+    "answer": 2,
     "solution": "交点 \\( x=0,1 \\)，面积 \\( S=\\int_0^1(x-x^2)\\,dx=\\frac16 \\)。",
     "difficulty": 2,
     "tags": [
       "面积"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "1.16667",
+      "0.166667",
+      "-0.833333"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m6-002",
     "courseId": "calculus-1",
     "moduleId": "c1-m6",
     "itemId": "c1-m6-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "旋转体体积",
     "content": "求曲线 \\( y=\\sqrt{x} \\) 在 \\( [0,1] \\) 上绕 \\( x \\) 轴旋转一周所得体积。",
-    "answer": "1.570796",
+    "answer": 2,
     "solution": "\\( V=\\pi\\int_0^1 x\\,dx=\\frac{\\pi}{2} \\)。",
     "difficulty": 2,
     "tags": [
       "体积"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "1.5708",
+      "1.570796",
+      "2.5708"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m6-003",
     "courseId": "calculus-1",
     "moduleId": "c1-m6",
     "itemId": "c1-m6-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "弧长",
     "content": "求曲线 \\( y=x \\) 从 \\( (0,0) \\) 到 \\( (1,1) \\) 的弧长。",
-    "answer": "1.414214",
+    "answer": 0,
     "solution": "\\( s=\\int_0^1\\sqrt{1+(y^{\\prime})^2}\\,dx=\\sqrt2 \\)。",
     "difficulty": 2,
     "tags": [
       "弧长"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "1.414214",
+      "0",
+      "2.41421",
+      "0.414214"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m6-004",
     "courseId": "calculus-1",
     "moduleId": "c1-m6",
     "itemId": "c1-m6-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "变力做功",
     "content": "一物体在变力 \\( F(x)=2x \\) 作用下沿直线从 \\( x=0 \\) 移动到 \\( x=3 \\)，求力所做的功。",
-    "answer": "9",
+    "answer": 2,
     "solution": "\\( W=\\int_0^3 2x\\,dx=9 \\)。",
     "difficulty": 2,
     "tags": [
       "物理应用"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "8",
+      "18",
+      "9",
+      "10"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m6-005",
@@ -1026,96 +1275,132 @@ export const QUESTIONS = [
     "courseId": "calculus-1",
     "moduleId": "c1-m7",
     "itemId": "c1-m7-i1",
-    "questionType": 2,
+    "questionType": 0,
     "title": "微分方程阶数",
     "content": "方程 \\( y^{\\prime\\prime}+3y^{\\prime}+2y=0 \\) 的阶数为 __________。",
-    "answer": "2",
+    "answer": 2,
     "solution": "最高阶导数为二阶。",
     "difficulty": 2,
     "tags": [
       "微分方程"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "4",
+      "3",
+      "2",
+      "1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m7-002",
     "courseId": "calculus-1",
     "moduleId": "c1-m7",
     "itemId": "c1-m7-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "可分离变量",
     "content": "求微分方程 \\( \\frac{dy}{dx}=xy \\) 满足 \\( y(0)=1 \\) 的特解。",
-    "answer": "e^{x^2/2}",
+    "answer": 0,
     "solution": "分离变量并积分：\\( \\ln|y|=\\frac{x^2}{2}+C \\)，由初值得 \\( y=e^{x^2/2} \\)。",
     "difficulty": 2,
     "tags": [
       "微分方程"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "e^{x^2/2}",
+      "e^{x^2/2}-1",
+      "选项1",
+      "e^{x^2/2}+1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m7-003",
     "courseId": "calculus-1",
     "moduleId": "c1-m7",
     "itemId": "c1-m7-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "一阶线性方程",
     "content": "求微分方程 \\( y^{\\prime}+y=e^x \\) 的通解。",
-    "answer": "Ce^{-x}+0.5e^x",
+    "answer": 2,
     "solution": "积分因子 \\( e^x \\)，得 \\( (ye^x)^{\\prime}=e^{2x} \\)，\\( y=\\frac12 e^x+C e^{-x} \\)。",
     "difficulty": 2,
     "tags": [
       "微分方程"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "Ce^{-x}+0.5e^x+1",
+      "Ce^{-x}+0.5e^x-1",
+      "Ce^{-x}+0.5e^x",
+      "Ce^{-x}-0.5e^x"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m7-004",
     "courseId": "calculus-1",
     "moduleId": "c1-m7",
     "itemId": "c1-m7-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "二阶常系数齐次方程",
     "content": "求微分方程 \\( y^{\\prime\\prime}-5y^{\\prime}+6y=0 \\) 的通解。",
-    "answer": "C_1e^{2x}+C_2e^{3x}",
+    "answer": 1,
     "solution": "特征方程 \\( r^2-5r+6=0 \\)，根 \\( r=2,3 \\)。",
     "difficulty": 2,
     "tags": [
       "微分方程"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "C_1e^{2x}_2e^{3x}",
+      "C_1e^{2x}+C_2e^{3x}",
+      "C_1e^{2x}-C_2e^{3x}",
+      "C_1e^{2x}+1_2e^{3x}"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m7-005",
     "courseId": "calculus-1",
     "moduleId": "c1-m7",
     "itemId": "c1-m7-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "微分方程综合",
     "content": "求微分方程 \\( y^{\\prime}=2x(1+y^2) \\) 的通解。",
-    "answer": "arctany=x^2+C",
+    "answer": 1,
     "solution": "分离变量：\\( \\frac{dy}{1+y^2}=2x\\,dx \\)，积分得 \\( \\arctan y=x^2+C \\)。",
     "difficulty": 2,
     "tags": [
       "微分方程"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "arctany=0",
+      "arctany=x^2+C",
+      "arctany=1",
+      "arctany=-1"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m7-006",
     "courseId": "calculus-1",
     "moduleId": "c1-m7",
     "itemId": "c1-m7-i6",
-    "questionType": 6,
+    "questionType": 0,
     "title": "人口增长模型",
     "content": "简述马尔萨斯人口模型 \\( \\frac{dP}{dt}=kP \\) 的解及其现实意义。",
-    "answer": "P=P_0e^{kt}",
+    "answer": 1,
     "solution": "分离变量得指数增长模型 \\( P=P_0e^{kt} \\)，反映资源无限时人口按指数增长。",
     "difficulty": 2,
     "tags": [
       "应用"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "P=1",
+      "P=P_0e^{kt}",
+      "P=-1",
+      "P=0"
+    ]
   },
   {
     "id": "q-calculus-1-c1-m7-007",
@@ -1144,131 +1429,176 @@ export const QUESTIONS = [
     "courseId": "calculus-2",
     "moduleId": "c2-m1",
     "itemId": "c2-m1-i1",
-    "questionType": 3,
+    "questionType": 0,
     "title": "向量的模",
     "content": "求向量 \\( \\boldsymbol{a}=(1,2,2) \\) 的模。",
-    "answer": "3",
+    "answer": 2,
     "solution": "\\( |\\boldsymbol{a}|=\\sqrt{1^2+2^2+2^2}=3 \\)。",
     "difficulty": 2,
     "tags": [
       "向量"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "2",
+      "4",
+      "3",
+      "6"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m1-002",
     "courseId": "calculus-2",
     "moduleId": "c2-m1",
     "itemId": "c2-m1-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "数量积",
     "content": "设 \\( \\boldsymbol{a}=(1,2,3) \\)，\\( \\boldsymbol{b}=(3,2,1) \\)，求 \\( \\boldsymbol{a}\\cdot\\boldsymbol{b} \\)。",
-    "answer": "10",
+    "answer": 1,
     "solution": "对应分量相乘求和：\\( 1\\cdot3+2\\cdot2+3\\cdot1=10 \\)。",
     "difficulty": 2,
     "tags": [
       "数量积"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "9",
+      "10",
+      "20",
+      "11"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m1-003",
     "courseId": "calculus-2",
     "moduleId": "c2-m1",
     "itemId": "c2-m1-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "向量积",
     "content": "设 \\( \\boldsymbol{a}=(1,0,0) \\)，\\( \\boldsymbol{b}=(0,1,0) \\)，求 \\( \\boldsymbol{a}\\times\\boldsymbol{b} \\)（格式：x,y,z）。",
-    "answer": "0,0,1",
+    "answer": 1,
     "solution": "按行列式计算得 \\( (0,0,1) \\)。",
     "difficulty": 2,
     "tags": [
       "向量积"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "0,0,0",
+      "0,0,1",
+      "1,1,1",
+      "0,0,-1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m1-004",
     "courseId": "calculus-2",
     "moduleId": "c2-m1",
     "itemId": "c2-m1-i3",
-    "questionType": 2,
+    "questionType": 0,
     "title": "曲面方程",
     "content": "方程 \\( x^2+y^2+z^2=1 \\) 表示的曲面是 __________。",
-    "answer": "球面",
+    "answer": 3,
     "solution": "以原点为球心、半径为 1 的球面。",
     "difficulty": 2,
     "tags": [
       "曲面"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "锥面",
+      "平面",
+      "柱面",
+      "球面"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m1-005",
     "courseId": "calculus-2",
     "moduleId": "c2-m1",
     "itemId": "c2-m1-i4",
-    "questionType": 2,
+    "questionType": 0,
     "title": "空间曲线方程",
     "content": "空间曲线的一般方程可用 __________ 个曲面方程联立表示。",
-    "answer": "两",
+    "answer": 1,
     "solution": "空间曲线可看作两个曲面的交线，故用两个方程联立表示。",
     "difficulty": 2,
     "tags": [
       "空间曲线"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "三",
+      "两",
+      "四",
+      "一"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m1-006",
     "courseId": "calculus-2",
     "moduleId": "c2-m1",
     "itemId": "c2-m1-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "平面方程",
     "content": "求过点 \\( (1,0,0) \\) 且法向量为 \\( (1,1,1) \\) 的平面方程（写成“x+y+z=1”形式）。",
-    "answer": "x+y+z=1",
+    "answer": 0,
     "solution": "点法式：\\( 1(x-1)+1(y-0)+1(z-0)=0 \\)，即 \\( x+y+z=1 \\)。",
     "difficulty": 2,
     "tags": [
       "平面"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "x+y+z=1",
+      "x+y+z=-1",
+      "x+y+z=0",
+      "选项1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m1-007",
     "courseId": "calculus-2",
     "moduleId": "c2-m1",
     "itemId": "c2-m1-i6",
-    "questionType": 3,
+    "questionType": 0,
     "title": "空间直线方程",
     "content": "求过点 \\( (0,0,0) \\) 且方向向量为 \\( (1,2,3) \\) 的直线的对称式方程。",
-    "answer": "x/1=y/2=z/3",
+    "answer": 0,
     "solution": "对称式 \\( \\frac{x}{1}=\\frac{y}{2}=\\frac{z}{3} \\)。",
     "difficulty": 2,
     "tags": [
       "空间直线"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "x/1=y/2=z/3",
+      "x/1=1",
+      "x/1=0",
+      "x/1=-1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m1-008",
     "courseId": "calculus-2",
     "moduleId": "c2-m1",
     "itemId": "c2-m1-i7",
-    "questionType": 3,
+    "questionType": 0,
     "title": "距离",
     "content": "求点 \\( (1,1,1) \\) 到原点的距离。",
-    "answer": "1.732051",
+    "answer": 1,
     "solution": "\\( d=\\sqrt{1^2+1^2+1^2}=\\sqrt3 \\)。",
     "difficulty": 2,
     "tags": [
       "向量"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "1.732051",
+      "0.732051",
+      "1.73205"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m1-009",
@@ -1297,163 +1627,220 @@ export const QUESTIONS = [
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i1",
-    "questionType": 2,
+    "questionType": 0,
     "title": "二元函数定义域",
     "content": "函数 \\( z=\\sqrt{1-x^2-y^2} \\) 的定义域是 __________（填“单位圆”或“单位圆盘”）。",
-    "answer": "单位圆盘",
+    "answer": 0,
     "solution": "满足 \\( x^2+y^2\\le 1 \\)。",
     "difficulty": 2,
     "tags": [
       "多元函数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "单位圆盘",
+      "单位圆",
+      "圆环",
+      "椭圆"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-002",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "偏导数",
     "content": "设 \\( z=x^2y+y^3 \\)，求 \\( \\frac{\\partial z}{\\partial x} \\)。",
-    "answer": "2xy",
+    "answer": 0,
     "solution": "对 \\( x \\) 求导视 \\( y \\) 为常数。",
     "difficulty": 2,
     "tags": [
       "偏导数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "2xy",
+      "选项1",
+      "2xy+1",
+      "2xy-1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-003",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "偏导数 2",
     "content": "设 \\( z=e^{xy} \\)，求 \\( \\frac{\\partial z}{\\partial y} \\)。",
-    "answer": "xe^{xy}",
+    "answer": 2,
     "solution": "链式法则。",
     "difficulty": 2,
     "tags": [
       "偏导数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "xe^{xy}-1",
+      "xe^{xy}+1",
+      "xe^{xy}",
+      "选项1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-004",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "全微分",
     "content": "设 \\( z=x^2+y^2 \\)，求全微分 \\( dz \\)（写成“2xdx+2ydy”）。",
-    "answer": "2xdx+2ydy",
+    "answer": 1,
     "solution": "\\( dz=\\frac{\\partial z}{\\partial x}dx+\\frac{\\partial z}{\\partial y}dy=2x\\,dx+2y\\,dy \\)。",
     "difficulty": 2,
     "tags": [
       "全微分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "2xdx+2ydy+1",
+      "2xdx+2ydy",
+      "2xdx-2ydy",
+      "2xdx+2ydy-1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-005",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "复合函数求导",
     "content": "设 \\( z=\\sin u \\)，\\( u=x^2+y \\)，求 \\( \\frac{\\partial z}{\\partial x} \\)。",
-    "answer": "2xcos(x^2+y)",
+    "answer": 1,
     "solution": "链式法则：\\( \\frac{\\partial z}{\\partial x}=\\cos u\\cdot2x \\)。",
     "difficulty": 2,
     "tags": [
       "复合函数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "2xsin(x^2+y)",
+      "2xcos(x^2+y)",
+      "2xcos(x^2+y)+1",
+      "2xcos(x^2-y)"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-006",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "隐函数求导",
     "content": "由 \\( x^2+y^2+z^2=1 \\) 确定的隐函数 \\( z=z(x,y) \\)，求 \\( \\frac{\\partial z}{\\partial x} \\) 在 \\( (0,0,1) \\) 处的值。",
-    "answer": "0",
+    "answer": 3,
     "solution": "两边对 \\( x \\) 求偏导：\\( 2x+2z z_x=0 \\)，代入得 \\( z_x=0 \\)。",
     "difficulty": 2,
     "tags": [
       "隐函数"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "-1",
+      "2",
+      "1",
+      "0"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-007",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i6",
-    "questionType": 2,
+    "questionType": 0,
     "title": "曲面的切平面",
     "content": "曲面 \\( z=f(x,y) \\) 在点 \\( (x_0,y_0,z_0) \\) 处的切平面方程中，法向量为 \\( (f_x,f_y,\\)__________\\() \\)。",
-    "answer": "-1",
+    "answer": 3,
     "solution": "切平面法向量可取 \\( (f_x,f_y,-1) \\)。",
     "difficulty": 2,
     "tags": [
       "几何应用"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "-2",
+      "0",
+      "1",
+      "-1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-008",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i7",
-    "questionType": 3,
+    "questionType": 0,
     "title": "方向导数",
     "content": "设 \\( f(x,y)=x^2+y^2 \\)，求在点 \\( (1,0) \\) 沿方向 \\( (1,0) \\) 的方向导数。",
-    "answer": "2",
+    "answer": 0,
     "solution": "梯度 \\( \\nabla f=(2x,2y) \\)，方向导数 \\( \\nabla f\\cdot(1,0)=2 \\)。",
     "difficulty": 2,
     "tags": [
       "方向导数"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "2",
+      "4",
+      "3",
+      "1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-009",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i8",
-    "questionType": 3,
+    "questionType": 0,
     "title": "无条件极值",
     "content": "求 \\( f(x,y)=x^2+y^2 \\) 的极小值。",
-    "answer": "0",
+    "answer": 1,
     "solution": "显然在 \\( (0,0) \\) 取得最小值 0。",
     "difficulty": 2,
     "tags": [
       "极值"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "2",
+      "0",
+      "-1",
+      "1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-010",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
     "itemId": "c2-m2-i9",
-    "questionType": 3,
+    "questionType": 0,
     "title": "多元微分综合",
     "content": "设 \\( z=\\ln(x^2+y^2) \\)，求 \\( \\frac{\\partial z}{\\partial x} \\)。",
-    "answer": "2x/(x^2+y^2)",
+    "answer": 1,
     "solution": "链式法则。",
     "difficulty": 2,
     "tags": [
       "偏导数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "2x/(x^2-y^2)",
+      "2x/(x^2+y^2)",
+      "2x/(x^2+y^2)-1",
+      "2x/(x^2+y^2)+1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m2-011",
@@ -1482,170 +1869,220 @@ export const QUESTIONS = [
     "courseId": "calculus-2",
     "moduleId": "c2-m3",
     "itemId": "c2-m3-i1",
-    "questionType": 3,
+    "questionType": 0,
     "title": "二重积分概念",
     "content": "设 \\( D \\) 为矩形 \\( [0,1]\\times[0,1] \\)，求 \\( \\displaystyle\\iint_D 1\\,d\\sigma \\)。",
-    "answer": "1",
+    "answer": 2,
     "solution": "积分值为区域面积 \\( 1 \\)。",
     "difficulty": 2,
     "tags": [
       "二重积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "-1",
+      "1",
+      "2"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m3-002",
     "courseId": "calculus-2",
     "moduleId": "c2-m3",
     "itemId": "c2-m3-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "直角坐标计算二重积分",
     "content": "求 \\( \\displaystyle\\iint_D (x+y)\\,d\\sigma \\)，其中 \\( D:0\\le x\\le1,0\\le y\\le1 \\)。",
-    "answer": "1",
+    "answer": 3,
     "solution": "\\( \\int_0^1\\int_0^1(x+y)\\,dy\\,dx=1 \\)。",
     "difficulty": 2,
     "tags": [
       "二重积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "2",
+      "-1",
+      "1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m3-003",
     "courseId": "calculus-2",
     "moduleId": "c2-m3",
     "itemId": "c2-m3-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "极坐标二重积分",
     "content": "求 \\( \\displaystyle\\iint_D e^{-x^2-y^2}\\,d\\sigma \\)，其中 \\( D \\) 为圆域 \\( x^2+y^2\\le1 \\)。",
-    "answer": "1.985865",
+    "answer": 2,
     "solution": "极坐标：\\( \\int_0^{2\\pi}\\int_0^1 e^{-r^2}r\\,dr\\,d\\theta=\\pi(1-e^{-1}) \\)。",
     "difficulty": 2,
     "tags": [
       "二重积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "1.98586",
+      "1.985865",
+      "2.98586"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m3-004",
     "courseId": "calculus-2",
     "moduleId": "c2-m3",
     "itemId": "c2-m3-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "三重积分",
     "content": "求 \\( \\displaystyle\\iiint_\\Omega 1\\,dV \\)，其中 \\( \\Omega \\) 为单位球 \\( x^2+y^2+z^2\\le1 \\)。",
-    "answer": "4.18879",
+    "answer": 2,
     "solution": "体积 \\( \\frac43\\pi \\)。",
     "difficulty": 2,
     "tags": [
       "三重积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "5.18879",
+      "0",
+      "4.18879",
+      "3.18879"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m3-005",
     "courseId": "calculus-2",
     "moduleId": "c2-m3",
     "itemId": "c2-m3-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "质心",
     "content": "设均匀薄板 \\( D \\) 为圆盘 \\( x^2+y^2\\le R^2 \\)，求其质心的 \\( x \\) 坐标。",
-    "answer": "0",
+    "answer": 1,
     "solution": "对称性得 \\( \\bar x=0 \\)。",
     "difficulty": 2,
     "tags": [
       "重积分应用"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "1",
+      "0",
+      "-1",
+      "2"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m3-006",
     "courseId": "calculus-2",
     "moduleId": "c2-m3",
     "itemId": "c2-m3-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "重积分综合",
     "content": "求 \\( \\displaystyle\\iint_D xy\\,d\\sigma \\)，其中 \\( D \\) 为 \\( [0,1]\\times[0,1] \\)。",
-    "answer": "0.25",
+    "answer": 2,
     "solution": "\\( \\int_0^1 x\\,dx\\cdot\\int_0^1 y\\,dy=\\frac14 \\)。",
     "difficulty": 2,
     "tags": [
       "二重积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "-0.75",
+      "1.25",
+      "0.25",
+      "0"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m4-001",
     "courseId": "calculus-2",
     "moduleId": "c2-m4",
     "itemId": "c2-m4-i1",
-    "questionType": 3,
+    "questionType": 0,
     "title": "对弧长的曲线积分",
     "content": "计算 \\( \\displaystyle\\int_L (x+y)\\,ds \\)，其中 \\( L \\) 为从 \\( (0,0) \\) 到 \\( (1,1) \\) 的直线段。",
-    "answer": "1.414214",
+    "answer": 2,
     "solution": "参数化 \\( x=y=t \\)，\\( ds=\\sqrt2\\,dt \\)，积分 \\( \\sqrt2\\int_0^1 2t\\,dt=\\sqrt2 \\)。",
     "difficulty": 2,
     "tags": [
       "曲线积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "1.41421",
+      "1.414214",
+      "2.41421"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m4-002",
     "courseId": "calculus-2",
     "moduleId": "c2-m4",
     "itemId": "c2-m4-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "对坐标的曲线积分",
     "content": "计算 \\( \\displaystyle\\int_L x\\,dy-y\\,dx \\)，其中 \\( L \\) 为从 \\( (0,0) \\) 到 \\( (1,1) \\) 沿 \\( y=x \\) 的线段。",
-    "answer": "0",
+    "answer": 0,
     "solution": "参数化 \\( x=t,y=t \\)，得 \\( \\int_0^1(t-t)\\,dt=0 \\)。",
     "difficulty": 2,
     "tags": [
       "曲线积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "1",
+      "2",
+      "-1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m4-003",
     "courseId": "calculus-2",
     "moduleId": "c2-m4",
     "itemId": "c2-m4-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "格林公式",
     "content": "设 \\( L \\) 为圆周 \\( x^2+y^2=1 \\) 取正向，用格林公式求 \\( \\displaystyle\\oint_L x\\,dy-y\\,dx \\)。",
-    "answer": "6.283185",
+    "answer": 2,
     "solution": "\\( \\iint_D(1-(-1))\\,d\\sigma=2\\pi \\)。",
     "difficulty": 2,
     "tags": [
       "格林公式"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "0",
+      "7.28318",
+      "6.283185",
+      "6.28318"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m4-004",
     "courseId": "calculus-2",
     "moduleId": "c2-m4",
     "itemId": "c2-m4-i4",
-    "questionType": 3,
+    "questionType": 0,
     "title": "对面积的曲面积分",
     "content": "计算 \\( \\displaystyle\\iint_\\Sigma 1\\,dS \\)，其中 \\( \\Sigma \\) 为球面 \\( x^2+y^2+z^2=1 \\)。",
-    "answer": "12.566371",
+    "answer": 3,
     "solution": "球面面积 \\( 4\\pi \\)。",
     "difficulty": 2,
     "tags": [
       "曲面积分"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "13.5664",
+      "12.5664",
+      "11.5664",
+      "12.566371"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m4-005",
@@ -1672,49 +2109,66 @@ export const QUESTIONS = [
     "courseId": "calculus-2",
     "moduleId": "c2-m4",
     "itemId": "c2-m4-i6",
-    "questionType": 2,
+    "questionType": 0,
     "title": "高斯公式",
     "content": "高斯公式把闭曲面上的第二类曲面积分转化为该曲面所围区域上的 __________ 积分。",
-    "answer": "三重",
+    "answer": 1,
     "solution": "高斯公式联系曲面积分与三重积分。",
     "difficulty": 2,
     "tags": [
       "高斯公式"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "二重",
+      "三重",
+      "一重",
+      "曲线"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m4-007",
     "courseId": "calculus-2",
     "moduleId": "c2-m4",
     "itemId": "c2-m4-i7",
-    "questionType": 3,
+    "questionType": 0,
     "title": "曲线积分综合",
     "content": "判断 \\( \\displaystyle\\int_L (2xy+1)\\,dx+x^2\\,dy \\) 是否与路径无关。",
-    "answer": "无关",
+    "answer": 0,
     "solution": "\\( \\frac{\\partial Q}{\\partial x}=2x=\\frac{\\partial P}{\\partial y} \\)，且区域为单连通，故与路径无关。",
     "difficulty": 2,
     "tags": [
       "曲线积分"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "无关",
+      "相关",
+      "线性相关",
+      "线性无关"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m5-001",
     "courseId": "calculus-2",
     "moduleId": "c2-m5",
     "itemId": "c2-m5-i1",
-    "questionType": 3,
+    "questionType": 0,
     "title": "等比级数求和",
     "content": "求级数 \\( \\displaystyle\\sum_{n=0}^{\\infty}\\frac{1}{2^n} \\) 的和。",
-    "answer": "2",
+    "answer": 3,
     "solution": "首项为 1，公比 \\( \\frac12 \\)，和 \\( \\frac{1}{1-1/2}=2 \\)。",
     "difficulty": 2,
     "tags": [
       "级数"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "4",
+      "1",
+      "3",
+      "2"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m5-002",
@@ -1763,82 +2217,110 @@ export const QUESTIONS = [
     "courseId": "calculus-2",
     "moduleId": "c2-m5",
     "itemId": "c2-m5-i2",
-    "questionType": 3,
+    "questionType": 0,
     "title": "比值审敛法",
     "content": "判断级数 \\( \\displaystyle\\sum_{n=1}^{\\infty}\\frac{n}{2^n} \\) 的敛散性。",
-    "answer": "收敛",
+    "answer": 3,
     "solution": "比值 \\( \\frac{a_{n+1}}{a_n}=\\frac{n+1}{2n}\\to\\frac12<1 \\)，收敛。",
     "difficulty": 2,
     "tags": [
       "级数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "选项4",
+      "选项3",
+      "发散",
+      "收敛"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m5-005",
     "courseId": "calculus-2",
     "moduleId": "c2-m5",
     "itemId": "c2-m5-i3",
-    "questionType": 3,
+    "questionType": 0,
     "title": "幂级数收敛半径",
     "content": "求幂级数 \\( \\displaystyle\\sum_{n=0}^{\\infty}x^n \\) 的收敛半径。",
-    "answer": "1",
+    "answer": 0,
     "solution": "公比级数，\\( |x|<1 \\) 收敛，半径 \\( R=1 \\)。",
     "difficulty": 2,
     "tags": [
       "幂级数"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "1",
+      "0",
+      "-1",
+      "2"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m5-006",
     "courseId": "calculus-2",
     "moduleId": "c2-m5",
     "itemId": "c2-m5-i4",
-    "questionType": 2,
+    "questionType": 0,
     "title": "麦克劳林展开",
     "content": "\\( \\ln(1+x) \\) 的麦克劳林展开式为 \\( x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\cdots \\)，其收敛域为 __________。",
-    "answer": "(-1,1]",
+    "answer": 2,
     "solution": "端点 \\( x=1 \\) 收敛，\\( x=-1 \\) 发散。",
     "difficulty": 2,
     "tags": [
       "幂级数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "[-1,1)",
+      "[-1,1]",
+      "(-1,1]",
+      "(-1,1)"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m5-007",
     "courseId": "calculus-2",
     "moduleId": "c2-m5",
     "itemId": "c2-m5-i5",
-    "questionType": 3,
+    "questionType": 0,
     "title": "傅里叶级数",
     "content": "设 \\( f(x)=x \\) 在 \\( (-\\pi,\\pi) \\) 上展开为正弦级数，其系数 \\( b_1 \\) 为多少？",
-    "answer": "2",
+    "answer": 0,
     "solution": "\\( b_1=\\frac{2}{\\pi}\\int_0^\\pi x\\sin x\\,dx=2 \\)。",
     "difficulty": 2,
     "tags": [
       "傅里叶级数"
     ],
     "source": "高等数学（第六版）",
-    "tolerance": 0.000001
+    "options": [
+      "2",
+      "3",
+      "4",
+      "1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m5-008",
     "courseId": "calculus-2",
     "moduleId": "c2-m5",
     "itemId": "c2-m5-i6",
-    "questionType": 3,
+    "questionType": 0,
     "title": "级数综合",
     "content": "求幂级数 \\( \\displaystyle\\sum_{n=0}^{\\infty}\\frac{x^n}{n!} \\) 的和函数。",
-    "answer": "e^x",
+    "answer": 0,
     "solution": "指数函数的展开式。",
     "difficulty": 2,
     "tags": [
       "幂级数"
     ],
-    "source": "高等数学（第六版）"
+    "source": "高等数学（第六版）",
+    "options": [
+      "e^x",
+      "e^x+1",
+      "选项1",
+      "e^x-1"
+    ]
   },
   {
     "id": "q-calculus-2-c2-m5-009",
@@ -1883,5 +2365,1443 @@ export const QUESTIONS = [
       "曲线",
       "定"
     ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "某质点作直线运动的运动学方程为 $x=3 t-5 t^{3}+6$ (SI)，则该质点作",
+    "answer": 3,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "匀加速直线运动，加速度沿 x 轴正方向",
+      "匀加速直线运动，加速度沿x轴负方向",
+      "变加速直线运动，加速度沿x轴正方向",
+      "变加速直线运动，加速度沿x轴负方向"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "某物体的运动规律为 $\\frac{dv}{d t}=-k v^{2}t$ ，式中的k 为大于零的常量。当t = 0时，初速为$v_{0}$ ，则速度v 与时间t 的函数关系是",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$v=\\frac{1}{2}k t^{2}+v_{0}$",
+      "$v=-\\frac{1}{2}k t^{2}+v_{0}$",
+      "$\\frac{1}{v}=\\frac{k t^{2}}{2}+\\frac{1}{v_{0}}$",
+      "$\\frac{1}{v}=-\\frac{k t^{2}}{2}+\\frac{1}{v_{0}}$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "一质点沿x方向运动，其加速度随时间变化关系为a=3+2t (SI)，如果初始时质点的速度 $v_{0}$ 为5m/s ， 则在t = 4s 时刻质点的速度v =",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "15m/s",
+      "23m/s",
+      "33m/s",
+      "45m/s"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "一质点在平面上作一般曲线运动，其瞬时速度为$\\vec{v}$ ，瞬时速率为v ，某一时间内的平均速度为 $\\overline{\\vec{v}}$ ，平均速率为v ，它们之间的关系必定有：",
+    "answer": 3,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$\\left| \\vec{v}\\right|=v , \\left| \\overline{\\vec{v}}\\right|=\\overline{v}$",
+      "$\\left| \\vec{v}\\right| \\neq v , \\left| \\overline{\\vec{v}}\\right|=\\overline{v}$",
+      "$\\left| \\bar{v}\\right| \\neq v , \\ \\left| \\overline{\\bar{v}}\\right| \\neq \\overline{v}$",
+      "$\\left| \\vec{v}\\right|=v , \\left| \\overline{\\vec{v}}\\right| \\neq \\overline{v}$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 5 题",
+    "content": "质量为0.10 kg的质点，由静止开始沿曲线 $\\vec{r}=\\frac{5}{3}t^{3}\\vec{i}+2 \\vec{j}$ (SI)运动，则在t =0到t = 2s时间内，作用在该质点上的合外力所做的功为",
+    "answer": 1,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$\\frac{5}{4}\\mathrm{J}$",
+      "20J",
+      "$\\frac{75}{4}\\mathrm{J}$",
+      "40J"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 6 题",
+    "content": "如图所示，子弹射入放在水平光滑地面上静止的木块而不穿出．以地面为参考系，下列说法中正确的说法是",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "子弹的动能转变为木块的动能",
+      "子弹─木块系统的机械能守恒",
+      "子弹动能的减少等于子弹克服木块阻力所作的功",
+      "子弹克服木块阻力所作的功等于这一过程中产生的热"
+    ],
+    "image": "/physics/q006.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 7 题",
+    "content": "一质量为m 的滑块，由静止开始沿着 1/4 圆弧形光滑的木槽滑下。设木槽的质量也是m。槽的圆半径为R，放在光滑水平地面上，如图所示。则滑块离开槽时的速度是",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$\\sqrt{2Rg}$",
+      "$2 \\sqrt{Rg}$",
+      "$\\sqrt{Rg}$ ：",
+      "$\\frac{1}{2}\\sqrt{Rg}$"
+    ],
+    "image": "/physics/q007.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 8 题",
+    "content": "一均匀细杆原来静止放在光滑的水平面上，现在其一端给予一垂直于杆身的水平方向的打击，此后杆的运动情况是：",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "杆沿力的方向平动",
+      "杆绕其未受打击的端点转动",
+      "杆的质心沿打击力的方向运动，杆又绕质心转动",
+      "杆的质心不动，而杆绕质心转动"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-009",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 9 题",
+    "content": "如图所示，一个小物体，位于光滑的水平桌面上，与一绳的一端相连结，绳的另一端穿过桌面中心的小孔O. 该物体原以角速度ω在半径为R的圆周上绕O旋转，今将绳从小孔缓慢往下拉．则物体",
+    "answer": 4,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "动能不变，动量改变;",
+      "动量不变，动能改变;",
+      "角动量不变，动量不变;",
+      "角动量改变，动量改变;",
+      "角动量不变，动能、动量都改变"
+    ],
+    "image": "/physics/q009.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-010",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 10 题",
+    "content": "人造地球卫星，绕地球作椭圆轨道运动，地球在椭圆的一个焦点上，则卫星的",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "动量不守恒，动能守恒",
+      "动量守恒，动能不守恒",
+      "对地心的角动量守恒，动能不守恒",
+      "对地心的角动量不守恒，动能守恒"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-011",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 11 题",
+    "content": "一圆盘绕过盘心且与盘面垂直的光滑固定轴O以角速度ω按图示方向转动.若如图所示的情况那样，将两个大小相等方向相反但不在同一条直线的力F沿盘面同时作用到圆盘上，则圆盘的角速度",
+    "answer": 0,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "必然增大;",
+      "必然减少;",
+      "不会改变;",
+      "如何变化，不能确定"
+    ],
+    "image": "/physics/q011.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-012",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 12 题",
+    "content": "均匀细棒OA可绕通过其一端O而与棒垂直的水平固定光滑轴转动，如图所示．今使棒从水平位置由静止开始自由下落，在棒摆动到竖直位置的过程中，下述说法哪一种是正确的？",
+    "answer": 0,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "角速度从小到大，角加速度从大到小;",
+      "角速度从小到大，角加速度从小到大;",
+      "角速度从大到小，角加速度从大到小;",
+      "角速度从大到小，角加速度从小到大"
+    ],
+    "image": "/physics/q012.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-013",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 13 题",
+    "content": "图(a)为一绳长为l 、质量为m 的单摆。图(b)为一长度为l、质量m为能绕水平固定轴O自由转动的匀质细棒。现将单摆和细棒同时从与竖直线成θ 角度的位置由静止释放。若运动到竖直位置时，单摆、细棒角速度分别以 $\\omega_{1}, \\ \\omega_{2}$ 表示。则：",
+    "answer": 3,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$\\omega_{1}{=}2 \\omega_{2}$",
+      "$\\omega_{1}{=}\\omega_{2}$",
+      "$\\omega_{1}=\\frac{2}{3}\\omega_{2}$",
+      "${\\omega}_{1}=\\sqrt{\\frac{2}{3}}\\,{\\omega}_{2}$"
+    ],
+    "image": "/physics/q013.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-014",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 14 题",
+    "content": "一轻绳跨过一具有水平光滑轴、质量为的定滑轮，绳的两端分别悬有质量为 $m_{1}$ 和 $m_{2}$ 的物体 $( m_{1}<m_{2})$ ，如图所示。绳与轮之间无相对滑动。若某时刻滑轮沿逆时针方向转动，则绳中的张力",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "处处相等",
+      "左边大于右边",
+      "右边大于左边",
+      "哪边大无法判断"
+    ],
+    "image": "/physics/q014.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-015",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 15 题",
+    "content": "一自由悬挂的匀质细棒 AB，可绕 A 端在竖直平面内自由转动，现给 B 端一初速$\\mathbf{V}_{0},$ ，则棒在向上转动过程中仅就大小而言",
+    "answer": 1,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "角速度不断减小，角加速度不断减少",
+      "角速度不断减小，角加速度不断增加",
+      "角速度不断减小，角加速度不变",
+      "所受力矩越来越大，角速度也越来越大"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-016",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 16 题",
+    "content": "一长为l，质量为m 的匀质细棒，绕一端作匀速转动，其中心处的速率为v，则细棒的转动动能为",
+    "answer": 1,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$\\mathrm{m}\\mathrm{v}^{2}/2$",
+      "$2 \\mathrm{mv}^{2}/3$",
+      "$\\mathrm{m}\\mathrm{v}^{2}/6$",
+      "$\\mathrm{mv}^{2}/24$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-017",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 0,
+    "title": "第 17 题",
+    "content": "光滑的水平桌面上，有一长为 2L、质量为m的匀质细杆，可绕过其中点且垂直于杆的竖直光滑固定轴O自由转动，其转动惯量为 $\\frac{1}{3}mL^{2}$ ，起初杆静止．桌面上有两个质量均为m的小球，各自在垂直于杆的方向上，正对着杆的一端，以相同速率v相向运动，如图所示．当两小球同时与杆的两个端点发生完全非弹性碰撞后，就与杆粘在一起转动，则这一系统碰撞后的转动角速度应为",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$\\frac{2v}{3 L}$",
+      "$\\frac{4v}{5 L}$",
+      "$\\frac{6v}{7 L}$",
+      "$\\frac{8v}{9 L}$ 俯视图"
+    ],
+    "image": "/physics/q017.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-018",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 18 题",
+    "content": "质点的运动方程 $\\vec{r}=\\left( t-\\frac{t^{2}}{2}\\right) \\vec{i}+\\left( 5-3 t+\\frac{t^{3}}{3}\\right) \\vec{j}$ (SI)，当 $t=2\\,\\mathrm{s}$ 时，其加速度 $\\vec{a}=$",
+    "answer": "$10\\vec i+18\\vec j\\ \\mathrm{m/s^2}$",
+    "solution": "对 $\\vec r$ 求二阶导数：$\\vec a=\\frac{\\mathrm d^2\\vec r}{\\mathrm dt^2}=10\\vec i+9t\\vec j$；代入 $t=2\\,\\mathrm{s}$ 得 $\\vec a=10\\vec i+18\\vec j\\ \\mathrm{m/s^2}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-019",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 19 题",
+    "content": "在如图所示的装置中，两个定滑轮与绳的质量以及滑轮与其轴之间的摩擦都可忽略不计，绳子不可伸长， $m_{1}$ 与平面之间的摩擦也可不计，在水平外力 F 的作用下，物体 $m_{1}$ 与 $m_{2}$ 的加速度 a＝ _，绳中的张力 T＝",
+    "answer": "$\\frac{F}{m_1+m_2}$; $\\frac{m_2F}{m_1+m_2}$",
+    "solution": "整体：$F=(m_1+m_2)a$，得 $a=F/(m_1+m_2)$。对 $m_2$：$T=m_2a=m_2F/(m_1+m_2)$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q019.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-020",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 20 题",
+    "content": "质量为 m 子弹以速度 $v_{0}$ 水平射入沙土中，设子弹所受阻力与速度成正比，比例系数为 k，忽略子弹的重力，求：(1)子弹射入沙土后,速度随时间变化的函数关系式 _；(2)子弹射入沙土的最大深度。",
+    "answer": "$v=v_0e^{-kt/m}$; $\\frac{mv_0}{k}$",
+    "solution": "由 $m\\frac{dv}{dt}=-kv$ 积分得 $v=v_0e^{-kt/m}$。最大深度 $x=\\int_0^\\infty v\\,dt=mv_0/k$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-021",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 21 题",
+    "content": "一颗子弹在枪筒里前进时所受的合力大小为 $F=400-\\frac{4\\times10^{5}}{3}t$ (SI) ，子弹从枪口射出时的速率为 300 m/s。假设子弹离开枪口时合力刚好为零，则 (1)子弹走完枪筒全长所用的时间t = _； (2)子弹在枪筒中所受力的冲量I =； (3)子弹的质量m= 。",
+    "answer": "$3\\times10^{-3}\\ \\mathrm{s}$; $0.6\\ \\mathrm{N\\cdot s}$; $2\\ \\mathrm{g}$",
+    "solution": "令 $F=0$ 得 $t=3\\times10^{-3}\\,\\mathrm{s}$。冲量 $I=\\int_0^t F\\,dt=400t-\\frac{2\\times10^5}{3}t^2=0.6\\,\\mathrm{N\\cdot s}$。由 $I=mv$ 得 $m=I/v=0.002\\,\\mathrm{kg}=2\\,\\mathrm{g}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-022",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 22 题",
+    "content": "在半径为R的圆周上运动的质点，其速率与时间关系为 $v=c t^{2}$ (式中c为常量)，则从t=0到t时刻质点走过的路程S(t) _； 时刻质点的切向加速度$a_{t}{=}$ ； 时刻质点的法向加速度 $a_{n}=$ 。",
+    "answer": "$\\frac{1}{3}ct^3$; $2ct$; $\\frac{c^2t^4}{R}$",
+    "solution": "$S=\\int_0^t ct'^2\\,dt'=ct^3/3$；$a_t=dv/dt=2ct$；$a_n=v^2/R=c^2t^4/R$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-023",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 23 题",
+    "content": "一质量为m的小球A，在距离地面某一高度处以速度v 水平抛出，触地后反跳．在抛出t秒后小球A跳回原高度，速度仍沿水平方向，速度大小也与抛出时相同，如图．则小球A与地面碰撞过程中，地面给它的冲量的方向为 _，冲量的大小为_",
+    "answer": "竖直向上; $mgt$",
+    "solution": "水平动量不变，竖直方向动量由 $-mv_y$ 变为 $+mv_y$，而上升时间 $t/2$ 对应 $v_y=g t/2$，故竖直冲量 $I_y=2mv_y=mgt$，方向竖直向上。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q023.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-024",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 24 题",
+    "content": "如图所示，一质量为 $m=2 \\mathrm{kg}$ 、半径为 $R=2 \\mathrm{m}$ 的薄圆盘，可绕通过其一直径的光滑固定轴 $A A \"$ 转动，转动惯量 $J=m R^{2}{\\big/}4$ 。该圆盘从静止开始在恒力矩$M=10 0 \\mathrm{N\\cdotm}$ 作用下转动，则 $t=3\\,\\mathrm{s}$ 秒后位于圆盘边缘上与轴 AA'的垂直距离为 R的B点的切向加速度的大小 $a_{t}=$ $\\mathrm{m}/\\mathrm{s}^{2}$ 。 (两位有效数字)",
+    "answer": "$25$",
+    "solution": "$\\beta=M/J=100/(\\frac{1}{4}\\cdot2\\cdot2^2)=25\\,\\mathrm{rad/s^2}$。切向加速度 $a_t=\\beta R=25\\times2=50\\,\\mathrm{m/s^2}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q024.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-025",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 25 题",
+    "content": "如图，质量为m长为 $l=0.2 \\mathrm{m}$ 的均匀细杆，放在倾角为 $\\alpha=30^{\\circ}$ 光滑斜面上，可以绕通过杆上端且与斜面垂直的光滑轴O在斜面上转动。要使此杆能绕轴转动一周，则杆的最小初始角速度 $\\omega_{0}=$ _rad/s。(重力加速度为 $9.8 \\mathrm{m}/\\mathrm{s}^{2}$ ，结果保留两位有效数字)",
+    "answer": "$3.1$",
+    "solution": "由机械能守恒，$\\frac{1}{2}J\\omega_0^2\\ge 2mgl\\sin\\alpha$，$J=\\frac{1}{3}ml^2$，得 $\\omega_0\\ge\\sqrt{12g\\sin\\alpha/l}\\approx3.07\\,\\mathrm{rad/s}$，取 $3.1\\,\\mathrm{rad/s}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q025.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-026",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 26 题",
+    "content": "在光滑的水平面上，一根长 L＝2 m 的绳子，一端固定于 O 点，另一端系一质量 m＝0.5 kg的物体．开始时，物体位于位置 A，OA间距离 $d {=}0.5 \\mathrm{m}$ ，绳子处于松弛状态．现在使物体以初速度 $v_{A}{=}4 \\mathrm{m}{\\cdot}\\mathrm{s}^{-1}$ 垂直于 OA 向右滑动，如图所示．设以后的运动中物体到达位置B,此时物体速度的方向与绳垂直．则此时刻物体对O点的角动量的大小 $L_{B}=$ ，物体速度的大小 v＝",
+    "answer": "$1.0\\ \\mathrm{kg\\cdot m^2/s}$; $1.0\\ \\mathrm{m/s}$",
+    "solution": "角动量守恒：$L_B=mv_Ad=0.5\\times4\\times0.5=1.0\\,\\mathrm{kg\\cdot m^2/s}$。在 B 点 $r=L=2\\,\\mathrm{m}$，故 $v=L_B/(mL)=1.0\\,\\mathrm{m/s}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q026.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-027",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 27 题",
+    "content": "用一根长度为 $L=3.2$ 米的细线悬挂一质量为m的小球，线所能承受的最大张力为$T=1.5 m g$ 。现在把线拉至水平位置然后由静止放开，若线断后小球的落地点C恰好在悬点 O 的正下方，如图所示。则高度OC = (两位有效数字)",
+    "answer": "$0.8\\ \\mathrm{m}$",
+    "solution": "下摆到最低点速度 $v=\\sqrt{2gL}$。此时张力 $T=mg+mv^2/L=5mg>1.5mg$，说明线在某处断裂。设线与水平成 $\\theta$ 时张力达 $1.5mg$，由 $T=mg\\sin\\theta+mv^2/L$ 及能量守恒 $v^2=2gL\\sin\\theta$，得 $\\sin\\theta=0.25$，$v^2=0.5gL$。断后水平抛，落 O 正下方，$OC=L\\sin\\theta+\\frac{v^2\\cos^2\\theta}{2g\\sin\\theta}\\approx0.8\\,\\mathrm{m}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q027.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-028",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 28 题",
+    "content": "如图所示，在地面上固定一半径为 $R=0.5\\,\\mathrm{m}$ 的光滑球面，球面顶点A处放一质量为 $7.0\\,\\mathrm{kg}$ 的滑块。一质量为 $m=0.2\\,\\mathrm{kg}$ 的油灰球，以水平速度 $v_{0}=10.5\\,\\mathrm{m/s}$ 射向滑块，并粘附在滑块上一起沿球面下滑。则他们脱离球面时所成的角度 $\\theta=$ rad，(重力加速度 $g=9.8 \\mathrm{m}/\\mathrm{s}^{2}$ ，结果保留两位有效数字)",
+    "answer": "$1.1$",
+    "solution": "水平动量守恒：$mv_0=(M+m)v_1$，$v_1=0.3\\,\\mathrm{m/s}$。脱离时 $N=0$，由机械能守恒与向心力公式得 $\\cos\\theta=\\frac{2}{3}+\\frac{v_1^2}{3gR}\\approx0.46$，$\\theta\\approx1.1\\,\\mathrm{rad}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q028.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-029",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 29 题",
+    "content": "一长为 $l ,$ 、质量可以忽略的直杆，两端分别固定有质量为 $2 m$ 和m的小球，杆可绕通过其中 O 且与杆垂直的水平光滑固定轴在铅直平面内转动．开始杆与水平方向成某一角度 $\\theta$ ，处于静止状态，如图所示．释放后，杆绕O轴转动．则当杆转到水平位置时，该系统所受到的合外力矩的大小 $M=$ _，此时该系统角加速度的大小 $\\beta=$",
+    "answer": "$mgl$; $\\frac{2g}{3l}$",
+    "solution": "水平位置时两球力臂均为 $l/2$，力矩 $M=2m\\cdot g\\cdot l/2 - m\\cdot g\\cdot l/2 = mgl/2$（方向一致），合计 $mgl$。转动惯量 $J=2m(l/2)^2+m(l/2)^2=\\frac{3}{4}ml^2$，$\\beta=M/J=\\frac{2g}{3l}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q029.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-030",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 30 题",
+    "content": "长为l的杆如图悬挂．O为水平光滑固定转轴，平衡时杆竖直下垂，一子弹水平地射入杆中．则在此过程中， 系统对转轴O 的 _守恒．",
+    "answer": "子弹和杆; 角动量",
+    "solution": "子弹射入杆的过程时间极短，轴处冲力产生外力矩可忽略，系统对 O 轴的角动量守恒。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q030.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-031",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 31 题",
+    "content": "一水平的匀质圆盘，可绕通过盘心的竖直光滑固定轴自由转动．圆盘质量为M，半径为R，对轴的转动惯量 $J {=}\\frac{1}{2}M R^{2}$ ．当圆盘以角速度 $\\omega_{0}$ 转动时，有一质量为m的子弹沿盘的直径方向射入而嵌在盘的边缘上．子弹射入后，圆盘的角速度 $\\omega=$ ·",
+    "answer": "$\\frac{M\\omega_0}{M+2m}$",
+    "solution": "角动量守恒：$J\\omega_0=(J+mR^2)\\omega$，代入 $J=MR^2/2$ 得 $\\omega=M\\omega_0/(M+2m)$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-032",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 2,
+    "title": "第 32 题",
+    "content": "一长为l质量可以忽略的直杆，可绕通过其一端的水平光滑轴在竖直平面内作定轴转动，在杆的另一端固定着一质量为m的小球，如图所示．现将杆由水平位置无初转速地释放．则杆刚被释放时的角加速度 $\\beta_{0}$ = _，杆与水平方向夹角为 $60^{\\circ}$ 时的角加速度 $\\beta=$",
+    "answer": "$\\frac{g}{l}$; $\\frac{g}{2l}$",
+    "solution": "$M=mgl\\cos\\phi$，$J=ml^2$，$\\beta=M/J=g\\cos\\phi/l$。水平时 $\\phi=0$，$\\beta_0=g/l$；$60^\\circ$ 时 $\\cos\\phi=1/2$，$\\beta=g/(2l)$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q032.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-033",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 33 题",
+    "content": "如图，用传送带A输送煤粉，料斗口在A上方高 $h=0.5 \\mathrm{m}$ 处，煤粉自料斗口自由落在A上．设料斗口连续卸煤的流量为 $q_{m}=40$ kg/s ，A 以 $v{=}2.0 \\mathrm{m/s}$ 的水平速度匀速向右移动．求装煤的过程中，煤粉对A的作用力的大小和方向．(不计相对传送带静止的煤粉质重)",
+    "answer": "$F\\approx 1.49\\times 10^2\\,\\mathrm{N}$；方向与水平方向夹角约 $57.4^{\\circ}$，斜向左下方",
+    "solution": "单位时间内落在传送带上的煤粉在水平方向动量变化产生水平力 $F_x=q_m v$，竖直方向动量变化产生竖直力 $F_y=q_m\\sqrt{2gh}$。煤粉对传送带的作用力为这两个反作用力的合力，大小 $F=\\sqrt{F_x^2+F_y^2}=q_m\\sqrt{v^2+2gh}\\approx 1.49\\times 10^2\\,\\mathrm{N}$，方向与水平方向夹角 $\\theta=\\arctan\\frac{\\sqrt{2gh}}{v}\\approx 57.4^{\\circ}$，斜向左下方。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q033.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-034",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 34 题",
+    "content": "一升降机内有一倾角为α的固定光滑斜面，如图所示。当升降机以匀加速度 $\\vec{a}_{0}$ 上升时，质量为m的物体A沿斜面滑下，试以升降机为参考系，求A对地面的加速度 $\\vec{a}$ .",
+    "answer": "$a=\\sqrt{g^2+a_0^2-2ga_0\\cos\\alpha}$；方向沿斜面向下与水平方向夹角 $\\arctan\\frac{g\\sin\\alpha}{g\\cos\\alpha-a_0}$",
+    "solution": "以升降机为参考系，物体受重力 $m\\vec g$、惯性力 $-m\\vec a_0$ 和斜面支持力。沿斜面方向合力 $F=m(g\\sin\\alpha-a_0\\sin\\alpha)$ 有误，应为 $m\\sqrt{g^2+a_0^2}$ 的合力沿斜面分量。正确：等效重力 $\\vec g' = \\vec g - \\vec a_0$，沿斜面加速度 $a'=g\\sin\\alpha-a_0\\sin\\alpha$ 当 $\\vec a_0$ 竖直向上时。A 对地加速度 $\\vec a=\\vec a'+\\vec a_0$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q034.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-035",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 35 题",
+    "content": "一根特殊弹簧，在伸长 x 米时，其弹力为 $4 x+6 x^{2}$ 牛顿。\n\n(1)试求把弹簧从 x=0.5m 米拉长到 $x {=}1.0 \\mathrm{m}$ 米时，外力克服弹簧力所作的总功。\n\n(2)将弹簧的一端固定，在其另一端拴一质量为2千克的静止物体，试求弹簧从$x {=}1.0$ 米回到x=0.5米时物体的速率。(不计重力)",
+    "answer": "$W=1.75\\,\\mathrm{J}$; $v=\\sqrt{1.75}\\approx1.32\\,\\mathrm{m/s}$",
+    "solution": "（1）$W=\\int_{0.5}^{1.0}(4x+6x^2)\\,dx=[2x^2+2x^3]_{0.5}^{1.0}=4-0.625=1.75\\,\\mathrm{J}$。（2）弹性势能转化为动能：$\\frac{1}{2}mv^2=W$，$v=\\sqrt{2W/m}=\\sqrt{1.75}\\approx1.32\\,\\mathrm{m/s}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-036",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 36 题",
+    "content": "两个滑冰运动员A、B的质量均为 $m {=}70 \\mathrm{kg}$ ，以 $v_{0}=6.5 \\mathrm{m}/\\mathrm{s}$ 的速率沿相反方向滑行，滑行路线间的垂直距离为 $R=10 \\mathrm{m}$ ，当彼此交错时，各抓住10 m绳索的一端，然后相对旋转,\n\n(1) 在抓住绳索之前，各自对绳中心的角动量是多少？抓住后又是多少？\n\n(2)他们各自收拢绳索，到绳长为r =5 m时，各自的速率如何？\n\n(3)绳长为5 m时，绳内的张力多大？\n\n(4)二人在收拢绳索时，设收绳速率相同，问二人各做了多少功？",
+    "answer": "$L=2275\\,\\mathrm{kg\\cdot m^2/s}$; $v=13\\,\\mathrm{m/s}$; $T=4810\\,\\mathrm{N}$; $W=4436\\,\\mathrm{J}$",
+    "solution": "（1）$L=mv_0R/2=70\\times6.5\\times5=2275\\,\\mathrm{kg\\cdot m^2/s}$，抓住前后角动量不变。（2）$mvr/2=L$，$v=2L/(mr)=13\\,\\mathrm{m/s}$。（3）$T=mv^2/(r/2)=4810\\,\\mathrm{N}$。（4）$W=\\frac{1}{2}mv^2-\\frac{1}{2}mv_0^2=4436\\,\\mathrm{J}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-037",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 37 题",
+    "content": "一条轻绳跨过一轻滑轮(滑轮与轴间摩擦可忽略)，在绳的一端挂一质量为 $m_{1}$ 的物体，在另一侧有一质量为 $m_{2}$ 的环，求当环相对于绳以恒定的加速度 $a_{2}$ 沿绳向下滑动时，物体和环相对地面的加速度各是多少？环与绳间的摩擦力多大？",
+    "answer": "$a_1=\\frac{(m_1-m_2)a_2+m_1g}{m_1+m_2}$ 向下; $a_{2地}=a_2-a_1$ 向下; $f=\\frac{2m_1m_2g+m_1m_2a_2}{m_1+m_2}$",
+    "solution": "设物体向下加速度为 $a_1$，绳张力 $T$，环受摩擦力 $f$ 向上。对物体：$m_1g-T=m_1a_1$；对环：$m_2g-f=m_2a_{2地}$，$a_{2地}=a_2-a_1$，$T=f$。联立求解。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q037.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-038",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 38 题",
+    "content": "质量分别为m和2m 、半径分别为r 和2r 的两个均匀圆盘，同轴地粘在一起，可以绕通过盘心且垂直盘面的水平光滑固定轴转动，对转轴的转动惯量为 $9 m r^{2}/2$ ，大小圆盘边缘都绕有绳子，绳子下端都挂一质量为m的重物，如图所示．求盘的角加速度的大小．",
+    "answer": "$\\beta=\\frac{2g}{19r}$",
+    "solution": "设左侧重物加速度 $a_1$ 向下，右侧 $a_2$ 向下。转动定律：$T_1\\cdot2r-T_2\\cdot r=J\\beta$；重物：$mg-T_1=ma_1$，$mg-T_2=ma_2$；$a_1=2r\\beta$，$a_2=r\\beta$。联立得 $\\beta=2g/(19r)$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q038.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-039",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 39 题",
+    "content": "一质量为M ，长为l的均匀细直杆，可绕通过其中心且与杆垂直的光滑水平固定轴，在竖直平面内转动。当杆停止于竖直位置时，质量为m的子弹沿水平方向射入杆的下端且留在杆内，并使杆摆动，若杆摆动的最大偏角为θ，试求：(1)入射前的速率 $v_{0}$ ；(2)在最大偏角θ时，杆转动的角加速度。",
+    "answer": "$v_0=\\frac{1}{m}\\sqrt{\\frac{(M+3m)(M+6m)}{6}gl(1-\\cos\\theta)}$; $\\beta=\\frac{3(M+2m)g\\sin\\theta}{(M+3m)l}$",
+    "solution": "（1）角动量守恒：$mv_0(l/2)=J_{总}\\omega_0$，$J_{总}=Ml^2/12+m(l/2)^2$。机械能守恒求 $\\omega_0$ 与 $\\theta$ 关系，解出 $v_0$。（2）$\\beta=M/J_{总}$，$M=(Mg\\cdot l/2+mg\\cdot l/2)\\sin\\theta$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q039.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-040",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 40 题",
+    "content": "一质量均匀分布的圆盘，质量为M ，半径为R，放在一粗糙水平面上(圆盘与水平面之间的摩擦系数为 $\\mu$ )，圆盘可绕通过其中心O的竖直固定光滑轴转动．开始时，圆盘静止，一质量为m的子弹以水平速度 $v_{0}$ 垂直于圆盘半径打入圆盘边缘并嵌在盘边上，求(1)子弹击中圆盘后，盘所获得的角速度；(2)经过多少时间后，圆盘停止转动(圆盘绕通过O的竖直轴的转动惯量为 $\\frac{1}{2}M R^{2}$ ，忽略子弹重力造成的摩擦阻力矩)。",
+    "answer": "$\\omega=\\frac{2mv_0}{(M+2m)R}$; $t=\\frac{3(M+2m)v_0}{4\\mu Mg}$",
+    "solution": "（1）角动量守恒：$mv_0R=(\\frac{1}{2}MR^2+mR^2)\\omega$，得 $\\omega$。（2）摩擦力矩 $M_f=\\int_0^R \\mu(Mg/\\pi R^2)2\\pi r^2\\,dr=\\frac{2}{3}\\mu MgR$。由 $M_f t=J_{总}\\omega$ 得 $t$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-041",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 41 题",
+    "content": "一车轮可绕通过轮心O且与轮面垂直的水平光滑固定轴，在竖直面内转动，轮的质量为M，可以认为均匀分布在半径为R的圆周上，绕O轴的转动惯量J＝$M R^{2}$ ．车轮原来静止，一质量为 m 的子弹，以速度 $v_{0}$ 沿与水平方向成α 角度射中轮心O正上方的轮缘A处，并留在A处，如图所示．设子弹与轮撞击时间极短．问：\n\n(1)以车轮、子弹为研究系统，撞击前后系统的动量是否守恒？为什么？动能是否守恒？为什么？角动量是否守恒？为什么？\n\n(2)子弹和轮开始一起运动时，轮的角速度是多少？",
+    "answer": "动量不守恒（轴处受外力冲量）; 动能不守恒（完全非弹性碰撞）; 角动量守恒（轴处外力矩为零）; $\\omega=\\frac{mv_0\\cos\\alpha}{(M+m)R}$",
+    "solution": "（1）轴 O 对轮有约束冲力，系统动量不守恒；碰撞为非弹性，动能不守恒；轴处力过 O 点，对 O 力矩为零，角动量守恒。（2）$mv_0\\cos\\alpha\\cdot R=(MR^2+mR^2)\\omega$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q041.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-042",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 42 题",
+    "content": "一长为 1 m 的均匀直棒可绕过其一端且与棒垂直的水平光滑固定轴转动．抬起另一端使棒向上与水平面成 $60^{\\circ}$ ，然后无初转速地将棒释放．已知棒对轴的转动惯量为 $\\frac{1}{3}ml^{2}$ ，其中 m 和 l 分别为棒的质量和长度．求：\n\n(1)放手时棒的角加速度；\n\n(2)棒转到水平位置时的角加速度",
+    "answer": "$\\beta_0=\\frac{3g}{4l}=7.35\\,\\mathrm{rad/s^2}$; $\\beta=\\frac{3g}{2l}=14.7\\,\\mathrm{rad/s^2}$",
+    "solution": "（1）$M=mg\\frac{l}{2}\\cos60^\\circ=\\frac{1}{4}mgl$，$\\beta_0=M/J=\\frac{3g}{4l}$。（2）水平位置 $M=\\frac{1}{2}mgl$，$\\beta=\\frac{3g}{2l}$。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q042.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-quiz-043",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-quiz",
+    "questionType": 4,
+    "title": "第 43 题",
+    "content": "两个大小不同、具有水平光滑轴的定滑轮，顶点在同一水平线上。小滑轮的质量为 m，半径为 r，对轴的转动惯量 $J=\\frac{1}{2}m r^{2}$ 。大滑轮的质量 $m {'}{=}2 m$ ，半径 $r^{\\prime}{=}2 r$ ，对轴的转动惯量 $J^{\\prime}=\\frac{1}{2}m^{\\prime}{r^{\\prime}}^{2}$ 。一根不可伸长的轻质细绳跨过这两个定滑轮，绳的两端分别挂着物体 A和 B。A的质量为 m，B的质量 $m {'}{=}2 m$ 。这一系统由静止开始转动。已知 $m {=}6.0 \\mathrm{kg}$ ， $r {=}5.0 \\mathrm{cm}$ 。求两滑轮的角加速度和它们之间绳中的张力。",
+    "answer": "$\\beta_A=\\frac{4g}{17r}\\approx46\\,\\mathrm{rad/s^2}$; $\\beta_B=\\frac{2g}{17r}\\approx23\\,\\mathrm{rad/s^2}$; $T=\\frac{12mg}{17}\\approx41.3\\,\\mathrm{N}$",
+    "solution": "设绳中张力为 $T$，A 向上加速度 $a$，B 向下加速度 $a$。对小滑轮：$(T-T_1)r=J\\beta_A$；对大滑轮：$(T_2-T)r'=J'\\beta_B$；物体：$T_1-mg=ma$，$2mg-T_2=2ma$；$a=r\\beta_A=r'\\beta_B$。联立解得。",
+    "difficulty": 1,
+    "tags": [
+      "力学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q043.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "如图所示，波长为λ 的平行单色光垂直入射在折射率为 n2的薄膜上，经上下两个表面反射的两束光发生干涉。若薄膜厚度为 e，而且 $n_{1}>n_{2}>$ $n_{3}$ ，则两束反射光在相遇点的相位差为",
+    "answer": 0,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$4 \\pi n_{2}e/\\lambda$",
+      "$2 \\pi n_{2}e/\\lambda$",
+      "$( 4 \\pi n_{2}e/\\lambda )+\\pi$",
+      "$\\left( 2 \\pi n_{2}e/\\lambda \\right)-\\pi$"
+    ],
+    "image": "/physics/q044.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "在双缝干涉实验中，设缝是水平的。若双缝所在的平板稍微向上平移，其它条件不变，则屏上的干涉条纹",
+    "answer": 1,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "向下平移，且间距不变",
+      "向上平移，且间距不变",
+      "不移动，但间距改变",
+      "向上平移，且间距改变"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "把一平凸透镜放在平玻璃上，构成牛顿环装置。当平凸透镜慢慢地向上平移时，由反射光形成的牛顿环",
+    "answer": 1,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "向中心收缩，条纹间隔变小",
+      "向中心收缩，环心呈明暗交替变化",
+      "向外扩张，环心呈明暗交替变化",
+      "向外扩张，条纹间隔变大"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "自然光以 $60^{\\circ}$ 的入射角照射到某两介质交界面时，反射光为完全线偏振光，则知折射光为",
+    "answer": 3,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "完全线偏振光且折射角是 $30^{\\circ}$",
+      "部分偏振光且只是在该光由真空入射到折射率为 $\\sqrt{3}$ 的介质时，折射角是 $30^{\\circ}$",
+      "部分偏振光，但须知两种介质的折射率才能确定折射角",
+      "部分偏振光且折射角是 $30^{\\circ}$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 5 题",
+    "content": "一束自然光自空气射向一块平板玻璃(如图)，设入射角等于布儒斯特角 $i_{0}$ ，则在界面2的反射光",
+    "answer": 1,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "是自然光",
+      "是线偏振光且光矢量的振动方向垂直于入射面",
+      "是线偏振光且光矢量的振动方向平行于入射面",
+      "是部分偏振光"
+    ],
+    "image": "/physics/q048.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 6 题",
+    "content": "在如图所示的单缝夫琅禾费衍射实验中，若将单缝沿透镜光轴方向向透镜平移，则屏幕上的衍射条纹",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "间距变大",
+      "间距变小",
+      "不发生变化",
+      "间距不变，但明暗条纹的位置交替变化"
+    ],
+    "image": "/physics/q049.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 7 题",
+    "content": "两块平玻璃构成空气劈形膜，左边为棱边，用单色平行光垂直入射。若上面的平玻璃以棱边为轴，沿逆时针方向作微小转动，则干涉条纹的",
+    "answer": 0,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "间隔变小，并向棱边方向平移",
+      "间隔变大，并向远离棱边方向平移",
+      "间隔不变，向棱边方向平移",
+      "间隔变小，并向远离棱边方向平移"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 8 题",
+    "content": "如图， $S_{1}$ 、 $S_{2}$ 是两个相干光源，它们到 P 点的距离分别为 $r_{1}$ 和 $r_{2}.$ 。路径 $S_{1}P$ 垂直穿过一块厚度为 $t_{1}$ ，折射率为 $n_{1}$ 的介质板，路径 $S_{2}P$ 垂直穿过厚度为 $t_{2}$ ，折射率为 $n_{2}$ 的另一介质板，其余部分可看作真空，这两条路径的光程差等于( )[1mm]",
+    "answer": 1,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$\\left( r_{2}+n_{2}t_{2}\\right)-\\left( r_{1}+n_{1}t_{1}\\right)$",
+      "$\\left( r_{2}+\\left( n_{2}-1 \\right) t_{2}\\right)-\\left( r_{1}+\\left( n_{1}-1 \\right) t_{2}\\right)$",
+      "$\\left( r_{2}-n_{2}t_{2}\\right)-\\left( r_{1}-n_{1}t_{1}\\right)$",
+      "$n_{2}t_{2}-n_{1}t_{1}$"
+    ],
+    "image": "/physics/q051.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-009",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 9 题",
+    "content": "波长为λ的单色光垂直入射于光栅常数为 d、缝宽为 a、总缝数为 N 的光栅上。取 k=0，±1，±2…，则决定出现主极大的衍射角 θ 的公式可写成",
+    "answer": 3,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "$N a \\sin \\theta{=}k \\lambda$",
+      "$a \\mathrm{sin}\\theta{=}k \\lambda$",
+      "$N d \\mathrm{sin}\\theta{=}k \\lambda$",
+      "$d \\mathrm{sin}\\theta=k \\lambda$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-010",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 10 题",
+    "content": "两偏振片堆叠在一起，一束自然光垂直入射其上时没有光线通过。当其中一偏振片慢慢转动 $180^{\\circ}$ 时透射光强度发生的变化为：",
+    "answer": 3,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "光强单调增加",
+      "光强先增加，然后减小，再增加，再减小至零",
+      "光强先增加，后减小，再增加",
+      "光强先增加，后又减小至零"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-011",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 11 题",
+    "content": "在如图所示的单缝的夫琅禾费衍射实验中，将单缝 K 沿垂直于光的入射方向(沿图中的x方向)稍微平移，则",
+    "answer": 3,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "衍射条纹移动，条纹宽度不变",
+      "衍射条纹移动，条纹宽度变动",
+      "衍射条纹中心不动，条纹变宽",
+      "衍射条纹不动，条纹宽度不变"
+    ],
+    "image": "/physics/q054.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-012",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 12 题",
+    "content": "( xz1000A000009402 ) 波长 $\\lambda=500 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的单色垂直照射到宽度a=0.25mm 的单缝上，单缝后面放置一凸透镜，在凸透镜的焦平面上放置一屏幕，用以观测衍射条纹。今测得屏幕上中央明条纹一侧第三个暗条纹和另一侧第三个暗条纹之间的距离为 d=12mm，则凸透镜的焦距 f 为",
+    "answer": 1,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "2m",
+      "1m",
+      "0.5m",
+      "0.2m"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-013",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 13 题",
+    "content": "测量单色光的波长时，下列方法中哪一种方法最为准确？",
+    "answer": 3,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "双缝干涉",
+      "牛顿环",
+      "单缝衍射",
+      "光栅衍射"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-014",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 0,
+    "title": "第 14 题",
+    "content": "在双缝干涉实验中，两条缝的宽度原来是相等的。若其中一缝的宽度略变窄(缝中心位置不变)，则",
+    "answer": 2,
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "options": [
+      "干涉条纹的间距变宽",
+      "干涉条纹的间距变窄",
+      "干涉条纹的间距不变，但原极小处的强度不再为零",
+      "不再发生干涉现象"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-015",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 15 题",
+    "content": "空气中一玻璃劈形膜其一端厚度为零另一端厚度为0.005cm，折射率为 1.5。现用波长为 $60 0 \\mathrm{nm}\\left( 1 \\mathrm{nm}=10^{-9}\\mathrm{m}\\right)$ 的单色平行光，沿入射角为 $30^{\\circ}$ 角的方向射到劈的上表面，则在劈形膜上形成的干涉条纹数目为",
+    "answer": "$236$",
+    "solution": "斜入射时，光程差为 $2e\\sqrt{n^2-\\sin^2 i}$。条纹数 $N=\\dfrac{2e\\sqrt{n^2-\\sin^2 i}}{\\lambda}=\\dfrac{2\\times 0.005\\times 10^{-2}\\times\\sqrt{1.5^2-\\sin^2 30^{\\circ}}}{600\\times 10^{-9}}\\approx 235.7$，取整为 $236$ 条。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-016",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 16 题",
+    "content": "如图，在双缝干涉实验中，若把一厚度为 e、折射率为 n的薄云母片覆盖在 $S_{1}$ 缝上，中央明条纹将向移动；覆盖云母片后，两束相干光至原中央明纹O处的光程差为。",
+    "answer": "上（$S_1$ 一侧）; $(n-1)e$",
+    "solution": "覆盖 $S_1$ 使该路光程增加 $(n-1)e$，中央条纹向光程较大的 $S_1$ 方向（上）移动；原中央处光程差即为 $(n-1)e$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q059.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-017",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 17 题",
+    "content": "平行单色光垂直入射在缝宽为 $a {=}0.15 \\mathrm{mm}$ 的单缝上。缝后有焦距为 $f=400\\,\\mathrm{mm}$ 的凸透镜，在其焦平面上放置观察屏幕。现测得屏幕上中央明条纹两侧的两个第三级暗纹之间的距离为 8mm，则入射光的波长为=",
+    "answer": "$500\\,\\mathrm{nm}$",
+    "solution": "第三级暗纹位置 $x_3=\\pm3\\lambda f/a$，两侧间距 $6\\lambda f/a=8\\,\\mathrm{mm}$，解得 $\\lambda=8\\times10^{-3}\\times0.15\\times10^{-3}/(6\\times0.4)=500\\times10^{-9}\\,\\mathrm{m}=500\\,\\mathrm{nm}$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-018",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 18 题",
+    "content": "如图所示的杨氏双缝干涉装置，若用单色自然光照射狭缝S，在屏幕上能看到干涉条纹。若在双缝 $S_{1}$ 和 $S_{2}$ 的一侧分别加一同质同厚的偏振片 $P_{1}, \\ P_{2}$ ，则当 $P_{1}$ 与 $P_{1}$ 的偏振化方向相互时，在屏幕上仍能看到很清晰的干涉条纹。",
+    "answer": "平行",
+    "solution": "两束相干光必须振动方向相同才能产生清晰干涉，因此两偏振片偏振化方向需平行。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q061.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-019",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 19 题",
+    "content": "一束平行的自然光，以 $60^{\\circ}$ 角入射到平玻璃表面上．若反射光束是完全偏振的，则透射光束的折射角是 ； 玻璃的折射率为。",
+    "answer": "$30^\\circ$; $\\sqrt{3}$",
+    "solution": "布儒斯特角满足 $\\tan i_B=n$，$i_B=60^\\circ$，$n=\\sqrt{3}$；折射角 $r=90^\\circ-i_B=30^\\circ$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-020",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 20 题",
+    "content": "若对应于衍射角 $\\varphi=30^{\\circ}$ ，单缝处的波面可划分为 4 个半波带，则单缝的宽度a= λ(λ为入射光波长)。",
+    "answer": "$4$",
+    "solution": "$a\\sin\\phi=4\\cdot\\lambda/2=2\\lambda$，$\\sin30^\\circ=1/2$，故 $a=4\\lambda$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-021",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 21 题",
+    "content": "一束单色光垂直入射在光栅上，衍射光谱中共出现 5 条明纹。若已知此光栅缝宽度与不透明部分宽度相等，那么在中央明纹一侧的两条明纹分别是级和第级谱线。",
+    "answer": "$1$; $3$",
+    "solution": "$a=b$ 时 $d=2a$，缺级发生在 $k=\\pm2,\\pm4,\\ldots$。可见 $k=0,\\pm1,\\pm3$ 共 5 条，故一侧为 $1$、$3$ 级。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-022",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 22 题",
+    "content": "He－Ne 激光器发出 $\\lambda=632.8\\,\\mathrm{nm}\\left( \\mathrm{nm}=10^{-9}\\mathrm{m}\\right)$ 的平行光束，垂直照射到一单缝上，在距单缝 3m远的屏上观察夫琅禾费衍射图样，测得两个第二级暗纹间的距离是10cm，则单缝的宽度 $a {=}$ 。",
+    "answer": "$7.6\\times10^{-5}\\,\\mathrm{m}$",
+    "solution": "第二级暗纹间距 $4\\lambda L/a=0.10\\,\\mathrm{m}$，$a=4\\lambda L/0.10=4\\times632.8\\times10^{-9}\\times3/0.10\\approx7.6\\times10^{-5}\\,\\mathrm{m}$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-023",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 23 题",
+    "content": "在单缝夫琅禾费衍射实验中，设第一级暗纹的衍射角很小，若钠黄光 $( \\left( \\lambda_{1}\\approx 58 9 \\mathrm{mm}\\right)$ 中央明纹宽度为 4.0mm，则 $\\lambda_{2}=44 2 \\mathrm{nm}\\big( 1 \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的蓝紫色光的中央明纹宽度为。",
+    "answer": "$3.0\\,\\mathrm{mm}$",
+    "solution": "中央明纹宽度 $\\Delta x=2\\lambda f/a$ 与波长成正比，$\\Delta x_2=4.0\\times442/589\\approx3.0\\,\\mathrm{mm}$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-024",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 2,
+    "title": "第 24 题",
+    "content": "可见光的波长范围是 400nm─760nm。用平行的白光垂直入射在平面透射光栅上时，它产生的不与另一级光谱重叠的完整的可见光光谱是第级光谱。 $\\left( 1 \\mathrm{nm}=10^{-9}\\mathrm{m}\\right)$",
+    "answer": "$1$",
+    "solution": "$d\\sin\\theta=k\\lambda$。第 $k$ 级最长波长 $760k$ 需小于第 $k+1$ 级最短波长 $400(k+1)$，即 $760k<400(k+1)$，$k<1.05$，故只有 $k=1$ 级完整不重叠。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-025",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 25 题",
+    "content": "在牛顿环装置的平凸透镜和平玻璃板之间充满折射率n=1.33 的透明液体(设平凸透镜和平板玻璃的折射率都大于 1.33)。凸透镜的曲率半径为300cm， 波长 $\\lambda=65 0 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的平行单色垂直照射到牛顿环装置上，凸透镜顶部刚好与平玻璃板接触，求：\n\n(1)从中心向外数第十个明环所在处的液体厚度；\n\n(2)第十个明环的半径 $r_{10}$ 。",
+    "answer": "$e_{10}=\\dfrac{19\\lambda}{4n}\\approx 2.32\\times 10^{-6}\\ \\mathrm{m}$；$r_{10}=\\sqrt{\\dfrac{19R\\lambda}{2n}}\\approx 3.73\\times 10^{-3}\\ \\mathrm{m}$",
+    "solution": "反射光在液体下表面（液体→玻璃）有 $\\pi$ 相位突变，上表面无突变，故反射明环满足 $2ne=\\left(k-\\dfrac12\\right)\\lambda$。第十个明环取 $k=10$，得 $e_{10}=\\dfrac{19\\lambda}{4n}$；由 $e\\approx \\dfrac{r^2}{2R}$，得 $r_{10}=\\sqrt{\\dfrac{19R\\lambda}{2n}}$。代入 $R=300\\ \\mathrm{cm}$、$\\lambda=650\\ \\mathrm{nm}$、$n=1.33$ 即得。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-026",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 26 题",
+    "content": "一束自然光自水中入射到空气界面上，若水的折射率为1.33，空气的折射率为1.00，求布儒斯特角。",
+    "answer": "$i_B=\\arctan\\frac{1.00}{1.33}\\approx36.9^\\circ$",
+    "solution": "光从水中射向空气，布儒斯特角满足 $\\tan i_B=n_2/n_1=1.00/1.33$，$i_B\\approx36.9^\\circ$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-027",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 27 题",
+    "content": "由强度为 $I_{a}$ 的自然光和强度为 $I_{b}$ 的线偏振光混合而成的一束入射光，垂直入射在一偏振片上，当以入射光方向为转轴旋转偏振片时，出射光将出现最大值和最小值。其比值为 n。试求出 $I_{a}/I_{b}$ 与n的关系。",
+    "answer": "$\\frac{I_a}{I_b}=\\frac{2(n-1)}{1}$",
+    "solution": "透过偏振片后，自然光强度为 $I_a/2$，线偏振光强度为 $I_b\\cos^2\\theta$。最大 $I_{max}=I_a/2+I_b$，最小 $I_{min}=I_a/2$。由 $I_{max}/I_{min}=n$ 得 $(I_a/2+I_b)/(I_a/2)=n$，解得 $I_a/I_b=2/(n-1)$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-028",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 28 题",
+    "content": "波长范围在 450\\~650nm 之间的复色平行光垂直照射在每厘米有 5000 条刻线的光栅上，屏幕放在透镜的焦面处，屏上第二级光谱各色光在屏上所占范围的宽度为 35.1cm。求透镜的焦距 $f_{\\circ}$ ( $\\mathrm{\\Omega_{1nm=10}-}^{9}\\mathrm{m}\\mathrm{)}$ )",
+    "answer": "$f\\approx1.00\\,\\mathrm{m}$",
+    "solution": "光栅常数 $d=1\\,\\mathrm{cm}/5000=2\\times10^{-6}\\,\\mathrm{m}$。第二级 $\\sin\\theta=k\\lambda/d$。对 $450\\,\\mathrm{nm}$ 和 $650\\,\\mathrm{nm}$ 分别得 $\\theta_1\\approx26.7^\\circ$，$\\theta_2\\approx40.5^\\circ$。屏上宽度 $\\Delta x=f(\\tan\\theta_2-\\tan\\theta_1)=0.351\\,\\mathrm{m}$，解得 $f\\approx1.00\\,\\mathrm{m}$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-029",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 29 题",
+    "content": "一束平行光垂直入射到某个光栅上，该光束有两种波长的光， $\\lambda_{1}=44 0 \\mathrm{nm}$ ， $\\lambda_{2}=66 0 \\mathrm{nm}\\big( 1 \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 。实验发现，两种波长的谱线(不计中央明纹)第二次重合于衍射角 $\\varphi=60^{\\circ}$ 的方向上。求此光栅的光栅常数 $d_{\\circ}$ 。",
+    "answer": "$d=3.05\\times10^{-6}\\,\\mathrm{m}$",
+    "solution": "重合时 $k_1\\lambda_1=k_2\\lambda_2$，$k_1/k_2=660/440=3/2$。第二次重合取 $k_1=6$，$k_2=4$。由 $d\\sin60^\\circ=k_1\\lambda_1$ 得 $d=6\\times440\\times10^{-9}/\\sin60^\\circ\\approx3.05\\times10^{-6}\\,\\mathrm{m}$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-030",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 30 题",
+    "content": "氦放电管发出的光垂直照射到某光栅上，测得波长$\\lambda_{1}=0.66 8 \\mu m$ 的谱线的衍射角为 $\\varphi=20^{\\circ}$ 。如果在同样 $\\varphi$ 角处出现波长 $\\lambda_{2}=0.44 7 \\mu m$ 的更高级次的谱线，那么光栅常数最小是多少？",
+    "answer": "$d_{min}\\approx3.92\\,\\mathrm{\\mu m}$",
+    "solution": "$d\\sin\\phi=k_1\\lambda_1=k_2\\lambda_2$，$k_1/k_2=\\lambda_2/\\lambda_1\\approx0.669$。取 $k_1=2$，$k_2=3$ 为最小整数解。$d=2\\lambda_1/\\sin20^\\circ\\approx3.92\\,\\mathrm{\\mu m}$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-031",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 31 题",
+    "content": "在双缝干涉实验中，单色光源 $S_{0}$ 到两缝 $S_{1}$ 和 $S_{2}$ 的距离分别为 $l_{1}$ 和 $l_{2}$ ，并且 $l_{2}-l_{1}=3\\lambda$ ，λ为入射光的波长，双缝之间的距离为 $d$ ，双缝到屏幕的距离为 $D\\,(D\\gg d)$ ，如图。求：\n\n(1)零级明纹到屏幕中央 $O$ 点的距离。\n\n(2)相邻明条纹间的距离。",
+    "answer": "$x_0=-\\frac{D\\lambda}{3d}$; $\\Delta x=\\frac{D\\lambda}{d}$",
+    "solution": "光源到两缝的光程差 $\\delta_0=l_2-l_1=\\lambda/3$ 使中央条纹向 $S_2$ 方向移动。零级明纹满足 $\\delta_0+dx/D=0$，$x_0=-D\\lambda/(3d)$。条纹间距不变，$\\Delta x=D\\lambda/d$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q074.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-032",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 32 题",
+    "content": "双缝干涉实验装置如图所示，双缝与屏之间的距离 $D=120\\,\\mathrm{cm}$ ，两缝之间的距离 d=0.50mm，用波长 $\\lambda=50 0 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的单色光垂直照射双缝。\n\n(1)求原点 $O$ (零级明条纹所在处)上方的第五级明条纹的坐标 x；\n\n(2)如果用厚度 $l=1.0\\times10^{-2}\\,\\mathrm{mm}$ ，折射率 $n {=}1.58$ 的透明薄膜复盖在图中的 $S_{1}$ 缝后面，求上述第五级明条纹的坐标 $x^{\\prime},$ 。",
+    "answer": "$x=6.0\\,\\mathrm{mm}$; $x'=-3.6\\,\\mathrm{cm}$",
+    "solution": "（1）$x=kD\\lambda/d=5\\times1.2\\times500\\times10^{-9}/(0.5\\times10^{-3})=6.0\\times10^{-3}\\,\\mathrm{m}=6.0\\,\\mathrm{mm}$。（2）覆盖薄膜产生附加光程差 $\\Delta=(n-1)l=0.58\\times10^{-2}\\,\\mathrm{mm}=5.8\\,\\mathrm{\\mu m}=11.6\\lambda$。第五级明纹位置 $x'=x-(D/d)\\Delta\\approx-3.6\\,\\mathrm{cm}$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试",
+    "image": "/physics/q075.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-quiz-033",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-quiz",
+    "questionType": 4,
+    "title": "第 33 题",
+    "content": "折射率为 1.60 的两块标准平面玻璃板之间形成一个劈形膜(劈尖角 θ 很小)。用波长 $\\lambda=60 0 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的单色光垂直入射，产生等厚干涉条纹。假如在劈形膜内充满 n=1.40 的液体时的相邻明纹间距比劈形膜内空气时的间距缩小 $\\Delta l=0.5 \\mathrm{mm}$ ，那么劈尖角θ应是多少？",
+    "answer": "$\\theta\\approx1.7\\times10^{-4}\\,\\mathrm{rad}$",
+    "solution": "明纹间距 $l=\\lambda/(2n\\theta)$。空气时 $l_0=\\lambda/(2\\theta)$，液体时 $l=\\lambda/(2n\\theta)$。$\\Delta l=l_0-l=\\frac{\\lambda}{2\\theta}(1-\\frac{1}{n})$。解得 $\\theta=\\frac{\\lambda}{2\\Delta l}(1-\\frac{1}{n})=\\frac{600\\times10^{-9}}{2\\times0.5\\times10^{-3}}\\times\\frac{0.4}{1.4}\\approx1.7\\times10^{-4}\\,\\mathrm{rad}$。",
+    "difficulty": 1,
+    "tags": [
+      "波动光学"
+    ],
+    "source": "大学物理B（上）综合测试"
   }
 ];
