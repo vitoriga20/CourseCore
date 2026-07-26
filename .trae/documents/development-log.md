@@ -2205,6 +2205,68 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 - [x] 文档中的"最后更新时间"已更新。
 - [x] 代码和文档描述一致。
 
+### 阶段 77: 为 CourseCore 平台添加 shadcn 风格加载动画
+
+**日期**: 2026-07-26
+
+**操作**:
+- 明确技术约束：CourseCore 为原生 ES Modules + Tailwind CSS，无 React 运行时，无法直接安装 shadcn/ui 的 React 组件。
+- 在 `coursecore/src/components/loading.js` 创建原生 JS 加载组件集合，参考 shadcn/ui 的 Spinner / Skeleton / Progress 语义：
+  - `renderSpinner`：几何蛇形圆环 spinner，支持 sm/md/lg/xl。
+  - `renderSkeleton` / `renderSkeletonCard`：shimmer 骨架屏，适配深色/浅色 CSS 变量。
+  - `renderProgress`：线性进度条。
+  - `renderPageLoader` / `showPageLoader` / `hidePageLoader`：全屏毛玻璃页面加载层。
+  - `renderImageWithLoader` / `initImageLoaders`：图片 skeleton 占位 + blur-up fade-in。
+  - `renderButtonLoader` / `setButtonLoading`：按钮内 spinner loading 状态。
+- 在 `coursecore/src/style.css` 新增 loading 样式：spinner 旋转动画、shimmer、page-loader overlay、image-loader 占位与淡入、按钮 loader。
+- 修改 `coursecore/src/router.js`：新增 `applyRouteWithLoader`，在 `restoreLocation` / `navigateTo` 时显示 120ms 页面加载器，提供路由切换视觉反馈；`renderMain` 渲染完成后调用 `initImageLoaders`。
+- 修改 `coursecore/src/main.js`：首屏初始化时显示 `CourseCore` 页面加载器，随后由路由层接管隐藏。
+- 修改 `coursecore/src/views/question/index.js`：题图渲染改用 `renderImageWithLoader`，所有带 `image` 字段的题目自动获得骨架占位与淡入效果。
+- 修改 `coursecore/src/views/quizSession.js`：测验初始加载文字替换为 spinner + 文字；提交答案按钮点击后显示 loading spinner。
+- 修改 `coursecore/src/router.js`：`handleSubmitAnswer` 与 `handleSubmitItem` 提交时按钮显示 loading spinner。
+- 验证：`npm run build:data` 成功生成 291 题、15 theory、2 试卷；`npx vite build && node scripts/prerender.js` 成功预渲染 479 条静态路由；生成 CSS 中已包含 `cc-spinner`、`cc-skeleton`、`cc-page-loader`、`cc-image-loader` 等类。
+
+**问题修复**:
+- 题图 skeleton 一直显示：原因为 `renderImageWithLoader` 给 `<img>` 加了 `loading="lazy"`，题目详情页中图片位于首屏且加载依赖 `load` 事件触发淡入；lazy 图片在部分情况下未进入视口或事件未触发，导致 skeleton 永不消失。
+- 修复：将 `loading="lazy"` 改为 `loading="eager"`；同时完善 `initImageLoaders` 对 `img.complete` 的分支处理：成功则直接 reveal，失败则显示"图片加载失败"。
+- 复测：Playwright 访问 `/question/q-physics-b-1-p1b-m1-02-training-004`，`cc-image-loader--loaded` 正常添加，skeleton opacity 为 0，图片 naturalWidth=229，加载正常。
+- 二次反馈：用户本地 dev server 仍显示所有题图 skeleton 一直加载；Network 显示图片请求 200/304 正常返回，Console 无错误。本地 Playwright 复现正常，判断为特定浏览器/环境下 `load`/`error` 事件不可靠或丢失。
+- 二次修复：`initImageLoaders` 增加轮询 fallback，每 100ms 检查 `img.complete`，最多 5 秒；一旦检测到加载完成立即 reveal，避免依赖单一事件；添加 `data-cc-image-watched` 与 `data-cc-image-revealed` 标记防止重复绑定和重复 reveal。
+- 二次验证：本地多个有图片题目仍正常加载；`npx vite build && node scripts/prerender.js` 通过（479 路由）。
+
+**关键决策**:
+- 不引入 React，保持 CourseCore 原生 ES Modules 架构，降低依赖与打包体积。
+- 参考 shadcn/ui 设计语义而非复制组件，确保风格与项目现有黑白几何 + 蛇元素品牌基因一致。
+- 页面加载器只在路由切换/首屏显示 120ms，避免数据已在本地时产生真实等待感；图片 loader 使用真实 `load` 事件触发淡入。
+- 按钮 loading 在提交瞬间设置，随后由重新渲染自然恢复，避免状态同步复杂度。
+
+**产出文件**:
+- `coursecore/src/components/loading.js` - 原生 JS 加载组件集合
+- `coursecore/src/style.css` - loading 动画与占位样式
+- `coursecore/src/router.js` - 路由切换 loader、图片初始化、按钮 loading
+- `coursecore/src/main.js` - 首屏 loader
+- `coursecore/src/views/question/index.js` - 题图带 loader 渲染
+- `coursecore/src/views/quizSession.js` - 测验加载与提交 loading
+
+## 任务完成检查清单
+
+- [x] 已读取现有开发文档（`development-log.md`、`technical-architecture.md`、`prd.md`）。
+- [x] 加载动画适配方案已与用户确认。
+- [x] 原生 JS loading 组件模块已创建（spinner、skeleton、progress、page-loader、image-loader、button-loader）。
+- [x] 页面级加载动画已接入首屏与路由切换。
+- [x] 图片级加载占位与淡入效果已接入题目配图。
+- [x] 提交按钮 loading 状态已接入单题、小节、测验三种提交场景。
+- [x] `npm run build:data` 通过（291 题、15 theory、2 试卷）。
+- [x] `npx vite build && node scripts/prerender.js` 通过（479 条路由预渲染）。
+- [x] `development-log.md` 已更新（新增阶段 77）。
+- [x] 文档中的"最后更新时间"已更新。
+- [x] 代码和文档描述一致。
+
+## 更新记录 - 2026-07-26
+
+### 修改
+- 关闭 `coursecore/src/components/loading.js` 中的 `[CC-DEBUG]` 调试日志：移除 `watchImageLoad` 与 `initImageLoaders` 内的 `console.log`，保留轮询兜底与加载状态标记逻辑，避免生产环境控制台噪音。
+
 ## 最后更新时间
 
-2026-07-26 01:00
+2026-07-26 21:10

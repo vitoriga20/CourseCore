@@ -7,6 +7,7 @@
 | 构建工具 | Vite 5 |
 | 样式框架 | Tailwind CSS 3 (npm) + PostCSS + Autoprefixer |
 | 脚本模块 | 原生 ES Modules |
+| 组件搜索 MCP | shadcn MCP server + React Bits registry（仅搜索，不引入 React 运行时） |
 | 数学公式 | MathJax 3 (tex-mml-chtml) |
 | PDF 抽取 | MinerU（`pipeline` 后端，`MINERU_MODEL_SOURCE=modelscope`） |
 | 动态背景 | HTML5 Canvas 2D 全局背景 + p5.js 测验几何背景（球面投影网格与三角分布十字星星） |
@@ -65,6 +66,9 @@ c:\Users\vitoriga\Downloads\物理试题\
 │       ├── quiz-background.js          # p5.js 测验专用几何背景（初始化/销毁/素白模式回退）
 │       ├── utils.js                    # 通用工具函数
 │       ├── style.css                   # Tailwind 指令 + CSS 变量主题
+│       ├── components\                  # 可复用 UI 组件（原生 JS + Tailwind）
+│       │   ├── gooeyNav.js             # GooeyNav 粘性流体导航
+│       │   └── loading.js              # 加载组件：spinner、skeleton、progress、page-loader、image-loader
 │       ├── config\                     # 全局配置
 │       │   ├── routes.js               # 路由表、URL 匹配、链接生成、静态路径枚举
 │       │   └── question-types.js       # 题型枚举与行为映射表
