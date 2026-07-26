@@ -4,6 +4,7 @@ export const TYPE_LABELS = {
   practice: "练习",
   project: "项目",
   quiz: "测验",
+  training: "训练",
   review: "复习"
 };
 

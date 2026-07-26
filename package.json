@@ -9,11 +9,12 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
+    "build:training": "node builders/training-builder.js",
     "build:data": "node builders/question-builder.js",
     "validate:data": "node builders/question-builder.js --validate",
     "predev": "npm run build:data",
     "dev": "vite",
-    "prebuild": "npm run build:data",
+    "prebuild": "npm run build:training && npm run build:data",
     "build": "vite build && node scripts/prerender.js",
     "preview": "vite preview"
   },

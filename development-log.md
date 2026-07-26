@@ -5,9 +5,9 @@
 | 项 | 内容 |
 |---|---|
 | 项目名称 | CourseCore — 大学基础课学习平台 |
-| 当前状态 | 已完成小节独立页面、inline 全题提交、错题查看答案、全部答对进入下一节 |
-| 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter |
-| 构建产物 | `dist/`（264 个预渲染静态路由） |
+| 当前状态 | 已完成小节独立页面、inline 全题提交、错题查看答案、全部答对进入下一节；大学物理B（上）力学与波动光学 13 个章节训练小节已集成，题目类型、题干、图片抽样检查通过 |
+| 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) |
+| 构建产物 | `dist/`（479 个预渲染静态路由） |
 | 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
 
 ## 文件结构
@@ -15,7 +15,11 @@
 ```
 coursecore/
 ├── builders/question-builder.js    # 解析 Markdown 题目，生成 JS 数据模块
+├── builders/training-extract.py    # 调用 MinerU API 从 PDF 抽取训练题题干
+├── builders/training-builder.js    # Node.js 包装，prebuild 阶段调用 Python 脚本并加载 .env.local
 ├── scripts/prerender.js            # 基于 routes.js 生成静态 HTML
+├── .env.local                      # MinerU API token（不提交 Git）
+├── public/physics/training/        # 训练题题图资源
 ├── src/
 │   ├── main.js                     # 应用壳、事件委托、初始化
 │   ├── router.js                   # 路由与视图控制器
@@ -102,10 +106,83 @@ coursecore/
 - `src/main.js`
 - `src/state.js`
 - `src/utils/answer-collector.js`
-- `src/views/question/choice.js`
-- `src/views/question/fill.js`
-- `src/views/question/calc.js`
-- `src/views/question/code.js`
+
+### 阶段 5: 大学物理B（上）章节训练题集成
+
+**日期**: 2026-07-25
+
+**操作**:
+- 在 `courses.js` 中每个力学与波动光学理论小节后插入 `type: training` 小节，实现"一小节理论 + 一训练"结构。
+- 新增 `builders/training-extract.py`，调用 MinerU（`MINERU_MODEL_SOURCE=modelscope`）从 13 个 PDF 练习文件中提取题干，按题号/题型拆分后生成 Markdown 源文件。
+- 新增 `builders/training-builder.js`，在 `prebuild` 阶段调用 Python 脚本完成批量 PDF 抽取。
+- `labels.js` 增加 `training` 类型标签。
+- `practiceList.js` 对 `quiz` 与 `training` 均调用 `renderQuizSession`，容器宽度统一为 `max-w-7xl`。
+- `router.js` 修复 `training` 小节未调用 `initQuizSession` 导致页面只显示占位符的问题。
+- 完成 `npm run build:data` 与 `npx vite build && node scripts/prerender.js`，预渲染路由从 264 增至 480 条。
+
+**关键决策**:
+- 训练题只抽取题干，答案字段留空由后续手动补充 → 符合用户"答案我自己补"的需求。
+- 训练小节复用 `quizSession` 完整交互 → 保持顺序/随机切换、字体/背景切换、题号导航、进度报告一致。
+- MinerU 使用 modelscope 镜像下载模型 → 解决 huggingface 连接超时问题。
+- 直接运行 `npx vite build && node scripts/prerender.js` 而不触发 `prebuild` 中的 `build:training` → 避免已完成的 PDF 抽取被重复执行导致构建时间过长。
+
+**产出文件**:
+- `builders/training-extract.py`
+- `builders/training-builder.js`
+- `src/data/courses.js`
+- `src/data/labels.js`
+- `src/views/practiceList.js`
+- `src/router.js`
+- `curriculum/raw/questions/physics-b-1/p1b-m1-01-training ~ p1b-m1-07-training`
+- `curriculum/raw/questions/physics-b-1/p1b-m2-01-training ~ p1b-m2-06-training`
+
+### 阶段 6: 切换 MinerU API 并修复训练题解析问题
+
+**日期**: 2026-07-26
+
+**操作**:
+- 将 `builders/training-extract.py` 从本地 MinerU CLI 迁移到 `mineru-open-sdk` HTTP API，避免本地模型下载失败。
+- 新增 `builders/training-builder.js` 的 `loadEnvLocal` 函数，从 `.env.local` 读取 `MINERU_TOKEN` 并透传给 Python 进程。
+- 修复选择题选项提取正则：移除 CJK 字符前的 negative lookbehind（`\w` 在 Python 中匹配 Unicode 字母），允许 `(A)` 后直接跟中文选项文本。
+- 修复 `extract_options` 第一个选项被误丢弃的切片 bug，选项为空占位时不再截断实际首选项。
+- 新增题库前缀类型推断（xz→选择题、tk→填空题、js→计算题等），解决部分题目因缺少章节标题而类型/标签错误的问题。
+- 新增 `repair_missing_lambda` 与 `patch_known_questions` 后处理：恢复 MinerU 漏掉的 λ、π/4 等符号，并补齐特定题目的空选项。
+- 抽样检查 107 道训练题：47 道单选均带 4 个选项，35 道填空，25 道计算；26 张题图全部复制到 `public/physics/training` 且引用正确。
+- 运行 `npm run build` 成功，预渲染 479 条静态路由。
+
+**关键决策**:
+- 使用官方 SDK 的 `extract_batch` 而非直接调用 REST → 批量状态轮询更稳定，错误处理更完整。
+- 敏感配置放入 `.env.local` 并在 `.gitignore` 中忽略 → 避免 token 泄漏。
+- 对 MinerU API 偶发的希腊符号遗漏做启发式修复 + 已知题目硬编码补丁 → 在自动抽取与人工校对之间取得平衡。
+- 题图随 Markdown 一起复制到 `public/physics/training/<item>`，URL 使用 `/physics/training/<item>/<hash>.jpg` → 与构建后的静态资源路径一致。
+
+**产出文件**:
+- `builders/training-extract.py`（API 化 + 解析修复）
+- `builders/training-builder.js`（加载 `.env.local`）
+- `.env.local`
+- `public/physics/training/`（训练题题图）
+- `curriculum/raw/questions/physics-b-1/p1b-m1-01-training ~ p1b-m1-07-training`（修正后）
+- `curriculum/raw/questions/physics-b-1/p1b-m2-01-training ~ p1b-m2-06-training`（修正后）
+
+### 阶段 7: 训练题抽样检查与最终构建验证
+
+**日期**: 2026-07-26
+
+**操作**:
+- 编写抽样检查脚本，遍历 13 个训练小节共 107 道 Markdown 题目。
+- 验证题型分布：单选 47 道（均含 4 个选项）、填空 35 道、计算 25 道。
+- 验证 26 张 `image` 引用全部对应 `public/physics/training/<item>/` 下的实际文件。
+- 检查异常：无空题干、无空选项、无题型与选项冲突。
+- 运行 `npm run build:data` 生成 291 道题目 + 15 个理论内容 + 2 套试卷。
+- 运行 `npx vite build && node scripts/prerender.js`，成功预渲染 479 条静态路由。
+
+**关键决策**:
+- 抽样检查直接扫描 Markdown 源文件与 public 资源，不依赖已构建的 `questions.js` → 更早暴露路径错误。
+- 最终构建避开 `prebuild` 中的 `build:training`，避免重复调用 MinerU API；在数据未变更时直接用现有 Markdown 产物构建。
+
+**产出文件**:
+- `dist/`（479 个预渲染静态路由）
+- `src/data/questions.js`（构建生成）
 
 ## 问题与解决方案
 
@@ -144,6 +221,8 @@ coursecore/
 - 单选/判断题的选择状态目前未写入 `state.inlineAnswers`，页面重绘后会丢失选中状态；后续可通过监听 `change` 事件持久化。
 - 证明题、代码题依赖人工/运行器校验，UI 仅提示“请对照参考答案自行检查”。
 - 题目内容中的 LaTeX 依赖 MathJax 异步渲染，极快切换页面时可能出现闪烁。
+- MinerU API 对少数希腊符号（如 λ）可能漏识别，当前通过 `repair_missing_lambda` 与 `patch_known_questions` 做启发式恢复，后续可升级为更完整的符号 OCR 后处理或人工抽检。
+- 训练题答案字段目前留空，需后续手动补充。
 
 ## 阶段 3: 构建与功能验证
 
@@ -200,18 +279,45 @@ coursecore/
 - inline 全题提交与反馈流程。
 - “查看答案”展开标准解法。
 - 全部答对后“进入下一节”按钮。
+- 大学物理B（上）力学与波动光学 13 个章节训练小节（`type: training`）。
+- `builders/training-extract.py` 与 `builders/training-builder.js`，基于 MinerU 从 PDF 抽取训练题题干。
 
 ### 修改
 - `course.js` 小节入口由 button 改为 a 链接。
 - `inlinePractice.js` 完全重写为多题展示模式。
 - `answer-collector.js` 支持非 document 根节点。
 - `style.css` 的 `.card` 增加 `display: block`。
+- `src/data/courses.js` 在大学物理B（上）每个理论小节后插入训练小节。
+- `src/views/practiceList.js` 对 `quiz` 与 `training` 均复用 `quizSession`。
+- `src/router.js` 对 `quiz` 与 `training` 均初始化 `quizSession`。
+- 构建产物预渲染路由从 264 增至 480。
 
 ### 修复
 - 提交时 `getElementById` 报错。
 - `renderSidebarContent` 未定义报错。
 - 知识库 `/kb` 题目卡片标题被截断、出现多余竖条的问题。
+- `router.js` 中 `training` 小节未初始化 `quizSession` 导致页面空白的问题。
+
+## 更新记录 - 2026-07-26
+
+### 新增
+- `.env.local` 存放 `MINERU_TOKEN`。
+- `builders/training-builder.js` 的 `loadEnvLocal` 函数，自动将 `.env.local` 注入 Python 子进程环境变量。
+- 题库前缀类型推断（xz/tk/js/pd/jd/zm）与题目类型/标签修复。
+- `repair_missing_lambda` 与 `patch_known_questions` 后处理，修复 MinerU 漏识别的 λ、π/4 等符号及空选项。
+
+### 修改
+- `builders/training-extract.py` 从本地 MinerU CLI 迁移到 `mineru-open-sdk` HTTP API。
+- 选择题选项正则移除 CJK 前 negative lookbehind，修复 `(A)` 后紧跟中文无法匹配的问题。
+- `extract_options` 修复首选项被丢弃的切片错误。
+- 训练题题图复制到 `public/physics/training/<item>/`，Markdown 中 `image` 字段使用对应 URL。
+- 抽样检查 107 道训练题，单选 47 道均带 4 个选项，填空 35 道，计算 25 道；26 张题图引用全部正确。
+
+### 修复
+- 训练题全部显示为填空题的问题（题干中无选项时默认 `proof`，现根据章节标题/题库前缀/选项存在性正确判定为 `singleChoice`/`fillInBlank`/`calculation`）。
+- 部分选择题选项未提取的问题（正则 lookahead 要求选项标记后必须有空格，导致 `(B)中央...` 等格式失败）。
+- 题图未加载的问题（之前未从 MinerU 输出目录复制图片到 `public`，现自动复制）。
 
 ## 最后更新时间
 
-2026-07-25
+2026-07-26 20:40

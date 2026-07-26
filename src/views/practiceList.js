@@ -32,7 +32,7 @@ export function renderPracticeList(itemId) {
   const item = module.items.find(i => i.id === itemId);
 
   let bodyHtml = '';
-  if (item.type === 'quiz') {
+  if (item.type === 'quiz' || item.type === 'training') {
     bodyHtml = renderQuizSession(itemId);
   } else if (item.type === 'theory') {
     bodyHtml = renderTheoryPlaceholder(item);
@@ -46,7 +46,7 @@ export function renderPracticeList(itemId) {
     `;
   }
 
-  const wrapperClass = item.type === 'quiz' ? 'max-w-7xl mx-auto' : 'max-w-3xl mx-auto';
+  const wrapperClass = item.type === 'quiz' || item.type === 'training' ? 'max-w-7xl mx-auto' : 'max-w-3xl mx-auto';
 
   return `
     <div class="${wrapperClass}">

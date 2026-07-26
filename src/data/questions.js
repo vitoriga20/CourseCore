@@ -2367,6 +2367,1140 @@ export const QUESTIONS = [
     ]
   },
   {
+    "id": "q-physics-b-1-p1b-m1-01-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "一运动质点在某瞬时位于矢径 $\\begin{array} { r l } { \\vec { r } } & { { } ( \\mathbf { x } , \\mathbf { y } ) } \\end{array}$ 的端点处,则其速度大小为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习一.pdf 第1题",
+    "options": [
+      "$\\frac { d r } { d t }$",
+      "$\\frac { d \\vec { r } } { d t }$",
+      "$\\frac { d \\vec { \\mathbf { \\nabla } } \\vec { r } \\| } { d t }$",
+      "$\\sqrt { \\left( \\frac { d x } { d t } \\right) ^ { 2 } + \\left( \\frac { d y } { d t } \\right) ^ { 2 } }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-01-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "下述关于质点运动描述的表达式正确的是",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习一.pdf 第2题",
+    "options": [
+      "$\\left| { \\vec { \\Delta r } } \\right| = \\Delta r$",
+      "${ \\frac { d { \\stackrel { } { r } } } { d t } } = { \\frac { d r } { d t } }$",
+      "${ \\frac { \\left| { \\vec { d r } } \\right| } { d t } } \\neq \\left| { \\frac { d r } { d t } } \\right|$",
+      "$\\left| d s \\right| \\neq \\left| \\vec { d _ { T } } \\right|$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-01-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "某质点作直线运动的运动学方程为 $x = 3 t - 5 t ^ { 3 } + 2$ ,则该质点作",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习一.pdf 第3题",
+    "options": [
+      "匀加速直线运动,加速度沿x轴正方向",
+      "匀加速直线运动,加速度沿x轴负方向",
+      "变加速直线运动,加速度沿x轴正方向",
+      "变加速直线运动,加速度沿x轴负方向。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-01-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "一质点沿 x 轴运动,其加速度 a 与位置坐标 x 的关系为$a = 2 + 6 x ^ { 2 }$ 。如果质点在原点处的速度为零,则质点在 $X { = } 2 \\mathrm { m }$ 处的速度大小 v 约为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习一.pdf 第4题",
+    "options": [
+      "$\\sqrt { 4 0 } \\mathrm { m / s }$",
+      "$5 \\mathrm { m / s } ;$",
+      "$\\sqrt { 2 0 } \\mathrm { m / s }$",
+      "$1 0 \\mathrm { m / s }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-01-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "一质点沿 x方向运动,其加速度随时间变化关系为 $a { = } 3 { + } 2 t$ 如果初始时质点的速度 $\\nu _ { 0 }$ 为 $5 \\mathrm { m / s }$ ,则当t为3s时,质点的速度v =",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习一.pdf 第5题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-01-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "质点以加速度 $a { = } k t$ 作直线运动,式中 k为常数,设初速度为 $\\nu _ { 0 }$ ,求质点速度 v与时间t的函数关系",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习一.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-01-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 3,
+    "title": "第 7 题",
+    "content": "一质点在 xoy 平面上运动,运动方程为 $x { = } 3 t { + } 5$ $y = \\frac { 1 } { 2 } t ^ { 2 } + 3 t - 4$ 。求以下物理量并把它们表示成直角坐标系中的矢量形式。以时间t为变量,写出质点位置矢量的表示式;\n(2)求出t=1s时刻和 $t { = } 2 \\mathbf { s }$ 时刻的位置矢量,计算这1秒内质点的位移;\n(3)计算t=0s时刻到 $\\scriptstyle { t = 4 \\mathrm { s } }$ 时刻内的平均速度;\n(4)求出质点速度矢量表示式,计算 $\\scriptstyle { t = 4 \\mathrm { s } }$ 时质点的速度;\n(5)计算t=0s到t=4s内质点的平均加速度;\n(6)求出质点加速度矢量的表示式,计算t=4s时质点的加速度。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习一.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-01-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 3,
+    "title": "第 8 题",
+    "content": "一质点沿 x 轴运动,其加速度为 $a { = } 4 t$ ,已知 $\\scriptstyle { t = 0 }$ 时,质点位于 ${ x } _ { 0 } \\mathrm { { = } } 1 0 \\mathrm { { m } }$ 处,初速度 $\\scriptstyle \\nu _ { 0 } = 0$ 。试求其位置和时间的关系式。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习一.pdf 第8题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-01-training-009",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-01-training",
+    "questionType": 3,
+    "title": "第 9 题",
+    "content": "一个质点沿 x 轴运动,其加速度和位置的关系为 $\\scriptstyle a = 2 + 6 x ^ { 2 }$ 。已知质点在 $x _ { 0 } { = } 0$ 处,速度为 $\\nu _ { 0 } { = } 1 0 m / s$ ,试求质点在任何坐标处的速度值。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习一.pdf 第9题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "下列说法中,哪一个是正确的？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习二.pdf 第1题",
+    "options": [
+      "一质点在某时刻的瞬时速度是2 m/s,说明它在此后1 s内一定要经过2 m的路程",
+      "斜向上抛的物体,在最高点处的速度最小,加速度最大",
+      "物体作曲线运动时,有可能在某时刻的法向加速度为零",
+      "物体加速度越大,则速度越大。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "质点作半径为 R 的变速圆周运动时的加速度大小为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习二.pdf 第2题",
+    "options": [
+      "(v表示任一时刻质点的速率) $\\frac { d \\nu } { d t }$",
+      "$\\nu ^ { 2 } / R$",
+      "$\\frac { d \\nu } { d t } + \\frac { \\nu ^ { 2 } } { R }$",
+      "$[ \\left( \\frac { d \\nu } { d t } \\right) ^ { 2 } + \\left( \\frac { \\nu ^ { 4 } } { R ^ { 2 } } \\right) ] ^ { 1 / 2 }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "在一个转动的齿轮上,一个齿尖 P 沿半径为 R=0.2m 的圆周运动,其路程 S 随时间的变化规律为 $S = \\nu _ { 0 } t + { \\frac { 1 } { 2 } } b t ^ { 2 }$ ,其中 $\\nu _ { 0 } { = } 2 \\mathrm { m / s }$ 和 $b = 0 . 3 m / s ^ { 2 }$ 0则t=5s时齿尖P的总加速度大小a约等于",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习二.pdf 第3题",
+    "options": [
+      "$3 4 \\mathrm { m } / \\mathrm { s } ^ { 2 }$",
+      "$4 2 \\mathrm { m } / \\mathrm { s } ^ { 2 }$",
+      "$5 1 \\mathrm { m } / \\mathrm { s } ^ { 2 }$",
+      "$6 1 \\mathrm { m } / \\mathrm { s } ^ { 2 }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "质点的质量为 m,置于光滑球面的顶点 A 处(球面固定不动),如图所示。当它由静止开始下滑到球面上B点时,它的加速度的大小为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习二.pdf 第4题",
+    "options": [
+      "$a = 2 g { \\big ( } 1 - \\cos \\theta { \\big ) }$",
+      "$a = g \\sin \\theta$",
+      "$a { = } g$",
+      "$a = \\sqrt { 4 g ^ { 2 } \\big ( 1 - \\cos \\theta \\big ) ^ { 2 } + g ^ { 2 } \\sin ^ { 2 } \\theta }$"
+    ],
+    "image": "/physics/training/p1b-m1-02-training/d9ee40d816856f6b75588d5c5adde7fbe6076a36381795ded5d2220b3ba1b1f9.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 0,
+    "title": "第 5 题",
+    "content": "一质点从静止出发沿半径为 R=3m 的圆周运动,切向加速度恒为 $a _ { \\tau } = 8 m / s ^ { 2 }$ ,经时间t总加速度恰好与半径成 π/4角,则t等于",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习二.pdf 第5题",
+    "options": [
+      "$\\frac { \\sqrt { 6 } } { 4 }$",
+      "$\\frac { \\sqrt { 6 } } { 2 }$",
+      "$\\frac { \\sqrt { 3 } } { 2 }$",
+      "$\\frac { \\sqrt { 2 } } { 3 }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "质点沿半径为 R 的圆周运动,运动学方程为 $\\theta = 3 + 2 t ^ { 2 }$ ,则时刻质点的法向加速度大小为 $a _ { n } \\mathrm { { : } }$ = \\_;角加速度 $\\beta =$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习二.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 2,
+    "title": "第 7 题",
+    "content": "在半径为 R 的圆周上运动的质点,其速率与时间关系为$\\scriptstyle \\nu = c t ^ { 2 }$ (式中c为常量),则从t=0到t时刻质点走过的路程St时刻质点的切向加速度 $a _ { t } \\mathrm { = }$ \\_;t时刻质点的法向加速度 $a _ { n } \\overline { { \\mathbf { \\Omega } } }$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习二.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 2,
+    "title": "第 8 题",
+    "content": "在水平飞行的飞机上向前发射一颗炮弹,发射后飞机的速度为 $\\nu _ { 0 }$ ,炮弹相对于飞机的速度为 v,略去空气阻力,则以地球为参考系,炮弹的轨迹方程为 ;(2)以飞机为参考系,炮弹的轨迹方程为(设两种参考系中坐标原点均在发射处,x轴沿速度方向向前,y轴竖直向下)",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习二.pdf 第8题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-009",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 2,
+    "title": "第 9 题",
+    "content": "飞轮作加速转动时,轮边缘上一点的运动学方程为 $S { = } 0 . 1 t ^ { 3 }$ 飞轮半径为 2m。当此点的速率 v=30m/s 时,其切向加速度为 \\_,法向加速度为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习二.pdf 第9题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-02-training-010",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-02-training",
+    "questionType": 3,
+    "title": "第 10 题",
+    "content": "由楼窗口以水平初速度 $\\overrightarrow { \\nu _ { 0 } }$ 射出一发子弹,射出时子弹离地面的高度为 h,取枪口为原点,沿 $\\overrightarrow { \\nu _ { 0 } }$ 方向为 x轴,竖直向下为 y轴,并取发射时刻t为0,试求：子弹在任一时刻 的位置坐标及轨迹方程;\n(2)子弹在t时刻的速度,切向加速度和法向加速度;\n(3)子弹轨道落地处的曲率半径。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习二.pdf 第10题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-03-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-03-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "在足够长的管中装有粘滞液体,放入钢球由静止开始向下运动,下列说法中正确的是：",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习三.pdf 第1题",
+    "options": [
+      "钢球运动越来越慢,最后静止不动",
+      "钢球运动越来越慢,最后达到稳定的速度",
+      "钢球运动越来越快,一直无限制地增加",
+      "钢球运动越来越快,最后达到稳定的速度。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-03-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-03-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "质量分别为m和M 的滑块A和B,叠放在光滑水平桌面上,如图所示。A、B间静摩擦系数为 $\\mu _ { s }$ ,滑动摩擦系数为 $\\mu _ { k }$ ,系统原处于静止。今有一水平力作用于A上,要使A、B不发生相对滑动,则应有",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习三.pdf 第2题",
+    "options": [
+      "$F \\le \\mu _ { s } m g$",
+      "$F \\leq \\mu _ { s } ( 1 + m / M ) m g$ ; A IB",
+      "$F \\leq \\mu _ { s } ( m + M ) m g$",
+      "$F \\leq \\mu _ { s } m g { \\frac { m } { M } }$"
+    ],
+    "image": "/physics/training/p1b-m1-03-training/fa05c9f7443c261e509c0a00757428cdfaeed2a7f62dc8b730aba305f38e990b.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-03-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-03-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "质量为m的物体最初位于 $x _ { 0 }$ 处,在力 $F = - k / x ^ { 2 }$ 作用下由静止开始沿直线运动,k为一常数,则物体在任一位置x处的速度应为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习三.pdf 第3题",
+    "options": [
+      "$\\sqrt { \\frac { k } { m } ( \\frac { 1 } { x } - \\frac { 1 } { x _ { 0 } } ) }$",
+      "$\\sqrt { \\frac { 2 k } { m } ( \\frac { 1 } { x } - \\frac { 1 } { x _ { 0 } } ) }$",
+      "$\\sqrt { \\frac { 3 k } { m } ( \\frac { 1 } { x } - \\frac { 1 } { x _ { 0 } } ) }$",
+      "$\\sqrt { { \\frac { 4 k } { m } } ( { \\frac { 1 } { x } } - { \\frac { 1 } { x _ { 0 } } } ) }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-03-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-03-training",
+    "questionType": 2,
+    "title": "第 4 题",
+    "content": "( tk1000A000010957)已知一质量为m 的质点在x 轴上运动,质点只受到指向原点的引力的作用,引力大小与质点离原点的距离x的平方成反比,即$f = - k / x ^ { 2 }$ ,k 是比例常数。设质点在 $x = 8 . 0 0 m$ 时的速度为零,则质点在$x = 2 . 0 0 m$ 处的速率v= o",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习三.pdf 第4题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-03-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-03-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "如图所示,A B两物体质量均为m,用质量不计的定滑轮和细绳连接,并不计摩擦,则A获得的加速度大小为 ,B获得的加速度大小为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习三.pdf 第5题",
+    "image": "/physics/training/p1b-m1-03-training/2e6df1503643fb1daaa5de8ca1759b7e2e9c605a6fd9fae8640749f2d928aa8d.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-03-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-03-training",
+    "questionType": 3,
+    "title": "第 6 题",
+    "content": "质量为m的质点,原来静止,在一变力作用下运动,大小随时间变化的关系为$F = F _ { 0 } [ 1 { - } ( t - T ) / T ]$ ,其中 $F _ { 0 }$ T为恒量,求经过2T时间后质点的速度。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习三.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-03-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-03-training",
+    "questionType": 3,
+    "title": "第 7 题",
+    "content": "质量m = 10kg的物体沿x轴无摩擦地运动,设t = 0时,物体位于原点,速度为零。试求物体在外力F = 4+3x作用下运动了5 m时的速度。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习三.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-03-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-03-training",
+    "questionType": 3,
+    "title": "第 8 题",
+    "content": "( js1000A000010960 ) 质量为 m 的子弹以速度 $\\nu _ { 0 }$ 水平射入沙土中,设子弹所受阻力与速度反向,大小与速度成正比,比例系数为K ,忽略子弹的重力,求：子弹射入沙土后,速度随时间变化的函数式;\n(2)子弹进入沙土的最大深度。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习三.pdf 第8题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "质量为 20 g 的子弹沿 X 轴正向以 500 m/s 的速率射入一木块后,与木块一起仍沿 轴正向以50 m/s的速率前进,在此过程中木块所受冲量的大小为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习四.pdf 第1题",
+    "options": [
+      "10N s·",
+      "-10N·s",
+      "9N·s",
+      "-9N·s。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "如图所示,流水以初速度 $\\nu _ { 1 }$ 进入弯管,流出时的速度为$\\nu _ { 2 }$ ,且 $\\nu _ { 1 } = \\nu _ { 2 } = 5 . 0 ~ \\mathrm { m / s } ,$ ,设每秒流入的水质量为 $q = 1 0 ~ \\mathrm { k g / s }$ ,则在管子转弯处,水对管壁的平均冲力F 大小为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习四.pdf 第2题",
+    "options": [
+      "50 N",
+      "100 N;30°",
+      "150 N",
+      "200 N。A"
+    ],
+    "image": "/physics/training/p1b-m1-04-training/122af3b51e98d071b7fb8105bb19d2d8969807ece3ed8d762b298ce2006fd3ca.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "设作用在质量为 $m { = } 2 . 0 0 \\mathrm { k g }$ 的物体上的力 $F { = } 6 . 0 0 t { + } 3 . 0 0$ (SI)。如果物体在这一力的作用下, 由静止开始沿直线运动,在0到1.50s的时间间隔内,这个力作用在物体上的冲量大小I=",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习四.pdf 第3题",
+    "options": [
+      "$1 1 \\mathrm { N } . \\mathrm { s } ;$",
+      "18Ns",
+      "36Ns",
+      "60Ns"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "作匀速圆周运动的物体运动一周后回到原处,这一周期内物体",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习四.pdf 第4题",
+    "options": [
+      "动量守恒,合外力为零",
+      "动量守恒,合外力不为零",
+      "动量变化为零,合外力不为零,合外力的冲量为零",
+      "动量变化为零,合外力为零。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 0,
+    "title": "第 5 题",
+    "content": "用一根细线吊一重物,重物质量为5 kg,重物下面再系一根同样的细线,细线只能经受70 N的拉力.现在突然向下拉一下下面的线.设力最大值为50 N,则",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习四.pdf 第5题",
+    "options": [
+      "下面的线先断",
+      "上面的线先断",
+      "两根线一起断",
+      "两根线都不断"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "一物体质量 $M { = } 2 \\mathrm { k g }$ ,在合外力 $\\overrightarrow { F } = \\left( 3 + 2 t \\right) \\ \\overrightarrow { i }$的作用下,从静止开始运动,式中i 为方向一定的单位矢量, 则当 =1 s时物体的速度 $\\vec { \\nu } _ { 1 } =$ C",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习四.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 2,
+    "title": "第 7 题",
+    "content": "一质量为 $m _ { \\theta }$ 的斜面原来静止于水平光滑平面上,将一质量为m的木块轻轻放于斜面上,如图,如果此后木块能静止于斜面上,则斜面将",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习四.pdf 第7题",
+    "image": "/physics/training/p1b-m1-04-training/e446a8e4a0c6fbf404cc0e4a774ec4f825f5b0f90b35e7c70e7c0a606794196a.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 3,
+    "title": "第 8 题",
+    "content": "有一门质量为M(含炮弹)的大炮,在一斜面上无摩擦地由静止开始下滑,当滑下L距离时,从炮内沿水平方向射出一发质量为m的炮弹。要使炮车在发射炮弹后的瞬时停止滑动,炮弹的初速度 $\\mathrm { V } _ { 0 }$ 为多少？(设斜面倾角为α)",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习四.pdf 第8题",
+    "image": "/physics/training/p1b-m1-04-training/8af6d44f50d63fb35cd90823369e0be426186647d5352d8bbd5b60dbfc3337ee.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-04-training-009",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-04-training",
+    "questionType": 3,
+    "title": "第 9 题",
+    "content": "一颗子弹在枪筒里前进时所受的合力大小为 $F = 4 0 0 - \\frac { 4 } { 3 } { \\times } 1 0 ^ { 5 } t \\left( N \\right)$ ,子弹从枪口射出时的速率为 $3 0 0 m / s$ 。设子弹离开枪口处合力刚好为零。求：子弹走完枪筒全长所用的时间t;\n(2)子弹在枪筒中所受力的冲量I ;\n(3)子弹的质量。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习四.pdf 第9题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-05-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-05-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "对于一个物体系来说,在下列的哪种情况下系统的机械能守恒？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习五.pdf 第1题",
+    "options": [
+      "合外力为0",
+      "合外力不作功",
+      "外力和非保守内力都不作功",
+      "外力和保守内力都不作功。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-05-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-05-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "作为相互作用的一对滑动摩擦力,当分别作用在有相对滑动的两物体上时,它们作功之和",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习五.pdf 第2题",
+    "options": [
+      "恒为零",
+      "恒为负",
+      "恒为正",
+      "可能为正、为负或为零。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-05-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-05-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "如图的系统,物体 A,B置于光滑的桌面上,物体 A和 C,B 和 D 之间摩擦因数均不为零,首先用外力沿水平方向相向推压 A 和 B,使弹簧压缩,后拆除外力,则A和B弹开过程中,对 A、B、C、D组成的系统",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习五.pdf 第3题",
+    "options": [
+      "动量守恒,机械能守恒",
+      "动量不守恒,机械能守恒",
+      "动量不守恒,机械能不守恒",
+      "动量守恒,机械能不一定守恒。"
+    ],
+    "image": "/physics/training/p1b-m1-05-training/c48c724ea33827978b9b82637e9aedd60d9d3fee12b1670dfd0b2efafe951c34.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-05-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-05-training",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "质点在恒力 $\\vec { F } = - 3 \\vec { i } - 5 \\vec { j } + 9 \\vec { k }$作用下,从 $\\vec { r } _ { 1 } = 2 \\vec { i } + 4 \\vec { j } + 3 \\vec { k } \\quad ( \\textrm { m } )$ 运动到$\\vec { r } _ { 2 } = 6 \\vec { i } - \\vec { j } + 1 2 \\vec { k } ( \\mathbf { m } )$ 处,则在此过程中该力做的功为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习五.pdf 第4题",
+    "options": [
+      "67J",
+      "-67J",
+      "94J",
+      "17J。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-05-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-05-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "一人造地球卫星绕地球作椭圆运动,近地点为A,远地点为B,A、B两点距地心分别为 $r _ { 1 } , r _ { 2 }$ ,设卫星质量为m,地球质量为M,万有引力常数为G。则卫星在A、B两点处的万有引力势能之差 $E _ { p B ^ { - } } E _ { p A }$ 为 ,动能之差$E _ { k B } – E _ { k A }$ 为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习五.pdf 第5题",
+    "image": "/physics/training/p1b-m1-05-training/1742c89adc33d757e90e84df44ba7cd78a0d21f74d469695ba246debf45b358c.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-05-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-05-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "质量为 m=2.00 kg 的质点开始时静止,在如图所示合力 F 的\n作用下沿直线运动,已知 $F = F _ { 0 } \\sin ( 2 \\pi \\frac { t } { T } )$ ,方向与直线平行,若$F _ { 0 } = 3 ~ \\mathrm { N }$ , 周期为T s=3.1 ,则在 0 到 $\\frac { T } { 2 }$ 时间内,力F 所作的总功W =\\_\\_ \\_J。(两位有效数字)",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习五.pdf 第6题",
+    "image": "/physics/training/p1b-m1-05-training/a0c166ae401063fe212f2db2fd1c3022fe5b9f7caffd250610bd40c773b6750e.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-05-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-05-training",
+    "questionType": 3,
+    "title": "第 7 题",
+    "content": "质量为 m 的子弹 A,以 $\\nu _ { 0 }$ 的速率水平地射入一静止在水平面上的质量为M 的 B内,A射入B后,B向前移动了S的距离后而停止,求： B与水平面间的摩擦系数; (2)木块对子弹所作的功 $W _ { 1 }$ ;\n(3)子弹对木块所作的功 $W _ { \\scriptscriptstyle 2 }$ ; (4) $W _ { 1 }$ 与 $W _ { \\scriptscriptstyle 2 }$ 的大小是否相等？为什么？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习五.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-05-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-05-training",
+    "questionType": 3,
+    "title": "第 8 题",
+    "content": "质量为 $m _ { 1 }$ 的A物与弹簧相连,弹簧劲度系数为k;另有一质量为 $m _ { 2 }$ 的B物通过轻绳与A物相连,两物体与水平面的摩擦系数为零。今以一恒力F将B物向右拉(如图所示),施力前弹簧处于自然长度,A、B两物均静止,且A、B间的轻绳绷直。求两物A、B系统受合力为零时的速度;\n(2)上述过程中绳的拉力对物A所作的功,恒力F对物B所作的功。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习五.pdf 第8题",
+    "image": "/physics/training/p1b-m1-05-training/f26f892ae856d4c3c831545ee06ab08b8c65a3c9eb752ac745694b7bf914476d.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-06-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-06-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": ")几个力同时作用在一个具有光滑固定转轴的刚体上,如果这几个力的矢量和为零,则此刚体",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习六.pdf 第1题",
+    "options": [
+      "必然不会转动",
+      "转速必然不变",
+      "转速必然改变",
+      "转速可能不变,也可能改变。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-06-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-06-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "如图所示,A、B 为两个相同的绕着轻绳的定滑轮。A 滑轮挂一质量为 M的物体,B滑轮受拉力 F,而且 $\\scriptstyle { F = M g }$ 。设 A、B两滑轮的角加速度分别为 $\\beta _ { \\mathrm { { A } } }$ 和 $\\beta _ { \\mathrm { B } }$ 不计滑轮轴的摩擦,则有",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习六.pdf 第2题",
+    "options": [
+      "$\\beta _ { \\mathrm { { A } } } { = } \\beta _ { \\mathrm { { B } } }$",
+      "$\\beta _ { \\mathrm { { A } } } { > } \\beta _ { \\mathrm { { B } } }$",
+      "$\\beta _ { \\mathrm { { A } } } { < } \\beta _ { \\mathrm { { B } } }$",
+      "开始时 $\\beta _ { \\mathrm { { A } } } { = } \\beta _ { \\mathrm { { B } } }$ ,以后 $\\beta _ { \\mathrm { { A } } } { < } \\beta _ { \\mathrm { { B } } }$ 0"
+    ],
+    "image": "/physics/training/p1b-m1-06-training/2c9b08b7b89e0b0f012c35a1273090ff58e71e6a13152cd067ca7ef95110049d.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-06-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-06-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "一绕中心轴转动的圆盘,角速度为 ${ \\pmb \\omega } _ { \\pmb _ { \\imath } }$ 若将它放在摩擦系数为 水平桌面上,问经过多长时间停下来？(已知圆盘质量为 m 半径为 R,绕轴的转动惯量为 $J = \\frac { 1 } { 2 } m R ^ { 2 } \\mathbf { \\Sigma } )$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习六.pdf 第3题",
+    "options": [
+      "$\\frac { 3 R } { 4 \\mu g }$",
+      "$\\frac { 5 R } { 4 \\mu g }$",
+      "$\\frac { 3 \\omega } { 4 R \\mu g }$",
+      "$\\frac { 3 R \\omega } { 4 \\mu g }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-06-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-06-training",
+    "questionType": 2,
+    "title": "第 4 题",
+    "content": "一根均匀棒,长为 l,质量为 m,可绕通过其一端且与其垂直的固定轴在竖直面内自由转动。开始时棒静止在水平位置,当它自由下摆时,它的初角速度等于 \\_,初角加速度等于 。已知均匀棒对于通过其一端垂直于棒的轴的转动惯量为 ${ \\frac { 1 } { 3 } } m l ^ { 2 }$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习六.pdf 第4题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-06-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-06-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "如图,质量为 m 和 2m 的两个质点 A和 B,用一长为 L的轻质细杆相连,系统绕通过杆上 O点且与杆垂直的水平轴转动,已知 O点与 A点相距 2L/3,B点的线速度为v,且与杆垂直,则该系统对转轴的转动惯量大小为： ,杆的角速度为 ,在图示位置时刻,杆受的合力矩为 ,杆的角加速度为 0",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习六.pdf 第5题",
+    "image": "/physics/training/p1b-m1-06-training/9f4edfa3acf2ff0718e3ff9499a2901c00b4ddb89217c3d4e6d4f518b3cf722a.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-06-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-06-training",
+    "questionType": 3,
+    "title": "第 6 题",
+    "content": "质量为m的物体悬于一条轻绳的一端,绳另一端绕在一轮轴的轴上,如图所示。轴水平且垂直于轮轴面,其半径为r , 整个装置架在光滑的固定轴承之上。当物体从静止释放后,在时间t 内下降了一段距离S。试求整个轮轴的转动惯量(用m、r、t 和S 表示)。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习六.pdf 第6题",
+    "image": "/physics/training/p1b-m1-06-training/051d57409f11372b21bfce7342d670adc400759565f4ead61a0cb4626700b284.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-06-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-06-training",
+    "questionType": 3,
+    "title": "第 7 题",
+    "content": "如图所示,一个质量为 m 的物体与绕在定滑轮上的绳子相联,绳子质量可以忽略,它与定滑轮之间无滑动。假设定滑轮质量为 M、半径为R,其转动惯量为 $\\frac { 1 } { 2 } M R ^ { 2 }$ ,滑轮轴光滑。试求该物体由静止开始下落R的过程中,下落速度与时间的关系。 M",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习六.pdf 第7题",
+    "image": "/physics/training/p1b-m1-06-training/4067317c7cda28aaf79cc3e8ed7af8597fb73ae2fa61ed40788151e31bb3913b.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-07-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-07-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "一水平圆盘可绕通过其中心的固定竖直轴转动,盘上站着一个人。把人和圆盘取作系统,当此人在盘上随意走动时,若忽略轴的摩擦,此系统",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习七.pdf 第1题",
+    "options": [
+      "动量守恒",
+      "机械能守恒",
+      "对转轴的角动量守恒",
+      "动量、机械能和角动量都守恒"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-07-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-07-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "如图所示,一匀质细杆可绕通过上端与杆垂直的水平光滑固定轴 旋转,初始状态为静止悬挂。现有一个小球自左方水平打击细杆。 设小球与细杆之间为非弹性碰撞,则在碰撞过程中对细杆与小球这一系统",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习七.pdf 第2题",
+    "options": [
+      "只有机械能守恒",
+      "只有动量守恒",
+      "只有对转轴O的角动量守恒",
+      "机械能、动量和角动量均守恒。"
+    ],
+    "image": "/physics/training/p1b-m1-07-training/43ec6662ef75c0d98fdc5a04798a1558b5aa2c97b81b1f0f76fdd08d815dd61c.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-07-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-07-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "一个半径为 R=20.0cm,质量为 m 的均匀薄圆盘,竖直地立放在粗糙的水平桌面上。开始时处于静止状态,而后薄圆盘受到轻微扰动而绕过接触点的某一轴转动最终倒下,已知圆盘对该轴的转动惯量为 $5 \\mathrm { m } R ^ { 2 } / 4$ 。则圆盘平面与桌面碰撞前(即圆盘平面在水平位置)时质心速度的大小为 $\\nu _ { \\mathrm { c } } =$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习七.pdf 第3题",
+    "options": [
+      "(两位有效数字,重力加速度 $g { = } 9 . 8 0 \\mathrm { m } / \\mathrm { s } _ { 2 } )$1.3m/s",
+      "1.8m/s",
+      "2.2m/s",
+      "$2 . 5 \\mathrm { m } / \\mathrm { s } .$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-07-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-07-training",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "一人站在轴上无摩擦的旋转平台上,平台以 $\\omega _ { \\mathrm { i } } = 2 \\pi$ $r a d \\textit { \\textbf { / s } }$ 的角速度旋转,这时他的双臂水平伸直,并且两手都握着重物,整个系统的转动惯量是 $J _ { 1 } { = } 6 . 0 0 \\mathrm { k g } { \\cdot } \\mathrm { m } ^ { 2 }$ 。如果他将双手收回,系统的转动惯量减小到 $J _ { 2 } { = } 2 . 0 0$ $\\mathrm { k g } \\cdot \\mathrm { m } ^ { 2 }$ ,则系统的转动动能增量为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习七.pdf 第4题",
+    "options": [
+      "237J",
+      "400J",
+      "20J",
+      "135J"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-07-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-07-training",
+    "questionType": 0,
+    "title": "第 5 题",
+    "content": "一根长为l、质量为M的匀质棒自由悬挂于通过其上端的光滑水平轴上。现有一质量为m的子弹以水平速度 $\\nu _ { 0 }$ 射向棒的中心,并以 $\\nu _ { 0 } / 2$ 的水平速度穿出棒,此后棒的最大偏转角恰为 $9 0 ^ { \\circ }$ ,则 $\\nu _ { 0 }$ 的大小为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "力学练习七.pdf 第5题",
+    "options": [
+      "$\\frac { 4 M } { m } \\sqrt { \\frac { g l } { 3 } }$",
+      "$\\sqrt { \\frac { g l } { 2 } }$",
+      "$\\frac { 2 M } { m } \\sqrt { g l }$",
+      "$\\frac { 1 6 M ^ { 2 } g l } { 3 m ^ { 2 } }$ o"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-07-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-07-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "如图所示,A、B 两飞轮的轴杆在一条直线上,并可用摩擦啮合器 C使它们连结。开始时 A C BB 轮静止,A 轮以角速度 $\\omega _ { A }$ 转动,设在啮合过程中两飞轮不受其它力矩的作用。当两轮连结在一起后,共同的角速度为 $\\omega$ 。若 A轮的转动惯量为 $J _ { \\mathrm { A } }$ ,则 轮的转动惯 $J _ { \\mathrm { B } } { = }$ C",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习七.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-07-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-07-training",
+    "questionType": 2,
+    "title": "第 7 题",
+    "content": "一半径为 0.1m 的飞轮能绕水平轴在铅直面内作无摩擦的自由转动,其转动惯量$\\scriptstyle \\mathbf { J } = 2 \\times 1 0 ^ { - 2 } ( \\mathbf { k g } \\cdot \\mathbf { m } ^ { 2 } )$ ,由静止开始受一作用在轮缘上,方向始终与切线一致的变力作用,其大小为 $F = 0 . 5 t \\quad \\left( \\mathrm { N } \\right)$ ,则受力后一秒末的角速度为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "力学练习七.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m1-07-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m1",
+    "itemId": "p1b-m1-07-training",
+    "questionType": 3,
+    "title": "第 8 题",
+    "content": "一根放在水平光滑桌面上的匀质棒,可绕通过其一端的竖直固定光滑轴 O 转动。棒的质量为 $m { = } 1 . 5 \\mathrm { k g }$ ,长度为 l=1.0m,对轴的转动惯量为$J { = } m l ^ { 2 } / 3$ 。初始时棒静止。今有一水平运动的子弹垂直地射入棒的另一端,并留在棒中,如图所示。子弹的质量为 $\\mathrm { m } { = } 0 . 0 2 \\mathrm { k g }$ ,速率为 v=400m/s。试问：棒开始和子弹一起转动时角速度 有多大？\n(2)若棒转动时受到大小为 $\\textstyle M _ { \\mathrm { r } } = 4 . 0 \\mathrm { N } \\cdot \\mathrm { m }$ 恒定阻力矩作用,棒能转过多大的角度θ？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "力学练习七.pdf 第8题",
+    "image": "/physics/training/p1b-m1-07-training/447fae5f824e760711941e2e4f7d6f7afb00fe369ac80f519abd2e86c072ebb3.jpg"
+  },
+  {
     "id": "q-physics-b-1-p1b-m1-quiz-001",
     "courseId": "physics-b-1",
     "moduleId": "p1b-m1",
@@ -3182,6 +4316,892 @@ export const QUESTIONS = [
     ],
     "source": "大学物理B（上）综合测试",
     "image": "/physics/q043.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-01-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-01-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "在双缝干涉实验中,若单色光源 S到两缝 $S _ { 1 } .$ 、 $S _ { 2 }$ 距离相等,则观察屏上中央明纹位于图中 O 处。现将光源 S 向下移动到示意图中的 S 位置,则",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习一.pdf 第1题",
+    "options": [
+      "中央明条纹也向下移动,且条纹间距不变",
+      "中央明条纹向上移动,且条纹间距不变",
+      "中央明条纹向下移动,且条纹间距增大",
+      "中央明条纹向上移动,且条纹间距增大。"
+    ],
+    "image": "/physics/training/p1b-m2-01-training/e1934e63bf306ca25fbb91acd5f30b8755998ecd384ef93baf72a05af2e134c7.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-01-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-01-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "用白光光源进行双缝实验,若用一个纯红色的滤光片遮盖一条缝,用一个纯蓝色的滤光片遮盖另一条缝,则",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习一.pdf 第2题",
+    "options": [
+      "干涉条纹的宽度将发生改变",
+      "产生红光和蓝光的两套彩色干涉条纹",
+      "干涉条纹的亮度将发生改变",
+      "不产生干涉条纹。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-01-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-01-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "在双缝干涉实验中,两缝间距离为 d,双缝与屏幕之间的距离为 $D \\ ( D { > } { > } d )$ 。波长为 λ 的平行单色光垂直照射到双缝上。屏幕上干涉条纹中相邻暗纹之间的距离是",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习一.pdf 第3题",
+    "options": [
+      "$2 \\lambda D / d$",
+      "$\\lambda d / D$",
+      "$d D / \\lambda$",
+      "$\\lambda D / d$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-01-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-01-training",
+    "questionType": 2,
+    "title": "第 4 题",
+    "content": "在双缝干涉实验中,若两缝的间距为所用光波波长的 N 倍,观察屏到双缝的距离为D,则屏上相邻明纹的间距为 。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习一.pdf 第4题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-01-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-01-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "在双缝干涉实验中,双缝间距为 d,双缝到屏的距离为 D( $( D { > } { > } d )$ ,测得中央零级明纹与第五级明之间的距离为 x,则入射光的波长为C",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习一.pdf 第5题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-01-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-01-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "( tk1000A000009334 ) 在 双 缝 干 涉 实 验 中 , 所 用 单 色 光 波 长 为$\\lambda = 5 6 2 . 5 \\mathrm { n m } \\big ( \\mathrm { l n m } = 1 0 ^ { - 9 } \\mathrm { m } \\big )$ ,双缝与观察屏的距离 $D { = } 1 . 2 \\mathrm { m }$ ,若测得屏上相邻明条纹间距为 $\\Delta x = 1 . 5 \\mathrm { m m }$ ,则双缝的间距d=",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习一.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-01-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-01-training",
+    "questionType": 3,
+    "title": "第 7 题",
+    "content": "在图示的双缝干涉实验中,若用薄玻璃片(折射率 $n _ { 1 } { = } 1 . 4 )$ 覆盖缝 $S _ { 1 }$ ,用同样厚度的玻璃片(但折射率 $n _ { 2 } { = } 1 . 7 )$ )覆盖缝 $S _ { 2 } ,$ ,将使原来未放玻璃 时 屏 上 的 中 央 明 条 纹 处 O 变 为 第 五 级 明 纹 。 设 单 色 光 波 长$\\lambda = 4 8 0 \\mathrm { n m } \\big ( \\mathrm { l n m } = 1 0 ^ { - 9 } \\mathrm { m } \\big )$ ,求玻璃片的厚度d(可认为光线垂直穿过玻璃片)。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习一.pdf 第7题",
+    "image": "/physics/training/p1b-m2-01-training/ac2a9ae924f795ee24739fb2373236ebe61b531e1fb8aa2ce1c1d629f0612e8d.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-01-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-01-training",
+    "questionType": 3,
+    "title": "第 8 题",
+    "content": "( js1000A000008966 ) 薄 钢 片 上 有 两 条 紧 靠 的 平 行 细 缝 , 用 波 长$\\lambda = 5 4 6 . \\mathrm { l n m } \\big ( \\mathrm { l n m } = 1 0 ^ { - 9 } \\mathrm { m } \\big )$ 的平面光波正入射到钢片上。屏幕距双缝的距离为$D { = } 2 . 0 0 \\mathrm { m }$ ,测得中央明条纹两侧的第五级明条纹间的距离为 $\\Delta x = 1 2 . 0 \\mathrm { m m }$ 。求两缝间的距离;\n(2)从任一明条纹(记作0)向一边数到第20条明条纹,共经过多大距离？\n(3)如果使光波斜入射到钢片上,条纹间距将如何改变？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习一.pdf 第8题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-02-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-02-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "如图所示,折射率为 $n _ { 2 } .$ 、厚度为 e的透明介质薄膜的上方和下方的透明介质的折射率分别为 $n _ { 1 }$ 和 $n _ { 3 }$ ,已知 $n _ { 1 } { < } n _ { 2 } { < } n _ { 3 }$ 。若用波长为 λ 的单色平行光垂直入射到该薄膜上,则从薄膜上、下两表面反射的光束① 与② 的光程差是",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习二.pdf 第1题",
+    "options": [
+      "$2 \\mathbf { n } _ { 2 } \\ \\mathbf { e }$",
+      "$2 n , e - \\lambda / 2$",
+      "$2 n _ { \\mathrm { { > } } } e - \\lambda$",
+      "$2 n _ { 2 } e - \\lambda / \\left( 2 n _ { 2 } \\right)$"
+    ],
+    "image": "/physics/training/p1b-m2-02-training/3215a92dd2998b600310a215340499e5fda0f6b07d0cfe4f7dcbe2c71250b07f.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-02-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-02-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "一束波长为 λ 的单色光由空气垂直入射到折射率为 n 的透明薄膜上,透明薄膜放在空气中,要使反射光得到干涉加强,则薄膜最小的厚度为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习二.pdf 第2题",
+    "options": [
+      "λ/4",
+      "$\\lambda / { \\left( 4 n \\right) }$",
+      "$\\lambda / 2$",
+      "$\\lambda / { \\left( 2 n \\right) }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-02-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-02-training",
+    "questionType": 2,
+    "title": "第 3 题",
+    "content": "如图所示,假设有两个同相的相干点光源 $S _ { 1 }$ 和 $S _ { 2 }$ ,发出波长为 λ 的光。A 是它们连线的中垂线上的一点。若在 $S _ { 1 }$ 与 A 之间插入厚度为 e、折射率为 n 的薄玻璃片,则两光源发出的光在 A 点的相位差 $\\Delta \\phi =$ \\_。若已知 $\\lambda = 5 0 0 \\mathrm { n m }$ $n { = } 1 . 5$ ,A点恰为第四级明纹中心,则 $e = { \\mathrm { ~ \\textrm ~ { ~ ~ } ~ } } { \\mathrm { n m } } _ { \\beta }$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习二.pdf 第3题",
+    "image": "/physics/training/p1b-m2-02-training/18f3b401316c99fd4c7458f1da3eb568c451ca409cc9676d726b7a5f42a599b7.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-02-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-02-training",
+    "questionType": 2,
+    "title": "第 4 题",
+    "content": "一束波长为 $\\lambda = 6 0 0 \\mathrm { n m \\ : \\ : ( \\ l n m { = } 1 0 ^ { - 9 } m ) }$ 的平行单色光垂直入射到折射率为 n=1.33 的透明薄膜上,该薄膜是放在空气中的。要使反射光得到最大限度的加强,薄膜最小厚度应为 nm。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习二.pdf 第4题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-02-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-02-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "波长为 λ 的平行单色光垂直照射到折射率为 n 的劈形膜上,相邻的两明纹所对应的薄膜厚度之差是 C",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习二.pdf 第5题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-02-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-02-training",
+    "questionType": 3,
+    "title": "第 6 题",
+    "content": "用波长为 $5 0 0 \\mathrm { n m } ~ ( 1 \\mathrm { n m } { = } 1 0 ^ { - 9 } \\mathrm { m } )$ 的单色光垂直照射到由两块光学平玻璃构成的空气劈形膜上。在观察反射光的干涉现象中,距劈形膜棱边$l { = } 1 . 5 6 \\mathrm { c m }$ 的A处是从棱边算起的第四条暗条纹中心。求此空气劈形膜的劈尖角θ;\n(2)改用 600nm 的单色光垂直照射到此劈尖上仍观察反射光的干涉条纹,A 处是明条纹还是暗条纹？\n(3)在第(2)问的情形从棱边到A处的范围内共有几条明纹？几条暗纹？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习二.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-02-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-02-training",
+    "questionType": 3,
+    "title": "第 7 题",
+    "content": "波长 =650nm 的红光垂直照射到劈形液膜上,膜的折射率n=1.33,液面两侧是同一种媒质。观察反射光的干涉条纹。离开劈形膜棱边的第一条明条纹中心所对应的膜厚度是多少？\n(2)若相邻的明条纹间距 l=6mm,上述第一条明纹中心到劈形膜棱边的距离 x 是多少？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习二.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-03-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-03-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "在图示三种透明材料构成的牛顿环装置中,用单色光垂直照射,在反射光中看到干涉条纹,则在接触点P处形成的圆斑为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习三.pdf 第1题",
+    "options": [
+      "全明",
+      "全暗",
+      "右半部明,左半部暗",
+      "右半部暗,左半部明。"
+    ],
+    "image": "/physics/training/p1b-m2-03-training/1282d6ac8a85a1a2039fdb78cf2190437b40cf910ea71d25fe6ba4204f0dc890.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-03-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-03-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "如图 a所示,一光学平板玻璃 A与待测工件 B之间形成空气劈尖,用波长 $\\lambda = 5 0 0 \\mathrm { n m } \\big ( \\mathrm { l n m } = 1 0 ^ { - 9 } \\mathrm { m } \\big )$ 的单色光垂直照射。看到的反射光的干涉条纹如图 b 所示。有些条纹弯曲部分的顶点恰好与其右边条纹的直线部分的连续相切。则工件的上表面缺陷是",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习三.pdf 第2题",
+    "options": [
+      "不平处为凸起纹,最大高度为500nm",
+      "不平处为凸起纹,最大高度为250nm",
+      "不平处为凹槽,最大深度为500nm",
+      "不平处为凹槽,最大深度为250nm。"
+    ],
+    "image": "/physics/training/p1b-m2-03-training/2e64a0cd21b73d61affd67eaecafc6d9291577c8e8ca2bfd26af5a2c5122efc5.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-03-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-03-training",
+    "questionType": 2,
+    "title": "第 3 题",
+    "content": "一平凸透镜,凸面朝下放在一平玻璃板上。透镜刚好与玻璃板接触。波长分别为 $\\lambda _ { 1 } = 6 0 0 \\mathrm { n m }$ 和 $\\lambda _ { 2 } = 5 0 0 \\mathrm { n m }$ 的两种单色光垂直入射,观察反射光形成的牛顿环。从中心向外数的两种光的第五个明环所对应的空气膜厚度之差为 nm。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习三.pdf 第3题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-03-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-03-training",
+    "questionType": 2,
+    "title": "第 4 题",
+    "content": "已知在迈克耳孙干涉仪中使用波长为 λ 的单色光。在干涉仪的可动反射镜移动距离d的过程中,干涉条纹将移动 \\_条。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习三.pdf 第4题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-03-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-03-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "用迈克耳孙干涉仪产生等厚干涉条纹,设入射光的波长为,在反射镜 $M _ { 2 }$ 转动过程中,在总的观测区域宽度 L 内,观测到总的干涉条纹数从 $N _ { 1 }$ 条增加到 $N _ { 2 }$ 条。在此过程中 $M _ { 2 }$ 转过的角度Δ 是",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习三.pdf 第5题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-03-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-03-training",
+    "questionType": 3,
+    "title": "第 6 题",
+    "content": "用波长 $\\lambda { = } 5 0 0 n m$ 的单色光照射在有两块玻璃板(一端刚好接触成劈棱)构成的空气劈形膜上,劈尖角 $\\theta { = } 2 { \\times } 1 0 ^ { - 4 } r a d$ 。如果劈形膜内充满折射率为n=1.40的液体,求从劈棱数起第五个明条纹在充入液体前后移动的距离。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习三.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-03-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-03-training",
+    "questionType": 3,
+    "title": "第 7 题",
+    "content": "在牛顿环装置的平凸透镜和平玻璃板之间充以折射率 $n { = } 1 . 3 3$ 的液体(透镜和平玻璃板的折射率都大于 1.33)。凸透镜曲率半径为 300cm,用波长 $\\lambda = 6 5 0 \\mathrm { { n m } }$ 的光垂直照射,求第 10个暗环的半径(设凸透镜中心刚好与平板接触,中心暗斑不计入环数)。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习三.pdf 第7题",
+    "image": "/physics/training/p1b-m2-03-training/7a71df1c7c9b8f8ff151afe7fcdec7393ef4d5843d87556401324040c150a154.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-04-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-04-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "在如图所示的单缝夫琅禾费衍射装置中,设中央明纹的衍射角范围很小,若使单缝宽度 a 变为原来的 $\\frac { 3 } { 2 }$ ,同时使入射的单色光的波长 变成原来的 $\\frac 3 4$ ,则屏幕C上单缝衍射条纹中央明纹的宽度Δx将变为原来的",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习四.pdf 第1题",
+    "options": [
+      "3/4倍",
+      "2/3倍",
+      "9/8倍",
+      "1/2倍"
+    ],
+    "image": "/physics/training/p1b-m2-04-training/06c9dfb5d60bf0262ec3105ddd7cdb190d7310ad1c16d8ac65d5256f1b8dfef3.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-04-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-04-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "一束波长为 λ 的平行单色光垂直入射到一个单缝 AB 上,装置如图。在屏幕 D 上形成衍射图样,如果 P 是中央条纹一侧第一个暗纹所在的位置,则BC的长度为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习四.pdf 第2题",
+    "options": [
+      "λ/2",
+      "λ",
+      "3/2λ",
+      "2λ"
+    ],
+    "image": "/physics/training/p1b-m2-04-training/54ce28d6d9e01f3ed26dbcc170e07f92262cb1c280ef3c110ccebc53641543d4.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-04-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-04-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "如果单缝夫琅禾费衍射的第一级暗纹发生在衍射角为$\\varphi = 3 0 ^ { \\circ }$ 的方位上。所用单色光波长为 $\\lambda = 5 0 0 \\mathrm { n m }$ ,则单缝宽度为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习四.pdf 第3题",
+    "options": [
+      "$2 . 5 { \\times } 1 0 ^ { - 5 } \\mathrm { m }$",
+      "$1 . 0 { \\times } 1 0 ^ { - 5 } \\mathrm { m }$",
+      "$1 . 0 { \\times } 1 0 ^ { - 6 } \\mathrm { m }$",
+      "$2 . 5 { \\times } 1 0 ^ { - 7 } \\mathrm { m }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-04-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-04-training",
+    "questionType": 2,
+    "title": "第 4 题",
+    "content": "将波长为 λ 的平行单色光垂直投射于一狭缝上,若对应于衍射图样的第一级暗纹位置的衍射角的绝对值为 θ,则缝的宽度等于",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习四.pdf 第4题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-04-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-04-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "波长为 600nm 的单色平行光,垂直入射到缝宽为 a=0.60mm的单缝上,缝后有一焦距 f '=60cm 的透镜,在透镜焦平面上观察衍射图样。则：中央明纹的宽度为 \\_,两个第三级暗纹之间的距离为 。 $\\mathrm { ( 1 n m { = } 1 0 ^ { - } }$ $^ { 9 } \\mathrm { { m } ) }$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习四.pdf 第5题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-04-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-04-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "在单缝的夫琅禾费衍射实验中,屏上第三级暗纹对应于单缝处波面可划分为 个半波带,若将缝宽缩小一半,原来第三级暗纹处将是\\_纹。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习四.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-04-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-04-training",
+    "questionType": 3,
+    "title": "第 7 题",
+    "content": "某种单色平行光垂直入射在单缝上,单缝宽 $a { = } 0 . 1 5 \\mathrm { m m }$ 。缝后放一个焦距 f=400mm 的凸透镜,在透镜的焦平面上,测得中央明条纹两侧的两个第三级暗条纹之间的距离为8.0mm,求入射光的波长。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习四.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-04-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-04-training",
+    "questionType": 3,
+    "title": "第 8 题",
+    "content": "波长为 $6 0 0 \\mathrm { n m \\ ( \\ l n m { = } 1 0 ^ { - 9 } m ) }$ 的单色光垂直入射到宽度为a=0.10mm的单缝上,观察夫琅禾费衍射图样,透镜焦距 f=1.0m,屏在透镜的焦平面处。求：中央衍射明条纹的宽度 $\\Delta x _ { 0 }$ ;\n(2)第二级暗纹离透镜焦点的距离 $x _ { 2 }$ 。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习四.pdf 第8题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-05-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-05-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "一束白光垂直照射在一光栅上,在形成的同一级光栅光谱中,偏离中央明纹最远的是",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习五.pdf 第1题",
+    "options": [
+      "紫光",
+      "绿光",
+      "黄光",
+      "红光"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-05-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-05-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "若用衍射光栅准确测定一单色可见的波长,在下列各种光栅常数的光栅中选用哪一种最好？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习五.pdf 第2题",
+    "options": [
+      "$5 . 0 { \\times } 1 0 ^ { - 1 } \\mathrm { m m }$",
+      "$1 . 0 { \\times } 1 0 ^ { - 1 } \\mathrm { m m }$",
+      "$1 . 0 { \\times } 1 0 ^ { - 2 } \\mathrm { m m }$",
+      "$1 . 0 { \\times } 1 0 ^ { - 3 } \\mathrm { m m }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-05-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-05-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "对某一定波长的垂直入射光,衍射光栅的屏幕上只能出现零级和一级主极大,欲使屏幕上出现更高级次的主极大,应该",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习五.pdf 第3题",
+    "options": [
+      "换一个光栅常数较小的光栅",
+      "换一个光栅常数较大的光栅",
+      "将光栅向靠近屏幕的方向移动",
+      "将光栅向远离屏幕的方向移动。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-05-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-05-training",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "在光栅光谱中,假如所有偶数级次的主极大都恰好在单缝衍射的暗纹方向上,因而实际上不出现,那么此光栅每个透光缝宽度 a 和相邻两缝间不透光部分宽度b的关系为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习五.pdf 第4题",
+    "options": [
+      "$a = { \\frac { 1 } { 2 } } b$",
+      "$a = b$",
+      "$a = 2 b$",
+      "$a = 3 b$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-05-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-05-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "( tk1000A000009233 ) 用 波 长 为 的 单 色 平 行 红 光 垂 直 在 光 棚 常 数$d = 2 \\mu m \\big ( 1 \\mu m = 1 0 ^ { - 6 } \\mathrm { m } \\big )$ 的光栅上,用焦距 f=0.5m的透镜将光聚在屏上,测得第一级谱 线 与 透 镜 主 焦 点 的 距 离 l=0.1667m 。 则 可 知 该 入 射 的 红 光 波 长= \\_nm。( $\\mathrm { \\Omega _ { 1 n m = 1 0 } ^ { - 9 } m } )$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习五.pdf 第5题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-05-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-05-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "某单色光垂直入射到一个每毫米有 800 条刻线的光栅上,如果第一级谱线的衍射角为30°,则入射光的波长应为 。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习五.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-05-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-05-training",
+    "questionType": 2,
+    "title": "第 7 题",
+    "content": "用平行的白光垂直入射在平面透射光栅上时,波长为$\\lambda _ { 1 } = 4 4 0 \\mathrm { n m }$ 的第 3 级光谱线将与波长为 $\\lambda _ { 2 } =$ nm 的第 2 级光谱线重叠。 $\\mathrm { ( 1 n m { = } 1 0 ^ { - 9 } m ) }$",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习五.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-05-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-05-training",
+    "questionType": 3,
+    "title": "第 8 题",
+    "content": "在单缝夫琅禾费衍射实验中,垂直入射的光有两种波长,$\\lambda _ { 1 } = 4 0 0 \\mathrm { n m }$ $\\lambda _ { \\gamma } = 7 6 0 \\mathrm { n m }$ 。已知单缝宽度 $a { = } 1 . 0 { \\times } 1 0 ^ { - 2 } \\mathrm { c m }$ ,透镜焦距 $f { = } 5 0 \\mathrm { c m }$ 。求：两种光第一级衍射明纹中心之间的距离;\n(2)若用光栅常数 $d { = } 1 . 0 { \\times } 1 0 ^ { - 3 } \\mathrm { c m }$ 的光栅替换单缝,其他条件和上一问相同,求两种光第一级主极大之间的距离。\n9 $\\mathrm { ( j s 1 0 0 0 A 0 0 0 0 9 0 7 4 ) }$\n氢 放 电 管 发 出 的 光 垂 直 照 射 在 某 光 栅 上 , 在 衍 射 角 $\\varphi = 4 1 ^ { \\circ }$ 的 方 向 上 看 到$\\lambda _ { 1 } = 6 5 6 . 2 \\mathrm { n m }$ 和 $\\lambda _ { 2 } = 4 1 0 . 1 \\mathrm { n m } ( 1 \\mathrm { n m } { = } 1 0 ^ { - 9 } \\mathrm { m } )$ )的谱线相重合,求光栅常数最小是多少？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习五.pdf 第8题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-001",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 0,
+    "title": "第 1 题",
+    "content": "一束光是自然光和线偏振光的混合光,让它垂直通过一偏振片。若以此入射光束为轴旋转偏振片,测得透射光强度最大值是最小值的 5 倍,那么入射光束中自然光与线偏振光的光强比值为",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习六.pdf 第1题",
+    "options": [
+      "1/2",
+      "1/3",
+      "1/4",
+      "1/5。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-002",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 0,
+    "title": "第 2 题",
+    "content": "在双缝干涉实验中,用单色自然光,在屏上形成干涉条纹。若在两缝后放一个偏振片,则",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习六.pdf 第2题",
+    "options": [
+      "干涉条纹的间距不变,但明纹的亮度加强",
+      "干涉条纹的间距不变,但明纹的亮度减弱",
+      "干涉条纹的间距变窄,且明纹的亮度减弱",
+      "无干涉条纹。"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-003",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 0,
+    "title": "第 3 题",
+    "content": "一束光强为 $I _ { 0 }$ 的自然光,相继通过三个偏振片 $P _ { 1 } , \\ P _ { 2 } , \\ P _ { 3 }$ 后,出射光的光强为 $I { = } 3 I _ { 0 } / 3 2$ 。已知 $P _ { 1 }$ 和 $P _ { 3 }$ 的偏振化方向相互垂直,若以入射光线为轴,旋转 $P _ { 2 }$ ,要使出射光的光强为零, $P _ { 2 }$ 最少要转过的角度是",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习六.pdf 第3题",
+    "options": [
+      "$6 0 ^ { \\circ }$",
+      "$3 0 ^ { \\circ }$",
+      "$9 0 ^ { \\circ }$",
+      "$4 5 ^ { \\circ }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-004",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 0,
+    "title": "第 4 题",
+    "content": "某种透明媒质对于空气的临界角(指全反射)等于 $4 5 ^ { \\circ }$ ,光从空气射向此媒质时的布儒斯特角是",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "选择题"
+    ],
+    "source": "波动光学练习六.pdf 第4题",
+    "options": [
+      "$5 4 . 7 ^ { \\circ }$",
+      "$4 5 ^ { \\circ }$",
+      "$4 0 . 9 ^ { \\circ }$",
+      "$3 5 . 3 ^ { \\circ }$"
+    ]
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-005",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 2,
+    "title": "第 5 题",
+    "content": "某一块火石玻璃的折射率是 1.65,现将这块玻璃浸没在水中(n=1.33)。欲使从这块玻璃表面反射到水中的光是完全偏振的,则光由水射向玻璃的入射角应为 C",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习六.pdf 第5题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-006",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 2,
+    "title": "第 6 题",
+    "content": "应用布儒斯特定律可以测介质的折射率。今测得此介质的起偏振角 $i _ { 0 } { = } 5 6 ^ { 0 }$ ,这种物质的折射率为 。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习六.pdf 第6题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-007",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 2,
+    "title": "第 7 题",
+    "content": "光强为 $I _ { 0 }$ 的自然光垂直通过两个偏振片后,出射光强$I { = } I _ { 0 } / 8$ ,则两个偏振片的偏振化方向之间的夹角为 。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习六.pdf 第7题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-008",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 2,
+    "title": "第 8 题",
+    "content": "如果从一池静水(n=1.33)的表面反射出来的太阳光是线偏振的,那么太阳的仰角(见图)大致等于 \\_。在这反射光中的 $\\vec { E }$ 矢量的方向应 。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "填空题"
+    ],
+    "source": "波动光学练习六.pdf 第8题",
+    "image": "/physics/training/p1b-m2-06-training/16c5e1bea935f50416cdde744ef61a2dd20f552ed59b83717da0378c66d220b9.jpg"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-009",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 3,
+    "title": "第 9 题",
+    "content": "一束自然光自空气入射到水(折射率为 1.33)表面上,若反射光是线偏振光,问：此入射光的入射角为多大？(2)折射角为多大？",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习六.pdf 第9题"
+  },
+  {
+    "id": "q-physics-b-1-p1b-m2-06-training-010",
+    "courseId": "physics-b-1",
+    "moduleId": "p1b-m2",
+    "itemId": "p1b-m2-06-training",
+    "questionType": 3,
+    "title": "第 10 题",
+    "content": "有三个偏振片叠在一起,已知第一个与第三个的偏振化方向相互垂直.一束光强为 $I _ { 0 }$ 的自然光垂直入射在偏振片上,求第二个偏振片与第一个偏振片的偏振化方向之间的夹角为多大时,该入射光连续通过三个偏振片之后的光强为最大。",
+    "answer": "",
+    "solution": "",
+    "difficulty": 1,
+    "tags": [
+      "计算题"
+    ],
+    "source": "波动光学练习六.pdf 第10题"
   },
   {
     "id": "q-physics-b-1-p1b-m2-quiz-001",

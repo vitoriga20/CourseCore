@@ -377,7 +377,7 @@ export function renderMain() {
       {
         const course = COURSES.find(c => c.modules.some(m => m.items.some(i => i.id === state.currentPracticeItem)));
         const item = course?.modules.flatMap(m => m.items).find(i => i.id === state.currentPracticeItem);
-        if (item?.type === 'quiz') {
+        if (item?.type === 'quiz' || item?.type === 'training') {
           initQuizSession(state.currentPracticeItem);
           activeQuizItemId = state.currentPracticeItem;
         }

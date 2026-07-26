@@ -206,12 +206,19 @@ export const COURSES = [
       title: "力学",
       items: [
         { id: "p1b-m1-01", type: "theory", title: "质点运动学基础" },
+        { id: "p1b-m1-01-training", type: "training", title: "质点运动学基础 训练" },
         { id: "p1b-m1-02", type: "theory", title: "质点运动学与相对运动" },
+        { id: "p1b-m1-02-training", type: "training", title: "质点运动学与相对运动 训练" },
         { id: "p1b-m1-03", type: "theory", title: "牛顿运动定律与非惯性系" },
+        { id: "p1b-m1-03-training", type: "training", title: "牛顿运动定律与非惯性系 训练" },
         { id: "p1b-m1-04", type: "theory", title: "动量与动量守恒定律" },
+        { id: "p1b-m1-04-training", type: "training", title: "动量与动量守恒定律 训练" },
         { id: "p1b-m1-05", type: "theory", title: "功和能与机械能守恒定律" },
+        { id: "p1b-m1-05-training", type: "training", title: "功和能与机械能守恒定律 训练" },
         { id: "p1b-m1-06", type: "theory", title: "角动量与角动量守恒定律" },
+        { id: "p1b-m1-06-training", type: "training", title: "角动量与角动量守恒定律 训练" },
         { id: "p1b-m1-07", type: "theory", title: "刚体的定轴转动" },
+        { id: "p1b-m1-07-training", type: "training", title: "刚体的定轴转动 训练" },
         { id: "p1b-m1-quiz", type: "quiz", title: "力学期末综合测验" }
       ]
     },
@@ -220,11 +227,17 @@ export const COURSES = [
       title: "波动光学",
       items: [
         { id: "p1b-m2-01", type: "theory", title: "光的干涉基础" },
+        { id: "p1b-m2-01-training", type: "training", title: "光的干涉基础 训练" },
         { id: "p1b-m2-02", type: "theory", title: "光程差与薄膜干涉" },
+        { id: "p1b-m2-02-training", type: "training", title: "光程差与薄膜干涉 训练" },
         { id: "p1b-m2-03", type: "theory", title: "薄膜干涉与迈克耳逊干涉仪" },
+        { id: "p1b-m2-03-training", type: "training", title: "薄膜干涉与迈克耳逊干涉仪 训练" },
         { id: "p1b-m2-04", type: "theory", title: "光的衍射与单缝衍射" },
+        { id: "p1b-m2-04-training", type: "training", title: "光的衍射与单缝衍射 训练" },
         { id: "p1b-m2-05", type: "theory", title: "光栅衍射" },
+        { id: "p1b-m2-05-training", type: "training", title: "光栅衍射 训练" },
         { id: "p1b-m2-06", type: "theory", title: "光学仪器分辨率与X射线衍射" },
+        { id: "p1b-m2-06-training", type: "training", title: "光学仪器分辨率与X射线衍射 训练" },
         { id: "p1b-m2-07", type: "theory", title: "光的偏振" },
         { id: "p1b-m2-08", type: "theory", title: "反射折射偏振与双折射" },
         { id: "p1b-m2-quiz", type: "quiz", title: "波动光学期末综合测验" }
