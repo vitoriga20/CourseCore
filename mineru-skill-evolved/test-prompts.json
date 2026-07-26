@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "prompt": "我有 13 份大学物理《力学练习》《波动光学练习》PDF，想提取成训练题 Markdown。要求只保留题干、答案留空、自动区分选择题/填空题/计算题、题图复制到 public/physics/training/<item>/。请给出完整流程和关键代码。",
+    "expected": "给出基于 mineru-open-sdk 的批量抽取流程、content_list.json 解析、题型判定与选项提取正则、题图复制、符号后处理等完整方案。"
+  },
+  {
+    "id": 2,
+    "prompt": "用 MinerU 把 PDF 转成 Markdown 后，发现物理公式里的希腊字母（如 λ、π、θ）经常漏识别或变成 PUA 乱码，选项也偶尔丢失。应该怎么处理后处理？",
+    "expected": "提供 PUA 字符映射表、启发式希腊字母修复、选项提取正则、首选项推断等具体后处理代码。"
+  },
+  {
+    "id": 3,
+    "prompt": "本地跑 MinerU CLI 时提示 Connection to huggingface.co timed out，模型下载失败。我不想折腾本地环境，有没有更稳定的调用方式？",
+    "expected": "推荐使用 mineru-open-sdk HTTP API，给出安装、token 设置、extract_batch 调用示例和批量轮询说明。"
+  }
+]

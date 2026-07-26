@@ -1,0 +1,3 @@
+timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
+2026-07-26T20:50	baseline	mineru	-	41.6	baseline	-	初始基线评估：工作流、失败模式、检查点、反例清单均缺失；运行时路径含 CLAUDE_PLUGIN_ROOT	dry_run
+2026-07-26T21:00	r1	mineru	41.6	77.6	keep	dim2/dim3/dim4/dim9	新增 Workflow、Failure Modes 表、🔴 CHECKPOINTS、Anti-Patterns；将 CLAUDE_PLUGIN_ROOT 改为 SKILL_ROOT	dry_run

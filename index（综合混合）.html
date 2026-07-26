@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,104 +7,116 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --bg-color: #111111;
-            --text-color: #f2f2f2;
-            --border-color: #2a2a2a;
-            --accent-color: #ffffff;
-            --muted-color: #888888;
-            --dot-color: rgba(255,255,255,0.05);
-            --grid-color: rgba(255,255,255,0.04);
-            --card-bg: #1a1a1a;
-            --correct-bg: #143316;
-            --correct-border: #4caf50;
-            --hover-text-color: var(--correct-border);
-            --wrong-bg: #3a1515;
-            --wrong-border: #ef5350;
+            --bg-color: #f3f6f4;
+            --text-color: #2d4e3e;
+            --border-color: rgba(45, 78, 62, 0.18);
+            --accent-color: #2d4e3e;
+            --muted-color: rgba(45, 78, 62, 0.58);
+            --text-on-accent-color: #f3f6f4;
+            --card-bg: rgba(255, 255, 255, 0.76);
+            --card-shadow: 0 20px 60px rgba(45, 78, 62, 0.08), 0 8px 24px rgba(45, 78, 62, 0.04);
+            --correct-bg: rgba(45, 78, 62, 0.10);
+            --correct-border: #2d4e3e;
+            --hover-text-color: #3d6b56;
+            --wrong-bg: rgba(139, 58, 58, 0.08);
+            --wrong-border: #8b3a3a;
             --question-font: var(--font-serif);
-            --font-sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
             --font-serif: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", serif;
-            --font-mono: "JetBrains Mono", "SFMono-Regular", "SF Mono", Consolas, monospace;
+            --font-mono: "SF Mono", "JetBrains Mono", SFMono-Regular, Consolas, monospace;
         }
         * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             margin: 0;
             font-family: var(--font-sans);
-            background-color: var(--bg-color);
+            background: transparent;
             color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        body[data-bg="dot"] {
-            background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
-            background-size: 24px 24px;
+        body[data-bg="plain"] {
+            background: #f3f6f4;
         }
-        body[data-bg="grid"] {
-            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
-                              linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 32px 32px;
+        body[data-bg="plain"] #bg-canvas { display: none; }
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
         }
-        body[data-bg="line"] {
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 24px, var(--grid-color) 24px, var(--grid-color) 25px);
-        }
-        body[data-bg="plain"] { background-image: none; }
         .font-serif { font-family: var(--font-serif); }
         .font-mono { font-family: var(--font-mono); }
         .geo-border { border: 1px solid var(--border-color); }
         .geo-card {
-            background-color: var(--card-bg);
+            background: var(--card-bg);
+            background-clip: padding-box;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 0 rgba(255,255,255,0.03);
-            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.2s;
         }
         .geo-btn {
             border: 1px solid var(--border-color);
-            background: transparent;
+            background: rgba(255, 255, 255, 0.6);
             color: var(--text-color);
             font-family: var(--font-sans);
-            transition: all 0.15s;
+            border-radius: 9999px;
+            transition: all 0.2s ease-out;
         }
         .geo-btn:hover:not(:disabled) {
             background: var(--accent-color);
-            color: var(--hover-text-color);
+            color: var(--text-on-accent-color);
             border-color: var(--accent-color);
+            box-shadow: 0 4px 14px rgba(45, 78, 62, 0.14);
+            transform: translateY(-1px);
         }
         .geo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .geo-primary {
             background: var(--accent-color);
-            color: var(--bg-color);
+            color: var(--text-on-accent-color);
             border: 1px solid var(--accent-color);
+            border-radius: 9999px;
         }
         .geo-primary:hover:not(:disabled) {
-            background: transparent;
-            color: var(--hover-text-color);
+            background: #3d6b56;
+            border-color: #3d6b56;
+            color: #f3f6f4;
+            box-shadow: 0 6px 20px rgba(45, 78, 62, 0.18);
+            transform: translateY(-1px);
         }
         .control-bar {
             position: sticky;
             top: 0;
             z-index: 40;
-            background-color: var(--bg-color);
+            background: rgba(255, 255, 255, 0.78);
             border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
         }
         .theme-chip {
             display: inline-flex;
             align-items: center;
             gap: 0.375rem;
-            padding: 0.375rem 0.75rem;
+            padding: 0.5rem 0.875rem;
             border: 1px solid var(--border-color);
-            background: transparent;
+            background: rgba(255, 255, 255, 0.6);
             color: var(--text-color);
             font-size: 0.8rem;
+            border-radius: 9999px;
             cursor: pointer;
             user-select: none;
-            transition: all 0.15s;
+            transition: all 0.2s ease-out;
         }
         .theme-chip:hover {
             background: var(--accent-color);
-            color: var(--hover-text-color);
+            color: var(--text-on-accent-color);
             border-color: var(--accent-color);
         }
-        .progress-bar { height: 4px; background: var(--border-color); }
-        .progress-bar > div { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.3s; }
+        .progress-bar { height: 3px; background: var(--border-color); }
+        .progress-bar > div { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.3s ease-out; }
         .nav-btn {
             aspect-ratio: 1;
             display: inline-flex;
@@ -113,60 +125,88 @@
             font-family: var(--font-mono);
             font-size: 0.8rem;
             border: 1px solid var(--border-color);
-            background: transparent;
+            background: rgba(255, 255, 255, 0.5);
             color: var(--text-color);
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s ease-out;
         }
-        .nav-btn:hover:not(.current):not(.correct):not(.wrong):not(:disabled) { background: rgba(128,128,128,0.12); color: var(--hover-text-color); }
-        .nav-btn.current { background: var(--accent-color); color: var(--bg-color); border-color: var(--accent-color); }
+        .nav-btn:hover:not(.current):not(.correct):not(.wrong):not(:disabled) {
+            background: rgba(45, 78, 62, 0.08);
+            color: var(--hover-text-color);
+            transform: scale(1.05);
+        }
+        .nav-btn.current { background: var(--accent-color); color: #ffffff; border-color: var(--accent-color); }
         .nav-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-border); }
         .nav-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-border); }
         .option-btn {
             text-align: left;
-            padding: 0.875rem 1rem;
-            margin-bottom: 0.625rem;
+            padding: 1rem 1.125rem;
+            margin-bottom: 0.75rem;
             border: 1px solid var(--border-color);
-            background: transparent;
+            background: rgba(255, 255, 255, 0.5);
             color: var(--text-color);
             display: block;
             width: 100%;
             font-family: var(--question-font);
             font-size: 1rem;
-            line-height: 1.6;
-            transition: all 0.15s;
+            line-height: 1.7;
+            border-radius: 16px;
+            transition: all 0.2s ease-out;
             cursor: pointer;
         }
-        .option-btn:hover:not(:disabled) { background: rgba(128,128,128,0.08); color: var(--hover-text-color); }
+        .option-btn:hover:not(:disabled) {
+            background: rgba(45, 78, 62, 0.05);
+            color: var(--hover-text-color);
+            border-color: rgba(45, 78, 62, 0.28);
+            transform: translateY(-1px);
+        }
         .option-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); }
         .option-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); }
+        .option-btn.correct, .option-btn.wrong { color: var(--text-color); }
         .question-body {
             font-family: var(--question-font);
             font-size: 1.125rem;
-            line-height: 1.8;
+            line-height: 1.85;
         }
         .question-figure {
-            margin: 1rem 0;
-            padding: 0.75rem;
+            margin: 1.25rem 0;
+            padding: 1rem;
             border: 1px solid var(--border-color);
-            background: rgba(128,128,128,0.03);
+            background: rgba(45, 78, 62, 0.04);
+            border-radius: 16px;
         }
-        .question-figure img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+        .question-figure img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 8px; }
         .feedback {
             border-left: 3px solid var(--border-color);
-            padding-left: 0.875rem;
-            margin-top: 0.875rem;
+            padding-left: 1rem;
+            margin-top: 1rem;
             font-family: var(--question-font);
-            line-height: 1.7;
+            line-height: 1.75;
+            color: var(--text-color);
         }
         .feedback.correct { border-color: var(--correct-border); }
         .feedback.wrong { border-color: var(--wrong-border); }
         .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: var(--bg-color); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
         input, textarea {
             font-family: var(--font-mono);
             font-size: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--text-color);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(45, 78, 62, 0.45);
+            box-shadow: 0 0 0 3px rgba(45, 78, 62, 0.08);
+        }
+        @media (max-width: 640px) {
+            .geo-card { border-radius: 20px; }
+            .nav-btn { border-radius: 10px; }
         }
     </style>
     <script>
@@ -176,17 +216,289 @@
     };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
-<body data-bg="dot">
+<body data-bg="geo">
+    <div id="bg-canvas"></div>
+    <script>
+        (function() {
+            const params = {
+                seed: 12345,
+                sphereRadius: 1200,
+                gridDensity: 6,
+                noiseAmp: 12,
+                rotationSpeed: 0.00015,
+                viewOffsetX: Math.PI / 2,
+                starCount: 28,
+                equatorStarCount: 6,
+                lineWeight: 0.8,
+                particleCount: 0,
+                trailLength: 10
+            };
+            let particles = [];
+            let stars = [];
+            let spherePoints = [];
+            let time = 0;
+            let focalLength = 1500;
+            let container;
+            let canvas;
+            let isVisible = true;
+            let primaryColor, secondaryColor, bgColor;
+
+            function setup() {
+                container = document.getElementById('bg-canvas');
+                if (!container) return;
+                canvas = createCanvas(container.clientWidth, container.clientHeight);
+                canvas.parent('bg-canvas');
+                pixelDensity(1);
+                frameRate(15);
+                updateColors();
+                initializeSystem();
+                window.addEventListener('resize', onResize);
+            }
+
+            function onResize() {
+                if (!container) return;
+                resizeCanvas(container.clientWidth, container.clientHeight);
+            }
+
+            function updateColors() {
+                const style = getComputedStyle(document.body);
+                primaryColor = style.getPropertyValue('--text-color').trim() || '#2d4e3e';
+                secondaryColor = style.getPropertyValue('--muted-color').trim() || 'rgba(45,78,62,0.58)';
+                bgColor = style.getPropertyValue('--bg-color').trim() || '#f3f6f4';
+            }
+
+            function initializeSystem() {
+                randomSeed(params.seed);
+                noiseSeed(params.seed);
+                time = 0;
+                precomputeSpherePoints();
+                stars = [];
+                let eqCount = params.equatorStarCount || 0;
+                for (let i = 0; i < eqCount; i++) {
+                    let theta = HALF_PI + map(i, 0, eqCount - 1, -1.2, 1.2) + random(-0.12, 0.12);
+                    let phi = HALF_PI + random(-0.25, 0.25);
+                    stars.push({
+                        pos: perturbedPoint(theta, phi, params.sphereRadius),
+                        size: random(35, 48),
+                        phase: random(TWO_PI)
+                    });
+                }
+                for (let i = 0; i < params.starCount; i++) {
+                    let theta = random(TWO_PI);
+                    let phi = random(PI);
+                    stars.push({
+                        pos: perturbedPoint(theta, phi, params.sphereRadius),
+                        size: random(12, 18),
+                        phase: random(TWO_PI)
+                    });
+                }
+                particles = [];
+                for (let i = 0; i < params.particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function precomputeSpherePoints() {
+                spherePoints = [];
+                let latCount = params.gridDensity;
+                let lonCount = params.gridDensity * 2;
+                for (let i = 0; i <= latCount; i++) {
+                    spherePoints[i] = [];
+                    let phi = map(i, 0, latCount, 0.08, PI - 0.08);
+                    for (let j = 0; j <= lonCount; j++) {
+                        let theta = map(j, 0, lonCount, 0, TWO_PI);
+                        spherePoints[i][j] = perturbedPoint(theta, phi, params.sphereRadius);
+                    }
+                }
+            }
+
+            function draw() {
+                if (!isVisible) return;
+                background(bgColor);
+                time += params.rotationSpeed;
+                let rotX = time * 0.7 + params.viewOffsetX;
+                let rotY = time * 0.5;
+                let rotZ = time * 0.3;
+                drawSphereGrid(rotX, rotY, rotZ);
+                drawStars(rotX, rotY, rotZ);
+                for (let p of particles) {
+                    p.update();
+                    p.draw(rotX, rotY, rotZ);
+                }
+            }
+
+            function sphericalToCartesian(r, theta, phi) {
+                return {
+                    x: r * sin(phi) * cos(theta),
+                    y: r * sin(phi) * sin(theta),
+                    z: r * cos(phi)
+                };
+            }
+
+            function rotate3D(x, y, z, rx, ry, rz) {
+                let y1 = y * cos(rx) - z * sin(rx);
+                let z1 = y * sin(rx) + z * cos(rx);
+                let x2 = x * cos(ry) + z1 * sin(ry);
+                let z2 = -x * sin(ry) + z1 * cos(ry);
+                let x3 = x2 * cos(rz) - y1 * sin(rz);
+                let y3 = x2 * sin(rz) + y1 * cos(rz);
+                return { x: x3, y: y3, z: z2 };
+            }
+
+            function project(x, y, z) {
+                let scale = focalLength / (focalLength + z);
+                return {
+                    x: x * scale + width / 2,
+                    y: y * scale + height / 2,
+                    scale: scale,
+                    visible: z > -focalLength + 50
+                };
+            }
+
+            function perturbedPoint(theta, phi, r) {
+                let base = sphericalToCartesian(r, theta, phi);
+                let nx = base.x / r, ny = base.y / r, nz = base.z / r;
+                let amp = params.noiseAmp;
+                let n = noise(base.x * 0.004, base.y * 0.004, base.z * 0.004);
+                let n2 = noise(base.x * 0.012 + 1000, base.y * 0.012 + 1000, base.z * 0.012 + 1000);
+                let displacement = (n - 0.5) * amp + (n2 - 0.5) * amp * 0.4;
+                return {
+                    x: base.x + nx * displacement,
+                    y: base.y + ny * displacement,
+                    z: base.z + nz * displacement
+                };
+            }
+
+            function drawSphereGrid(rotX, rotY, rotZ) {
+                let latCount = params.gridDensity;
+                let lonCount = params.gridDensity * 2;
+                let c = color(primaryColor);
+                c.setAlpha(120);
+                stroke(c);
+                strokeWeight(params.lineWeight);
+                noFill();
+                let projected = [];
+                for (let i = 0; i <= latCount; i++) {
+                    projected[i] = [];
+                    for (let j = 0; j <= lonCount; j++) {
+                        let p = spherePoints[i][j];
+                        let rp = rotate3D(p.x, p.y, p.z, rotX, rotY, rotZ);
+                        projected[i][j] = project(rp.x, rp.y, rp.z);
+                    }
+                }
+                for (let i = 1; i < latCount; i++) {
+                    beginShape();
+                    for (let j = 0; j <= lonCount; j++) {
+                        let pt = projected[i][j];
+                        if (pt.visible) vertex(pt.x, pt.y);
+                    }
+                    endShape();
+                }
+                for (let j = 0; j <= lonCount; j++) {
+                    beginShape();
+                    for (let i = 0; i <= latCount; i++) {
+                        let pt = projected[i][j];
+                        if (pt.visible) vertex(pt.x, pt.y);
+                    }
+                    endShape();
+                }
+            }
+
+            function drawStars(rotX, rotY, rotZ) {
+                let c = color(primaryColor);
+                for (let s of stars) {
+                    let rp = rotate3D(s.pos.x, s.pos.y, s.pos.z, rotX, rotY, rotZ);
+                    let proj = project(rp.x, rp.y, rp.z);
+                    if (!proj.visible) continue;
+                    let pulse = 0.6 + 0.4 * sin(time * 2 + s.phase);
+                    let alpha = 230 * pulse + 20;
+                    let size = s.size * proj.scale;
+                    let x = proj.x, y = proj.y;
+                    noStroke();
+                    // outer glow
+                    c.setAlpha(alpha * 0.15);
+                    fill(c);
+                    ellipse(x, y, size * 4.0, size * 4.0);
+                    // middle glow
+                    c.setAlpha(alpha * 0.4);
+                    fill(c);
+                    ellipse(x, y, size * 2.2, size * 2.2);
+                    // main dot
+                    c.setAlpha(alpha * 0.8);
+                    fill(c);
+                    ellipse(x, y, size, size);
+                    // bright core
+                    c.setAlpha(alpha);
+                    fill(c);
+                    ellipse(x, y, size * 0.45, size * 0.45);
+                    // cross rays
+                    c.setAlpha(alpha * 0.4);
+                    stroke(c);
+                    strokeWeight(params.lineWeight * 0.8);
+                    line(x - size * 1.2, y, x + size * 1.2, y);
+                    line(x, y - size * 1.2, x, y + size * 1.2);
+                    noStroke();
+                }
+            }
+
+            class Particle {
+                constructor() {
+                    this.theta = random(TWO_PI);
+                    this.phi = random(0.2, PI - 0.2);
+                    this.speedTheta = random(-0.0008, 0.0008);
+                    this.speedPhi = random(-0.0003, 0.0003);
+                    this.trail = [];
+                    this.r = params.sphereRadius * random(0.97, 1.03);
+                }
+                update() {
+                    this.theta += this.speedTheta;
+                    this.phi += this.speedPhi;
+                    this.phi = constrain(this.phi, 0.15, PI - 0.15);
+                    let p = perturbedPoint(this.theta, this.phi, this.r);
+                    this.trail.push({ x: p.x, y: p.y, z: p.z });
+                    if (this.trail.length > params.trailLength) this.trail.shift();
+                }
+                draw(rotX, rotY, rotZ) {
+                    if (this.trail.length < 2) return;
+                    let c = color(secondaryColor);
+                    for (let i = 0; i < this.trail.length - 1; i++) {
+                        let rp1 = rotate3D(this.trail[i].x, this.trail[i].y, this.trail[i].z, rotX, rotY, rotZ);
+                        let proj1 = project(rp1.x, rp1.y, rp1.z);
+                        if (!proj1.visible) continue;
+                        let rp2 = rotate3D(this.trail[i+1].x, this.trail[i+1].y, this.trail[i+1].z, rotX, rotY, rotZ);
+                        let proj2 = project(rp2.x, rp2.y, rp2.z);
+                        if (!proj2.visible) continue;
+                        let alpha = map(i, 0, this.trail.length, 0, 55);
+                        c.setAlpha(alpha);
+                        stroke(c);
+                        strokeWeight(params.lineWeight * 0.5 * proj1.scale);
+                        line(proj1.x, proj1.y, proj2.x, proj2.y);
+                    }
+                }
+            }
+
+            function updateVisibility() {
+                isVisible = (document.body.getAttribute('data-bg') || 'geo') === 'geo';
+            }
+            const observer = new MutationObserver(updateVisibility);
+            observer.observe(document.body, { attributes: true, attributeFilter: ['data-bg'] });
+            updateVisibility();
+            window.setup = setup;
+            window.draw = draw;
+        })();
+    </script>
+
     <div class="control-bar">
         <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
                 <h1 class="font-serif text-lg md:text-xl font-bold tracking-tight truncate">物理综合混合刷题</h1>
-                <span id="mode-badge" class="font-mono text-xs px-2 py-1 border shrink-0" style="border-color:var(--border-color);color:var(--muted-color)">顺序</span>
+                <span id="mode-badge" class="font-mono text-xs px-2.5 py-1 rounded-full border shrink-0" style="border-color:var(--border-color);color:var(--muted-color);background:rgba(255,255,255,0.6)">顺序</span>
             </div>
             <div class="flex items-center gap-2 shrink-0">
                 <button id="font-btn" class="theme-chip hidden sm:inline-flex">字体：宋体</button>
-                <button id="bg-btn" class="theme-chip hidden sm:inline-flex">背景：网点</button>
+                <button id="bg-btn" class="theme-chip hidden sm:inline-flex">背景：几何</button>
                 <button id="order-btn" class="theme-chip">切换随机</button>
             </div>
         </div>
@@ -200,7 +512,7 @@
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <h2 class="font-serif text-2xl font-bold" id="question-header">综合</h2>
-                            <span id="question-meta" class="font-mono text-xs px-2 py-0.5 border" style="border-color:var(--border-color);color:var(--muted-color)"></span>
+                            <span id="question-meta" class="font-mono text-xs px-2 py-0.5 rounded-md border" style="border-color:var(--border-color);color:var(--muted-color)"></span>
                         </div>
                         <p class="text-sm" style="color:var(--muted-color)">点击右侧题号可跳转，答完后显示解析</p>
                     </div>
@@ -236,15 +548,15 @@
                     <button id="sidebar-finish-btn" class="geo-primary w-full py-2.5 text-sm font-medium">完成练习</button>
                 </div>
                 <div class="mt-4 space-y-2 text-xs" style="color:var(--muted-color)">
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 border" style="border-color:var(--border-color);background:transparent"></span> 未答</div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3" style="background:var(--correct-bg);border:1px solid var(--correct-border)"></span> 正确</div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3" style="background:var(--wrong-bg);border:1px solid var(--wrong-border)"></span> 错误</div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm border" style="border-color:var(--border-color);background:transparent"></span> 未答</div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:var(--correct-bg);border:1px solid var(--correct-border)"></span> 正确</div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:var(--wrong-bg);border:1px solid var(--wrong-border)"></span> 错误</div>
                 </div>
             </div>
         </aside>
     </div>
 
-    <div id="bottom-navbar" class="lg:hidden fixed bottom-0 left-0 right-0 border-t py-2 px-3" style="background-color:var(--card-bg);border-color:var(--border-color)">
+    <div id="bottom-navbar" class="lg:hidden fixed bottom-0 left-0 right-0 border-t py-2 px-3" style="background:rgba(255,255,255,0.82);border-color:var(--border-color);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
         <div id="bottom-navbar-container" class="flex items-center gap-2 overflow-x-auto whitespace-nowrap custom-scrollbar"></div>
     </div>
 
@@ -1109,8 +1421,8 @@
   }
 ];
 
-            const BG_MODES = ['dot', 'grid', 'line', 'plain'];
-            const BG_LABELS = { dot: '网点', grid: '方格', line: '斜线', plain: '纯色' };
+            const BG_MODES = ['geo', 'plain'];
+            const BG_LABELS = { geo: '几何', plain: '素白' };
 
             function init() {
                 state.allQuestions = questionBankData;
@@ -1234,14 +1546,14 @@
                 const input = document.createElement(isLong ? 'textarea' : 'input');
                 input.type = isLong ? null : 'text';
                 input.id = 'text-answer-input';
-                input.className = 'w-full p-3 bg-transparent geo-border outline-none';
+                input.className = 'w-full p-3 outline-none';
                 input.style.color = 'var(--text-color)';
                 input.placeholder = isLong ? '请输入答案/关键结果（多部分用 ; 分隔）' : '请输入答案...';
                 if (isLong) { input.rows = 4; }
 
                 const submitBtn = document.createElement('button');
                 submitBtn.textContent = '提交答案';
-                submitBtn.className = 'geo-primary px-4 py-2 self-start';
+                submitBtn.className = 'geo-primary px-5 py-2 self-start';
                 submitBtn.onclick = () => handleTextSubmit();
 
                 container.appendChild(input);
@@ -1410,12 +1722,12 @@
 
             function loadBg() {
                 const saved = localStorage.getItem('grind-bg');
-                const bg = saved || 'dot';
+                const bg = BG_MODES.includes(saved) ? saved : 'geo';
                 setBg(bg);
             }
 
             function toggleBg() {
-                const current = document.body.getAttribute('data-bg') || 'dot';
+                const current = document.body.getAttribute('data-bg') || 'geo';
                 const idx = BG_MODES.indexOf(current);
                 const next = BG_MODES[(idx + 1) % BG_MODES.length];
                 setBg(next);

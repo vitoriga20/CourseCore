@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CourseCore — 大学基础课学习平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --muted: #6e6e73;
+      --line: #e5e5e5;
+      --accent: #000000;
+      --card: #f5f5f7;
+      --hover: #f0f0f0;
+      --success: #2d4e3e;
+      --warn: #8b5a00;
+    }
+    [data-theme="dark"] {
+      --bg: #000000;
+      --fg: #f5f5f7;
+      --muted: #a1a1a6;
+      --line: #333333;
+      --accent: #ffffff;
+      --card: #111111;
+      --hover: #1a1a1a;
+      --success: #4caf50;
+      --warn: #ffb800;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      transition: background 0.25s ease, color 0.25s ease;
+      min-height: 100vh;
+    }
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.22;
+    }
+    .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+    .btn-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
+    }
+    .btn-pill:hover { transform: scale(1.02); }
+    .btn-pill:active { transform: scale(0.98); }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+    .btn-ghost:hover { background: var(--hover); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+    }
+    .card-hover:hover { transform: translateY(-2px); }
+    .module-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border-radius: 0.875rem;
+      background: transparent;
+      border: 1px solid transparent;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .module-header:hover { background: var(--hover); border-color: var(--line); }
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border-radius: 0.75rem;
+      color: var(--fg);
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+    .item-row:hover { background: var(--hover); }
+    .status-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid var(--line);
+    }
+    .status-done { background: var(--success); border-color: var(--success); }
+    .status-current { background: var(--warn); border-color: var(--warn); }
+    .status-todo { background: transparent; }
+    .type-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .kind-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+    .progress-bar {
+      height: 0.375rem;
+      border-radius: 9999px;
+      background: var(--line);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: var(--accent);
+      transition: width 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    }
+    .search-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 9999px;
+      padding: 0.6rem 1rem 0.6rem 2.5rem;
+      color: var(--fg);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(128,128,128,0.15); }
+    .search-wrap { position: relative; }
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .sidebar {
+      position: fixed;
+      top: 4rem;
+      left: 0;
+      bottom: 0;
+      width: 18rem;
+      border-right: 1px solid var(--line);
+      background: rgba(var(--bg), 0.92);
+      backdrop-filter: blur(12px);
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 20;
+    }
+    .sidebar.open { transform: translateX(0); }
+    @media (min-width: 1024px) {
+      .sidebar { position: sticky; top: 4rem; transform: translateX(0); }
+      .menu-toggle { display: none; }
+    }
+    .main-content { flex: 1; min-width: 0; }
+    .course-card:hover { transform: translateY(-2px); }
+    .course-card { transition: transform 0.2s ease; }
+    .answer-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: var(--fg);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .answer-input:focus { border-color: var(--accent); }
+    .solution-box {
+      border-left: 2px solid var(--accent);
+      padding-left: 1rem;
+      margin-top: 1rem;
+      color: var(--fg);
+    }
+    .nav-link {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color 0.15s ease;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--fg); }
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--muted);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .tab-btn.active { background: var(--accent); color: var(--bg); }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="app">
+    <header class="sticky top-0 z-30 border-b" style="background: rgba(var(--bg), 0.82); border-color: var(--line); backdrop-filter: blur(14px);">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <button id="menu-toggle" class="menu-toggle p-2 rounded-lg hover:bg-[var(--hover)]" aria-label="切换菜单">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <a href="#" class="flex items-center gap-2" onclick="showLanding(); return false;">
+            <div class="w-8 h-8 rounded-full border flex items-center justify-center" style="border-color: var(--accent);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+            </div>
+            <span class="text-xl font-bold tracking-tight">CourseCore</span>
+          </a>
+        </div>
+        <div class="hidden md:flex items-center gap-6">
+          <nav class="flex items-center gap-5">
+            <a href="#" class="nav-link active" id="nav-learn" onclick="showLanding('learn'); return false;">学习</a>
+            <a href="#" class="nav-link" id="nav-kb" onclick="showKnowledgeBase(); return false;">知识库</a>
+            <a href="#" class="nav-link" id="nav-bank" onclick="showPracticeBank(); return false;">刷题</a>
+          </nav>
+          <div class="search-wrap w-56">
+            <span class="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input id="global-search" class="search-input" type="text" placeholder="查找课程、题型或试卷…">
+          </div>
+          <button id="theme-toggle" class="p-2 rounded-full hover:bg-[var(--hover)]" aria-label="切换主题">
+            <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          </button>
+          <a href="#" class="btn-pill btn-primary" onclick="showLanding('learn'); return false;">开始学习</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 max-w-7xl mx-auto w-full">
+      <aside id="sidebar" class="sidebar p-4">
+        <div class="search-wrap mb-4 lg:hidden">
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input id="sidebar-search" class="search-input" type="text" placeholder="在课程中查找…">
+        </div>
+        <div id="course-list" class="space-y-1"></div>
+      </aside>
+
+      <main id="main" class="main-content px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <!-- 动态内容 -->
+      </main>
+    </div>
+
+    <footer class="border-t mt-auto" style="border-color: var(--line);">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-7 h-7 rounded-full border flex items-center justify-center" style="border-color: var(--accent);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+              </div>
+              <span class="font-bold">CourseCore</span>
+            </div>
+            <p class="text-sm" style="color: var(--muted);">帮助大学生系统掌握基础课，从概念到考题逐步拆解。</p>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-3">课程</h4>
+            <ul class="space-y-2 text-sm" style="color: var(--muted);">
+              <li><a href="#" class="hover:text-[var(--fg)]" onclick="showCourse('calculus-1'); return false;">高等数学</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)]" onclick="showCourse('physics-mechanics'); return false;">大学物理</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)]" onclick="showCourse('linear-algebra'); return false;">线性代数</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)]" onclick="showCourse('probability'); return false;">概率统计</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-3">资源</h4>
+            <ul class="space-y-2 text-sm" style="color: var(--muted);">
+              <li><a href="#" class="hover:text-[var(--fg)]" onclick="showKnowledgeBase(); return false;">知识库</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)]" onclick="showPracticeBank(); return false;">刷题</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)]" onclick="showExamPapers(); return false;">期末试卷</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-3">关于</h4>
+            <ul class="space-y-2 text-sm" style="color: var(--muted);">
+              <li><a href="#" class="hover:text-[var(--fg)]">关于我们</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)]">使用条款</a></li>
+              <li><a href="#" class="hover:text-[var(--fg)]">隐私政策</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-10 pt-6 border-t text-center text-xs" style="border-color: var(--line); color: var(--muted);">
+          (c) 2026 CourseCore. 内容仅供学习交流，课程数据可自由改造。
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const PLATFORM = {
+      name: "CourseCore",
+      tagline: "大学基础课的系统化学习平台"
+    };
+
+    const COURSES = [
+      {
+        id: "calculus-1",
+        title: "高等数学（上）",
+        description: "从数列极限到微分方程，系统掌握一元微积分核心思想与计算方法。",
+        requirements: [
+          "完成全部 6 个模块的理论与练习",
+          "通过 5 次模块测验",
+          "完成 1 个结课认证项目"
+        ],
+        modules: [
+          { id: "c1-m1", title: "极限与连续", items: [
+            { id: "c1-m1-i1", type: "theory", title: "数列极限的 ε-N 定义" },
+            { id: "c1-m1-i2", type: "example", title: "用定义证明 lim 1/n = 0" },
+            { id: "c1-m1-i3", type: "practice", title: "计算基本极限" },
+            { id: "c1-m1-i4", type: "quiz", title: "极限与连续小测" }
+          ]},
+          { id: "c1-m2", title: "导数与微分", items: [
+            { id: "c1-m2-i1", type: "theory", title: "导数的几何与物理意义" },
+            { id: "c1-m2-i2", type: "example", title: "求导法则综合运用" },
+            { id: "c1-m2-i3", type: "practice", title: "隐函数与参数方程求导" },
+            { id: "c1-m2-i4", type: "quiz", title: "导数与微分小测" }
+          ]},
+          { id: "c1-m3", title: "微分中值定理", items: [
+            { id: "c1-m3-i1", type: "theory", title: "Rolle、Lagrange、Cauchy 定理" },
+            { id: "c1-m3-i2", type: "example", title: "证明不等式与等式" },
+            { id: "c1-m3-i3", type: "practice", title: "Taylor 展开练习" },
+            { id: "c1-m3-i4", type: "quiz", title: "中值定理小测" }
+          ]},
+          { id: "c1-m4", title: "不定积分", items: [
+            { id: "c1-m4-i1", type: "theory", title: "原函数与不定积分概念" },
+            { id: "c1-m4-i2", type: "example", title: "换元法与分部积分" },
+            { id: "c1-m4-i3", type: "practice", title: "有理函数积分" },
+            { id: "c1-m4-i4", type: "quiz", title: "不定积分小测" }
+          ]},
+          { id: "c1-m5", title: "定积分", items: [
+            { id: "c1-m5-i1", type: "theory", title: "定积分定义与性质" },
+            { id: "c1-m5-i2", type: "example", title: "变上限积分与 Newton-Leibniz" },
+            { id: "c1-m5-i3", type: "practice", title: "定积分应用：面积与体积" },
+            { id: "c1-m5-i4", type: "quiz", title: "定积分小测" }
+          ]},
+          { id: "c1-m6", title: "微分方程", items: [
+            { id: "c1-m6-i1", type: "theory", title: "一阶微分方程类型" },
+            { id: "c1-m6-i2", type: "example", title: "二阶常系数线性方程" },
+            { id: "c1-m6-i3", type: "project", title: "人口增长模型项目" },
+            { id: "c1-m6-i4", type: "review", title: "高等数学（上）总复习" }
+          ]}
+        ]
+      },
+      {
+        id: "physics-mechanics",
+        title: "大学物理（力学）",
+        description: "从质点运动学到刚体转动，建立经典力学的概念框架与解题体系。",
+        requirements: [
+          "完成全部 5 个模块的理论与实验",
+          "通过 4 次模块测验",
+          "完成 1 个结课认证项目"
+        ],
+        modules: [
+          { id: "pm-m1", title: "质点运动学", items: [
+            { id: "pm-m1-i1", type: "theory", title: "位置、速度、加速度矢量" },
+            { id: "pm-m1-i2", type: "example", title: "曲线运动的自然坐标描述" },
+            { id: "pm-m1-i3", type: "practice", title: "相对运动与伽利略变换" },
+            { id: "pm-m1-i4", type: "quiz", title: "运动学小测" }
+          ]},
+          { id: "pm-m2", title: "牛顿运动定律", items: [
+            { id: "pm-m2-i1", type: "theory", title: "牛顿三定律与常见力" },
+            { id: "pm-m2-i2", type: "example", title: "连接体与约束问题" },
+            { id: "pm-m2-i3", type: "practice", title: "非惯性系与惯性力" },
+            { id: "pm-m2-i4", type: "quiz", title: "牛顿定律小测" }
+          ]},
+          { id: "pm-m3", title: "动量与能量", items: [
+            { id: "pm-m3-i1", type: "theory", title: "动量定理与守恒" },
+            { id: "pm-m3-i2", type: "example", title: "碰撞问题" },
+            { id: "pm-m3-i3", type: "practice", title: "功、能与机械能守恒" },
+            { id: "pm-m3-i4", type: "quiz", title: "动量与能量小测" }
+          ]},
+          { id: "pm-m4", title: "刚体转动", items: [
+            { id: "pm-m4-i1", type: "theory", title: "转动惯量与定轴转动" },
+            { id: "pm-m4-i2", type: "example", title: "角动量守恒应用" },
+            { id: "pm-m4-i3", type: "practice", title: "转动中的能量问题" },
+            { id: "pm-m4-i4", type: "quiz", title: "刚体转动小测" }
+          ]},
+          { id: "pm-m5", title: "万有引力与综合", items: [
+            { id: "pm-m5-i1", type: "theory", title: "万有引力定律" },
+            { id: "pm-m5-i2", type: "example", title: "开普勒定律与轨道" },
+            { id: "pm-m5-i3", type: "project", title: "单摆周期实验项目" },
+            { id: "pm-m5-i4", type: "review", title: "力学总复习" }
+          ]}
+        ]
+      },
+      {
+        id: "linear-algebra",
+        title: "线性代数",
+        description: "从行列式到特征值，理解向量空间、线性变换与矩阵计算。",
+        requirements: [
+          "完成全部 5 个模块的理论与练习",
+          "通过 4 次模块测验",
+          "完成 1 个结课认证项目"
+        ],
+        modules: [
+          { id: "la-m1", title: "行列式", items: [
+            { id: "la-m1-i1", type: "theory", title: "行列式的定义与性质" },
+            { id: "la-m1-i2", type: "example", title: "计算 n 阶行列式" },
+            { id: "la-m1-i3", type: "practice", title: "Cramer 法则" },
+            { id: "la-m1-i4", type: "quiz", title: "行列式小测" }
+          ]},
+          { id: "la-m2", title: "矩阵", items: [
+            { id: "la-m2-i1", type: "theory", title: "矩阵运算与逆矩阵" },
+            { id: "la-m2-i2", type: "example", title: "分块矩阵技巧" },
+            { id: "la-m2-i3", type: "practice", title: "矩阵方程" },
+            { id: "la-m2-i4", type: "quiz", title: "矩阵小测" }
+          ]},
+          { id: "la-m3", title: "向量空间", items: [
+            { id: "la-m3-i1", type: "theory", title: "线性相关与基" },
+            { id: "la-m3-i2", type: "example", title: "求秩与极大无关组" },
+            { id: "la-m3-i3", type: "practice", title: "子空间与维数" },
+            { id: "la-m3-i4", type: "quiz", title: "向量空间小测" }
+          ]},
+          { id: "la-m4", title: "线性方程组", items: [
+            { id: "la-m4-i1", type: "theory", title: "解的结构与判定" },
+            { id: "la-m4-i2", type: "example", title: "齐次与非齐次方程组" },
+            { id: "la-m4-i3", type: "practice", title: "参数方程组讨论" },
+            { id: "la-m4-i4", type: "quiz", title: "线性方程组小测" }
+          ]},
+          { id: "la-m5", title: "特征值与二次型", items: [
+            { id: "la-m5-i1", type: "theory", title: "特征值、特征向量与相似对角化" },
+            { id: "la-m5-i2", type: "example", title: "实对称矩阵的正交对角化" },
+            { id: "la-m5-i3", type: "project", title: "PageRank 简化模型" },
+            { id: "la-m5-i4", type: "review", title: "线性代数总复习" }
+          ]}
+        ]
+      },
+      {
+        id: "probability",
+        title: "概率论与数理统计",
+        description: "从随机事件到统计推断，建立概率思维与数据分析基础。",
+        requirements: [
+          "完成全部 4 个模块的理论与练习",
+          "通过 3 次模块测验",
+          "完成 1 个结课认证项目"
+        ],
+        modules: [
+          { id: "pr-m1", title: "概率论基础", items: [
+            { id: "pr-m1-i1", type: "theory", title: "随机事件与概率公理" },
+            { id: "pr-m1-i2", type: "example", title: "条件概率与 Bayes 公式" },
+            { id: "pr-m1-i3", type: "practice", title: "独立性判断" },
+            { id: "pr-m1-i4", type: "quiz", title: "概率基础小测" }
+          ]},
+          { id: "pr-m2", title: "随机变量", items: [
+            { id: "pr-m2-i1", type: "theory", title: "离散与连续随机变量" },
+            { id: "pr-m2-i2", type: "example", title: "常见分布：二项、泊松、正态" },
+            { id: "pr-m2-i3", type: "practice", title: "分布函数与密度函数" },
+            { id: "pr-m2-i4", type: "quiz", title: "随机变量小测" }
+          ]},
+          { id: "pr-m3", title: "数字特征", items: [
+            { id: "pr-m3-i1", type: "theory", title: "期望、方差与协方差" },
+            { id: "pr-m3-i2", type: "example", title: "大数定律与中心极限定理" },
+            { id: "pr-m3-i3", type: "practice", title: "Chebyshev 不等式" },
+            { id: "pr-m3-i4", type: "quiz", title: "数字特征小测" }
+          ]},
+          { id: "pr-m4", title: "统计推断", items: [
+            { id: "pr-m4-i1", type: "theory", title: "点估计与区间估计" },
+            { id: "pr-m4-i2", type: "example", title: "假设检验基本思想" },
+            { id: "pr-m4-i3", type: "project", title: "身高数据置信区间项目" },
+            { id: "pr-m4-i4", type: "review", title: "概率统计总复习" }
+          ]}
+        ]
+      }
+    ];
+
+    const QUESTIONS = [
+      {
+        id: "q-c1-m1-01",
+        courseId: "calculus-1",
+        moduleId: "c1-m1",
+        itemId: "c1-m1-i3",
+        kind: "fill",
+        title: "计算基本极限",
+        content: "求极限 \( \displaystyle \lim_{n \to \infty} \frac{1}{n} \)。",
+        answer: "0",
+        solution: "当 \( n \) 无限增大时，\( \frac{1}{n} \) 无限接近于 0，因此极限为 0。"
+      },
+      {
+        id: "q-c1-m1-02",
+        courseId: "calculus-1",
+        moduleId: "c1-m1",
+        itemId: "c1-m1-i3",
+        kind: "calc",
+        title: "计算基本极限",
+        content: "求极限 \( \displaystyle \lim_{x \to 0} \frac{\sin x}{x} \)。",
+        answer: "1",
+        solution: "这是重要极限之一，利用夹逼定理或 Taylor 展开可得 \( \lim_{x \to 0} \frac{\sin x}{x} = 1 \)。"
+      },
+      {
+        id: "q-c1-m2-01",
+        courseId: "calculus-1",
+        moduleId: "c1-m2",
+        itemId: "c1-m2-i3",
+        kind: "calc",
+        title: "隐函数求导",
+        content: "设 \( x^2 + y^2 = 1 \)，求 \( \frac{dy}{dx} \)。",
+        answer: "-x/y",
+        solution: "两边对 \( x \) 求导：\( 2x + 2y y' = 0 \)，整理得 \( y' = -\frac{x}{y} \)。"
+      },
+      {
+        id: "q-pm-m1-01",
+        courseId: "physics-mechanics",
+        moduleId: "pm-m1",
+        itemId: "pm-m1-i3",
+        kind: "apply",
+        title: "相对运动",
+        content: "火车以 \( 20\,\text{m/s} \) 匀速前进，雨滴相对地面竖直下落，速度为 \( 10\,\text{m/s} \)。求雨滴相对火车的速度大小。",
+        answer: "22.36",
+        solution: "相对速度 \( \vec v_{\text{雨对车}} = \vec v_{\text{雨对地}} - \vec v_{\text{车对地}} \)。大小为 \( \sqrt{20^2 + 10^2} = \sqrt{500} \approx 22.36\,\text{m/s} \)。"
+      },
+      {
+        id: "q-la-m1-01",
+        courseId: "linear-algebra",
+        moduleId: "la-m1",
+        itemId: "la-m1-i3",
+        kind: "calc",
+        title: "行列式计算",
+        content: "计算 \( \begin{vmatrix} 1 & 2 \\ 3 & 4 \end{vmatrix} \)。",
+        answer: "-2",
+        solution: "二阶行列式 \( = 1 \times 4 - 2 \times 3 = 4 - 6 = -2 \)。"
+      },
+      {
+        id: "q-pr-m1-01",
+        courseId: "probability",
+        moduleId: "pr-m1",
+        itemId: "pr-m1-i3",
+        kind: "choice",
+        title: "独立性判断",
+        content: '掷一枚均匀硬币两次，事件 A="第一次正面"，事件 B="第二次正面"，则 A 与 B：',
+        options: ["互斥", "独立", "对立", "相等"],
+        answer: "1",
+        solution: "两次掷硬币互不影响，\( P(AB) = P(A)P(B) = 1/4 \)，故 A 与 B 独立。"
+      }
+    ];
+
+    const EXAM_PAPERS = [
+      {
+        id: "csust-calc-2025",
+        school: "长沙理工大学",
+        college: "土木工程学院",
+        subject: "高等数学（上）",
+        term: "2025–2026 学年第一学期",
+        duration: 120,
+        sections: [
+          {
+            title: "一、填空题（每空 4 分，共 20 分）",
+            questions: [
+              { id: "eq-001", kind: "fill", content: "\( \displaystyle \lim_{x \to 0} \frac{\sin 2x}{x} = \) ______。", answer: "2", solution: "利用重要极限 \( \lim_{x \to 0} \frac{\sin 2x}{x} = 2 \lim_{x \to 0} \frac{\sin 2x}{2x} = 2 \)。" },
+              { id: "eq-002", kind: "fill", content: "函数 \( f(x) = x^3 - 3x \) 的极小值点为 ______。", answer: "1", solution: "\( f'(x)=3x^2-3=0 \) 得 \( x=\pm 1 \)；\( f''(x)=6x \)，\( f''(1)=6>0 \)，故 \( x=1 \) 为极小值点。" }
+            ]
+          },
+          {
+            title: "二、计算题（每题 10 分，共 30 分）",
+            questions: [
+              { id: "eq-003", kind: "calc", content: "求不定积分 \( \displaystyle \int x \cos x \, dx \)。", answer: "x sinx + cosx + C", solution: "分部积分：\( \int x \cos x\,dx = x\sin x - \int \sin x\,dx = x\sin x + \cos x + C \)。" },
+              { id: "eq-004", kind: "calc", content: "求由曲线 \( y=x^2 \) 与 \( y=x \) 围成的区域面积。", answer: "1/6", solution: "交点 \( x=0,1 \)。面积 \( S = \int_0^1 (x - x^2)\,dx = [\frac{x^2}{2} - \frac{x^3}{3}]_0^1 = \frac{1}{6} \)。" }
+            ]
+          },
+          {
+            title: "三、证明题（10 分）",
+            questions: [
+              { id: "eq-005", kind: "proof", content: "证明：当 \( x>0 \) 时，\( \ln(1+x) > \frac{x}{1+x} \)。", answer: "见解析", solution: "设 \( f(x) = \ln(1+x) - \frac{x}{1+x} \)，则 \( f(0)=0 \)，\( f'(x)=\frac{1}{1+x} - \frac{1}{(1+x)^2} = \frac{x}{(1+x)^2} > 0 \)（\( x>0 \)），故 \( f(x) > 0 \)。" }
+            ]
+          }
+        ]
+      },
+      {
+        id: "csust-physics-2025",
+        school: "长沙理工大学",
+        college: "汽车与机械工程学院",
+        subject: "大学物理（力学）",
+        term: "2025–2026 学年第一学期",
+        duration: 120,
+        sections: [
+          {
+            title: "一、填空题",
+            questions: [
+              { id: "eq-p-001", kind: "fill", content: "一质点沿 \( x \) 轴运动，运动方程为 \( x=2t^2 \)（SI），则 \( t=1\,\text{s} \) 时的速度为 ______。", answer: "4", solution: "\( v = dx/dt = 4t \)，当 \( t=1 \) 时 \( v=4\,\text{m/s} \)。" }
+            ]
+          },
+          {
+            title: "二、计算题",
+            questions: [
+              { id: "eq-p-002", kind: "calc", content: "质量为 \( 2\,\text{kg} \) 的物体在水平面上受 \( F=10\,\text{N} \) 水平拉力，动摩擦因数 \( \mu=0.2 \)，求加速度。", answer: "3", solution: "\( f = \mu mg = 0.2 \times 2 \times 10 = 4\,\text{N} \)；\( a = (F-f)/m = (10-4)/2 = 3\,\text{m/s}^2 \)。" }
+            ]
+          }
+        ]
+      }
+    ];
+
+    const TYPE_LABELS = {
+      theory: "理论",
+      example: "示例",
+      practice: "练习",
+      project: "项目",
+      quiz: "测验",
+      review: "复习"
+    };
+
+    const KIND_LABELS = {
+      choice: "选择",
+      fill: "填空",
+      calc: "计算",
+      proof: "证明",
+      apply: "应用"
+    };
+
+    let state = {
+      view: "landing",
+      landingTab: "learn",
+      currentCourseId: null,
+      expanded: {},
+      progress: {},
+      completedQuestions: {},
+      search: "",
+      theme: localStorage.getItem("coursecore-theme") || "light",
+      bankFilter: { kind: "all", course: "all" }
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem("coursecore-progress");
+        if (raw) state.progress = JSON.parse(raw);
+        const qraw = localStorage.getItem("coursecore-questions");
+        if (qraw) state.completedQuestions = JSON.parse(qraw);
+      } catch (e) {
+        state.progress = {};
+        state.completedQuestions = {};
+      }
+    }
+
+    function saveProgress() {
+      localStorage.setItem("coursecore-progress", JSON.stringify(state.progress));
+      localStorage.setItem("coursecore-questions", JSON.stringify(state.completedQuestions));
+    }
+
+    function setTheme(theme) {
+      state.theme = theme;
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("coursecore-theme", theme);
+      const icon = document.getElementById("theme-icon");
+      if (theme === "dark") {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      } else {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      }
+    }
+
+    function toggleTheme() {
+      setTheme(state.theme === "dark" ? "light" : "dark");
+    }
+
+    function setActiveNav(view) {
+      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+      if (view === 'landing' || view === 'course') document.getElementById('nav-learn').classList.add('active');
+      if (view === 'knowledge') document.getElementById('nav-kb').classList.add('active');
+      if (view === 'bank' || view === 'exam' || view === 'practice') document.getElementById('nav-bank').classList.add('active');
+    }
+
+    function getTotalItems(course) {
+      return course.modules.reduce((sum, m) => sum + m.items.length, 0);
+    }
+
+    function getCompletedCount(course) {
+      return course.modules.reduce((sum, m) => sum + m.items.filter(i => state.progress[i.id]).length, 0);
+    }
+
+    function getStatus(itemId) {
+      return state.progress[itemId] ? "done" : "todo";
+    }
+
+    function toggleItem(itemId) {
+      state.progress[itemId] = !state.progress[itemId];
+      saveProgress();
+      renderSidebar();
+      if (state.currentCourseId) renderCourse(state.currentCourseId);
+    }
+
+    function toggleModule(moduleId) {
+      state.expanded[moduleId] = !state.expanded[moduleId];
+      renderSidebar();
+    }
+
+    function showLanding(tab) {
+      state.view = "landing";
+      state.landingTab = tab || "learn";
+      state.currentCourseId = null;
+      setActiveNav('landing');
+      renderMain();
+      renderSidebar();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showCourse(courseId) {
+      state.view = "course";
+      state.currentCourseId = courseId;
+      const course = COURSES.find(c => c.id === courseId);
+      course.modules.forEach(m => { if (!(m.id in state.expanded)) state.expanded[m.id] = true; });
+      setActiveNav('course');
+      renderSidebar();
+      renderCourse(courseId);
+      window.scrollTo({ top: 0 });
+      if (window.innerWidth < 1024) document.getElementById("sidebar").classList.remove("open");
+    }
+
+    function showKnowledgeBase() {
+      state.view = "knowledge";
+      state.currentCourseId = null;
+      setActiveNav('knowledge');
+      renderMain();
+      renderSidebar();
+      window.scrollTo({ top: 0 });
+      if (window.innerWidth < 1024) document.getElementById("sidebar").classList.remove("open");
+    }
+
+    function showPracticeBank() {
+      state.view = "bank";
+      state.currentCourseId = null;
+      setActiveNav('bank');
+      renderMain();
+      renderSidebar();
+      window.scrollTo({ top: 0 });
+      if (window.innerWidth < 1024) document.getElementById("sidebar").classList.remove("open");
+    }
+
+    function showExamPapers() {
+      state.view = "exam";
+      state.currentCourseId = null;
+      setActiveNav('bank');
+      renderMain();
+      renderSidebar();
+      window.scrollTo({ top: 0 });
+      if (window.innerWidth < 1024) document.getElementById("sidebar").classList.remove("open");
+    }
+
+    function showExamPaper(examId) {
+      state.view = "exam-detail";
+      state.currentExamId = examId;
+      setActiveNav('bank');
+      renderMain();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showPracticeDetail(questionId) {
+      state.view = "practice";
+      state.currentQuestionId = questionId;
+      setActiveNav('bank');
+      renderMain();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showPracticeItem(itemId) {
+      const questions = QUESTIONS.filter(q => q.itemId === itemId);
+      if (questions.length === 0) {
+        alert("该练习暂无题目，后续可替换真实数据。");
+        return;
+      }
+      state.view = "practice-list";
+      state.currentPracticeItem = itemId;
+      setActiveNav('landing');
+      renderMain();
+      window.scrollTo({ top: 0 });
+    }
+
+    function markQuestion(qid, correct) {
+      state.completedQuestions[qid] = { correct, at: Date.now() };
+      saveProgress();
+    }
+
+    function renderSidebar() {
+      const list = document.getElementById("course-list");
+      if (state.view !== 'landing' && state.view !== 'course') {
+        list.innerHTML = `<div class="text-sm px-2 py-3" style="color:var(--muted)">当前不在课程视图，可从顶部导航进入学习/刷题。</div>`;
+        return;
+      }
+      const term = state.search.toLowerCase().trim();
+      list.innerHTML = COURSES.map(course => {
+        const total = getTotalItems(course);
+        const done = getCompletedCount(course);
+        const courseMatch = !term || course.title.toLowerCase().includes(term) || course.description.toLowerCase().includes(term);
+        let hasVisibleItem = false;
+        const modulesHtml = course.modules.map(m => {
+          const expanded = !!state.expanded[m.id];
+          const itemsHtml = m.items.map(i => {
+            const match = !term || i.title.toLowerCase().includes(term) || TYPE_LABELS[i.type].includes(term);
+            if (match) hasVisibleItem = true;
+            if (term && !match) return "";
+            const status = getStatus(i.id);
+            const onclick = i.type === 'practice' ? `showPracticeItem('${i.id}')` : `toggleItem('${i.id}')`;
+            return `<a href="#" class="item-row" onclick="${onclick}; return false;">
+              <span class="status-dot ${status === 'done' ? 'status-done' : 'status-todo'}"></span>
+              <span class="type-tag">${TYPE_LABELS[i.type]}</span>
+              <span class="text-sm truncate" style="color: var(--fg);">${escapeHtml(i.title)}</span>
+            </a>`;
+          }).join("");
+          const moduleMatch = !term || m.title.toLowerCase().includes(term);
+          const showModule = moduleMatch || hasVisibleItem || !term;
+          if (!showModule) return "";
+          return `<div class="mb-1">
+            <button class="module-header" onclick="toggleModule('${m.id}')">
+              <span class="text-sm font-semibold text-left" style="color: var(--fg);">${escapeHtml(m.title)}</span>
+              <svg class="transition-transform duration-200 ${expanded ? 'rotate-180' : ''}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="overflow-hidden transition-all duration-250 ${expanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}">
+              ${itemsHtml}
+            </div>
+          </div>`;
+        }).join("");
+        if (!courseMatch && !hasVisibleItem && term) return "";
+        return `<div class="mb-4">
+          <button class="w-full text-left px-2 py-2 rounded-lg hover:bg-[var(--hover)] transition-colors" onclick="showCourse('${course.id}')">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm" style="color: var(--fg);">${escapeHtml(course.title)}</span>
+              <span class="text-xs" style="color: var(--muted);">${done}/${total}</span>
+            </div>
+            <div class="progress-bar mt-2"><div class="progress-fill" style="width: ${total ? (done/total*100) : 0}%"></div></div>
+          </button>
+          ${modulesHtml}
+        </div>`;
+      }).join("");
+    }
+
+    function renderMain() {
+      if (state.view === "landing") renderLanding();
+      else if (state.view === "course") renderCourse(state.currentCourseId);
+      else if (state.view === "knowledge") renderKnowledgeBase();
+      else if (state.view === "bank") renderPracticeBank();
+      else if (state.view === "practice") renderPracticeDetail(state.currentQuestionId);
+      else if (state.view === "practice-list") renderPracticeList(state.currentPracticeItem);
+      else if (state.view === "exam") renderExamPapers();
+      else if (state.view === "exam-detail") renderExamDetail(state.currentExamId);
+    }
+
+    function renderLanding() {
+      const main = document.getElementById("main");
+      main.innerHTML = `
+        <section class="max-w-4xl mx-auto text-center pt-10 pb-12">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6 border" style="border-color: var(--line); color: var(--muted);">
+            <span class="w-1.5 h-1.5 rounded-full" style="background: var(--accent);"></span>
+            免费学习 · 进度自动保存 · 题型解法全覆盖
+          </div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6" style="color: var(--fg);">
+            ${PLATFORM.name}
+          </h1>
+          <p class="text-lg sm:text-xl mb-8 max-w-2xl mx-auto" style="color: var(--muted);">
+            ${PLATFORM.tagline}
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4">
+            <a href="#" class="btn-pill btn-primary text-base px-8 py-3" onclick="showLanding('learn'); return false;">开始学习</a>
+            <a href="#" class="btn-pill btn-ghost text-base px-8 py-3" onclick="showPracticeBank(); return false;">去刷题</a>
+          </div>
+        </section>
+
+        <section class="max-w-6xl mx-auto pb-16">
+          <div class="flex items-center justify-center gap-2 mb-8">
+            <button class="tab-btn ${state.landingTab === 'learn' ? 'active' : ''}" onclick="showLanding('learn')">学习板块</button>
+            <button class="tab-btn ${state.landingTab === 'kb' ? 'active' : ''}" onclick="showLanding('kb')">知识库板块</button>
+          </div>
+
+          ${state.landingTab === 'learn' ? renderLearnPanel() : renderKBSummaryPanel()}
+        </section>
+      `;
+    }
+
+    function renderLearnPanel() {
+      return `
+        <div>
+          <h2 class="text-2xl font-bold mb-2" style="color: var(--fg);">认证课程</h2>
+          <p class="mb-8" style="color: var(--muted);">每门课程由理论、示例、练习、项目与测验组成，完成即可解锁认证。</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
+            ${COURSES.map(course => {
+              const total = getTotalItems(course);
+              const done = getCompletedCount(course);
+              return `<div class="card course-card cursor-pointer" onclick="showCourse('${course.id}')">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="w-10 h-10 rounded-xl border flex items-center justify-center" style="border-color: var(--line);">
+                    <span class="font-bold text-sm">${course.title.slice(0,1)}</span>
+                  </div>
+                  <span class="text-xs font-semibold px-2 py-1 rounded-full border" style="border-color: var(--line); color: var(--muted);">${done}/${total} 完成</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2" style="color: var(--fg);">${escapeHtml(course.title)}</h3>
+                <p class="text-sm mb-4" style="color: var(--muted);">${escapeHtml(course.description)}</p>
+                <div class="progress-bar"><div class="progress-fill" style="width: ${total ? (done/total*100) : 0}%"></div></div>
+              </div>`;
+            }).join("")}
+          </div>
+
+          <h2 class="text-2xl font-bold mb-6" style="color: var(--fg);">学习路径</h2>
+          <div class="card">
+            <div class="flex flex-col md:flex-row md:items-center gap-4">
+              <div class="flex-1">
+                <h3 class="font-bold mb-1">理工科公共基础课路径</h3>
+                <p class="text-sm" style="color: var(--muted);">高等数学 → 线性代数 → 大学物理 → 概率统计。适合大一到大二的系统学习。</p>
+              </div>
+              <a href="#" class="btn-pill btn-ghost shrink-0" onclick="showCourse('calculus-1'); return false;">开始首门</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderKBSummaryPanel() {
+      const doneCount = Object.keys(state.completedQuestions).length;
+      return `
+        <div class="max-w-4xl mx-auto text-center">
+          <div class="card mb-8">
+            <div class="text-4xl font-extrabold mb-2" style="color: var(--fg);">${doneCount}</div>
+            <div class="text-sm" style="color: var(--muted);">已收录已做过的题型与解法</div>
+          </div>
+          <p class="mb-8" style="color: var(--muted);">知识库自动汇总你在课程练习与刷题中完成过的题目。完成后即可查看标准解法，便于考前复习。</p>
+          <a href="#" class="btn-pill btn-primary text-base px-8 py-3" onclick="showKnowledgeBase(); return false;">进入知识库</a>
+        </div>
+      `;
+    }
+
+    function renderCourse(courseId) {
+      const course = COURSES.find(c => c.id === courseId);
+      if (!course) return;
+      const total = getTotalItems(course);
+      const done = getCompletedCount(course);
+      const main = document.getElementById("main");
+      main.innerHTML = `
+        <div class="max-w-4xl mx-auto">
+          <div class="mb-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-4 border" style="border-color: var(--line); color: var(--muted);">
+              <span class="w-1.5 h-1.5 rounded-full" style="background: var(--accent);"></span>
+              认证课程
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4" style="color: var(--fg);">${escapeHtml(course.title)}</h1>
+            <p class="text-base sm:text-lg" style="color: var(--muted);">${escapeHtml(course.description)}</p>
+          </div>
+
+          <div class="card mb-8">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="font-bold">课程进度</h2>
+              <span class="text-sm font-semibold" style="color: var(--muted);">${done}/${total}</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width: ${total ? (done/total*100) : 0}%"></div></div>
+          </div>
+
+          <div class="card mb-10">
+            <h2 class="text-lg font-bold mb-4">要获得本课程认证：</h2>
+            <ul class="space-y-3">
+              ${course.requirements.map(r => `<li class="flex items-start gap-3 text-sm" style="color: var(--fg);">
+                <span class="mt-0.5 w-4 h-4 rounded-full border flex items-center justify-center shrink-0" style="border-color: var(--line);">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </span>
+                ${escapeHtml(r)}
+              </li>`).join("")}
+            </ul>
+          </div>
+
+          <h2 class="text-2xl font-bold mb-6" style="color: var(--fg);">课程</h2>
+          <div class="space-y-4">
+            ${course.modules.map(m => {
+              const mTotal = m.items.length;
+              const mDone = m.items.filter(i => state.progress[i.id]).length;
+              const expanded = !!state.expanded[m.id];
+              return `<div class="card p-0 overflow-hidden">
+                <button class="module-header rounded-none border-0 px-6 py-5" onclick="toggleModule('${m.id}')">
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl border flex items-center justify-center" style="border-color: var(--line);">
+                      <span class="font-bold text-sm">${m.title.slice(0,1)}</span>
+                    </div>
+                    <div class="text-left">
+                      <div class="font-bold" style="color: var(--fg);">${escapeHtml(m.title)}</div>
+                      <div class="text-xs mt-0.5" style="color: var(--muted);">${mDone}/${mTotal} 完成</div>
+                    </div>
+                  </div>
+                  <svg class="transition-transform duration-200 ${expanded ? 'rotate-180' : ''}" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="overflow-hidden transition-all duration-250 ${expanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}">
+                  <div class="px-2 pb-4">
+                    ${m.items.map(i => {
+                      const status = getStatus(i.id);
+                      const onclick = i.type === 'practice' ? `showPracticeItem('${i.id}')` : `toggleItem('${i.id}')`;
+                      return `<a href="#" class="item-row px-6" onclick="${onclick}; return false;">
+                        <span class="status-dot ${status === 'done' ? 'status-done' : 'status-todo'}"></span>
+                        <span class="type-tag">${TYPE_LABELS[i.type]}</span>
+                        <span class="text-sm" style="color: var(--fg);">${escapeHtml(i.title)}</span>
+                      </a>`;
+                    }).join("")}
+                  </div>
+                </div>
+              </div>`;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderKnowledgeBase() {
+      const term = state.search.toLowerCase().trim();
+      const doneQids = Object.keys(state.completedQuestions);
+      const visibleQuestions = QUESTIONS.filter(q => {
+        const done = state.completedQuestions[q.id];
+        if (!done) return false;
+        if (!term) return true;
+        return q.title.toLowerCase().includes(term) || q.content.toLowerCase().includes(term) || KIND_LABELS[q.kind].includes(term);
+      });
+      const grouped = {};
+      visibleQuestions.forEach(q => {
+        const key = KIND_LABELS[q.kind];
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(q);
+      });
+      const main = document.getElementById("main");
+      main.innerHTML = `
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4" style="color: var(--fg);">知识库</h1>
+          <p class="mb-8" style="color: var(--muted);">收录你已做过的题型与标准解法。完成练习或刷题后，对应解法自动解锁。</p>
+
+          <div class="card mb-8">
+            <div class="search-wrap">
+              <span class="search-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </span>
+              <input id="kb-search" class="search-input" type="text" placeholder="搜索已解锁的题型或解法…" value="${escapeHtml(state.search)}">
+            </div>
+          </div>
+
+          ${Object.keys(grouped).length === 0 ? `
+            <div class="card text-center py-12">
+              <p style="color: var(--muted);">暂无已解锁的题型解法。</p>
+              <a href="#" class="btn-pill btn-primary mt-4" onclick="showPracticeBank(); return false;">先去刷题</a>
+            </div>
+          ` : Object.entries(grouped).map(([kind, qs]) => `
+            <div class="mb-8">
+              <h2 class="text-xl font-bold mb-4" style="color: var(--fg);">${kind}题 <span class="text-sm font-normal" style="color:var(--muted)">(${qs.length})</span></h2>
+              <div class="space-y-3">
+                ${qs.map(q => `
+                  <div class="card card-hover cursor-pointer" onclick="showPracticeDetail('${q.id}')">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="kind-tag">${KIND_LABELS[q.kind]}</span>
+                      <span class="text-xs" style="color: var(--muted);">${courseTitle(q.courseId)} · ${moduleTitle(q.courseId, q.moduleId)}</span>
+                    </div>
+                    <div class="text-sm font-medium" style="color: var(--fg);">${escapeHtml(q.title)}</div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      document.getElementById('kb-search').addEventListener('input', e => {
+        state.search = e.target.value;
+        renderKnowledgeBase();
+      });
+    }
+
+    function renderPracticeBank() {
+      const term = state.search.toLowerCase().trim();
+      const filtered = QUESTIONS.filter(q => {
+        const matchTerm = !term || q.title.toLowerCase().includes(term) || q.content.toLowerCase().includes(term);
+        const matchKind = state.bankFilter.kind === 'all' || q.kind === state.bankFilter.kind;
+        const matchCourse = state.bankFilter.course === 'all' || q.courseId === state.bankFilter.course;
+        return matchTerm && matchKind && matchCourse;
+      });
+      const main = document.getElementById("main");
+      main.innerHTML = `
+        <div class="max-w-5xl mx-auto">
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4" style="color: var(--fg);">刷题</h1>
+          <p class="mb-8" style="color: var(--muted);">覆盖平台所有题型与大学期末试卷，按学科、题型筛选，做完即可查看解法。</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="card cursor-pointer card-hover" onclick="showPracticeBank()">
+              <div class="text-2xl font-extrabold mb-1" style="color: var(--fg);">${QUESTIONS.length}</div>
+              <div class="text-sm" style="color: var(--muted);">平台题型库</div>
+            </div>
+            <div class="card cursor-pointer card-hover" onclick="showExamPapers()">
+              <div class="text-2xl font-extrabold mb-1" style="color: var(--fg);">${EXAM_PAPERS.length}</div>
+              <div class="text-sm" style="color: var(--muted);">期末试卷</div>
+            </div>
+            <div class="card cursor-pointer card-hover" onclick="showKnowledgeBase()">
+              <div class="text-2xl font-extrabold mb-1" style="color: var(--fg);">${Object.keys(state.completedQuestions).length}</div>
+              <div class="text-sm" style="color: var(--muted);">已解锁解法</div>
+            </div>
+          </div>
+
+          <div class="card mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+              <div class="search-wrap flex-1">
+                <span class="search-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </span>
+                <input id="bank-search" class="search-input" type="text" placeholder="搜索题目…" value="${escapeHtml(state.search)}">
+              </div>
+              <select id="bank-kind" class="answer-input md:w-40">
+                <option value="all" ${state.bankFilter.kind === 'all' ? 'selected' : ''}>全部题型</option>
+                ${Object.entries(KIND_LABELS).map(([k, l]) => `<option value="${k}" ${state.bankFilter.kind === k ? 'selected' : ''}>${l}题</option>`).join('')}
+              </select>
+              <select id="bank-course" class="answer-input md:w-44">
+                <option value="all" ${state.bankFilter.course === 'all' ? 'selected' : ''}>全部学科</option>
+                ${COURSES.map(c => `<option value="${c.id}" ${state.bankFilter.course === c.id ? 'selected' : ''}>${escapeHtml(c.title)}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            ${filtered.length === 0 ? `<div class="card text-center py-10" style="color: var(--muted);">暂无符合条件的题目。</div>` : filtered.map(q => `
+              <div class="card card-hover cursor-pointer" onclick="showPracticeDetail('${q.id}')">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="kind-tag">${KIND_LABELS[q.kind]}</span>
+                  <span class="text-xs" style="color: var(--muted);">${courseTitle(q.courseId)} · ${moduleTitle(q.courseId, q.moduleId)}</span>
+                  ${state.completedQuestions[q.id] ? `<span class="text-xs font-semibold" style="color:var(--success)">已完成</span>` : ''}
+                </div>
+                <div class="text-sm" style="color: var(--fg);">${escapeHtml(q.title)}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+      document.getElementById('bank-search').addEventListener('input', e => { state.search = e.target.value; renderPracticeBank(); });
+      document.getElementById('bank-kind').addEventListener('change', e => { state.bankFilter.kind = e.target.value; renderPracticeBank(); });
+      document.getElementById('bank-course').addEventListener('change', e => { state.bankFilter.course = e.target.value; renderPracticeBank(); });
+    }
+
+    function renderPracticeList(itemId) {
+      const questions = QUESTIONS.filter(q => q.itemId === itemId);
+      const course = COURSES.find(c => c.modules.some(m => m.items.some(i => i.id === itemId)));
+      const module = course.modules.find(m => m.items.some(i => i.id === itemId));
+      const item = module.items.find(i => i.id === itemId);
+      const main = document.getElementById("main");
+      main.innerHTML = `
+        <div class="max-w-3xl mx-auto">
+          <button class="text-sm mb-4" style="color: var(--muted);" onclick="showCourse('${course.id}')">← 返回 ${escapeHtml(course.title)}</button>
+          <h1 class="text-2xl sm:text-3xl font-extrabold mb-2" style="color: var(--fg);">${escapeHtml(item.title)}</h1>
+          <p class="mb-8" style="color: var(--muted);">${escapeHtml(module.title)} · 共 ${questions.length} 题</p>
+          <div class="space-y-4">
+            ${questions.map((q, idx) => `
+              <div class="card cursor-pointer card-hover" onclick="showPracticeDetail('${q.id}')">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="kind-tag">${KIND_LABELS[q.kind]}</span>
+                  ${state.completedQuestions[q.id] ? `<span class="text-xs font-semibold" style="color:var(--success)">已完成</span>` : ''}
+                </div>
+                <div class="text-sm font-medium" style="color: var(--fg);">第 ${idx + 1} 题 · ${escapeHtml(q.title)}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPracticeDetail(questionId) {
+      const q = QUESTIONS.find(x => x.id === questionId) || EXAM_PAPERS.flatMap(e => e.sections.flatMap(s => s.questions.map(qx => ({...qx, examId: e.id, examName: `${e.school} ${e.subject} ${e.term}`}))));
+      const question = Array.isArray(q) ? q.find(x => x.id === questionId) : q;
+      if (!question) return;
+      const isCompleted = !!state.completedQuestions[questionId];
+      const main = document.getElementById("main");
+      const optionsHtml = question.options ? `
+        <div class="space-y-2 mt-3">
+          ${question.options.map((opt, idx) => `
+            <label class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer" style="border-color: var(--line);">
+              <input type="radio" name="q-choice" value="${idx}" class="mt-1">
+              <span class="text-sm" style="color: var(--fg);">${escapeHtml(opt)}</span>
+            </label>
+          `).join("")}
+        </div>
+      ` : '';
+      main.innerHTML = `
+        <div class="max-w-3xl mx-auto">
+          <button class="text-sm mb-4" style="color: var(--muted);" onclick="historyBack()">← 返回</button>
+          <div class="card">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="kind-tag">${KIND_LABELS[question.kind] || '期末'}</span>
+              <span class="text-xs" style="color: var(--muted);">${question.examName || `${courseTitle(question.courseId)} · ${moduleTitle(question.courseId, question.moduleId)}`}</span>
+            </div>
+            <h1 class="text-xl font-bold mb-4" style="color: var(--fg);">${escapeHtml(question.title || '期末试题')}</h1>
+            <div class="text-base mb-6" style="color: var(--fg);">${question.content}</div>
+
+            ${optionsHtml}
+
+            ${!question.options ? `
+              <div class="mt-4">
+                <label class="text-sm font-medium mb-2 block" style="color: var(--muted);">你的答案</label>
+                <input id="user-answer" class="answer-input" type="text" placeholder="输入答案…">
+              </div>
+            ` : ''}
+
+            <button class="btn-pill btn-primary mt-6" onclick="checkAnswer('${questionId}')">提交答案</button>
+
+            <div id="solution-box" class="solution-box ${isCompleted ? '' : 'hidden'}">
+              <h3 class="font-bold mb-2">标准解法</h3>
+              <div class="text-sm" style="color: var(--fg);">${question.solution}</div>
+              ${question.answer ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(question.answer))}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExamPapers() {
+      const main = document.getElementById("main");
+      main.innerHTML = `
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4" style="color: var(--fg);">期末试卷</h1>
+          <p class="mb-8" style="color: var(--muted);">收录各大学期末试卷，用于考前模拟与真题演练。</p>
+          <div class="space-y-4">
+            ${EXAM_PAPERS.map(exam => {
+              const qCount = exam.sections.reduce((s, sec) => s + sec.questions.length, 0);
+              return `<div class="card card-hover cursor-pointer" onclick="showExamPaper('${exam.id}')">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <div class="text-xs font-semibold uppercase tracking-wide mb-1" style="color: var(--muted);">${escapeHtml(exam.school)} · ${escapeHtml(exam.college)}</div>
+                    <h3 class="text-lg font-bold" style="color: var(--fg);">${escapeHtml(exam.subject)}</h3>
+                    <p class="text-sm" style="color: var(--muted);">${escapeHtml(exam.term)} · ${qCount} 题 · ${exam.duration} 分钟</p>
+                  </div>
+                  <span class="btn-pill btn-ghost shrink-0">开始模拟</span>
+                </div>
+              </div>`;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExamDetail(examId) {
+      const exam = EXAM_PAPERS.find(e => e.id === examId);
+      if (!exam) return;
+      const main = document.getElementById("main");
+      main.innerHTML = `
+        <div class="max-w-4xl mx-auto">
+          <button class="text-sm mb-4" style="color: var(--muted);" onclick="showExamPapers()">← 返回试卷列表</button>
+          <h1 class="text-2xl sm:text-3xl font-extrabold mb-2" style="color: var(--fg);">${escapeHtml(exam.subject)}</h1>
+          <p class="mb-8" style="color: var(--muted);">${escapeHtml(exam.school)} ${escapeHtml(exam.college)} · ${escapeHtml(exam.term)} · ${exam.duration} 分钟</p>
+          <div class="space-y-8">
+            ${exam.sections.map((sec, sidx) => `
+              <div>
+                <h2 class="text-lg font-bold mb-4" style="color: var(--fg);">${escapeHtml(sec.title)}</h2>
+                <div class="space-y-4">
+                  ${sec.questions.map((q, idx) => `
+                    <div class="card card-hover cursor-pointer" onclick="showExamQuestion('${exam.id}', '${q.id}')">
+                      <div class="flex items-center gap-2 mb-2">
+                        <span class="kind-tag">${KIND_LABELS[q.kind]}</span>
+                        ${state.completedQuestions[q.id] ? `<span class="text-xs font-semibold" style="color:var(--success)">已完成</span>` : ''}
+                      </div>
+                      <div class="text-sm" style="color: var(--fg);">${sidx + 1}.${idx + 1} ${q.content}</div>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function showExamQuestion(examId, qid) {
+      const exam = EXAM_PAPERS.find(e => e.id === examId);
+      const q = exam.sections.flatMap(s => s.questions).find(x => x.id === qid);
+      if (!q) return;
+      state.view = "practice";
+      state.currentQuestionId = qid;
+      state.examContext = examId;
+      setActiveNav('bank');
+      const main = document.getElementById("main");
+      const isCompleted = !!state.completedQuestions[qid];
+      const optionsHtml = q.options ? `
+        <div class="space-y-2 mt-3">
+          ${q.options.map((opt, idx) => `
+            <label class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer" style="border-color: var(--line);">
+              <input type="radio" name="q-choice" value="${idx}" class="mt-1">
+              <span class="text-sm" style="color: var(--fg);">${escapeHtml(opt)}</span>
+            </label>
+          `).join("")}
+        </div>
+      ` : '';
+      main.innerHTML = `
+        <div class="max-w-3xl mx-auto">
+          <button class="text-sm mb-4" style="color: var(--muted);" onclick="showExamPaper('${exam.id}')">← 返回试卷</button>
+          <div class="card">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="kind-tag">${KIND_LABELS[q.kind]}</span>
+              <span class="text-xs" style="color: var(--muted);">${escapeHtml(exam.school)} ${escapeHtml(exam.subject)}</span>
+            </div>
+            <div class="text-base mb-6" style="color: var(--fg);">${q.content}</div>
+            ${optionsHtml}
+            ${!q.options ? `
+              <div class="mt-4">
+                <label class="text-sm font-medium mb-2 block" style="color: var(--muted);">你的答案</label>
+                <input id="user-answer" class="answer-input" type="text" placeholder="输入答案…">
+              </div>
+            ` : ''}
+            <button class="btn-pill btn-primary mt-6" onclick="checkExamAnswer('${exam.id}', '${qid}')">提交答案</button>
+            <div id="solution-box" class="solution-box ${isCompleted ? '' : 'hidden'}">
+              <h3 class="font-bold mb-2">标准解法</h3>
+              <div class="text-sm" style="color: var(--fg);">${q.solution}</div>
+              ${q.answer ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(q.answer))}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function checkAnswer(qid) {
+      const q = QUESTIONS.find(x => x.id === qid);
+      if (!q) return;
+      let userAns = '';
+      if (q.options) {
+        const selected = document.querySelector('input[name="q-choice"]:checked');
+        userAns = selected ? selected.value : '';
+      } else {
+        userAns = document.getElementById('user-answer').value.trim();
+      }
+      if (userAns === '') { alert('请先输入或选择答案'); return; }
+      const correct = String(userAns).toLowerCase().replace(/\s+/g, '') === String(q.answer).toLowerCase().replace(/\s+/g, '');
+      markQuestion(qid, correct);
+      document.getElementById('solution-box').classList.remove('hidden');
+      alert(correct ? '回答正确，已解锁解法。' : '回答错误，已解锁解法供参考。');
+    }
+
+    function checkExamAnswer(examId, qid) {
+      const exam = EXAM_PAPERS.find(e => e.id === examId);
+      const q = exam.sections.flatMap(s => s.questions).find(x => x.id === qid);
+      if (!q) return;
+      let userAns = '';
+      if (q.options) {
+        const selected = document.querySelector('input[name="q-choice"]:checked');
+        userAns = selected ? selected.value : '';
+      } else {
+        userAns = document.getElementById('user-answer').value.trim();
+      }
+      if (userAns === '') { alert('请先输入或选择答案'); return; }
+      const correct = String(userAns).toLowerCase().replace(/\s+/g, '') === String(q.answer).toLowerCase().replace(/\s+/g, '');
+      markQuestion(qid, correct);
+      document.getElementById('solution-box').classList.remove('hidden');
+      alert(correct ? '回答正确，已解锁解法。' : '回答错误，已解锁解法供参考。');
+    }
+
+    function historyBack() {
+      if (state.view === 'practice' && state.examContext) {
+        showExamPaper(state.examContext);
+      } else if (state.view === 'practice') {
+        showPracticeBank();
+      } else {
+        showLanding();
+      }
+    }
+
+    function courseTitle(courseId) {
+      const c = COURSES.find(x => x.id === courseId);
+      return c ? c.title : "";
+    }
+
+    function moduleTitle(courseId, moduleId) {
+      const c = COURSES.find(x => x.id === courseId);
+      if (!c) return "";
+      const m = c.modules.find(x => x.id === moduleId);
+      return m ? m.title : "";
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+    }
+
+    function initBackground() {
+      const canvas = document.getElementById("bg-canvas");
+      const ctx = canvas.getContext("2d");
+      let w, h, horizon, focal, zMove = 0;
+      let raf;
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+        horizon = h * 0.38;
+        focal = Math.min(w, h) * 0.55;
+      }
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        const isDark = state.theme === "dark";
+        ctx.strokeStyle = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)";
+        ctx.lineWidth = 1;
+        const maxZ = Math.max(w, h) * 2.5;
+        const stepZ = Math.max(30, Math.min(w, h) * 0.04);
+        for (let z = 20; z < maxZ; z += stepZ) {
+          const depth = z + zMove;
+          const y = horizon + focal * 120 / depth;
+          if (y > h + 20) continue;
+          ctx.globalAlpha = Math.max(0, 1 - depth / maxZ) * 0.8;
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+        for (let x = -w; x <= w * 2; x += stepZ * 1.6) {
+          ctx.beginPath();
+          for (let z = 20; z < maxZ; z += stepZ * 0.8) {
+            const depth = z + zMove;
+            const y = horizon + focal * 120 / depth;
+            const sx = w / 2 + (x - w / 2) * focal / depth;
+            ctx.lineTo(sx, y);
+          }
+          ctx.globalAlpha = 0.25;
+          ctx.stroke();
+        }
+        zMove += 0.25;
+        if (zMove > stepZ) zMove -= stepZ;
+        raf = requestAnimationFrame(draw);
+      }
+      resize();
+      window.addEventListener("resize", resize);
+      draw();
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+      if (reduce.matches) cancelAnimationFrame(raf);
+      reduce.addEventListener("change", e => {
+        if (e.matches) cancelAnimationFrame(raf); else draw();
+      });
+    }
+
+    function init() {
+      loadProgress();
+      setTheme(state.theme);
+      document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+      document.getElementById("menu-toggle").addEventListener("click", () => {
+        document.getElementById("sidebar").classList.toggle("open");
+      });
+      const globalSearch = document.getElementById("global-search");
+      const sidebarSearch = document.getElementById("sidebar-search");
+      [globalSearch, sidebarSearch].forEach(input => {
+        if (!input) return;
+        input.addEventListener("input", e => {
+          state.search = e.target.value;
+          if (state.view === 'knowledge') renderKnowledgeBase();
+          else if (state.view === 'bank') renderPracticeBank();
+          else renderSidebar();
+        });
+      });
+      renderSidebar();
+      showLanding();
+      initBackground();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
