@@ -47,6 +47,7 @@ import {
   handleQuizSelectOption
 } from './views/quizSession.js';
 import { renderLandingContent } from './views/landing.js';
+import { showPageLoader, hidePageLoader, initImageLoaders } from './components/loading.js';
 
 function renderAppShell() {
   const app = document.getElementById('app');
@@ -351,6 +352,7 @@ function init() {
   setTheme(state.theme);
   renderAppShell();
   initEventDelegation();
+  showPageLoader('CourseCore');
   restoreLocation();
   initBackground(() => state.theme);
 
@@ -358,5 +360,6 @@ function init() {
     restoreLocation();
   });
 }
+
 
 document.addEventListener('DOMContentLoaded', init);

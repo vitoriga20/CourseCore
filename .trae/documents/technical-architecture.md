@@ -6,6 +6,7 @@
 |---|---|
 | 构建工具 | Vite 5 |
 | 样式 | Tailwind CSS 3 + PostCSS |
+| 组件搜索 MCP | shadcn MCP server + React Bits registry（仅搜索，不引入 React 运行时） |
 | 几何背景 | p5.js |
 | 路由 | HTML5 History API（客户端路由） |
 | 预渲染 | 自定义 `scripts/prerender.js` |

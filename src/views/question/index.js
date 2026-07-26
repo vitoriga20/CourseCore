@@ -3,7 +3,7 @@ import { renderChoice } from './choice.js';
 import { renderFill } from './fill.js';
 import { renderCalc } from './calc.js';
 import { renderCode } from './code.js';
-import { escapeHtml } from '../../utils.js';
+import { renderImageWithLoader } from '../../components/loading.js';
 
 const templates = {
   choice: renderChoice,
@@ -15,8 +15,8 @@ const templates = {
 function renderQuestionImage(question) {
   if (!question.image) return '';
   return `
-    <div class="question-figure mb-4">
-      <img src="${escapeHtml(question.image)}" alt="题图" class="rounded-xl max-w-full h-auto">
+    <div class="question-figure mb-4 max-w-full">
+      ${renderImageWithLoader(question.image, '题图')}
     </div>
   `;
 }

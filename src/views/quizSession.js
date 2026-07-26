@@ -7,6 +7,7 @@ import { collectUserAnswer, isEmptyAnswer } from '../utils/answer-collector.js';
 import { markQuestion, syncItemProgress } from '../state.js';
 import { submitTypes } from '../config/question-types.js';
 import { initQuizBackground, destroyQuizBackground } from '../quiz-background.js';
+import { renderSpinner, renderButtonLoader, initImageLoaders } from '../components/loading.js';
 
 const quizStates = new Map();
 
@@ -326,7 +327,10 @@ function renderQuizContent(state) {
 export function renderQuizSession(itemId) {
   return `
     <div class="quiz-session" data-item-id="${itemId}" data-font="serif" data-bg="geo">
-      <div class="quiz-loading">加载测验中…</div>
+      <div class="quiz-loading">
+        ${renderSpinner({ size: 'lg' })}
+        <span>加载测验中…</span>
+      </div>
     </div>
   `;
 }
@@ -343,6 +347,7 @@ export function initQuizSession(itemId) {
 
   container.innerHTML = renderControlBar(state) + renderQuizContent(state);
   typeset(container);
+  initImageLoaders(container);
 }
 
 function typeset(element) {
@@ -360,6 +365,7 @@ function rerender(itemId) {
   updateBodyBg(state.bg);
   container.innerHTML = renderControlBar(state) + renderQuizContent(state);
   typeset(container);
+  initImageLoaders(container);
 }
 
 function getQuestionRoot(itemId, qid) {
@@ -379,6 +385,12 @@ function submitCurrentAnswer(itemId, qid) {
   if (isEmptyAnswer(userAnswer)) {
     alert('请先输入或选择答案');
     return;
+  }
+
+  const submitBtn = document.querySelector(`[data-action="quiz-submit-answer"][data-item-id="${itemId}"][data-qid="${qid}"]`);
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = renderButtonLoader();
   }
 
   state.userAnswers[qid] = userAnswer;

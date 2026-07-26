@@ -318,6 +318,47 @@ coursecore/
 - 部分选择题选项未提取的问题（正则 lookahead 要求选项标记后必须有空格，导致 `(B)中央...` 等格式失败）。
 - 题图未加载的问题（之前未从 MinerU 输出目录复制图片到 `public`，现自动复制）。
 
+### 阶段 8: 接入 React Bits MCP（仅作搜索工具）
+
+**日期**: 2026-07-26
+
+**操作**:
+- 在 `coursecore/` 下创建 `components.json`，注册 `@react-bits` registry：`https://reactbits.dev/r/{name}.json`。
+- 创建 `jsconfig.json`，配置 `@/*` 路径别名指向 `src/`，满足 shadcn CLI 对项目配置文件的检查。
+- 运行 `npx shadcn@latest mcp init --client claude`，成功生成 `.mcp.json` 并安装 `shadcn` 开发依赖。
+- 确认 `.mcp.json` 中 `shadcn` MCP server 命令为 `npx shadcn@latest mcp`。
+
+**关键决策**:
+- 项目当前为原生 JS + Vite，不使用 React/shadcn 组件运行时；接入 MCP 仅用于通过自然语言搜索、浏览 React Bits 组件，找到合适动画后手动改写为原生 JS 实现。
+- 不引入 React、react-dom 等运行时依赖，避免破坏现有构建与路由体系。
+- `jsconfig.json` 仅作为 shadcn CLI 的配置入口，不参与实际构建；Vite 仍按原生 ESM 解析。
+
+**产出文件**:
+- `components.json` — shadcn registry 配置，含 `@react-bits` 注册表
+- `jsconfig.json` — 路径别名配置，满足 shadcn CLI 检查
+- `.mcp.json` — Claude MCP server 配置
+- `package.json` / `package-lock.json` — 新增 `shadcn` 开发依赖
+
+**连通性测试结果**:
+- `npx shadcn@latest --version` → `4.15.0` ✓
+- `npx shadcn@latest info` → 正确识别 Vite + Tailwind v3，注册表 `@shadcn` 与 `@react-bits` 均已配置 ✓
+- 直接调用 shadcn MCP server（JSON-RPC `tools/list`）→ 返回 7 个工具，包括 `search_items_in_registries`、`view_items_in_registries`、`get_item_examples_from_registries` 等 ✓
+- `@shadcn` 搜索 `skeleton`、`progress` → 有现成组件 ✓
+- `@react-bits` 搜索 `loading`/`spinner`/`skeleton`/`fade`/`blur`/`ripple`/`progress` → 无专门的 loading/spinner/skeleton；可用作加载动画的候选如下：
+  - `FadeContent-JS-TW`：内容淡入/滑入（依赖 gsap）
+  - `BlurText-JS-TW`：文字从模糊到清晰（依赖 motion）
+  - `GradualBlur-JS-TW`：渐进式去模糊
+  - `RippleGrid-JS-TW`：持续涟漪网格（依赖 ogl）
+  - `Radar-JS-TW`、`ShapeGrid-JS-TW`、`LineWaves-JS-TW`、`Threads-JS-TW` 等可作为全屏加载背景
+
+**问题与发现**:
+- 问题：直接 `WebFetch` 访问 `https://reactbits.dev/r/{name}.json` 返回 HTML "Not found"；说明 registry JSON 需要 MCP server 内部处理或带正确 UA/路由。
+- 解决：通过 `npx shadcn@latest mcp` 以 JSON-RPC 调用 `list_items_in_registries`/`search_items_in_registries` 可正常拿到组件元数据。
+
+**已知限制**:
+- MCP 可搜索/查看组件，但无法直接把 React 组件安装到当前原生 JS 项目；需人工翻译为 vanilla JS + Tailwind。
+- 如后续迁移到 React + shadcn，可直接用该 MCP 安装组件。
+
 ## 最后更新时间
 
-2026-07-26 20:40
+2026-07-26 21:30

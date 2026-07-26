@@ -19,6 +19,7 @@ import { renderPracticeDetail } from './views/practiceDetail.js';
 import { renderExamPapers } from './views/examPapers.js';
 import { renderExamDetail } from './views/examDetail.js';
 import { initGooeyNav } from './components/gooeyNav.js';
+import { showPageLoader, hidePageLoader, initImageLoaders, renderButtonLoader } from './components/loading.js';
 
 let activeQuizItemId = null;
 
@@ -69,13 +70,21 @@ function applyRoute(route) {
   }
 }
 
-export function restoreLocation() {
-  const route = matchRoute(window.location.pathname);
+const LOADER_DELAY = 120;
+
+function applyRouteWithLoader(route) {
+  showPageLoader();
   if (route) {
     applyRoute(route);
   } else {
     showLanding('learn');
   }
+  window.setTimeout(() => hidePageLoader(), LOADER_DELAY);
+}
+
+export function restoreLocation() {
+  const route = matchRoute(window.location.pathname);
+  applyRouteWithLoader(route);
 }
 
 export function navigateTo(path, { replace = false } = {}) {
@@ -89,7 +98,7 @@ export function navigateTo(path, { replace = false } = {}) {
   } else {
     history.pushState(null, '', path);
   }
-  applyRoute(route);
+  applyRouteWithLoader(route);
 }
 
 export function showLanding(tab) {
@@ -253,6 +262,12 @@ export function handleSubmitItem(itemId) {
     return;
   }
 
+  const submitBtn = document.querySelector(`[data-action="submit-item"][data-item-id="${itemId}"]`);
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = renderButtonLoader();
+  }
+
   state.inlineShowAnswers = {};
 
   let allPassed = true;
@@ -393,6 +408,7 @@ export function renderMain() {
       main.innerHTML = renderLanding();
   }
   typeset(main);
+  initImageLoaders(main);
 }
 
 function refreshQuestionView() {
@@ -416,6 +432,12 @@ export function handleSubmitAnswer(qid) {
   if (isEmptyAnswer(userAnswer)) {
     alert('请先输入或选择答案');
     return;
+  }
+
+  const submitBtn = document.querySelector(`[data-action="submit-answer"][data-qid="${qid}"]`);
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = renderButtonLoader();
   }
 
   state.isSubmitting = true;
