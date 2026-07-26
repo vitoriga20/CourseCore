@@ -2267,6 +2267,13 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 ### 修改
 - 关闭 `coursecore/src/components/loading.js` 中的 `[CC-DEBUG]` 调试日志：移除 `watchImageLoad` 与 `initImageLoaders` 内的 `console.log`，保留轮询兜底与加载状态标记逻辑，避免生产环境控制台噪音。
 
+### 修复
+- 修复题图普遍偏大的问题：根因是 `src/style.css` 中 `.cc-image-loader__img` 使用 `width: 100%`，把图片强制拉伸到 `.cc-image-loader` 块级容器的宽度；原图片样式只有 `max-width: 100%`，按自然尺寸显示。
+- 调整 `src/style.css`：
+  - `.cc-image-loader` 改为 `display: inline-block; max-width: 100%`，让它跟随图片自然尺寸。
+  - `.cc-image-loader__img` 改为 `max-width: 100%; width: auto; height: auto`，不再强制撑满容器。
+  - 给 loader 加 `min-width: 8rem; min-height: 6rem`，保证加载前骨架屏可见。
+
 ## 最后更新时间
 
-2026-07-26 21:10
+2026-07-26 21:20
