@@ -1254,11 +1254,15 @@ body[data-bg="geo"] #bg-canvas {
 /* Image loader with skeleton placeholder */
 .cc-image-loader {
   position: relative;
-  display: block;
+  display: inline-block;
+  max-width: 100%;
+  min-width: 8rem;
+  min-height: 6rem;
   overflow: hidden;
   border-radius: 0.875rem;
   background: var(--card);
   border: 1px solid var(--line);
+  vertical-align: middle;
 }
 
 .cc-image-loader__skeleton {
@@ -1274,7 +1278,8 @@ body[data-bg="geo"] #bg-canvas {
 
 .cc-image-loader__img {
   display: block;
-  width: 100%;
+  max-width: 100%;
+  width: auto;
   height: auto;
   opacity: 0;
   transform: scale(1.02);
