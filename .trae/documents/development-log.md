@@ -2262,6 +2262,25 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 - [x] 文档中的"最后更新时间"已更新。
 - [x] 代码和文档描述一致。
 
+### 阶段 78: 完成 CourseCore 产品定位章节并更新 PRD
+
+**日期**: 2026-07-26
+
+**操作**: 与用户讨论并确定 CourseCore 产品定位，将讨论结果整理为 PRD 的「产品定位」章节，补充到 `.trae/documents/prd.md` 开头。
+
+**关键决策**:
+- 目标用户: 大学生公共课学习者（期末冲刺型本科生、考研公共课复习者、日常学习型本科生）。
+- 核心价值主张: 以「本校真题 + 学霸笔记/答案」为核心差异，替代夸克等通用搜题工具的泛泛答案。
+- 科目范围: 从高等数学 + 大学物理起步，逐步扩展至大学所有公共科目。
+- 品牌调性: 黑白几何 + 蛇元素，传递高级感、秩序感与技术实力；内容按考试题型频率区分重要性，高频考点详尽展开。
+- 商业模式: 每个模块前 2 节免费；早期限量永久会员快速回笼资金并建立种子用户；后期仅保留月度/季度/年度订阅会员。
+- 内容获取: PGC 自建起步建立标杆，UGC 社群补充；版权策略激进但有兜底（用户协议授权 + 投诉下架）。
+
+**产出文件**:
+- `.trae/documents/prd.md` - 新增「1. 产品定位」章节，包含一句话定位、目标用户、核心价值主张、差异化优势、品牌调性、内容策略、商业模式。
+
+**关联问题**: 无
+
 ## 更新记录 - 2026-07-26
 
 ### 修改
@@ -2274,6 +2293,87 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
   - `.cc-image-loader__img` 改为 `max-width: 100%; width: auto; height: auto`，不再强制撑满容器。
   - 给 loader 加 `min-width: 8rem; min-height: 6rem`，保证加载前骨架屏可见。
 
+### 阶段 79: 压缩题目配图以节省服务器存储
+
+**日期**: 2026-07-26
+
+**操作**:
+- 用户担心后续接入 Supabase 等后端时，免费档存储（512MB）可能吃紧，要求压缩现有图片。
+- 统计 `coursecore/public/physics/` 下现有 63 张题目配图，原总大小约 379.50 KB，已属很轻量；仍为未来扩容做预防性压缩。
+- 安装 `sharp` 作为开发依赖，编写 `coursecore/builders/compress-images.js`：
+  - 遍历 `public/physics/**/*.jpg|jpeg|png|webp`。
+  - JPEG 使用 mozjpeg、质量 80、最大宽度 1200px（ fit: inside，不放大）。
+  - WebP 质量 80、最大宽度 1200px。
+  - 无透明 PNG 转 JPEG；有透明 PNG 保留 PNG 并压缩。
+  - 直接覆盖原文件，保持原目录结构与文件名。
+- 在 `package.json` 新增 `compress:images` 脚本，方便后续一键复压。
+- 运行压缩：63 张图从 379.50 KB 降至 292.42 KB，节省 22.9%；运行 `npx vite build && node scripts/prerender.js` 重新生成 `dist/`，dist 中图片总大小从约 379 KB 降至 331 KB。
+
+**关键决策**:
+- 1200px 宽度上限对题目配图足够：当前图片本身尺寸不大，压缩主要减少 JPEG 编码冗余而非大幅缩小分辨率。
+- 质量 80 是视觉无损与体积的平衡点；题目图以公式/示意图为主，不需要高码率照片级质量。
+- 不转换已有 JPG 为 WebP，避免改动引用路径与兼容性风险；仅对 PNG 做有透明保留 / 无透明转 JPG 的优化。
+- 压缩脚本读取文件到 Buffer 再交给 sharp，规避 OneDrive 按需同步文件直接路径打开失败的问题。
+
+**产出文件**:
+- `coursecore/builders/compress-images.js` - 基于 sharp 的批量图片压缩脚本
+- `coursecore/package.json`（更新）- 新增 `compress:images` 脚本与 `sharp` 开发依赖
+- `coursecore/public/physics/**/*.jpg` - 压缩后的题目配图
+
+**验证结果**:
+- 压缩脚本成功处理 63/63 张图片，无报错。
+- `npx vite build && node scripts/prerender.js` 通过，预渲染 479 条静态路由。
+- `dist/physics/` 图片总大小 331.33 KB，较压缩前下降约 13%。
+
+## 更新记录 - 2026-07-26
+
+### 新增
+- `coursecore/builders/compress-images.js`：基于 sharp 的批量图片压缩脚本。
+- `package.json` 新增 `compress:images` 脚本。
+
+### 修改
+- 压缩 `coursecore/public/physics/` 下全部 63 张题目配图：原 379.50 KB → 292.42 KB（节省 22.9%）。
+- 重新构建 `dist/`，产物图片总大小降至 331.33 KB。
+
+### 阶段 80: 系统调试修复训练题全部空白
+
+**日期**: 2026-07-27
+
+**操作**:
+- 用户反馈所有题目（含训练题）打不开，页面仅显示控制栏与底部导航，题目主内容区空白。
+- 按 systematic-debugging 流程排查：
+  - 复现：`/item/p1b-m1-01-training` 渲染后 `.quiz-question-card` 缺失。
+  - 追踪：`createState` 通过 `QUESTIONS.filter(q => q.itemId === itemId)` 取题，当前 `questions.js` 中 `p1b-m1-01-training` 等 training itemId 对应题目数为 0。
+  - 根因：`git status` 显示 `coursecore/curriculum/raw/questions/physics-b-1/` 下大量 training Markdown 源文件及 `public/physics/training/` 配图被标记为 `D`（已删除），且 `src/data/questions.js` 被重新 build，导致训练题数据丢失。
+- 修复：用 `git restore` 恢复被误删的 physics-b-1 training 原始文件与配图，然后执行 `npm run build:data` 重新生成 `src/data/questions.js`。
+- 验证：
+  - 数据层面：`p1b-m1-01-training` 9 题、`p1b-m1-02-training` 10 题、`p1b-m2-01-training` 8 题，training 与 quiz itemId 重新对齐。
+  - 页面层面：Playwright 访问 `http://localhost:5173/item/p1b-m1-01-training`，成功渲染题目卡片、选项与 9 题导航。
+
+**关键决策**:
+- 不直接手动改 `questions.js`（它是自动生成的），而是恢复源文件后重建，保证后续 `build:data` 可持续复现。
+- 仅恢复被删除的 training 相关文件，保留其他正在进行的未提交修改（如 loading 动画、样式调整）。
+
+**产出文件**:
+- 恢复的源文件：`coursecore/curriculum/raw/questions/physics-b-1/p1b-m1-01-training/*` 等 13 个 training 目录下的 Markdown。
+- 恢复的图片：`coursecore/public/physics/training/**/*`。
+- 重新生成：`coursecore/src/data/questions.js`（291 题 + 15 理论 + 2 试卷）。
+
+**关联问题**: 训练题页面空白、题目打不开
+
+## 更新记录 - 2026-07-27
+
+### 修改
+- 同步更新 `technical-architecture.md`：在「3. 数据流」中补充 `builders/compress-images.js` 的压缩策略与当前效果（63 张图 379.50 KB → 292.42 KB）。
+- 同步更新 `prd.md`：在「7. 非功能需求」中新增题目配图批量压缩的验收项。
+
+## 更新记录 - 2026-07-27
+
+### 修复
+- 修复大学物理B（上）训练题全部打不开的问题：
+  - 根因是 `coursecore/curriculum/raw/questions/physics-b-1/` 下 training Markdown 源文件与 `public/physics/training/` 配图被误删，重新 build:data 后 `src/data/questions.js` 缺失 training 题目，`itemId` 与 `courses.js` 不匹配。
+  - 恢复被删源文件与配图，重新运行 `npm run build:data`，验证 `/item/p1b-m1-01-training` 可正常渲染 9 道训练题。
+
 ## 最后更新时间
 
-2026-07-26 21:20
+2026-07-27 21:10

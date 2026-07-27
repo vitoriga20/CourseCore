@@ -44,7 +44,8 @@ c:\Users\vitoriga\Downloads\物理试题\
 │   │   ├── question-builder.js         # Markdown → src/data/*.js
 │   │   ├── physics-quiz-builder.js     # 物理综合测验 JSON → Markdown（一次性/可复用）
 │   │   ├── training-extract.py         # MinerU 抽取 PDF 训练题题干 → Markdown
-│   │   └── training-builder.js         # Node.js 包装，prebuild 调用 Python 脚本
+│   │   ├── training-builder.js         # Node.js 包装，prebuild 调用 Python 脚本
+│   │   └── compress-images.js          # 基于 sharp 批量压缩 public/physics 题图
 │   ├── scripts\                        # 辅助脚本
 │   │   ├── migrate-legacy-data.js      # 旧 JSON → Markdown 迁移（已执行）
 │   │   └── prerender.js                # 构建后为每条路由生成静态 index.html
@@ -123,7 +124,8 @@ builders/question-builder.js（构建时）
   - 解析试卷 Markdown：试卷由多个重复的 `## Section` 与 `### Question` 组成，使用 `parseRepeatedSections` 按出现顺序提取，避免按标题名去重导致只保留最后一节/最后一题。
   - 解析 theory 小节 Markdown（`type: theory`），生成 `src/data/theoryContents.js`。
   - 输出 ES Module 数据文件 `src/data/questions.js`、`src/data/theoryContents.js` 与 `src/data/examPapers.js`。
-  - 物理综合测验题库由 `builders/physics-quiz-builder.js` 从 `index（综合混合）.html` 的 JSON 中提取，按力学/波动光学拆分后生成 Markdown 源文件；图片路径由 `assets/qXXX.jpg` 改写为 `/physics/qXXX.jpg`。
+  - 物理综合测验题库由 `builders/physics-quiz-builder.js` 从 `index（综合混合）.html` 的 JSON 中提取，按力学/波动光学拆分后生成 Markdown 源文件；图片路径由 `assets/qXXX.jpg` 改写为 `/physics/qXXX.jpg`.
+  - 题目配图在入库后由 `builders/compress-images.js` 批量压缩：JPEG/WebP 质量 80、最大宽度 1200px、无透明 PNG 转 JPEG，以控制静态托管与后端存储成本（当前 63 张图从 379.50 KB 降至 292.42 KB）。
         │
         ▼
 src/data/questions.js / src/data/theoryContents.js / src/data/examPapers.js
