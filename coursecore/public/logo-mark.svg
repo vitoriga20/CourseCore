@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">CourseCore logo mark</title>
+  <desc id="desc">A minimal black and green geometric snake mark for a university fundamentals practice platform.</desc>
+  <defs>
+    <linearGradient id="cc-green" x1="26" y1="98" x2="102" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0aa866"/>
+      <stop offset="0.55" stop-color="#19f28b"/>
+      <stop offset="1" stop-color="#8cffc6"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="#030503"/>
+
+  <g fill="none" stroke="#19f28b" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M64 30 94 82H34L64 30Z" stroke-width="3" opacity="0.36"/>
+    <circle cx="64" cy="68" r="21" stroke-width="2.5" opacity="0.28"/>
+    <path d="M42 88H86" stroke-width="2.5" opacity="0.24"/>
+    <path d="M64 30V96" stroke-width="2.5" opacity="0.16"/>
+  </g>
+
+  <path
+    d="M99 39C90 27 74 22 58 25C36 29 22 47 22 67C22 91 42 106 66 104C81 103 93 96 100 86"
+    fill="none"
+    stroke="url(#cc-green)"
+    stroke-width="12"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <path d="M98 30 114 39 98 48Z" fill="#19f28b"/>
+  <circle cx="104" cy="39" r="2.4" fill="#030503"/>
+  <path d="M100 86 112 80 108 96Z" fill="#0aa866"/>
+
+  <g fill="#030503">
+    <circle cx="84" cy="31" r="2.1"/>
+    <circle cx="56" cy="26" r="2.1"/>
+    <circle cx="29" cy="50" r="2.1"/>
+    <circle cx="28" cy="82" r="2.1"/>
+    <circle cx="55" cy="103" r="2.1"/>
+    <circle cx="87" cy="96" r="2.1"/>
+  </g>
+
+  <g fill="#19f28b">
+    <circle cx="64" cy="30" r="3"/>
+    <circle cx="94" cy="82" r="3"/>
+    <circle cx="34" cy="82" r="3"/>
+    <circle cx="64" cy="68" r="3"/>
+  </g>
+</svg>
