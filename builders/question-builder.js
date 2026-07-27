@@ -159,13 +159,17 @@ function parseTheoryMarkdown(filePath) {
   const { data: frontmatter, content } = matter(raw);
   if (frontmatter.type !== 'theory') return null;
   const sections = parseSections(content, 2);
+  const examples = Array.isArray(frontmatter.examples)
+    ? frontmatter.examples.filter(id => typeof id === 'string')
+    : [];
   return {
     id: frontmatter.id,
     courseId: frontmatter.courseId || null,
     moduleId: frontmatter.moduleId || null,
     itemId: frontmatter.itemId || null,
     title: frontmatter.title || '',
-    content: sections.content || content.trim()
+    content: sections.content || content.trim(),
+    examples
   };
 }
 

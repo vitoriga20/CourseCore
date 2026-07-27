@@ -8,7 +8,7 @@
 | 当前状态 | 已完成用户认证体系前端链路：游客模式、邮箱+密码登录/注册/重置密码弹窗、用户菜单、本地↔Supabase 进度同步；付费与 Stripe 部分按决策延后 |
 | 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth |
 | 构建产物 | `dist/`（479 个预渲染静态路由） |
-| 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
+| 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js`；theory 小节支持 `examples` 字段关联例题 |
 
 ## 文件结构
 
@@ -480,6 +480,37 @@ coursecore/
 - `src/data/theoryContents.js`（自动构建生成）
 - `src/data/questions.js`（自动构建生成）
 
+### 阶段 11: 理论讲义 Markdown 渲染与例题面板（试点 p1b-m1-01）
+
+**日期**: 2026-07-27
+
+**操作**:
+- 新增依赖 `marked`，用于将 theory 小节 Markdown 内容解析为 HTML 前端展示。
+- 修改 `practiceList.js`：theory 类型小节不再直接转义原始 Markdown，而是使用 `marked.parse()` 渲染格式化内容，并在页面底部追加“本节例题”独立面板。
+- 修改 `question-builder.js`：解析 theory 小节 frontmatter 中的 `examples` 字段，写入 `theoryContents.js`。
+- 在 `p1b-m1-01.md` frontmatter 中增加 `examples` 字段，指向对应训练题 `q-physics-b-1-p1b-m1-01-training-002/004`。
+- 修改 `state.js`：新增 `theoryAnswers`、`theoryResults`、`theoryShowAnswers` 三个非持久化状态，以及对应 setter。
+- 修改 `router.js`：新增 `handleSubmitTheoryExamples` 与 `handleShowTheoryAnswer`，负责收集例题答案、调用 `validate` 判题、标记 `completedQuestions`、并在全部例题通过后自动将 theory 小节标记为已完成。
+- 修改 `main.js`：注册 `submit-theory-examples` 与 `show-theory-answer` 两个 data-action 事件分发。
+- 构建产物 `src/data/theoryContents.js` 与 `src/data/questions.js` 经 `npm run build:data` 重新生成。
+- 运行 `npx vite build` + `node scripts/prerender.js` 通过，生成 481 条静态路由；浏览器验证 `/item/p1b-m1-01` 页面 Markdown 格式化、例题面板、选项交互、判题反馈、公式渲染均正常。
+
+**关键决策**:
+- 例题与 theory 小节通过 frontmatter `examples` 显式关联，而非自动解析原始文件 → 关系清晰、可维护、后续推广时只需改 YAML。
+- 例题提交逻辑复用现有 `validate` 与 `collectUserAnswer`，不新增题型验证逻辑 → 减少重复代码。
+- 例题通过与否影响 theory 小节完成状态：全部通过后写入 `state.progress[itemId]` → 与现有 `isItemCompleted` 逻辑兼容，无需改动完成判定。
+- 仅试点 `p1b-m1-01`，其余 14 个 theory 小节暂不添加 `examples` → 先验证交互与样式，再批量推广。
+
+**产出文件**:
+- `curriculum/raw/questions/physics-b-1/p1b-m1-01.md`（新增 `examples` frontmatter）
+- `builders/question-builder.js`（解析 `examples`）
+- `src/views/practiceList.js`（Markdown 渲染 + 例题面板）
+- `src/state.js`（theory 例题状态）
+- `src/router.js`（例题提交与答案展开）
+- `src/main.js`（事件分发）
+- `src/data/theoryContents.js`（自动构建生成）
+- `src/data/questions.js`（自动构建生成）
+
 ## 更新记录 - 2026-07-27（第二次）
 
 ### 新增
@@ -491,10 +522,29 @@ coursecore/
 - `p1b-m1-01-training-002` 等 7 道训练题由空答案更新为文件中的正确答案，并新增 `## Solution` 解析分区。
 - `src/data/theoryContents.js` 与 `src/data/questions.js` 经 `build:data` 重新生成。
 
+## 更新记录 - 2026-07-27（第三次）
+
+### 新增
+- `marked` 依赖用于 theory Markdown 前端渲染。
+- theory 小节支持 frontmatter `examples` 字段，可关联对应例题训练题。
+- theory 例题独立面板与可交互提交逻辑（试点 `p1b-m1-01`）。
+
+### 修改
+- `practiceList.js` theory 占位区改为 `marked.parse()` 渲染 + 例题面板。
+- `state.js` / `router.js` / `main.js` 增加 theory 例题答题状态与提交事件。
+
+### 修复
+- theory 小节页面原先直接转义显示原始 Markdown，现在正确渲染为格式化 HTML。
+
+### 待后续
+- 试点验收通过后，为其余 14 个 theory 小节补充 `examples` frontmatter。
+- 评估 Markdown 内容中图片链接的本地化处理。
+- 评估是否需要为 theory 内容增加目录/锚点导航。
+
 ### 未录入内容
 - 第四章 4.2 节“保守力与势能”因源文件内容截断，未录入。
 - `p1b-m2-06` 小节“光学仪器分辨率与X射线衍射”因源文件无对应内容，保持占位。
 
 ## 最后更新时间
 
-2026-07-27
+2026-07-27 17:45

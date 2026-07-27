@@ -41,6 +41,11 @@ export const state = {
   inlineResults: {},
   inlineShowAnswers: {},
 
+  // theory 小节例题答题状态（不持久化）
+  theoryAnswers: {},
+  theoryResults: {},
+  theoryShowAnswers: {},
+
   // 课程页理论/练习项展开状态（不持久化）
   itemExpanded: {},
 
@@ -118,6 +123,18 @@ export function setInlineResult(qid, result) {
 
 export function setInlineShowAnswer(qid, show = true) {
   state.inlineShowAnswers[qid] = show;
+}
+
+export function setTheoryAnswer(qid, answer) {
+  state.theoryAnswers[qid] = answer;
+}
+
+export function setTheoryResult(qid, result) {
+  state.theoryResults[qid] = result;
+}
+
+export function setTheoryShowAnswer(qid, show = true) {
+  state.theoryShowAnswers[qid] = show;
 }
 
 export function clearInlineState() {

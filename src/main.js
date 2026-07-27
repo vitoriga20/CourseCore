@@ -26,6 +26,8 @@ import {
   handleRetryItem,
   handleNextItem,
   handleShowInlineAnswer,
+  handleSubmitTheoryExamples,
+  handleShowTheoryAnswer,
   handleSelectOption,
   handleSubmitAnswer,
   handleShowHint,
@@ -388,6 +390,8 @@ function initEventDelegation() {
       case 'retry-item': handleRetryItem(itemId); break;
       case 'next-item': handleNextItem(itemId); break;
       case 'show-inline-answer': handleShowInlineAnswer(qid); break;
+      case 'submit-theory-examples': handleSubmitTheoryExamples(itemId); break;
+      case 'show-theory-answer': handleShowTheoryAnswer(qid); break;
       case 'select-option': handleSelectOption(el.dataset.value); break;
       case 'quiz-select-option': handleQuizSelectOption(itemId, qid, el.dataset.value); break;
       case 'submit-answer': handleSubmitAnswer(qid); break;

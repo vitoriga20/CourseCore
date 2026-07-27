@@ -1,6 +1,7 @@
-import { state, saveProgress, markQuestion, toggleItem, toggleModule, setUserAnswer, clearQuestionState, syncItemProgress, startInlinePractice, clearInlineState, setInlineResult, setInlineShowAnswer } from './state.js';
+import { state, saveProgress, markQuestion, toggleItem, toggleModule, setUserAnswer, clearQuestionState, syncItemProgress, startInlinePractice, clearInlineState, setInlineResult, setInlineShowAnswer, setTheoryAnswer, setTheoryResult, setTheoryShowAnswer } from './state.js';
 import { COURSES } from './data/courses.js';
 import { QUESTIONS } from './data/questions.js';
+import { THEORY_CONTENTS } from './data/theoryContents.js';
 import { EXAM_PAPERS } from './data/examPapers.js';
 import { submitTypes } from './config/question-types.js';
 import { validate } from './validators/index.js';
@@ -332,6 +333,74 @@ export function handleRetryItem(itemId) {
 
 export function handleShowInlineAnswer(qid) {
   setInlineShowAnswer(qid, true);
+  renderMain();
+}
+
+export function handleSubmitTheoryExamples(itemId) {
+  const theory = THEORY_CONTENTS.find(t => t.itemId === itemId);
+  const exampleIds = theory?.examples || [];
+  const examples = exampleIds
+    .map(id => QUESTIONS.find(q => q.id === id))
+    .filter(Boolean);
+  if (examples.length === 0) return;
+
+  const root = document.querySelector(`.theory-examples[data-item-id="${itemId}"]`);
+  if (!root) return;
+
+  const answers = {};
+  for (const q of examples) {
+    const qRoot = root.querySelector(`[data-qid="${q.id}"]`);
+    answers[q.id] = collectUserAnswer(q, qRoot);
+  }
+
+  const emptyQids = examples.filter(q => isEmptyAnswer(answers[q.id])).map(q => q.id);
+  if (emptyQids.length > 0) {
+    alert('请先完成所有例题再提交');
+    const firstEmpty = root.querySelector(`[data-qid="${emptyQids[0]}"]`);
+    firstEmpty?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const submitBtn = document.querySelector(`[data-action="submit-theory-examples"][data-item-id="${itemId}"]`);
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = renderButtonLoader();
+  }
+
+  state.theoryShowAnswers = {};
+
+  let allPassed = true;
+  for (const q of examples) {
+    setTheoryAnswer(q.id, answers[q.id]);
+    let result;
+    try {
+      result = validate(q, answers[q.id]);
+    } catch (e) {
+      console.error(e);
+      result = { passed: false, userAnswer: answers[q.id], correctAnswer: q.answer, message: '验证出错：' + e.message, manual: false };
+    }
+    setTheoryResult(q.id, result);
+    if (!result.manual && !result.passed) {
+      allPassed = false;
+    }
+    markQuestion(q.id, result);
+  }
+
+  if (allPassed && !state.progress[itemId]) {
+    state.progress[itemId] = true;
+    saveProgress();
+  }
+
+  renderMain();
+
+  if (allPassed) {
+    const nextBtn = root.querySelector('[data-action="next-item"]');
+    nextBtn?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+export function handleShowTheoryAnswer(qid) {
+  setTheoryShowAnswer(qid, true);
   renderMain();
 }
 

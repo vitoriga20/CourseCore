@@ -78,7 +78,7 @@ c:\Users\vitoriga\Downloads\物理试题\
 │       │   ├── labels.js               # 题型与内容类型标签
 │       │   ├── courses.js              # 课程/模块/小节数据
 │       │   ├── questions.js            # 平台题库
-│       │   ├── theoryContents.js       # theory 小节占位内容
+│       │   ├── theoryContents.js       # theory 小节 Markdown 讲义 + 例题 ID 列表
 │       │   └── examPapers.js           # 期末试卷数据
 │       ├── validators\                 # 独立答案验证器
 │       │   ├── index.js                # validate(question, userAnswer) 入口
@@ -96,7 +96,7 @@ c:\Users\vitoriga\Downloads\物理试题\
 │       └── views\                      # 页面视图组件
 │           ├── landing.js              # 首页（学习/知识库双板块）
 │           ├── course.js               # 课程详情
-│           ├── practiceList.js         # 小节练习列表（支持 theory / quiz / practice / training）
+│           ├── practiceList.js         # 小节练习列表（支持 theory 讲义渲染+例题面板 / quiz / practice / training）
 │           ├── quizSession.js          # 通用测验视图（顺序/随机/字体/背景/导航/报告），被 quiz 与 training 复用
 │           ├── practiceDetail.js       # 单题作答与解法（薄封装）
 │           ├── practiceBank.js         # 刷题板块
@@ -122,7 +122,7 @@ Markdown 源文件（curriculum/raw/）
 builders/question-builder.js（构建时）
   - 解析题目 Markdown：gray-matter 读取 YAML frontmatter + 正文分区（Content / Options / Answer / Solution）。
   - 解析试卷 Markdown：试卷由多个重复的 `## Section` 与 `### Question` 组成，使用 `parseRepeatedSections` 按出现顺序提取，避免按标题名去重导致只保留最后一节/最后一题。
-  - 解析 theory 小节 Markdown（`type: theory`），生成 `src/data/theoryContents.js`。
+  - 解析 theory 小节 Markdown（`type: theory`），读取 YAML frontmatter（支持 `examples` 字段，值为题目 ID 数组），生成 `src/data/theoryContents.js`。
   - 输出 ES Module 数据文件 `src/data/questions.js`、`src/data/theoryContents.js` 与 `src/data/examPapers.js`。
   - 物理综合测验题库由 `builders/physics-quiz-builder.js` 从 `index（综合混合）.html` 的 JSON 中提取，按力学/波动光学拆分后生成 Markdown 源文件；图片路径由 `assets/qXXX.jpg` 改写为 `/physics/qXXX.jpg`.
   - 题目配图在入库后由 `builders/compress-images.js` 批量压缩：JPEG/WebP 质量 80、最大宽度 1200px、无透明 PNG 转 JPEG，以控制静态托管与后端存储成本（当前 63 张图从 379.50 KB 降至 292.42 KB）。
