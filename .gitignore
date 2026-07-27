@@ -6,4 +6,3 @@ dist/
 .netlify
 *.log
 coverage/
-.worktrees/

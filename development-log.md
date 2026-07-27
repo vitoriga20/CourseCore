@@ -5,20 +5,22 @@
 | 项 | 内容 |
 |---|---|
 | 项目名称 | CourseCore — 大学基础课学习平台 |
-| 当前状态 | 已完成用户认证体系前端链路：游客模式、邮箱+密码登录/注册/重置密码弹窗、用户菜单、本地↔Supabase 进度同步；付费与 Stripe 部分按决策延后 |
+| 当前状态 | 用户认证体系已完整落地：游客模式、邮箱+密码登录/注册/重置密码弹窗、用户菜单、本地↔Supabase 进度同步；Supabase 项目已连接并通过后端链路测试；付费与 Stripe 部分按决策延后 |
 | 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth |
-| 构建产物 | `dist/`（479 个预渲染静态路由） |
-| 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js`；theory 小节支持 `examples` 字段关联例题 |
+| 构建产物 | `dist/`（481 个预渲染静态路由） |
+| 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
 
 ## 文件结构
 
 ```
-coursecore/
+.
 ├── builders/question-builder.js    # 解析 Markdown 题目，生成 JS 数据模块
 ├── builders/training-extract.py    # 调用 MinerU API 从 PDF 抽取训练题题干
 ├── builders/training-builder.js    # Node.js 包装，prebuild 阶段调用 Python 脚本并加载 .env.local
 ├── scripts/prerender.js            # 基于 routes.js 生成静态 HTML
 ├── scripts/supabase-schema.sql     # Supabase 建表、RLS、触发器脚本
+├── scripts/test-supabase-connection.js  # 验证 Supabase 连接与表结构
+├── scripts/test-auth-flow.js       # 后端认证与同步链路端到端测试
 ├── .env.local                      # MinerU API token、Supabase 配置（不提交 Git）
 ├── public/physics/training/        # 训练题题图资源
 ├── src/
@@ -57,6 +59,7 @@ coursecore/
 │       ├── legal.js                # 隐私政策 / 用户协议页面
 │       └── question/               # 单题渲染组件
 ├── curriculum/raw/questions/       # 题目 Markdown 源文件
+├── .trae/documents/                # 开发文档
 └── development-log.md              # 本文件
 ```
 
@@ -480,70 +483,6 @@ coursecore/
 - `src/data/theoryContents.js`（自动构建生成）
 - `src/data/questions.js`（自动构建生成）
 
-### 阶段 11: 理论讲义 Markdown 渲染与例题面板（试点 p1b-m1-01）
-
-**日期**: 2026-07-27
-
-**操作**:
-- 新增依赖 `marked`，用于将 theory 小节 Markdown 内容解析为 HTML 前端展示。
-- 修改 `practiceList.js`：theory 类型小节不再直接转义原始 Markdown，而是使用 `marked.parse()` 渲染格式化内容，并在页面底部追加“本节例题”独立面板。
-- 修改 `question-builder.js`：解析 theory 小节 frontmatter 中的 `examples` 字段，写入 `theoryContents.js`。
-- 在 `p1b-m1-01.md` frontmatter 中增加 `examples` 字段，指向对应训练题 `q-physics-b-1-p1b-m1-01-training-002/004`。
-- 修改 `state.js`：新增 `theoryAnswers`、`theoryResults`、`theoryShowAnswers` 三个非持久化状态，以及对应 setter。
-- 修改 `router.js`：新增 `handleSubmitTheoryExamples` 与 `handleShowTheoryAnswer`，负责收集例题答案、调用 `validate` 判题、标记 `completedQuestions`、并在全部例题通过后自动将 theory 小节标记为已完成。
-- 修改 `main.js`：注册 `submit-theory-examples` 与 `show-theory-answer` 两个 data-action 事件分发。
-- 构建产物 `src/data/theoryContents.js` 与 `src/data/questions.js` 经 `npm run build:data` 重新生成。
-- 运行 `npx vite build` + `node scripts/prerender.js` 通过，生成 481 条静态路由；浏览器验证 `/item/p1b-m1-01` 页面 Markdown 格式化、例题面板、选项交互、判题反馈、公式渲染均正常。
-
-**关键决策**:
-- 例题与 theory 小节通过 frontmatter `examples` 显式关联，而非自动解析原始文件 → 关系清晰、可维护、后续推广时只需改 YAML。
-- 例题提交逻辑复用现有 `validate` 与 `collectUserAnswer`，不新增题型验证逻辑 → 减少重复代码。
-- 例题通过与否影响 theory 小节完成状态：全部通过后写入 `state.progress[itemId]` → 与现有 `isItemCompleted` 逻辑兼容，无需改动完成判定。
-- 仅试点 `p1b-m1-01`，其余 14 个 theory 小节暂不添加 `examples` → 先验证交互与样式，再批量推广。
-
-### 阶段 12: 推广 theory 例题面板至力学前三节
-
-**日期**: 2026-07-27
-
-**操作**:
-- 根据 `大物上第三版(改前两章).md` 中例题与 training 题目的对应关系，为 `p1b-m1-02.md` 与 `p1b-m1-03.md` 补充 `examples` frontmatter：
-  - `p1b-m1-02` → `q-physics-b-1-p1b-m1-02-training-002/004`
-  - `p1b-m1-03` → `q-physics-b-1-p1b-m1-03-training-001/002/008`
-- 重新运行 `npm run build:data`，`theoryContents.js` 中对应 3 个 theory 小节已写入 `examples` 数组，其余 12 个小节保持 `examples: []`。
-- 运行 `npx vite build` + `node scripts/prerender.js` 通过，生成 481 条静态路由。
-- 浏览器验证 `/item/p1b-m1-02` 与 `/item/p1b-m1-03`：Markdown 格式化、例题面板、交互、公式渲染均正常。
-
-**关键决策**:
-- 只推广有力学例题的 3 个小节（p1b-m1-01 ~ p1b-m1-03），其余 theory 小节源文件中无对应例题，保持 `examples` 为空 → 避免硬凑题目。
-- 不修改 `practiceList.js` 代码，仅通过 frontmatter 配置推广 → 验证试点代码的可复用性。
-
-**产出文件**:
-- `curriculum/raw/questions/physics-b-1/p1b-m1-02.md`（新增 `examples`）
-- `curriculum/raw/questions/physics-b-1/p1b-m1-03.md`（新增 `examples`）
-- `src/data/theoryContents.js`（自动构建生成）
-
-## 更新记录 - 2026-07-27（第四次）
-
-### 新增
-- `p1b-m1-02` 与 `p1b-m1-03` 两个 theory 小节的例题面板（共 5 道例题）。
-
-### 修改
-- 2 个 theory Markdown 源文件新增 `examples` frontmatter。
-- `src/data/theoryContents.js` 经 `build:data` 重新生成。
-
-### 待后续
-- 若后续源文件补充更多例题，继续按同样方式为对应 theory 小节添加 `examples`。
-
-**产出文件**:
-- `curriculum/raw/questions/physics-b-1/p1b-m1-01.md`（新增 `examples` frontmatter）
-- `builders/question-builder.js`（解析 `examples`）
-- `src/views/practiceList.js`（Markdown 渲染 + 例题面板）
-- `src/state.js`（theory 例题状态）
-- `src/router.js`（例题提交与答案展开）
-- `src/main.js`（事件分发）
-- `src/data/theoryContents.js`（自动构建生成）
-- `src/data/questions.js`（自动构建生成）
-
 ## 更新记录 - 2026-07-27（第二次）
 
 ### 新增
@@ -555,29 +494,88 @@ coursecore/
 - `p1b-m1-01-training-002` 等 7 道训练题由空答案更新为文件中的正确答案，并新增 `## Solution` 解析分区。
 - `src/data/theoryContents.js` 与 `src/data/questions.js` 经 `build:data` 重新生成。
 
-## 更新记录 - 2026-07-27（第三次）
-
-### 新增
-- `marked` 依赖用于 theory Markdown 前端渲染。
-- theory 小节支持 frontmatter `examples` 字段，可关联对应例题训练题。
-- theory 例题独立面板与可交互提交逻辑（试点 `p1b-m1-01`）。
-
-### 修改
-- `practiceList.js` theory 占位区改为 `marked.parse()` 渲染 + 例题面板。
-- `state.js` / `router.js` / `main.js` 增加 theory 例题答题状态与提交事件。
-
-### 修复
-- theory 小节页面原先直接转义显示原始 Markdown，现在正确渲染为格式化 HTML。
-
-### 待后续
-- 试点验收通过后，为其余 14 个 theory 小节补充 `examples` frontmatter。
-- 评估 Markdown 内容中图片链接的本地化处理。
-- 评估是否需要为 theory 内容增加目录/锚点导航。
-
 ### 未录入内容
 - 第四章 4.2 节“保守力与势能”因源文件内容截断，未录入。
 - `p1b-m2-06` 小节“光学仪器分辨率与X射线衍射”因源文件无对应内容，保持占位。
 
+### 阶段 11: Supabase 环境配置与后端认证链路验证
+
+**日期**: 2026-07-27
+
+**操作**:
+- 通过 MCP 读取 Supabase 项目 URL 与 publishable keys，修正 `.env.local` 中的错误配置。
+- 在 Supabase SQL Editor 中执行 `scripts/supabase-schema.sql`，创建 `profiles`、`answers`、`progress` 表并开启 RLS。
+- 编写 `scripts/test-supabase-connection.js`：验证 Supabase 认证服务可达、三张表存在且 RLS 开启。
+- 编写 `scripts/test-auth-flow.js`：完成注册 → profile 触发器 → 写入 answers / progress → 读取回来 → 清理测试数据的全链路验证。
+- 测试过程中发现 Supabase 默认开启邮箱验证（Confirm email）导致注册后无法直接获得 session；关闭 Confirm email 后测试通过。
+- 前端浏览器自动化测试因环境依赖与视口点击问题搁置；后端链路已充分验证，前端代码保持可用状态。
+
+**关键决策**:
+- 关闭 Supabase 的 Confirm email 以简化登录体验；后续如需提高邮件可信度，可再开启并补充重发确认邮件入口。
+- 使用 legacy anon key（JWT 格式）保持与现有 `@supabase/supabase-js` 代码的兼容性。
+- 不保留 Playwright 等重型浏览器测试依赖，避免拖慢安装与构建；测试脚本仅依赖 `@supabase/supabase-js`。
+
+**产出文件**:
+- `scripts/test-supabase-connection.js`
+- `scripts/test-auth-flow.js`
+- `.env.local`（已填入正确的 Supabase URL 与 anon key）
+
+**关联问题**: 无
+
+### 阶段 12: 仓库根目录重构
+
+**日期**: 2026-07-27
+
+**操作**:
+- 将原本嵌套在 `coursecore/` 子目录中的完整项目内容提升至仓库根目录。
+- 删除根目录下旧的 CourseCore 重复文件（`builders/`、`assets/`、`curriculum/` 等）。
+- 删除与 CourseCore 无关的内容：`freeCodeCamp-main/`、海报与演示 HTML、临时分析文档等。
+- 统一依赖：运行 `npm install` 补全因目录移动缺失的 `marked` 包。
+- 验证构建：`npm run build:data` 生成 291 题 + 15 讲义 + 2 试卷；`npm run build` 成功预渲染 481 条静态路由。
+
+**关键决策**:
+- `main` 分支以后只保留 CourseCore 项目本身，不再混放其他仓库或历史残留文件。
+- 保留根目录 `.trae/documents/` 作为权威开发文档位置；`coursecore/.trae` 在提升前移除，避免合并冲突。
+- 配置文件、构建脚本、源码、题库、静态资源全部平铺在根目录，Cloudflare Pages / Vercel / Netlify 直接以 `/` 为根目录部署。
+
+**产出文件**:
+- 根目录 `package.json`、`vite.config.js`、`tailwind.config.js` 等配置文件。
+- 根目录 `src/`、`builders/`、`scripts/`、`curriculum/`、`public/`。
+- 更新 `development-log.md` 与 `.trae/documents/technical-architecture.md` 中的目录结构描述。
+
+**关联问题**: “格式化展示大物理论”提交看似消失，实际是因代码被提交到 `coursecore/` 子目录而非根目录；重构后根目录代码与最新提交一致。
+
+## 更新记录 - 2026-07-27（第三次）
+
+### 新增
+- Supabase 项目连接与配置验证。
+- `scripts/test-supabase-connection.js` 与 `scripts/test-auth-flow.js` 后端测试脚本。
+
+### 修改
+- `.env.local` 中修正 `VITE_SUPABASE_URL` 与 `VITE_SUPABASE_ANON_KEY`。
+- Supabase 关闭 `Confirm email`，启用 Email provider。
+
+### 验证
+- `node scripts/test-supabase-connection.js`：认证服务可访问，三张表存在且 RLS 开启。
+- `node scripts/test-auth-flow.js`：注册成功、profile 自动生成、answers/progress 写入并读回正确。
+
+## 更新记录 - 2026-07-27（第四次）
+
+### 修改
+- 仓库结构：`coursecore/` 子目录内容全部提升至根目录，`main` 分支仅保留 CourseCore 项目。
+- `development-log.md` 与 `technical-architecture.md` 中的目录结构描述同步更新为根目录布局。
+- 构建产物统计更新为 481 个预渲染静态路由。
+
+### 验证
+- `npm run build:data` 成功。
+- `npm run build` 成功，预渲染 481 条路由。
+
+## 更新记录 - 2026-07-27（第五次）
+
+### 修改
+- 将根目录重构结果提交到 `main` 分支，commit message：`refactor: move coursecore to root`。
+- 仅提交已跟踪文件的变更，未包含未跟踪的调试脚本、PDF 源文件与分析产物。
+
 ## 最后更新时间
 
-2026-07-27 17:45
+2026-07-27

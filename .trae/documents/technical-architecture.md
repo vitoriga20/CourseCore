@@ -18,99 +18,113 @@
 
 ## 2. 项目目录说明
 
+仓库根目录即 CourseCore Vite 项目，不再嵌套 `coursecore/` 子目录。
+
 ```
-c:\Users\vitoriga\Downloads\物理试题\
+c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
 ├── .trae\documents\
 │   ├── development-log.md              # 开发日志
 │   ├── technical-architecture.md       # 本文件
 │   ├── prd.md                          # 产品需求文档
-│   ├── 刷题系统实现规范-freeCodeCamp借鉴.md  # 题型/验证/状态规范
-│   └── coursecore-question-system-refactor-plan.md  # 刷题系统重构计划
+│   └── ...                             # 其他专项文档
 ├── .github\workflows\
 │   └── deploy.yml                      # GitHub Pages 自动部署
-├── coursecore\                         # CourseCore Vite 项目
-│   ├── index.html                      # 应用入口
-│   ├── package.json                    # 依赖与脚本
-│   ├── vite.config.js                  # Vite 配置
-│   ├── tailwind.config.js              # Tailwind 内容扫描路径
-│   ├── postcss.config.js               # PostCSS 插件配置
-│   ├── vercel.json                     # Vercel SPA 回写
-│   ├── netlify.toml                    # Netlify 构建与重定向
-│   ├── README.md                       # 项目说明与部署指南
-│   ├── .env.example                    # 环境变量示例
-│   ├── .gitignore
-│   ├── public\favicon.svg
-│   ├── builders\                       # 构建时脚本
-│   │   ├── question-builder.js         # Markdown → src/data/*.js
-│   │   ├── physics-quiz-builder.js     # 物理综合测验 JSON → Markdown（一次性/可复用）
-│   │   ├── training-extract.py         # MinerU 抽取 PDF 训练题题干 → Markdown
-│   │   ├── training-builder.js         # Node.js 包装，prebuild 调用 Python 脚本
-│   │   └── compress-images.js          # 基于 sharp 批量压缩 public/physics 题图
-│   ├── scripts\                        # 辅助脚本
-│   │   ├── migrate-legacy-data.js      # 旧 JSON → Markdown 迁移（已执行）
-│   │   └── prerender.js                # 构建后为每条路由生成静态 index.html
-│   ├── curriculum\                     # Markdown 源题库
-│   │   └── raw\
-│   │       ├── questions\              # 平台题目（按学科/模块组织）
-│   │       │   ├── calculus-1\         # 高等数学（上）题目源文件
-│   │       │   ├── calculus-2\         # 高等数学（下）题目源文件
-│   │       │   └── physics-b-1\        # 大学物理B（上）理论占位 + 测验题目源文件
-│   │       └── exams\                  # 期末试卷
-│   ├── public\                         # 构建后原样复制的静态资源
-│   │   └── physics\                    # 物理测验题图（qXXX.jpg）
-│   └── src\
-│       ├── main.js                     # 应用初始化、App 外壳、事件委托、锚点导航拦截
-│       ├── router.js                   # History API 视图路由、答题处理、导航高亮
-│       ├── state.js                    # 全局状态与 localStorage
-│       ├── theme.js                    # 深色/浅色主题
-│       ├── background.js               # Canvas 2D 全局几何背景
-│       ├── quiz-background.js          # p5.js 测验专用几何背景（初始化/销毁/素白模式回退）
-│       ├── utils.js                    # 通用工具函数
-│       ├── style.css                   # Tailwind 指令 + CSS 变量主题
-│       ├── components\                  # 可复用 UI 组件（原生 JS + Tailwind）
-│       │   ├── gooeyNav.js             # GooeyNav 粘性流体导航
-│       │   └── loading.js              # 加载组件：spinner、skeleton、progress、page-loader、image-loader
-│       ├── config\                     # 全局配置
-│       │   ├── routes.js               # 路由表、URL 匹配、链接生成、静态路径枚举
-│       │   └── question-types.js       # 题型枚举与行为映射表
-│       ├── data\                       # 数据模块（由构建脚本生成）
-│       │   ├── platform.js             # 平台名称与标语
-│       │   ├── labels.js               # 题型与内容类型标签
-│       │   ├── courses.js              # 课程/模块/小节数据
-│       │   ├── questions.js            # 平台题库
-│       │   ├── theoryContents.js       # theory 小节 Markdown 讲义 + 例题 ID 列表
-│       │   └── examPapers.js           # 期末试卷数据
-│       ├── validators\                 # 独立答案验证器
-│       │   ├── index.js                # validate(question, userAnswer) 入口
-│       │   ├── exact.js                # 精确匹配
-│       │   ├── normalized.js           # 归一化匹配
-│       │   ├── tolerance.js            # 数值容差
-│       │   ├── set.js                  # 集合匹配（多选）
-│       │   ├── manual.js               # 人工/半自动（证明/简答）
-│       │   ├── runner.js               # 代码题沙箱执行
-│       │   └── mixed.js                # 综合混合题
-│       ├── utils\                      # 业务工具
-│       │   ├── answer-collector.js     # 根据题型收集用户输入
-│       │   ├── question.js             # 题目查找与导航
-│       │   └── progress.js             # localStorage 读写与迁移
-│       └── views\                      # 页面视图组件
-│           ├── landing.js              # 首页（学习/知识库双板块）
-│           ├── course.js               # 课程详情
-│           ├── practiceList.js         # 小节练习列表（支持 theory 讲义渲染+例题面板 / quiz / practice / training）
-│           ├── quizSession.js          # 通用测验视图（顺序/随机/字体/背景/导航/报告），被 quiz 与 training 复用
-│           ├── practiceDetail.js       # 单题作答与解法（薄封装）
-│           ├── practiceBank.js         # 刷题板块
-│           ├── knowledgeBase.js        # 知识库
-│           ├── examPapers.js           # 期末试卷列表
-│           ├── examDetail.js           # 试卷详情
-│           └── question\               # 题型模板
-│               ├── index.js            # renderQuestion(question) 入口
-│               ├── choice.js           # 单选/多选/判断
-│               ├── fill.js             # 填空/简答
-│               ├── calc.js             # 计算/证明
-│               ├── code.js             # 代码题
-│               ├── chrome.js           # 题目标题/反馈/解法/导航
-│               └── preview.js          # 列表页题干预览
+├── index.html                          # 应用入口
+├── package.json                        # 依赖与脚本
+├── vite.config.js                      # Vite 配置
+├── tailwind.config.js                  # Tailwind 内容扫描路径
+├── postcss.config.js                   # PostCSS 插件配置
+├── vercel.json                         # Vercel SPA 回写
+├── netlify.toml                        # Netlify 构建与重定向
+├── README.md                           # 项目说明与部署指南
+├── .env.example                        # 环境变量示例
+├── .env.local                          # 本地敏感配置（不提交 Git）
+├── .gitignore
+├── components.json                     # shadcn registry 配置
+├── jsconfig.json                       # 路径别名（满足 shadcn CLI 检查）
+├── public\                             # 构建后原样复制的静态资源
+│   ├── favicon.svg
+│   └── physics\                        # 物理题图（含 training/ 子目录）
+├── builders\                           # 构建时脚本
+│   ├── question-builder.js             # Markdown → src/data/*.js
+│   ├── physics-quiz-builder.js         # 物理综合测验 JSON → Markdown
+│   ├── training-extract.py             # MinerU 抽取 PDF 训练题题干 → Markdown
+│   ├── training-builder.js             # Node.js 包装，prebuild 调用 Python 脚本
+│   └── compress-images.js              # 基于 sharp 批量压缩 public/physics 题图
+├── scripts\                            # 辅助脚本
+│   ├── prerender.js                    # 构建后为每条路由生成静态 index.html
+│   ├── supabase-schema.sql             # Supabase 建表、RLS、触发器脚本
+│   ├── test-supabase-connection.js     # 验证 Supabase 连接与表结构
+│   └── test-auth-flow.js               # 后端认证与同步链路端到端测试
+├── curriculum\                         # Markdown 源题库
+│   └── raw\
+│       ├── questions\                  # 平台题目（按学科/模块组织）
+│       │   ├── calculus-1\             # 高等数学（上）题目源文件
+│       │   ├── calculus-2\             # 高等数学（下）题目源文件
+│       │   └── physics-b-1\            # 大学物理B（上）理论 + 测验题目源文件
+│       └── exams\                      # 期末试卷
+└── src\
+    ├── main.js                         # 应用初始化、App 外壳、事件委托、锚点导航拦截
+    ├── router.js                       # History API 视图路由、答题处理、导航高亮
+    ├── state.js                        # 全局状态与 localStorage
+    ├── theme.js                        # 深色/浅色主题
+    ├── background.js                   # Canvas 2D 全局几何背景
+    ├── quiz-background.js              # p5.js 测验专用几何背景（初始化/销毁/素白模式回退）
+    ├── utils.js                        # 通用工具函数
+    ├── style.css                       # Tailwind 指令 + CSS 变量主题
+    ├── components\                      # 可复用 UI 组件（原生 JS + Tailwind）
+    │   ├── authModal.js                # 登录/注册/重置密码弹窗
+    │   ├── auth-components.css         # 认证组件样式
+    │   ├── userMenu.js                 # 右上角用户状态菜单
+    │   ├── gooeyNav.js                 # GooeyNav 粘性流体导航
+    │   └── loading.js                  # 加载组件：spinner、skeleton、progress、page-loader、image-loader
+    ├── config\                         # 全局配置
+    │   ├── routes.js                   # 路由表、URL 匹配、链接生成、静态路径枚举
+    │   └── question-types.js           # 题型枚举与行为映射表
+    ├── data\                           # 数据模块（由构建脚本生成）
+    │   ├── platform.js                 # 平台名称与标语
+    │   ├── labels.js                   # 题型与内容类型标签
+    │   ├── courses.js                  # 课程/模块/小节数据
+    │   ├── questions.js                # 平台题库
+    │   ├── theoryContents.js           # theory 小节 Markdown 讲义 + 例题 ID 列表
+    │   └── examPapers.js               # 期末试卷数据
+    ├── services\                       # 认证与同步
+    │   ├── supabase.js                 # Supabase 客户端初始化
+    │   ├── auth.js                     # 游客初始化、登录/注册/登出、数据合并
+    │   └── sync.js                     # 云端 answers / progress 读写与合并
+    ├── validators\                     # 独立答案验证器
+    │   ├── index.js                    # validate(question, userAnswer) 入口
+    │   ├── exact.js                    # 精确匹配
+    │   ├── normalized.js               # 归一化匹配
+    │   ├── tolerance.js                # 数值容差
+    │   ├── set.js                      # 集合匹配（多选）
+    │   ├── manual.js                   # 人工/半自动（证明/简答）
+    │   ├── runner.js                   # 代码题沙箱执行
+    │   └── mixed.js                    # 综合混合题
+    ├── utils\                          # 业务工具
+    │   ├── answer-collector.js         # 根据题型收集用户输入
+    │   ├── question.js                 # 题目查找与导航
+    │   └── progress.js                 # localStorage 读写与迁移
+    └── views\                          # 页面视图组件
+        ├── landing.js                  # 首页（学习/知识库双板块）
+        ├── course.js                   # 课程详情
+        ├── practiceList.js             # 小节练习列表（支持 theory 讲义渲染+例题面板 / quiz / practice / training）
+        ├── quizSession.js              # 通用测验视图（顺序/随机/字体/背景/导航/报告），被 quiz 与 training 复用
+        ├── inlinePractice.js           # inline 多题训练区
+        ├── practiceDetail.js           # 单题作答与解法（薄包装）
+        ├── practiceBank.js             # 刷题板块
+        ├── knowledgeBase.js            # 知识库
+        ├── examPapers.js               # 期末试卷列表
+        ├── examDetail.js               # 试卷详情
+        ├── legal.js                    # 隐私政策 / 用户协议页面
+        └── question\                   # 题型模板
+            ├── index.js                # renderQuestion(question) 入口
+            ├── choice.js               # 单选/多选/判断
+            ├── fill.js                 # 填空/简答
+            ├── calc.js                 # 计算/证明
+            ├── code.js                 # 代码题
+            ├── chrome.js               # 题目标题/反馈/解法/导航
+            └── preview.js              # 列表页题干预览
 ```
 
 ## 3. 数据流
