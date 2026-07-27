@@ -1,0 +1,252 @@
+{
+  ".graphify_detect.json": {
+    "mtime": 1784948805.0073798,
+    "ast_hash": "23e49183afa8abd34e8b03c17b49e142",
+    "semantic_hash": "23e49183afa8abd34e8b03c17b49e142"
+  },
+  "builders/question-builder.js": {
+    "mtime": 1784895837.9872196,
+    "ast_hash": "a63f48a5691eba0b7c0682ac75845e0b",
+    "semantic_hash": "a63f48a5691eba0b7c0682ac75845e0b"
+  },
+  "package.json": {
+    "mtime": 1784906799.6955655,
+    "ast_hash": "8d445113a081f9f89c90ac1ffabfd37a",
+    "semantic_hash": "8d445113a081f9f89c90ac1ffabfd37a"
+  },
+  "postcss.config.js": {
+    "mtime": 1784680191.3210945,
+    "ast_hash": "442ee6f3f950b33482963958f133b78c",
+    "semantic_hash": "442ee6f3f950b33482963958f133b78c"
+  },
+  "scripts/migrate-legacy-data.js": {
+    "mtime": 1784855130.3156264,
+    "ast_hash": "4220bcfe01c94aacd153ba28270f14b9",
+    "semantic_hash": "4220bcfe01c94aacd153ba28270f14b9"
+  },
+  "scripts/prerender.js": {
+    "mtime": 1784906792.043551,
+    "ast_hash": "95832c214eaac7e9278b6c8a2ca96120",
+    "semantic_hash": "95832c214eaac7e9278b6c8a2ca96120"
+  },
+  "src/background.js": {
+    "mtime": 1784680351.723208,
+    "ast_hash": "4aef975db86763b429afe87cf3518c79",
+    "semantic_hash": "4aef975db86763b429afe87cf3518c79"
+  },
+  "src/components/gooeyNav.js": {
+    "mtime": 1784939326.165762,
+    "ast_hash": "1ee7507f4f62d1ffed2b62cbab7f9ab9",
+    "semantic_hash": "1ee7507f4f62d1ffed2b62cbab7f9ab9"
+  },
+  "src/config/question-types.js": {
+    "mtime": 1784854973.1972904,
+    "ast_hash": "a167c3f3066cf5b978dca40732552bb8",
+    "semantic_hash": "a167c3f3066cf5b978dca40732552bb8"
+  },
+  "src/config/routes.js": {
+    "mtime": 1784940889.611945,
+    "ast_hash": "f2900b75525f8a1f1c4cf8d4d716f9d7",
+    "semantic_hash": "f2900b75525f8a1f1c4cf8d4d716f9d7"
+  },
+  "src/data/courses.js": {
+    "mtime": 1784901643.7599337,
+    "ast_hash": "f72ec301e18d24ec3642beb5c8ff76c5",
+    "semantic_hash": "f72ec301e18d24ec3642beb5c8ff76c5"
+  },
+  "src/data/examPapers.js": {
+    "mtime": 1784947660.4229362,
+    "ast_hash": "421cff1197aafb4c2cd394a2353585f5",
+    "semantic_hash": "421cff1197aafb4c2cd394a2353585f5"
+  },
+  "src/data/labels.js": {
+    "mtime": 1784855054.0875554,
+    "ast_hash": "1922e7a9524c05d37df647663a29f7a4",
+    "semantic_hash": "1922e7a9524c05d37df647663a29f7a4"
+  },
+  "src/data/platform.js": {
+    "mtime": 1784901643.7609591,
+    "ast_hash": "fc745b54fff5419fbb00e8cffc7b8397",
+    "semantic_hash": "fc745b54fff5419fbb00e8cffc7b8397"
+  },
+  "src/data/questions.js": {
+    "mtime": 1784947660.4214218,
+    "ast_hash": "58669c8b4e1f8fab89ea937e0c7e548f",
+    "semantic_hash": "58669c8b4e1f8fab89ea937e0c7e548f"
+  },
+  "src/main.js": {
+    "mtime": 1784941244.649614,
+    "ast_hash": "f8a1dd3d89a26736e0e17ee0dd1f7f81",
+    "semantic_hash": "f8a1dd3d89a26736e0e17ee0dd1f7f81"
+  },
+  "src/router.js": {
+    "mtime": 1784940954.710389,
+    "ast_hash": "6ab305e4468a1985f91c8a919fc3608f",
+    "semantic_hash": "6ab305e4468a1985f91c8a919fc3608f"
+  },
+  "src/state.js": {
+    "mtime": 1784941252.1701696,
+    "ast_hash": "11b04462ba98873071f3ce455251c468",
+    "semantic_hash": "11b04462ba98873071f3ce455251c468"
+  },
+  "src/theme.js": {
+    "mtime": 1784939972.0926569,
+    "ast_hash": "6cec74c6bcffe8be3fee7db00e4893f6",
+    "semantic_hash": "6cec74c6bcffe8be3fee7db00e4893f6"
+  },
+  "src/utils.js": {
+    "mtime": 1784680343.617028,
+    "ast_hash": "ebd84de001c11ea03706bd84a01a4e87",
+    "semantic_hash": "ebd84de001c11ea03706bd84a01a4e87"
+  },
+  "src/utils/answer-collector.js": {
+    "mtime": 1784939438.924504,
+    "ast_hash": "88c42fb3406945c5f98956d52014fd2e",
+    "semantic_hash": "88c42fb3406945c5f98956d52014fd2e"
+  },
+  "src/utils/progress.js": {
+    "mtime": 1784855257.8457608,
+    "ast_hash": "ffae9f50680e930ad1c0d883139b5b81",
+    "semantic_hash": "ffae9f50680e930ad1c0d883139b5b81"
+  },
+  "src/utils/question.js": {
+    "mtime": 1784855311.475933,
+    "ast_hash": "b157be37e75dc242fc758457ec142499",
+    "semantic_hash": "b157be37e75dc242fc758457ec142499"
+  },
+  "src/validators/exact.js": {
+    "mtime": 1784854980.400571,
+    "ast_hash": "e5e2d90bd03c21d130775891fc423198",
+    "semantic_hash": "e5e2d90bd03c21d130775891fc423198"
+  },
+  "src/validators/index.js": {
+    "mtime": 1784855039.1014624,
+    "ast_hash": "c078cf9e22146667cfd3b3af2689ccf1",
+    "semantic_hash": "c078cf9e22146667cfd3b3af2689ccf1"
+  },
+  "src/validators/manual.js": {
+    "mtime": 1784855011.8735552,
+    "ast_hash": "1d902da587c2ea173723b02b9b54abf6",
+    "semantic_hash": "1d902da587c2ea173723b02b9b54abf6"
+  },
+  "src/validators/mixed.js": {
+    "mtime": 1784855028.6381402,
+    "ast_hash": "a9df1816a26ff089024ed18cc3d09d83",
+    "semantic_hash": "a9df1816a26ff089024ed18cc3d09d83"
+  },
+  "src/validators/normalized.js": {
+    "mtime": 1784854988.1729443,
+    "ast_hash": "1eadd678016990e4abbaefd8eca2aa45",
+    "semantic_hash": "1eadd678016990e4abbaefd8eca2aa45"
+  },
+  "src/validators/runner.js": {
+    "mtime": 1784855020.9866197,
+    "ast_hash": "d4d506f224b5274e03491d5d7be43a2b",
+    "semantic_hash": "d4d506f224b5274e03491d5d7be43a2b"
+  },
+  "src/validators/set.js": {
+    "mtime": 1784855005.6572556,
+    "ast_hash": "94ff6d34382f1e3a9f1dc048e4aed1ce",
+    "semantic_hash": "94ff6d34382f1e3a9f1dc048e4aed1ce"
+  },
+  "src/validators/tolerance.js": {
+    "mtime": 1784856034.3561232,
+    "ast_hash": "e3f48acd7303322d247b15334cdf9dc4",
+    "semantic_hash": "e3f48acd7303322d247b15334cdf9dc4"
+  },
+  "src/views/course.js": {
+    "mtime": 1784938966.8781974,
+    "ast_hash": "d71a1ad040fecf20499a26346e7d8163",
+    "semantic_hash": "d71a1ad040fecf20499a26346e7d8163"
+  },
+  "src/views/examDetail.js": {
+    "mtime": 1784906694.4338384,
+    "ast_hash": "c35eacd6d745ee4a648442d9ff3df45f",
+    "semantic_hash": "c35eacd6d745ee4a648442d9ff3df45f"
+  },
+  "src/views/examPapers.js": {
+    "mtime": 1784906657.8894398,
+    "ast_hash": "8f76a0ac5c2b0f517f7d11c081b1b92c",
+    "semantic_hash": "8f76a0ac5c2b0f517f7d11c081b1b92c"
+  },
+  "src/views/inlinePractice.js": {
+    "mtime": 1784938935.7172391,
+    "ast_hash": "698b66fffa26118e2dd91b3d46ca9478",
+    "semantic_hash": "698b66fffa26118e2dd91b3d46ca9478"
+  },
+  "src/views/knowledgeBase.js": {
+    "mtime": 1784947847.6391842,
+    "ast_hash": "c89092e88a1a27b7dde7de3027d5c38b",
+    "semantic_hash": "c89092e88a1a27b7dde7de3027d5c38b"
+  },
+  "src/views/landing.js": {
+    "mtime": 1784941277.8741956,
+    "ast_hash": "d6db3aac5bc157857fe08722979e6b69",
+    "semantic_hash": "d6db3aac5bc157857fe08722979e6b69"
+  },
+  "src/views/practiceBank.js": {
+    "mtime": 1784906635.1800907,
+    "ast_hash": "7fbba472f4a8ade561ce9367773e035b",
+    "semantic_hash": "7fbba472f4a8ade561ce9367773e035b"
+  },
+  "src/views/practiceDetail.js": {
+    "mtime": 1784906608.5561643,
+    "ast_hash": "198cb0f287ff552b5e665ed1b58d42e4",
+    "semantic_hash": "198cb0f287ff552b5e665ed1b58d42e4"
+  },
+  "src/views/practiceList.js": {
+    "mtime": 1784938984.7927506,
+    "ast_hash": "f40216f0822beda7c1779978a429127e",
+    "semantic_hash": "f40216f0822beda7c1779978a429127e"
+  },
+  "src/views/question/calc.js": {
+    "mtime": 1784938879.7297058,
+    "ast_hash": "1f85138c98b9fe1a170f173c570518f8",
+    "semantic_hash": "1f85138c98b9fe1a170f173c570518f8"
+  },
+  "src/views/question/choice.js": {
+    "mtime": 1784938836.126646,
+    "ast_hash": "19330c252f6192ac49241667147497b7",
+    "semantic_hash": "19330c252f6192ac49241667147497b7"
+  },
+  "src/views/question/chrome.js": {
+    "mtime": 1784906749.4984205,
+    "ast_hash": "cd9286281ed575113d17dcfea4ad6083",
+    "semantic_hash": "cd9286281ed575113d17dcfea4ad6083"
+  },
+  "src/views/question/code.js": {
+    "mtime": 1784938889.0901754,
+    "ast_hash": "4a53add5e0808bc6f43d3035602e65ea",
+    "semantic_hash": "4a53add5e0808bc6f43d3035602e65ea"
+  },
+  "src/views/question/fill.js": {
+    "mtime": 1784938869.6397197,
+    "ast_hash": "8ee31263637b5f66b5a0d8a2be43c482",
+    "semantic_hash": "8ee31263637b5f66b5a0d8a2be43c482"
+  },
+  "src/views/question/index.js": {
+    "mtime": 1784938784.4752104,
+    "ast_hash": "ec8dd941682ffe7320541ee202522e25",
+    "semantic_hash": "ec8dd941682ffe7320541ee202522e25"
+  },
+  "src/views/question/preview.js": {
+    "mtime": 1784855406.460149,
+    "ast_hash": "d27acd2c9be08ff9d9c042d86d66ed85",
+    "semantic_hash": "d27acd2c9be08ff9d9c042d86d66ed85"
+  },
+  "tailwind.config.js": {
+    "mtime": 1784680190.4595335,
+    "ast_hash": "739bd9ae2acad0142fd8917b496341a8",
+    "semantic_hash": "739bd9ae2acad0142fd8917b496341a8"
+  },
+  "vercel.json": {
+    "mtime": 1784680192.6503625,
+    "ast_hash": "ded0b04edc8941c3e8fa851382c63aa3",
+    "semantic_hash": "ded0b04edc8941c3e8fa851382c63aa3"
+  },
+  "vite.config.js": {
+    "mtime": 1784680189.261347,
+    "ast_hash": "5dd7191a71eb2212c2ad4fea4e68b971",
+    "semantic_hash": "5dd7191a71eb2212c2ad4fea4e68b971"
+  }
+}

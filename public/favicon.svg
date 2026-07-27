@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- 暖炭灰背景 -->
+    <linearGradient id="bg-muted" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d2d2d"/>
+      <stop offset="100%" stop-color="#1a1a1a"/>
+    </linearGradient>
+
+    <!-- 蛇身：哑光赭石金，朴素有质感 -->
+    <linearGradient id="snake-ochre" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c4a574"/>
+      <stop offset="50%" stop-color="#b08d5f"/>
+      <stop offset="100%" stop-color="#8f7048"/>
+    </linearGradient>
+
+    <!-- 柔和投影 -->
+    <filter id="soft-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- 背景圆角方块 -->
+  <rect width="128" height="128" rx="26" fill="url(#bg-muted)"/>
+
+  <!-- 同心圆：地质层/轨道感，制造深度 -->
+  <g fill="none" stroke="#f5f0e8" stroke-opacity="0.05" stroke-width="1">
+    <circle cx="64" cy="64" r="54"/>
+    <circle cx="64" cy="64" r="44"/>
+    <circle cx="64" cy="64" r="34"/>
+    <circle cx="64" cy="64" r="24"/>
+  </g>
+
+  <!-- 稀疏几何网格 -->
+  <g stroke="#f5f0e8" stroke-opacity="0.07" stroke-width="1">
+    <line x1="22" y1="44" x2="106" y2="44"/>
+    <line x1="22" y1="64" x2="106" y2="64"/>
+    <line x1="22" y1="84" x2="106" y2="84"/>
+    <line x1="44" y1="22" x2="44" y2="106"/>
+    <line x1="64" y1="22" x2="64" y2="106"/>
+    <line x1="84" y1="22" x2="84" y2="106"/>
+  </g>
+
+  <!--
+    蛇形主体：几何折线盘绕
+    形如无限符号的一半 + 向上的探索姿态
+  -->
+  <g filter="url(#soft-shadow)">
+    <!-- 蛇身 -->
+    <path
+      d="M 32 88
+         L 32 56
+         L 48 56
+         L 48 72
+         L 64 72
+         L 64 48
+         L 48 48
+         L 48 32
+         L 88 32
+         L 88 88
+         L 96 88"
+      fill="none"
+      stroke="url(#snake-ochre)"
+      stroke-width="10"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <!-- 蛇鳞节点：沿蛇身分布的小圆点 -->
+    <g fill="#1a1a1a">
+      <circle cx="32" cy="72" r="2.2"/>
+      <circle cx="32" cy="60" r="2.2"/>
+      <circle cx="40" cy="56" r="2.2"/>
+      <circle cx="48" cy="64" r="2.2"/>
+      <circle cx="48" cy="72" r="2.2"/>
+      <circle cx="56" cy="72" r="2.2"/>
+      <circle cx="64" cy="60" r="2.2"/>
+      <circle cx="64" cy="48" r="2.2"/>
+      <circle cx="56" cy="48" r="2.2"/>
+      <circle cx="48" cy="40" r="2.2"/>
+      <circle cx="64" cy="32" r="2.2"/>
+      <circle cx="76" cy="32" r="2.2"/>
+      <circle cx="88" cy="44" r="2.2"/>
+      <circle cx="88" cy="60" r="2.2"/>
+      <circle cx="88" cy="76" r="2.2"/>
+      <circle cx="92" cy="88" r="2.2"/>
+    </g>
+  </g>
+
+  <!-- 蛇头：几何三角形 -->
+  <g transform="translate(96, 88) rotate(-45)">
+    <polygon points="0,-8 12,0 0,8" fill="#c4a574"/>
+    <circle cx="3" cy="0" r="2" fill="#1a1a1a"/>
+  </g>
+
+  <!-- 学科符号：几何构成 -->
+  <!-- 数学：三角形（左上区域） -->
+  <g transform="translate(40, 44)" opacity="0.85">
+    <polygon points="0,-8 7,6 -7,6" fill="none" stroke="#d8cdb3" stroke-width="1.5"/>
+  </g>
+
+  <!-- 物理：同心圆/原子（右下区域） -->
+  <g transform="translate(80, 72)" opacity="0.85">
+    <circle cx="0" cy="0" r="5" fill="none" stroke="#d8cdb3" stroke-width="1.5"/>
+    <circle cx="0" cy="0" r="2" fill="#d8cdb3"/>
+  </g>
+
+  <!-- 蛇身关键节点：浅色圆点，像电路焊点 -->
+  <g fill="#d8cdb3">
+    <circle cx="32" cy="88" r="2.5"/>
+    <circle cx="48" cy="72" r="2.5"/>
+    <circle cx="64" cy="72" r="2.5"/>
+    <circle cx="48" cy="32" r="2.5"/>
+    <circle cx="88" cy="32" r="2.5"/>
+    <circle cx="88" cy="88" r="2.5"/>
+  </g>
+
+  <!-- 底部比例尺：测量与学习的隐喻 -->
+  <g transform="translate(64, 116)" stroke="#f5f0e8" stroke-opacity="0.12" stroke-width="1">
+    <line x1="-18" y1="0" x2="18" y2="0"/>
+    <line x1="-18" y1="-3" x2="-18" y2="3"/>
+    <line x1="0" y1="-2" x2="0" y2="2"/>
+    <line x1="18" y1="-3" x2="18" y2="3"/>
+  </g>
+</svg>
