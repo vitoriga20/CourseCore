@@ -18,6 +18,7 @@ import { initQuizSession, cleanupQuizSession } from './views/quizSession.js';
 import { renderPracticeDetail } from './views/practiceDetail.js';
 import { renderExamPapers } from './views/examPapers.js';
 import { renderExamDetail } from './views/examDetail.js';
+import { renderPrivacy, renderTerms } from './views/legal.js';
 import { initGooeyNav } from './components/gooeyNav.js';
 import { showPageLoader, hidePageLoader, initImageLoaders, renderButtonLoader } from './components/loading.js';
 
@@ -49,6 +50,12 @@ function applyRoute(route) {
       break;
     case 'exams':
       showExamPapers();
+      break;
+    case 'privacy':
+      showPrivacy();
+      break;
+    case 'terms':
+      showTerms();
       break;
     case 'course':
       showCourse(route.params.courseId);
@@ -150,6 +157,24 @@ export function showExamPapers() {
   state.currentCourseId = null;
   clearQuestionState();
   setActiveNav('bank');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showPrivacy() {
+  state.view = "privacy";
+  state.currentCourseId = null;
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showTerms() {
+  state.view = "terms";
+  state.currentCourseId = null;
+  clearQuestionState();
+  setActiveNav('landing');
   renderMain();
   window.scrollTo({ top: 0 });
 }
@@ -403,6 +428,12 @@ export function renderMain() {
       break;
     case "exam-detail":
       main.innerHTML = renderExamDetail(state.currentExamId);
+      break;
+    case "privacy":
+      main.innerHTML = renderPrivacy();
+      break;
+    case "terms":
+      main.innerHTML = renderTerms();
       break;
     default:
       main.innerHTML = renderLanding();

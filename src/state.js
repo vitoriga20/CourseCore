@@ -5,6 +5,8 @@ import {
   storeState,
   migrateCompletedQuestions
 } from './utils/progress.js';
+import { isSupabaseConfigured } from './services/supabase.js';
+import * as sync from './services/sync.js';
 
 export const CURRENT_STATE_VERSION = 1;
 
@@ -21,6 +23,10 @@ export const state = {
   search: '',
   theme: 'light',
   bankFilter: { kind: 'all', course: 'all' },
+
+  // 用户认证
+  user: null,
+  authReady: false,
 
   // 答题状态扩展
   currentQuestion: null,
@@ -86,6 +92,13 @@ export function markQuestion(qid, result) {
     lastAt: Date.now()
   };
   saveProgress();
+
+  if (state.user && isSupabaseConfigured()) {
+    const question = QUESTIONS.find(q => q.id === qid);
+    const itemId = question?.itemId || null;
+    sync.pushAnswer(state.user.id, qid, itemId, result.userAnswer ?? null, result.manual ? null : Boolean(result.passed))
+      .catch(err => console.error('Sync answer failed', err));
+  }
 }
 
 export function clearQuestionState() {
@@ -147,6 +160,11 @@ export function syncItemProgress(itemId) {
   if (allDone && !state.progress[itemId]) {
     state.progress[itemId] = true;
     saveProgress();
+
+    if (state.user && isSupabaseConfigured()) {
+      sync.pushItemProgress(state.user.id, itemId, 'completed', null)
+        .catch(err => console.error('Sync progress failed', err));
+    }
   }
 }
 

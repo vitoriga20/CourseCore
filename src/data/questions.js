@@ -2395,19 +2395,19 @@ export const QUESTIONS = [
     "itemId": "p1b-m1-01-training",
     "questionType": 0,
     "title": "第 2 题",
-    "content": "下述关于质点运动描述的表达式正确的是",
-    "answer": "",
-    "solution": "",
+    "content": "下述关于质点运动描述的表达式正确的是（    ）",
+    "answer": "C",
+    "solution": "**选项 (A)**：$|\\Delta \\vec{r}|$ 是位移的大小（直线距离），$\\Delta r = r_2 - r_1$ 是位矢模的增量。除非质点做通过原点的直线运动，否则二者不等。❌\n\n**选项 (B)**：$\\left| \\frac{d\\vec{r}}{dt} \\right| = |\\vec{v}|$ 是速度大小；$\\frac{dr}{dt}$ 是位矢模的变化率（径向速率）。例如匀速圆周运动中 $\\frac{dr}{dt}=0$，但 $|\\vec{v}| \\neq 0$。❌\n\n**选项 (C)**：速度大小通常不等于径向速率，符合一般曲线运动规律。✅\n\n**选项 (D)**：在微积分极限意义下，$dt \\to 0$ 时弧长无限接近弦长，故 $|d\\vec{r}| = ds$。❌",
     "difficulty": 1,
     "tags": [
       "选择题"
     ],
     "source": "力学练习一.pdf 第2题",
     "options": [
-      "$\\left| { \\vec { \\Delta r } } \\right| = \\Delta r$",
-      "${ \\frac { d { \\stackrel { } { r } } } { d t } } = { \\frac { d r } { d t } }$",
-      "${ \\frac { \\left| { \\vec { d r } } \\right| } { d t } } \\neq \\left| { \\frac { d r } { d t } } \\right|$",
-      "$\\left| d s \\right| \\neq \\left| \\vec { d _ { T } } \\right|$"
+      "$|\\Delta \\vec{r}| = \\Delta r$",
+      "$\\left| \\frac{d\\vec{r}}{dt} \\right| = \\frac{dr}{dt}$",
+      "$\\left| \\frac{d\\vec{r}}{dt} \\right| \\neq \\frac{dr}{dt}$",
+      "$|d\\vec{r}| \\neq ds$"
     ]
   },
   {
@@ -2439,19 +2439,19 @@ export const QUESTIONS = [
     "itemId": "p1b-m1-01-training",
     "questionType": 0,
     "title": "第 4 题",
-    "content": "一质点沿 x 轴运动,其加速度 a 与位置坐标 x 的关系为$a = 2 + 6 x ^ { 2 }$ 。如果质点在原点处的速度为零,则质点在 $X { = } 2 \\mathrm { m }$ 处的速度大小 v 约为",
-    "answer": "",
-    "solution": "",
+    "content": "一质点沿 $x$ 轴运动，其加速度 $a$ 与位置坐标 $x$ 的关系为 $a = 2 + 6x^2$（SI）。如果质点在原点处的速度为零，则质点在 $x=2\\text{m}$ 处的速度大小 $v$ 约为（    ）",
+    "answer": "B",
+    "solution": "本题属于质点运动学第二类问题，加速度是位置 $x$ 的函数。利用链式法则：\n\n$$a = \\frac{dv}{dt} = \\frac{dv}{dx}\\frac{dx}{dt} = v\\frac{dv}{dx}$$\n\n分离变量得 $v\\,dv = a\\,dx = (2+6x^2)\\,dx$。\n\n代入初始条件 $x=0$ 时 $v=0$，$x=2$ 时速度为 $v$，两边积分：\n\n$$\\int_0^v v\\,dv = \\int_0^2 (2+6x^2)\\,dx$$\n\n$$\\frac{1}{2}v^2 = \\left[2x+2x^3\\right]_0^2 = 4+16 = 20$$\n\n$$v = \\sqrt{40} \\approx 6.32\\text{m/s}$$\n\n最接近 $5\\text{m/s}$，故选 **B**。",
     "difficulty": 1,
     "tags": [
       "选择题"
     ],
     "source": "力学练习一.pdf 第4题",
     "options": [
-      "$\\sqrt { 4 0 } \\mathrm { m / s }$",
-      "$5 \\mathrm { m / s } ;$",
-      "$\\sqrt { 2 0 } \\mathrm { m / s }$",
-      "$1 0 \\mathrm { m / s }$"
+      "$40\\text{m/s}$",
+      "$5\\text{m/s}$",
+      "$20\\text{m/s}$",
+      "$10\\text{m/s}$"
     ]
   },
   {
@@ -2563,19 +2563,19 @@ export const QUESTIONS = [
     "itemId": "p1b-m1-02-training",
     "questionType": 0,
     "title": "第 2 题",
-    "content": "质点作半径为 R 的变速圆周运动时的加速度大小为",
-    "answer": "",
-    "solution": "",
+    "content": "质点作半径为 $R$ 的变速圆周运动时的加速度大小为（   ）（$v$ 表示任一时刻质点的速率）",
+    "answer": "D",
+    "solution": "变速圆周运动的加速度由两个互相垂直的分量组成：\n\n- **切向加速度**：$a_t = \\frac{dv}{dt}$，改变速度大小。\n- **法向加速度**：$a_n = \\frac{v^2}{R}$，改变速度方向。\n\n加速度是矢量，需用勾股定理合成：\n\n$$a = \\sqrt{a_n^2 + a_t^2} = \\sqrt{\\left(\\frac{v^2}{R}\\right)^2 + \\left(\\frac{dv}{dt}\\right)^2}$$\n\n故选 **D**。\n\n注意：匀速圆周运动时 $\\frac{dv}{dt}=0$，则 $a=\\frac{v^2}{R}$（对应选项 B）。",
     "difficulty": 1,
     "tags": [
       "选择题"
     ],
     "source": "力学练习二.pdf 第2题",
     "options": [
-      "(v表示任一时刻质点的速率) $\\frac { d \\nu } { d t }$",
-      "$\\nu ^ { 2 } / R$",
-      "$\\frac { d \\nu } { d t } + \\frac { \\nu ^ { 2 } } { R }$",
-      "$[ \\left( \\frac { d \\nu } { d t } \\right) ^ { 2 } + \\left( \\frac { \\nu ^ { 4 } } { R ^ { 2 } } \\right) ] ^ { 1 / 2 }$"
+      "$\\frac{dv}{dt}$",
+      "$\\frac{v^2}{R}$",
+      "$\\frac{v^2}{R} + \\frac{dv}{dt}$",
+      "$\\sqrt{\\left(\\frac{v^2}{R}\\right)^2 + \\left(\\frac{dv}{dt}\\right)^2}$"
     ]
   },
   {
@@ -2607,19 +2607,19 @@ export const QUESTIONS = [
     "itemId": "p1b-m1-02-training",
     "questionType": 0,
     "title": "第 4 题",
-    "content": "质点的质量为 m,置于光滑球面的顶点 A 处(球面固定不动),如图所示。当它由静止开始下滑到球面上B点时,它的加速度的大小为",
-    "answer": "",
-    "solution": "",
+    "content": "质点的质量为 $m$，置于光滑球面的顶点 $A$ 处（球面固定不动），如图所示。当它由静止开始下滑到球面上 $B$ 点时（设 $OB$ 与竖直方向夹角为 $\\theta$），它的加速度的大小为（   ）",
+    "answer": "D",
+    "solution": "质点在光滑球面上运动，只有重力做功，机械能守恒。下降高度 $h = R(1-\\cos\\theta)$，故：\n\n$$mgR(1-\\cos\\theta) = \\frac{1}{2}mv^2$$\n\n$$v^2 = 2gR(1-\\cos\\theta)$$\n\n在自然坐标系下：\n\n- **法向加速度**：$a_n = \\frac{v^2}{R} = 2g(1-\\cos\\theta)$\n- **切向加速度**：$a_t = g\\sin\\theta$\n\n总加速度大小为：\n\n$$a = \\sqrt{a_n^2 + a_t^2} = g\\sqrt{4(1-\\cos\\theta)^2 + \\sin^2\\theta}$$\n\n故选 **D**。",
     "difficulty": 1,
     "tags": [
       "选择题"
     ],
     "source": "力学练习二.pdf 第4题",
     "options": [
-      "$a = 2 g { \\big ( } 1 - \\cos \\theta { \\big ) }$",
-      "$a = g \\sin \\theta$",
-      "$a { = } g$",
-      "$a = \\sqrt { 4 g ^ { 2 } \\big ( 1 - \\cos \\theta \\big ) ^ { 2 } + g ^ { 2 } \\sin ^ { 2 } \\theta }$"
+      "$a = g\\sqrt{1 - \\cos\\theta}$",
+      "$a = g\\sin\\theta$",
+      "$a = g$",
+      "$a = g\\sqrt{4\\sin^2\\theta + (1 - \\cos\\theta)^2}$"
     ],
     "image": "/physics/training/p1b-m1-02-training/d9ee40d816856f6b75588d5c5adde7fbe6076a36381795ded5d2220b3ba1b1f9.jpg"
   },
@@ -2732,19 +2732,19 @@ export const QUESTIONS = [
     "itemId": "p1b-m1-03-training",
     "questionType": 0,
     "title": "第 1 题",
-    "content": "在足够长的管中装有粘滞液体,放入钢球由静止开始向下运动,下列说法中正确的是：",
-    "answer": "",
-    "solution": "",
+    "content": "在足够长的管中装有粘滞液体，放入钢球由静止开始向下运动，下列说法中正确的是：（    ）",
+    "answer": "D",
+    "solution": "钢球在粘滞液体中向下运动时，受三个力：竖直向下的重力 $G$、竖直向上的浮力 $F_{浮}$ 和竖直向上的粘滞阻力 $f$。粘滞阻力 $f$ 随速度增大而增大。\n\n1. **初始状态**：$v=0$，$f=0$，因钢球密度大于液体，$G > F_{浮}$，合力向下，钢球开始向下加速。\n2. **加速过程**：随着 $v$ 增大，$f$ 增大，向下的合力 $F_{合}=G-F_{浮}-f$ 逐渐减小，加速度 $a$ 逐渐减小。但只要 $F_{合}>0$，速度仍在增大。\n3. **最终状态**：当 $G = F_{浮}+f$ 时，$F_{合}=0$，$a=0$，钢球以此时的速度向下做匀速直线运动，即达到**收尾速度（Terminal Velocity）**。\n\n因此钢球运动越来越快，最后达到稳定的速度。故选 **D**。",
     "difficulty": 1,
     "tags": [
       "选择题"
     ],
     "source": "力学练习三.pdf 第1题",
     "options": [
-      "钢球运动越来越慢,最后静止不动",
-      "钢球运动越来越慢,最后达到稳定的速度",
-      "钢球运动越来越快,一直无限制地增加",
-      "钢球运动越来越快,最后达到稳定的速度。"
+      "钢球运动越来越慢，最后静止不动",
+      "钢球运动越来越慢，最后达到稳定的速度",
+      "钢球运动越来越快，一直无限制地增加",
+      "钢球运动越来越快，最后达到稳定的速度"
     ]
   },
   {
@@ -2754,19 +2754,19 @@ export const QUESTIONS = [
     "itemId": "p1b-m1-03-training",
     "questionType": 0,
     "title": "第 2 题",
-    "content": "质量分别为m和M 的滑块A和B,叠放在光滑水平桌面上,如图所示。A、B间静摩擦系数为 $\\mu _ { s }$ ,滑动摩擦系数为 $\\mu _ { k }$ ,系统原处于静止。今有一水平力作用于A上,要使A、B不发生相对滑动,则应有",
-    "answer": "",
-    "solution": "",
+    "content": "质量分别为 $m$ 和 $M$ 的滑块 $A$ 和 $B$，叠放在光滑水平桌面上，如图所示。$A$、$B$ 间静摩擦系数为 $\\mu_s$，滑动摩擦系数为 $\\mu_k$，系统原处于静止。今有一水平力作用于 $A$ 上，要使 $A$、$B$ 不发生相对滑动，则应有（    ）",
+    "answer": "B",
+    "solution": "要使 $A$、$B$ 不发生相对滑动，两者必须保持相对静止，即具有相同加速度。此时 $A$、$B$ 之间的摩擦力为静摩擦力。\n\n**整体法**：将 $A$、$B$ 看作整体，总质量为 $(M+m)$，只受水平拉力 $F$：\n\n$$F = (M+m)a$$\n\n**隔离法**：单独分析滑块 $B$，水平方向只受 $A$ 对 $B$ 的静摩擦力 $f$：\n\n$$f = Ma$$\n\n临界条件为静摩擦力达到最大静摩擦力：\n\n$$f_{max} = \\mu_s N_A = \\mu_s mg$$\n\n（$N_A$ 是 $A$ 对 $B$ 的压力，大小等于 $A$ 的重力 $mg$）\n\n由隔离法得系统最大加速度：\n\n$$Ma_{max} = \\mu_s mg \\Rightarrow a_{max} = \\frac{\\mu_s mg}{M}$$\n\n代入整体法：\n\n$$F_{max} = (M+m)a_{max} = (M+m)\\cdot\\frac{\\mu_s mg}{M} = \\mu_s mg\\left(1+\\frac{m}{M}\\right)$$\n\n故选 **B**。",
     "difficulty": 1,
     "tags": [
       "选择题"
     ],
     "source": "力学练习三.pdf 第2题",
     "options": [
-      "$F \\le \\mu _ { s } m g$",
-      "$F \\leq \\mu _ { s } ( 1 + m / M ) m g$ ; A IB",
-      "$F \\leq \\mu _ { s } ( m + M ) m g$",
-      "$F \\leq \\mu _ { s } m g { \\frac { m } { M } }$"
+      "$F \\leq \\mu_s mg$",
+      "$F \\leq \\mu_s (1 + m/M)mg$",
+      "$F \\leq \\mu_s (m+M)mg$",
+      "$F \\leq \\mu_s mg \\frac{m}{M}$"
     ],
     "image": "/physics/training/p1b-m1-03-training/fa05c9f7443c261e509c0a00757428cdfaeed2a7f62dc8b730aba305f38e990b.jpg"
   },
@@ -2864,9 +2864,9 @@ export const QUESTIONS = [
     "itemId": "p1b-m1-03-training",
     "questionType": 3,
     "title": "第 8 题",
-    "content": "( js1000A000010960 ) 质量为 m 的子弹以速度 $\\nu _ { 0 }$ 水平射入沙土中,设子弹所受阻力与速度反向,大小与速度成正比,比例系数为K ,忽略子弹的重力,求：子弹射入沙土后,速度随时间变化的函数式;\n(2)子弹进入沙土的最大深度。",
-    "answer": "",
-    "solution": "",
+    "content": "质量为 $m$ 的子弹以速度 $v_0$ 水平射入沙土中，设子弹所受阻力与速度反向，大小与速度成正比，比例系数为 $K$，忽略子弹的重力。求：\n\n（1）子弹射入沙土后，速度随时间变化的函数式；\n\n（2）子弹进入沙土的最大深度。",
+    "answer": "$v(t)=v_0 e^{-\frac{K}{m}t}$，$x_{max}=\frac{mv_0}{K}$",
+    "solution": "本题属于质点动力学中的变力问题。阻力 $f=-Kv$ 随速度变化，加速度不是常数，不能直接使用匀变速直线运动公式，需回归牛顿第二定律的微分形式。\n\n### 第（1）问：求 $v(t)$\n\n由牛顿第二定律：\n\n$$-Kv = m\\frac{dv}{dt}$$\n\n分离变量：\n\n$$\\frac{dv}{v} = -\\frac{K}{m}dt$$\n\n代入初始条件 $t=0$ 时 $v=v_0$，两边积分：\n\n$$\\int_{v_0}^{v}\\frac{1}{v}dv = \\int_0^t -\\frac{K}{m}dt$$\n\n$$\\ln\\frac{v}{v_0} = -\\frac{K}{m}t$$\n\n$$v(t) = v_0 e^{-\\frac{K}{m}t}$$\n\n### 第（2）问：求最大深度 $x_{max}$\n\n利用链式法则 $a = \\frac{dv}{dt} = v\\frac{dv}{dx}$，代入牛顿第二定律：\n\n$$-Kv = mv\\frac{dv}{dx}$$\n\n因 $v \\neq 0$，两边消去 $v$：\n\n$$-Kdx = mdv$$\n\n代入 $x=0$ 时 $v=v_0$，$x=x_{max}$ 时 $v=0$，积分：\n\n$$\\int_0^{x_{max}} -Kdx = \\int_{v_0}^{0} mdv$$\n\n$$-Kx_{max} = -mv_0$$\n\n$$x_{max} = \\frac{mv_0}{K}$$",
     "difficulty": 1,
     "tags": [
       "计算题"

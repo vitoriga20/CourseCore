@@ -12,6 +12,7 @@
     "build:training": "node builders/training-builder.js",
     "build:data": "node builders/question-builder.js",
     "validate:data": "node builders/question-builder.js --validate",
+    "compress:images": "node builders/compress-images.js",
     "predev": "npm run build:data",
     "dev": "vite",
     "prebuild": "npm run build:training && npm run build:data",
@@ -23,7 +24,11 @@
     "gray-matter": "^4.0.3",
     "postcss": "^8.4.38",
     "shadcn": "^4.15.0",
+    "sharp": "^0.35.3",
     "tailwindcss": "^3.4.4",
     "vite": "^5.3.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.8"
   }
 }

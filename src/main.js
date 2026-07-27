@@ -48,6 +48,9 @@ import {
 } from './views/quizSession.js';
 import { renderLandingContent } from './views/landing.js';
 import { showPageLoader, hidePageLoader, initImageLoaders } from './components/loading.js';
+import { initGuest, initAuth, signUp, signIn, signOut, resetPassword } from './services/auth.js';
+import { showAuthModal, hideAuthModal, switchAuthTab, getActiveAuthTab } from './components/authModal.js';
+import { updateUserMenu } from './components/userMenu.js';
 
 function renderAppShell() {
   const app = document.getElementById('app');
@@ -69,6 +72,8 @@ function renderAppShell() {
             <input id="global-search" class="search-input" type="text" placeholder="查找课程、题型或试卷…">
           </div>
         </div>
+        <div class="flex-1"></div>
+        <div id="user-menu-container"></div>
       </div>
     </header>
 
@@ -104,8 +109,8 @@ function renderAppShell() {
             <h4 class="font-semibold mb-3">关于</h4>
             <ul class="space-y-2 text-sm" style="color: var(--muted);">
               <li><span class="hover:text-[var(--fg)]">关于我们</span></li>
-              <li><span class="hover:text-[var(--fg)]">使用条款</span></li>
-              <li><span class="hover:text-[var(--fg)]">隐私政策</span></li>
+              <li><a href="/terms" class="hover:text-[var(--fg)]">使用条款</a></li>
+              <li><a href="/privacy" class="hover:text-[var(--fg)]">隐私政策</a></li>
             </ul>
           </div>
         </div>
@@ -149,6 +154,8 @@ function renderAppShell() {
         </nav>
       </aside>
     </div>
+
+    <div id="auth-modal-container"></div>
   `;
 }
 
@@ -223,6 +230,106 @@ function toggleCourseSubmenu(button) {
   }
 }
 
+function toggleUserMenu() {
+  const dropdown = document.getElementById('user-menu-dropdown');
+  const toggle = document.querySelector('[data-action="toggle-user-menu"]');
+  if (!dropdown) return;
+  const isHidden = dropdown.classList.contains('hidden');
+  if (isHidden) {
+    dropdown.classList.remove('hidden');
+    toggle?.setAttribute('aria-expanded', 'true');
+  } else {
+    dropdown.classList.add('hidden');
+    toggle?.setAttribute('aria-expanded', 'false');
+  }
+}
+
+function closeUserMenu() {
+  const dropdown = document.getElementById('user-menu-dropdown');
+  const toggle = document.querySelector('[data-action="toggle-user-menu"]');
+  if (dropdown && !dropdown.classList.contains('hidden')) {
+    dropdown.classList.add('hidden');
+    toggle?.setAttribute('aria-expanded', 'false');
+  }
+}
+
+function showAuthMessage(text, type) {
+  const el = document.getElementById('auth-message');
+  if (!el) return;
+  el.textContent = text;
+  el.className = `auth-message ${type}`;
+}
+
+function getAuthSubmitLabel(tab) {
+  const labels = { login: '登录', signup: '注册', reset: '发送重置邮件' };
+  return labels[tab] || '提交';
+}
+
+async function handleAuthSubmit() {
+  const tab = getActiveAuthTab();
+  const email = document.getElementById('auth-email')?.value.trim() || '';
+  const password = document.getElementById('auth-password')?.value || '';
+  const confirm = document.getElementById('auth-password-confirm')?.value || '';
+
+  if (!email) {
+    showAuthMessage('请输入邮箱', 'error');
+    return;
+  }
+
+  if (tab !== 'reset' && !password) {
+    showAuthMessage('请输入密码', 'error');
+    return;
+  }
+
+  if (tab === 'signup' && password !== confirm) {
+    showAuthMessage('两次输入的密码不一致', 'error');
+    return;
+  }
+
+  if (tab === 'signup') {
+    const consent = document.getElementById('auth-consent')?.checked;
+    if (!consent) {
+      showAuthMessage('请同意用户协议与隐私政策后注册', 'error');
+      return;
+    }
+  }
+
+  const submitBtn = document.querySelector('[data-action="auth-submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '处理中…';
+  }
+
+  try {
+    if (tab === 'login') {
+      await signIn(email, password);
+      hideAuthModal();
+    } else if (tab === 'signup') {
+      await signUp(email, password);
+      showAuthMessage('注册成功，请查收确认邮件（如启用邮箱验证）后登录。', 'success');
+    } else if (tab === 'reset') {
+      await resetPassword(email);
+      showAuthMessage('重置邮件已发送，请查收。', 'success');
+    }
+  } catch (err) {
+    showAuthMessage(err?.message || '操作失败，请重试', 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = getAuthSubmitLabel(tab);
+    }
+  }
+}
+
+async function handleLogout() {
+  try {
+    await signOut();
+    updateUserMenu();
+  } catch (err) {
+    console.error('Logout failed', err);
+  }
+}
+
 function initEventDelegation() {
   const app = document.getElementById('app');
   if (!app) return;
@@ -243,6 +350,8 @@ function initEventDelegation() {
     if (!el) {
       const menuWrap = document.getElementById('staggered-menu');
       if (menuWrap && !menuWrap.contains(e.target)) closeStaggeredMenu();
+      const userMenu = document.querySelector('.user-menu');
+      if (userMenu && !userMenu.contains(e.target)) closeUserMenu();
       return;
     }
     const action = el.dataset.action;
@@ -297,6 +406,16 @@ function initEventDelegation() {
       case 'next-question': handleNextQuestion(qid); break;
       case 'prev-question': handlePrevQuestion(qid); break;
       case 'history-back': window.history.back(); break;
+      case 'auth-open': showAuthModal(tab || 'login'); break;
+      case 'auth-close': hideAuthModal(); break;
+      case 'auth-close-navigate':
+        hideAuthModal();
+        if (el.dataset.target) navigateTo(el.dataset.target);
+        break;
+      case 'auth-tab': switchAuthTab(tab || 'login'); break;
+      case 'auth-submit': handleAuthSubmit(); break;
+      case 'logout': handleLogout(); break;
+      case 'toggle-user-menu': toggleUserMenu(); break;
       default: break;
     }
   });
@@ -347,17 +466,27 @@ function initEventDelegation() {
   });
 }
 
-function init() {
+async function init() {
+  initGuest();
   loadProgress();
   setTheme(state.theme);
   renderAppShell();
   initEventDelegation();
   showPageLoader('CourseCore');
-  restoreLocation();
   initBackground(() => state.theme);
+
+  window.addEventListener('cc-auth-change', () => updateUserMenu());
+
+  await initAuth();
+  updateUserMenu();
+  restoreLocation();
 
   window.addEventListener('popstate', () => {
     restoreLocation();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') hideAuthModal();
   });
 }
 

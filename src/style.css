@@ -275,6 +275,21 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
+.brand-mark {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.brand-mark-header {
+  width: 2rem;
+  height: 2rem;
+}
+
+.brand-mark-footer {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
 /* GooeyNav */
 .gooey-nav-wrapper {
   display: inline-flex;

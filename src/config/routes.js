@@ -3,6 +3,8 @@ export const ROUTES = {
   kb: { path: '/kb', view: 'knowledge' },
   bank: { path: '/bank', view: 'bank' },
   exams: { path: '/exams', view: 'exam' },
+  privacy: { path: '/privacy', view: 'privacy' },
+  terms: { path: '/terms', view: 'terms' },
   course: { path: '/course/:courseId', view: 'course', params: ['courseId'] },
   item: { path: '/item/:itemId', view: 'practice-list', params: ['itemId'] },
   question: { path: '/question/:qid', view: 'practice', params: ['qid'] },
@@ -50,7 +52,9 @@ export function getStaticPaths(courses, questions, examPapers) {
     '/',
     '/kb',
     '/bank',
-    '/exams'
+    '/exams',
+    '/privacy',
+    '/terms'
   ];
 
   for (const course of courses) {

@@ -5,8 +5,8 @@
 | 项 | 内容 |
 |---|---|
 | 项目名称 | CourseCore — 大学基础课学习平台 |
-| 当前状态 | 已完成小节独立页面、inline 全题提交、错题查看答案、全部答对进入下一节；大学物理B（上）力学与波动光学 13 个章节训练小节已集成，题目类型、题干、图片抽样检查通过 |
-| 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) |
+| 当前状态 | 已完成用户认证体系前端链路：游客模式、邮箱+密码登录/注册/重置密码弹窗、用户菜单、本地↔Supabase 进度同步；付费与 Stripe 部分按决策延后 |
+| 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth |
 | 构建产物 | `dist/`（479 个预渲染静态路由） |
 | 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
 
@@ -18,12 +18,13 @@ coursecore/
 ├── builders/training-extract.py    # 调用 MinerU API 从 PDF 抽取训练题题干
 ├── builders/training-builder.js    # Node.js 包装，prebuild 阶段调用 Python 脚本并加载 .env.local
 ├── scripts/prerender.js            # 基于 routes.js 生成静态 HTML
-├── .env.local                      # MinerU API token（不提交 Git）
+├── scripts/supabase-schema.sql     # Supabase 建表、RLS、触发器脚本
+├── .env.local                      # MinerU API token、Supabase 配置（不提交 Git）
 ├── public/physics/training/        # 训练题题图资源
 ├── src/
-│   ├── main.js                     # 应用壳、事件委托、初始化
+│   ├── main.js                     # 应用壳、事件委托、认证初始化
 │   ├── router.js                   # 路由与视图控制器
-│   ├── state.js                    # 全局状态与进度持久化
+│   ├── state.js                    # 全局状态、进度持久化、云端同步触发
 │   ├── style.css                   # 主题变量与组件样式
 │   ├── theme.js                    # 明暗主题切换
 │   ├── background.js               # p5.js 几何背景
@@ -35,15 +36,25 @@ coursecore/
 │   │   ├── questions.js            # 题目数据（自动构建生成）
 │   │   ├── examPapers.js           # 期末试卷数据
 │   │   └── labels.js               # 类型标签文案
+│   ├── services/
+│   │   ├── supabase.js             # Supabase 客户端初始化
+│   │   ├── auth.js                 # 游客初始化、登录/注册/登出、数据合并
+│   │   └── sync.js                 # 云端 answers / progress 读写与合并
 │   ├── utils/
 │   │   ├── progress.js             # localStorage 读写与迁移
 │   │   ├── answer-collector.js     # 从 DOM 收集用户答案
 │   │   └── question.js             # 题目导航工具
 │   ├── validators/                 # 各类答案校验器
+│   ├── components/
+│   │   ├── authModal.js            # 登录/注册/重置密码弹窗
+│   │   ├── auth-components.css     # 认证组件样式
+│   │   └── userMenu.js             # 右上角用户状态菜单
 │   └── views/                      # 页面与题目渲染模板
 │       ├── course.js               # 课程详情页
 │       ├── practiceList.js         # 小节独立页面（理论 + inline 训练）
 │       ├── inlinePractice.js       # inline 多题训练区
+│       ├── quizSession.js          # 单题/训练测验会话
+│       ├── legal.js                # 隐私政策 / 用户协议页面
 │       └── question/               # 单题渲染组件
 ├── curriculum/raw/questions/       # 题目 Markdown 源文件
 └── development-log.md              # 本文件
@@ -215,6 +226,9 @@ coursecore/
 | 单一提交/下一节按钮 | 根据 `allPassed` 状态动态切换文案与 `data-action` |
 | 答案收集基于 DOM | `collectUserAnswer(question, root)` 直接从 DOM 读取，避免不同题型的状态同步差异 |
 | 预渲染所有路由 | 构建时生成每个 URL 对应的 `index.html`，刷新或直接访问不 404 |
+| 游客优先 + 登录合并 | 未登录时全部数据存本地；登录后按时间戳合并到 Supabase，不询问用户 |
+| Supabase 未配置 graceful degradation | 无配置时站点仍以游客模式运行，同步函数被拦截，不影响现有功能 |
+| 邮箱 + 密码认证 | 用户已确认此方式，弹窗支持登录/注册/重置密码三态切换 |
 
 ## 已知限制与待改进项
 
@@ -223,6 +237,9 @@ coursecore/
 - 题目内容中的 LaTeX 依赖 MathJax 异步渲染，极快切换页面时可能出现闪烁。
 - MinerU API 对少数希腊符号（如 λ）可能漏识别，当前通过 `repair_missing_lambda` 与 `patch_known_questions` 做启发式恢复，后续可升级为更完整的符号 OCR 后处理或人工抽检。
 - 训练题答案字段目前留空，需后续手动补充。
+- 当前 Supabase 项目尚未创建，`.env.local` 中配置为空，认证与同步功能处于“就绪待配置”状态；创建项目并填入 URL/Key 后即可启用。
+- 登录/注册弹窗尚未增加“同意用户协议与隐私政策”勾选框，合规页面 `/privacy`、`/terms` 待后续补充。
+- 用户账号注销、邮箱确认重发、同步失败重试提示等体验细节待后续完善。
 
 ## 阶段 3: 构建与功能验证
 
@@ -318,6 +335,24 @@ coursecore/
 - 部分选择题选项未提取的问题（正则 lookahead 要求选项标记后必须有空格，导致 `(B)中央...` 等格式失败）。
 - 题图未加载的问题（之前未从 MinerU 输出目录复制图片到 `public`，现自动复制）。
 
+## 更新记录 - 2026-07-27
+
+### 新增
+- 用户认证体系前端链路：游客模式、邮箱+密码登录/注册/重置密码弹窗、右上角用户菜单。
+- `src/services/supabase.js`、`auth.js`、`sync.js`，实现 Supabase 客户端、游客初始化、登录状态管理、本地↔云端进度同步。
+- `src/components/authModal.js`、`auth-components.css`、`userMenu.js`。
+- `.env.local` 中新增 `VITE_SUPABASE_URL`、`VITE_SUPABASE_ANON_KEY` 占位。
+
+### 修改
+- `src/state.js` 新增 `user`、`authReady`；提交答案/完成小节时若已登录则同步到 Supabase。
+- `src/main.js` 集成认证初始化、用户菜单、弹窗容器与全部认证事件处理。
+- `.trae/documents/auth-system-plan.md` 版本升至 1.1，明确付费与 Stripe 延后。
+
+### 待后续
+- 创建 Supabase 项目并填入 `.env.local`。
+- 在 Supabase 中创建 `profiles`、`answers`、`progress` 表与 RLS。
+- 付费内容、Paywall、Stripe 支付、前 2 题试看移至后续迭代。
+
 ### 阶段 8: 接入 React Bits MCP（仅作搜索工具）
 
 **日期**: 2026-07-26
@@ -359,6 +394,107 @@ coursecore/
 - MCP 可搜索/查看组件，但无法直接把 React 组件安装到当前原生 JS 项目；需人工翻译为 vanilla JS + Tailwind。
 - 如后续迁移到 React + shadcn，可直接用该 MCP 安装组件。
 
+### 阶段 9: 用户认证体系前端链路
+
+**日期**: 2026-07-27
+
+**操作**:
+- 实现 `src/services/supabase.js`：读取 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`，未配置时优雅降级为 `null`。
+- 实现 `src/services/auth.js`：游客 `guest_id` 初始化、登录/注册/登出/重置密码、登录后本地↔云端数据合并。
+- 实现 `src/services/sync.js`：`pushAnswer`、`pushItemProgress`、`pullProgress`、`mergeAndPushLocal`，按时间戳合并本地与云端记录。
+- 实现 `src/components/authModal.js` + `auth-components.css`：邮箱+密码登录、注册、重置密码三态弹窗。
+- 实现 `src/components/userMenu.js`：右上角登录/注册按钮或已登录用户下拉菜单。
+- 修改 `src/state.js`：新增 `user`、`authReady`；`markQuestion` 与 `syncItemProgress` 在登录时同步到 Supabase。
+- 修改 `src/main.js`：
+  - 启动时调用 `initGuest()`、`initAuth()`、`updateUserMenu()`；
+  - 在 header 中渲染 `user-menu-container`，在 app shell 末尾渲染 `auth-modal-container`；
+  - 增加 `auth-open` / `auth-close` / `auth-tab` / `auth-submit` / `logout` / `toggle-user-menu` 事件处理。
+- 修改 `.env.local`：新增 Supabase 配置占位。
+- 更新 `.trae/documents/auth-system-plan.md`：版本升至 1.1，明确付费与 Stripe 延后。
+
+**关键决策**:
+- 邮箱 + 密码优先于 Magic Link：用户已明确选择此方式，且重置密码链路完整。
+- 未配置 Supabase 时不阻塞站点：游客模式仍可正常使用，所有同步操作被 `isSupabaseConfigured()` 拦截。
+- 进度合并以时间戳为准：本地较新则写入云端，云端较新则覆盖本地，避免弹窗询问。
+- 付费内容、Paywall、Stripe 支付延后：本次只完成账号体系与进度同步。
+
+**产出文件**:
+- `src/services/supabase.js`
+- `src/services/auth.js`
+- `src/services/sync.js`
+- `src/components/authModal.js`
+- `src/components/auth-components.css`
+- `src/components/userMenu.js`
+- `src/main.js`（认证事件与初始化）
+- `src/state.js`（同步触发）
+- `.env.local`（Supabase 占位）
+- `.trae/documents/auth-system-plan.md`（v1.1）
+
+**关联问题**: 无
+
+## 更新记录 - 2026-07-27（补充）
+
+### 新增
+- `/privacy` 隐私政策页面与 `/terms` 用户协议页面，含返回首页入口。
+- `src/views/legal.js`：复用卡片样式渲染隐私政策与用户协议。
+- 注册弹窗新增“已满 14 周岁并同意用户协议和隐私政策”勾选框，未勾选无法提交注册。
+- 页脚“使用条款”“隐私政策”改为真实链接。
+- `scripts/supabase-schema.sql`：包含 `profiles`、`answers`、`progress` 建表、RLS 策略、新用户触发器与索引。
+
+### 修改
+- `src/config/routes.js`：新增 `privacy`、`terms` 路由，并加入 `getStaticPaths` 预渲染列表。
+- `src/router.js`：增加 `showPrivacy`、`showTerms` 与 `renderMain` 对应分支。
+- `src/components/authModal.js`：注册表单增加同意勾选框与协议链接。
+- `src/components/auth-components.css`：增加 `.auth-consent*` 样式。
+- `src/main.js`：注册提交前校验同意状态；增加 `auth-close-navigate` 事件关闭弹窗并跳转协议页。
+- `.trae/documents/technical-architecture.md` 补充 `scripts/supabase-schema.sql` 说明。
+
+### 待后续
+- 在 Supabase SQL Editor 中运行 `scripts/supabase-schema.sql`。
+- 付费内容、Paywall、Stripe 支付、前 2 题试看移至后续迭代。
+
+### 阶段 10: 大学物理B（上）理论讲义与训练题答案补全
+
+**日期**: 2026-07-27
+
+**操作**:
+- 读取用户提供的 `大物上第三版(改前两章).md`，按现有 `courses.js` 的 15 个 theory 小节结构重新整理理论内容。
+- 更新 `curriculum/raw/questions/physics-b-1/p1b-m1-01.md ~ p1b-m1-07.md` 与 `p1b-m2-01.md ~ p1b-m2-05.md、p1b-m2-07.md、p1b-m2-08.md`，替换原有占位内容。
+- 对于无法完整映射的章节（4.2 保守力与势能内容截断、p1b-m2-06 光学仪器分辨率无源内容），按用户决策暂不录入，保留原小节占位或跳过内容。
+- 文件中的 7 道例题与现有 training 题目完全对应，为对应文件补充答案与详细解析：
+  - `p1b-m1-01-training-002/004`
+  - `p1b-m1-02-training-002/004`
+  - `p1b-m1-03-training-001/002/008`
+- 训练题图片路径沿用已有本地资源，未新增外链。
+- 运行 `npm run build:data` 与 `npm run validate:data` 均通过，生成 291 道题、15 个理论内容、2 套试卷。
+
+**关键决策**:
+- 保持现有 `courses.js` 小节结构不变，内容按标题语义映射，有冲突的章节不强行合并 → 减少课程结构改动风险。
+- 文件中的题目均为章节训练题，归入对应 `training` 小节；未在文件中发现新的期末综合难题，因此 quiz 目录不作追加 → 符合“training 放简单训练题，quiz 保留”的决策。
+- 题型维持原样：单选题保留 `singleChoice`，计算题保留 `calculation`，答案与解析均来自文件原文。
+
+**产出文件**:
+- `curriculum/raw/questions/physics-b-1/p1b-m1-01.md ~ p1b-m1-07.md`（力学理论讲义）
+- `curriculum/raw/questions/physics-b-1/p1b-m2-01.md ~ p1b-m2-05.md、p1b-m2-07.md、p1b-m2-08.md`（波动光学理论讲义）
+- `curriculum/raw/questions/physics-b-1/p1b-m1-01-training/q-physics-b-1-p1b-m1-01-training-002.md` 等 7 道训练题（补充答案与解析）
+- `src/data/theoryContents.js`（自动构建生成）
+- `src/data/questions.js`（自动构建生成）
+
+## 更新记录 - 2026-07-27（第二次）
+
+### 新增
+- 大学物理B（上）力学 7 个小节、波动光学 7 个小节的完整理论讲义内容（除映射冲突/截断部分外）。
+- 7 道已有 training 小题的标准答案与分步解析。
+
+### 修改
+- 15 个 theory Markdown 源文件由占位内容替换为正式讲义。
+- `p1b-m1-01-training-002` 等 7 道训练题由空答案更新为文件中的正确答案，并新增 `## Solution` 解析分区。
+- `src/data/theoryContents.js` 与 `src/data/questions.js` 经 `build:data` 重新生成。
+
+### 未录入内容
+- 第四章 4.2 节“保守力与势能”因源文件内容截断，未录入。
+- `p1b-m2-06` 小节“光学仪器分辨率与X射线衍射”因源文件无对应内容，保持占位。
+
 ## 最后更新时间
 
-2026-07-26 21:30
+2026-07-27
