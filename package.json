@@ -15,7 +15,7 @@
     "compress:images": "node builders/compress-images.js",
     "predev": "npm run build:data",
     "dev": "vite",
-    "prebuild": "npm run build:training && npm run build:data",
+    "prebuild": "npm run build:data",
     "build": "vite build && node scripts/prerender.js",
     "preview": "vite preview"
   },

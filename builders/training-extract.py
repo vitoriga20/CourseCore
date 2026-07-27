@@ -115,7 +115,7 @@ def question_type_for(section_title: str, has_options: bool) -> str:
 
 
 def extract_options(text: str):
-    """Extract inline options A/B/C/D from a question text.
+    r"""Extract inline options A/B/C/D from a question text.
 
     LaTeX formulas ($...$) are protected so that command letters like \Delta
     are not mistaken for option markers. If the first option marker is not A,
