@@ -501,6 +501,39 @@ coursecore/
 - 例题通过与否影响 theory 小节完成状态：全部通过后写入 `state.progress[itemId]` → 与现有 `isItemCompleted` 逻辑兼容，无需改动完成判定。
 - 仅试点 `p1b-m1-01`，其余 14 个 theory 小节暂不添加 `examples` → 先验证交互与样式，再批量推广。
 
+### 阶段 12: 推广 theory 例题面板至力学前三节
+
+**日期**: 2026-07-27
+
+**操作**:
+- 根据 `大物上第三版(改前两章).md` 中例题与 training 题目的对应关系，为 `p1b-m1-02.md` 与 `p1b-m1-03.md` 补充 `examples` frontmatter：
+  - `p1b-m1-02` → `q-physics-b-1-p1b-m1-02-training-002/004`
+  - `p1b-m1-03` → `q-physics-b-1-p1b-m1-03-training-001/002/008`
+- 重新运行 `npm run build:data`，`theoryContents.js` 中对应 3 个 theory 小节已写入 `examples` 数组，其余 12 个小节保持 `examples: []`。
+- 运行 `npx vite build` + `node scripts/prerender.js` 通过，生成 481 条静态路由。
+- 浏览器验证 `/item/p1b-m1-02` 与 `/item/p1b-m1-03`：Markdown 格式化、例题面板、交互、公式渲染均正常。
+
+**关键决策**:
+- 只推广有力学例题的 3 个小节（p1b-m1-01 ~ p1b-m1-03），其余 theory 小节源文件中无对应例题，保持 `examples` 为空 → 避免硬凑题目。
+- 不修改 `practiceList.js` 代码，仅通过 frontmatter 配置推广 → 验证试点代码的可复用性。
+
+**产出文件**:
+- `curriculum/raw/questions/physics-b-1/p1b-m1-02.md`（新增 `examples`）
+- `curriculum/raw/questions/physics-b-1/p1b-m1-03.md`（新增 `examples`）
+- `src/data/theoryContents.js`（自动构建生成）
+
+## 更新记录 - 2026-07-27（第四次）
+
+### 新增
+- `p1b-m1-02` 与 `p1b-m1-03` 两个 theory 小节的例题面板（共 5 道例题）。
+
+### 修改
+- 2 个 theory Markdown 源文件新增 `examples` frontmatter。
+- `src/data/theoryContents.js` 经 `build:data` 重新生成。
+
+### 待后续
+- 若后续源文件补充更多例题，继续按同样方式为对应 theory 小节添加 `examples`。
+
 **产出文件**:
 - `curriculum/raw/questions/physics-b-1/p1b-m1-01.md`（新增 `examples` frontmatter）
 - `builders/question-builder.js`（解析 `examples`）
