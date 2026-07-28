@@ -677,6 +677,17 @@ body {
 .sm-panel-itemWrap:nth-child(1) .sm-panel-label { transition-delay: 0.18s; }
 .sm-panel-itemWrap:nth-child(2) .sm-panel-label { transition-delay: 0.26s; }
 .sm-panel-itemWrap:nth-child(3) .sm-panel-label { transition-delay: 0.34s; }
+.sm-panel-itemWrap:nth-child(4) .sm-panel-label { transition-delay: 0.42s; }
+
+.sm-panel-auth .sm-panel-item {
+  color: var(--muted);
+  font-size: clamp(1rem, 2.2vw, 1.4rem);
+}
+
+.sm-panel-auth .sm-panel-item:hover,
+.sm-panel-auth .sm-panel-item:focus-visible {
+  color: var(--accent);
+}
 
 .sm-panel-group .sm-submenu {
   list-style: none;
