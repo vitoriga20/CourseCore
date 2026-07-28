@@ -92,6 +92,7 @@ CourseCore —— 用本校真题和学霸答案，精准搞定大学公共课�
 | 期末试卷列表 | `/exams` | `src/views/examPapers.js` | 试卷基本信息列表 |
 | 试卷详情 | `/exams/:examId` | `src/views/examDetail.js` | 分节展示试卷题目 |
 | 试卷逐题作答 | `/exams/:examId/questions/:qid` | `src/views/practiceDetail.js` | 在试卷上下文中逐题作答 |
+| 用户中心 | `/user` | `src/views/user/userPage.js` | 头像、昵称、学习统计、活动热图 |
 
 ## 5. 功能需求
 

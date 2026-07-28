@@ -261,3 +261,405 @@
 }
 
 .auth-consent a:hover { opacity: 0.8; }
+
+/* 浮动标签 */
+.auth-field.floating {
+  position: relative;
+  padding-top: 0.5rem;
+}
+
+.auth-field.floating label {
+  position: absolute;
+  left: 1rem;
+  top: 1.25rem;
+  font-size: 0.9375rem;
+  color: var(--muted);
+  background: transparent;
+  padding: 0 0.25rem;
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 0.2s ease, color 0.2s ease, background-color 0.2s ease, top 0.2s ease;
+}
+
+.auth-field.floating .auth-input {
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.auth-field.floating .auth-input:focus ~ label,
+.auth-field.floating .auth-input:not(:placeholder-shown) ~ label {
+  transform: translateY(-1.35rem) scale(0.78);
+  top: 1.25rem;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+.auth-field.floating .auth-input:focus ~ label {
+  color: var(--accent);
+}
+
+/* 动画登录按钮 */
+.auth-submit-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 120px;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 9999px;
+  border: none;
+  background: #22c55e;
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.auth-submit-btn:hover {
+  transform: scale(1.01);
+  opacity: 0.95;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+}
+
+.auth-submit-btn:active {
+  transform: scale(0.99);
+}
+
+.auth-submit-btn:disabled {
+  cursor: wait;
+}
+
+.auth-btn-loader,
+.auth-btn-check {
+  width: 0;
+  height: 20px;
+  flex-shrink: 0;
+  display: none;
+  animation: none;
+}
+
+.auth-btn-loader {
+  animation: auth-spin 1s linear infinite;
+}
+
+@keyframes auth-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.auth-submit-btn.loading .auth-btn-text,
+.auth-submit-btn.success .auth-btn-text {
+  opacity: 0.9;
+}
+
+.auth-submit-btn.loading .auth-btn-loader {
+  display: block;
+  width: 20px;
+}
+
+.auth-submit-btn.success .auth-btn-check {
+  display: block;
+  width: 20px;
+}
+
+.auth-submit-btn.loading .auth-btn-check,
+.auth-submit-btn.success .auth-btn-loader {
+  display: none;
+  width: 0;
+}
+
+/* 头像选择弹窗 */
+.avatar-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+.avatar-picker-modal {
+  width: 100%;
+  max-width: 360px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.avatar-picker-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 0;
+}
+
+.avatar-picker-close {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fg);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.avatar-picker-close:hover { background: var(--hover); }
+
+.avatar-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.avatar-choice {
+  aspect-ratio: 1;
+  border-radius: 1rem;
+  border: 2px solid transparent;
+  background: var(--card);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: transform 0.15s ease, border-color 0.2s ease;
+}
+
+.avatar-choice:hover { transform: scale(1.05); }
+
+.avatar-choice.active { border-color: var(--accent); }
+
+.avatar-choice img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+/* 用户中心页面 */
+.user-page {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.user-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  color: var(--fg);
+}
+
+.user-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.user-avatar-edit {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 1rem;
+  border: 2px solid var(--line);
+  background: var(--card);
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.user-avatar-edit img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--fg) 55%, transparent);
+  color: var(--bg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.user-avatar-edit:hover .user-avatar-mask { opacity: 1; }
+
+.user-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.user-name-input {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  color: var(--fg);
+  outline: none;
+  width: 180px;
+}
+
+.user-name-input:focus { border-color: var(--accent); }
+
+.user-name-edit {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.user-name-edit:hover { color: var(--fg); background: var(--hover); }
+
+.user-id {
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+}
+
+.user-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.user-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.user-privacy-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.user-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+
+.user-stat-label {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.user-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.user-heatmap {
+  overflow-x: auto;
+}
+
+.user-heatmap-months {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.user-heatmap-grid {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.user-heatmap-week {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 0.1875rem;
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+.user-heatmap-cell.level-1 { background: color-mix(in srgb, var(--fg) 25%, transparent); }
+.user-heatmap-cell.level-2 { background: color-mix(in srgb, var(--fg) 45%, transparent); }
+.user-heatmap-cell.level-3 { background: color-mix(in srgb, var(--fg) 65%, transparent); }
+.user-heatmap-cell.level-4 { background: color-mix(in srgb, var(--fg) 90%, transparent); }
+
+.user-heatmap-footer {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.user-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.user-logout-btn {
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.user-logout-btn:hover {
+  color: var(--error);
+  border-color: var(--error);
+  background: rgba(198, 40, 40, 0.08);
+}

@@ -29,17 +29,17 @@ function renderModalHtml() {
         </div>
         <div id="auth-message" class="auth-message hidden"></div>
         <form class="auth-form" id="auth-form" onsubmit="return false;">
-          <div class="auth-field">
+          <div class="auth-field floating">
+            <input id="auth-email" type="text" class="auth-input" placeholder=" " autocomplete="username" required>
             <label for="auth-email">账号</label>
-            <input id="auth-email" type="text" class="auth-input" placeholder="admin@coursecore.local" autocomplete="username" required>
           </div>
-          <div class="auth-field ${activeTab === 'reset' ? 'hidden' : ''}">
+          <div class="auth-field floating ${activeTab === 'reset' ? 'hidden' : ''}">
+            <input id="auth-password" type="password" class="auth-input" placeholder=" " autocomplete="${activeTab === 'signup' ? 'new-password' : 'current-password'}" ${activeTab === 'reset' ? '' : 'required'}>
             <label for="auth-password">密码</label>
-            <input id="auth-password" type="password" class="auth-input" placeholder="••••••••" autocomplete="${activeTab === 'signup' ? 'new-password' : 'current-password'}" ${activeTab === 'reset' ? '' : 'required'}>
           </div>
-          <div class="auth-field ${activeTab === 'signup' ? '' : 'hidden'}">
+          <div class="auth-field floating ${activeTab === 'signup' ? '' : 'hidden'}">
+            <input id="auth-password-confirm" type="password" class="auth-input" placeholder=" " autocomplete="new-password">
             <label for="auth-password-confirm">确认密码</label>
-            <input id="auth-password-confirm" type="password" class="auth-input" placeholder="••••••••" autocomplete="new-password">
           </div>
           <div class="auth-consent ${activeTab === 'signup' ? '' : 'hidden'}">
             <label class="auth-consent-label">
@@ -47,7 +47,11 @@ function renderModalHtml() {
               <span>我已年满 14 周岁，并同意<a href="/terms" data-action="auth-close-navigate" data-target="/terms">用户协议</a>和<a href="/privacy" data-action="auth-close-navigate" data-target="/privacy">隐私政策</a>。</span>
             </label>
           </div>
-          <button type="submit" class="auth-submit-btn" data-action="auth-submit">${SUBMIT_LABELS[activeTab]}</button>
+          <button type="submit" class="auth-submit-btn" data-action="auth-submit">
+            <svg class="auth-btn-loader" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3a9 9 0 1 0 9 9"/></svg>
+            <svg class="auth-btn-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12l2 2l4 -4"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/></svg>
+            <span class="auth-btn-text">${SUBMIT_LABELS[activeTab]}</span>
+          </button>
         </form>
       </div>
     </div>

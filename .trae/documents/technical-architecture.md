@@ -76,6 +76,7 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
     │   ├── authModal.js                # 登录/注册/重置密码弹窗
     │   ├── auth-components.css         # 认证组件样式
     │   ├── userMenu.js                 # 右上角用户状态菜单
+    │   ├── avatarPicker.js             # 头像选择弹窗
     │   ├── gooeyNav.js                 # GooeyNav 粘性流体导航
     │   └── loading.js                  # 加载组件：spinner、skeleton、progress、page-loader、image-loader
     ├── config\                         # 全局配置
@@ -104,7 +105,8 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
     ├── utils\                          # 业务工具
     │   ├── answer-collector.js         # 根据题型收集用户输入
     │   ├── question.js                 # 题目查找与导航
-    │   └── progress.js                 # localStorage 读写与迁移
+    │   ├── progress.js                 # localStorage 读写与迁移
+    │   └── avatars.js                  # 黑白几何占位头像
     └── views\                          # 页面视图组件
         ├── landing.js                  # 首页（学习/知识库双板块）
         ├── course.js                   # 课程详情
@@ -114,10 +116,12 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
         ├── practiceDetail.js           # 单题作答与解法（薄包装）
         ├── practiceBank.js             # 刷题板块
         ├── knowledgeBase.js            # 知识库
-        ├── examPapers.js               # 期末试卷列表
-        ├── examDetail.js               # 试卷详情
-        ├── legal.js                    # 隐私政策 / 用户协议页面
-        └── question\                   # 题型模板
+        ├── examPapers.js            # 期末试卷列表
+        ├── examDetail.js            # 试卷详情
+        ├── legal.js                 # 隐私政策 / 用户协议页面
+        ├── user\                    # 用户中心
+        │   └── userPage.js          # /user 页面渲染
+        └── question\                # 题型模板
             ├── index.js                # renderQuestion(question) 入口
             ├── choice.js               # 单选/多选/判断
             ├── fill.js                 # 填空/简答

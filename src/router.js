@@ -20,6 +20,7 @@ import { renderPracticeDetail } from './views/practiceDetail.js';
 import { renderExamPapers } from './views/examPapers.js';
 import { renderExamDetail } from './views/examDetail.js';
 import { renderPrivacy, renderTerms } from './views/legal.js';
+import { renderUserPage } from './views/user/userPage.js';
 import { initGooeyNav } from './components/gooeyNav.js';
 import { showPageLoader, hidePageLoader, initImageLoaders, renderButtonLoader } from './components/loading.js';
 
@@ -57,6 +58,9 @@ function applyRoute(route) {
       break;
     case 'terms':
       showTerms();
+      break;
+    case 'user':
+      showUserPage();
       break;
     case 'course':
       showCourse(route.params.courseId);
@@ -173,6 +177,15 @@ export function showPrivacy() {
 
 export function showTerms() {
   state.view = "terms";
+  state.currentCourseId = null;
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showUserPage() {
+  state.view = "user";
   state.currentCourseId = null;
   clearQuestionState();
   setActiveNav('landing');
@@ -503,6 +516,9 @@ export function renderMain() {
       break;
     case "terms":
       main.innerHTML = renderTerms();
+      break;
+    case "user":
+      main.innerHTML = renderUserPage();
       break;
     default:
       main.innerHTML = renderLanding();

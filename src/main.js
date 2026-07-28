@@ -50,9 +50,11 @@ import {
 } from './views/quizSession.js';
 import { renderLandingContent } from './views/landing.js';
 import { showPageLoader, hidePageLoader, initImageLoaders } from './components/loading.js';
-import { initGuest, initAuth, signUp, signIn, signOut, resetPassword } from './services/auth.js';
+import { initGuest, initAuth, signUp, signIn, signOut, resetPassword, updateUserProfile, getDefaultAvatar } from './services/auth.js';
 import { showAuthModal, hideAuthModal, switchAuthTab, getActiveAuthTab } from './components/authModal.js';
 import { updateUserMenu } from './components/userMenu.js';
+import { renderUserPage } from './views/user/userPage.js';
+import { renderAvatarPicker } from './components/avatarPicker.js';
 
 function renderAppShell() {
   const app = document.getElementById('app');
@@ -137,6 +139,11 @@ function renderAppShell() {
       </button>
       <aside class="sm-panel" id="sm-panel" aria-hidden="true">
         <nav class="sm-panel-inner">
+          <div class="sm-panel-avatar">
+            <button type="button" class="sm-avatar-btn" data-action="user-entry" title="${state.user ? state.user.name : '登录'}">
+              <img src="${state.user ? state.user.avatar : getDefaultAvatar('Guest', 'e5e7eb')}" alt="用户头像" class="sm-avatar-img" loading="eager">
+            </button>
+          </div>
           <ul class="sm-panel-list">
             <li class="sm-panel-itemWrap">
               <a href="/" class="sm-panel-item" data-index="01"><span class="sm-panel-label">首页</span></a>
@@ -151,11 +158,6 @@ function renderAppShell() {
             </li>
             <li class="sm-panel-itemWrap">
               <a href="/kb" class="sm-panel-item" data-index="03"><span class="sm-panel-label">知识库</span></a>
-            </li>
-            <li class="sm-panel-itemWrap sm-panel-auth">
-              ${state.user
-                ? `<button type="button" class="sm-panel-item" data-action="logout" data-index="04"><span class="sm-panel-label">退出登录</span></button>`
-                : `<button type="button" class="sm-panel-item" data-action="auth-open" data-tab="login" data-index="04"><span class="sm-panel-label">登录</span></button>`}
             </li>
           </ul>
         </nav>
@@ -216,19 +218,15 @@ function openStaggeredMenu() {
 }
 
 function updateStaggeredMenuAuth() {
-  const wrap = document.querySelector('.sm-panel-auth');
-  if (!wrap) return;
-  const label = wrap.querySelector('.sm-panel-label');
-  const btn = wrap.querySelector('button');
-  if (!label || !btn) return;
+  const avatarBtn = document.querySelector('.sm-avatar-btn');
+  const avatarImg = document.querySelector('.sm-avatar-img');
+  if (!avatarBtn || !avatarImg) return;
   if (state.user) {
-    btn.dataset.action = 'logout';
-    btn.removeAttribute('data-tab');
-    label.textContent = '退出登录';
+    avatarImg.src = state.user.avatar || getDefaultAvatar(state.user.name || 'Admin');
+    avatarBtn.title = state.user.name || '用户中心';
   } else {
-    btn.dataset.action = 'auth-open';
-    btn.dataset.tab = 'login';
-    label.textContent = '登录';
+    avatarImg.src = getDefaultAvatar('Guest', 'e5e7eb');
+    avatarBtn.title = '登录';
   }
 }
 
@@ -322,13 +320,19 @@ async function handleAuthSubmit() {
   const submitBtn = document.querySelector('[data-action="auth-submit"]');
   if (submitBtn) {
     submitBtn.disabled = true;
-    submitBtn.textContent = '处理中…';
+    submitBtn.classList.add('loading');
   }
 
   try {
     if (tab === 'login') {
       await signIn(email, password);
-      hideAuthModal();
+      if (submitBtn) {
+        submitBtn.classList.remove('loading');
+        submitBtn.classList.add('success');
+      }
+      setTimeout(() => {
+        hideAuthModal();
+      }, 1200);
     } else if (tab === 'signup') {
       await signUp(email, password);
       showAuthMessage('注册成功，请查收确认邮件（如启用邮箱验证）后登录。', 'success');
@@ -341,7 +345,10 @@ async function handleAuthSubmit() {
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
-      submitBtn.textContent = getAuthSubmitLabel(tab);
+      submitBtn.classList.remove('loading');
+      if (!submitBtn.classList.contains('success')) {
+        submitBtn.classList.remove('success');
+      }
     }
   }
 }
@@ -350,9 +357,65 @@ async function handleLogout() {
   try {
     await signOut();
     updateUserMenu();
+    updateStaggeredMenuAuth();
   } catch (err) {
     console.error('Logout failed', err);
   }
+}
+
+function openAvatarPicker() {
+  const container = document.getElementById('avatar-picker-container');
+  if (!container) return;
+  container.innerHTML = renderAvatarPicker(state.user?.avatar || '');
+}
+
+function closeAvatarPicker() {
+  const container = document.getElementById('avatar-picker-container');
+  if (container) container.innerHTML = '';
+}
+
+function startEditUserName() {
+  const nameEl = document.getElementById('user-display-name');
+  if (!nameEl) return;
+  const current = state.user?.name || '管理员';
+  nameEl.outerHTML = `
+    <input type="text" id="user-name-input" class="user-name-input" value="${escapeHtml(current)}" maxlength="20" autocomplete="off">
+  `;
+  const input = document.getElementById('user-name-input');
+  if (input) {
+    input.focus();
+    input.select();
+    input.addEventListener('blur', finishEditUserName);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        finishEditUserName();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        cancelEditUserName();
+      }
+    });
+  }
+}
+
+function finishEditUserName() {
+  const input = document.getElementById('user-name-input');
+  if (!input) return;
+  const value = input.value.trim();
+  if (value && state.user && value !== state.user.name) {
+    updateUserProfile({ name: value });
+  }
+  renderUserName(value || state.user?.name || '管理员');
+}
+
+function cancelEditUserName() {
+  renderUserName(state.user?.name || '管理员');
+}
+
+function renderUserName(name) {
+  const input = document.getElementById('user-name-input');
+  if (!input) return;
+  input.outerHTML = `<span class="user-name" id="user-display-name">${escapeHtml(name)}</span>`;
 }
 
 function initEventDelegation() {
@@ -455,6 +518,39 @@ function initEventDelegation() {
       case 'logout':
         closeStaggeredMenu();
         handleLogout();
+        break;
+      case 'logout-from-user-page':
+        handleLogout();
+        navigateTo('/');
+        break;
+      case 'user-entry':
+        closeStaggeredMenu();
+        if (state.user) {
+          navigateTo('/user');
+        } else {
+          showAuthModal('login');
+        }
+        break;
+      case 'open-avatar-picker':
+        openAvatarPicker();
+        break;
+      case 'close-avatar-picker': {
+        const pickerOverlay = document.getElementById('avatar-picker-overlay');
+        const isPickerBackground = pickerOverlay && e.target === pickerOverlay;
+        const isPickerClose = e.target.closest('.avatar-picker-close');
+        if (isPickerBackground || isPickerClose) {
+          closeAvatarPicker();
+        }
+        break;
+      }
+      case 'select-avatar':
+        if (el.dataset.avatar) {
+          updateUserProfile({ avatar: el.dataset.avatar });
+          closeAvatarPicker();
+        }
+        break;
+      case 'edit-user-name':
+        startEditUserName();
         break;
       case 'toggle-user-menu': toggleUserMenu(); break;
       default: break;

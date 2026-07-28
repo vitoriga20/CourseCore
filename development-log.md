@@ -45,18 +45,22 @@
 │   ├── utils/
 │   │   ├── progress.js             # localStorage 读写与迁移
 │   │   ├── answer-collector.js     # 从 DOM 收集用户答案
-│   │   └── question.js             # 题目导航工具
-│   ├── validators/                 # 各类答案校验器
+│   │   ├── question.js             # 题目导航工具
+│   │   └── avatars.js              # 黑白几何占位头像
 │   ├── components/
 │   │   ├── authModal.js            # 登录/注册/重置密码弹窗
 │   │   ├── auth-components.css     # 认证组件样式
-│   │   └── userMenu.js             # 右上角用户状态菜单
+│   │   ├── userMenu.js             # 右上角用户状态菜单
+│   │   └── avatarPicker.js         # 头像选择弹窗
+│   ├── validators/                 # 各类答案校验器
 │   └── views/                      # 页面与题目渲染模板
 │       ├── course.js               # 课程详情页
 │       ├── practiceList.js         # 小节独立页面（理论 + inline 训练）
 │       ├── inlinePractice.js       # inline 多题训练区
 │       ├── quizSession.js          # 单题/训练测验会话
 │       ├── legal.js                # 隐私政策 / 用户协议页面
+│       ├── user/                   # 用户中心
+│       │   └── userPage.js         # /user 页面渲染
 │       └── question/               # 单题渲染组件
 ├── curriculum/raw/questions/       # 题目 Markdown 源文件
 ├── .trae/documents/                # 开发文档
@@ -263,6 +267,33 @@
 - `src/views/quizSession.js`
 
 **关联问题**: 答案展示为 0/1/2/3，用户希望显示 A/B/C/D
+### 阶段 18: 用户中心页面与占位头像
+
+**日期**: 2026-07-28
+
+**操作**:
+- 创建 `src/views/user/userPage.js`，渲染 `/user` 用户中心：头像、昵称编辑、学习统计、2026-02 至 2026-07 活动热图、退出登录。
+- 创建 `src/components/avatarPicker.js`，提供 8 张候选头像的选择弹窗。
+- 在 `src/main.js` 侧边栏顶部新增头像入口，已登录跳转 `/user`，未登录打开登录弹窗；新增头像选择、昵称编辑、用户页退出等事件处理。
+- 新增 `src/utils/avatars.js`，用内联 SVG data URL 提供 8 张黑白几何占位头像（球面网格、蛇形螺旋、三角十字星、六边形、棋盘格、波浪线、同心圆、斜条纹），替换原有 dicebear 外链。
+- `src/services/auth.js` 改为从 `avatars.js` 导入并重新导出 `getDefaultAvatar`；`avatarPicker.js` 改用 `AVATAR_CHOICES`。
+- `src/components/auth-components.css` 中用户卡片背景与活动热图颜色改用主题 CSS 变量，保持黑白品牌调性。
+- 创建 `.trae/documents/user-page-implementation-plan.md` 记录实现计划与验收清单。
+
+**关键决策**:
+- 头像全部使用本地占位图，不再请求外部 API → 避免网络不稳定导致头像空白，符合黑白几何品牌风格。
+- 默认头像由 seed 哈希确定 → 同一昵称稳定展示同一张占位图，游客与管理员的默认头像自然不同。
+- 用户卡片与热图颜色跟随主题变量 → 在深浅主题下均保持可读性。
+
+**产出文件**:
+- `src/utils/avatars.js`
+- `src/views/user/userPage.js`
+- `src/components/avatarPicker.js`
+- `src/components/auth-components.css`（用户页与热图样式）
+- `src/main.js`（侧边栏头像入口与用户相关事件）
+- `src/services/auth.js`（头像引用迁移）
+- `.trae/documents/user-page-implementation-plan.md`
+
 ## 架构决策记录
 
 | 决策 | 说明 |
@@ -704,6 +735,18 @@
 ### 修改
 - `src/components/authModal.js` 禁用"注册"与"重置" tab 按钮，悬浮提示"功能暂时关闭"。
 - `src/components/auth-components.css` 新增禁用 tab 样式。
+
+## 更新记录 - 2026-07-28（第五次）
+### 新增
+- 用户中心页面 `/user`：头像、昵称编辑、学习统计、活动热图、退出登录。
+- `src/utils/avatars.js`：8 张黑白几何占位头像。
+- `src/components/avatarPicker.js`：头像选择弹窗。
+- `.trae/documents/user-page-implementation-plan.md`：用户页实现计划。
+
+### 修改
+- 侧边栏顶部入口改为头像，已登录进入 `/user`，未登录打开登录弹窗。
+- `src/services/auth.js` 与 `src/components/avatarPicker.js` 移除 dicebear 外链，改用本地占位图。
+- `src/components/auth-components.css` 用户卡片背景与热图颜色改为跟随主题变量。
 
 ## 最后更新时间
 

@@ -1,7 +1,10 @@
 import { state, saveProgress } from '../state.js';
 import { loadPersistedData } from '../utils/progress.js';
+import { getDefaultAvatar } from '../utils/avatars.js';
 import { isSupabaseConfigured } from './supabase.js';
 import * as sync from './sync.js';
+
+export { getDefaultAvatar } from '../utils/avatars.js';
 
 const GUEST_ID_KEY = 'cc-guest-id';
 const ADMIN_SESSION_KEY = 'cc-admin-session';
@@ -14,7 +17,9 @@ const ADMIN_CREDENTIALS = {
 const ADMIN_USER = {
   id: 'admin',
   email: ADMIN_CREDENTIALS.email,
-  role: 'admin'
+  role: 'admin',
+  name: '管理员',
+  avatar: getDefaultAvatar('Admin')
 };
 
 function generateGuestId() {
@@ -81,7 +86,12 @@ export async function initAuth() {
     const session = localStorage.getItem(ADMIN_SESSION_KEY);
     if (session) {
       const user = JSON.parse(session);
-      setAuthUser(user);
+      const normalized = {
+        ...ADMIN_USER,
+        ...user,
+        avatar: user.avatar || getDefaultAvatar(user.name || 'Admin')
+      };
+      setAuthUser(normalized);
       return;
     }
   } catch (e) {
@@ -107,6 +117,18 @@ export async function signOut() {
   localStorage.removeItem(ADMIN_SESSION_KEY);
   clearGuestData();
   setAuthUser(null);
+}
+
+export function updateUserProfile(updates) {
+  if (!state.user) return null;
+  const next = { ...state.user, ...updates };
+  if (!next.avatar) {
+    next.avatar = getDefaultAvatar(next.name || 'Admin');
+  }
+  state.user = next;
+  localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(next));
+  window.dispatchEvent(new CustomEvent('cc-auth-change', { detail: { user: next } }));
+  return next;
 }
 
 export async function resetPassword(email) {
