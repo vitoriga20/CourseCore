@@ -80,7 +80,43 @@ function parseTags(value) {
   return [];
 }
 
-function buildQuestion(frontmatter, sections) {
+const LETTER_TO_INDEX = { A: '0', B: '1', C: '2', D: '3', E: '4', F: '5' };
+
+const TRUTHY_LABELS = new Set(['正确', '对', '是', 'true', 't', 'yes', 'y', '1']);
+const FALSY_LABELS = new Set(['错误', '错', '否', 'false', 'f', 'no', 'n', '0']);
+
+function isDigitString(value) {
+  return typeof value === 'string' && /^\d+$/.test(value.trim());
+}
+
+function letterToIndex(letter, options, sourcePath) {
+  const upper = String(letter).trim().toUpperCase();
+  if (!/^[A-Z]$/.test(upper)) return null;
+  const idx = LETTER_TO_INDEX[upper];
+  if (idx === undefined) {
+    if (sourcePath) console.warn(`[question-builder] Unknown answer letter "${upper}" in ${sourcePath}`);
+    return null;
+  }
+  const numIdx = parseInt(idx, 10);
+  if (options && numIdx >= options.length) {
+    if (sourcePath) console.warn(`[question-builder] Answer "${upper}" maps to index ${idx} but only ${options.length} options in ${sourcePath}`);
+    return null;
+  }
+  return idx;
+}
+
+function normalizeChoiceAnswer(answer, options, sourcePath) {
+  if (answer === undefined || answer === null || answer === '') return answer;
+  if (isDigitString(answer)) return answer.trim();
+  const fromLetter = letterToIndex(answer, options, sourcePath);
+  if (fromLetter !== null) return fromLetter;
+  const lower = String(answer).trim().toLowerCase();
+  if (TRUTHY_LABELS.has(lower)) return '1';
+  if (FALSY_LABELS.has(lower)) return '0';
+  return answer;
+}
+
+function buildQuestion(frontmatter, sections, sourcePath = '') {
   const q = {
     id: frontmatter.id,
     courseId: frontmatter.courseId || null,
@@ -103,6 +139,15 @@ function buildQuestion(frontmatter, sections) {
     q.answers = Array.isArray(frontmatter.answers)
       ? frontmatter.answers
       : parseTags(frontmatter.answers || sections.answers);
+  }
+
+  const choiceTypes = [questionTypes.singleChoice, questionTypes.multipleChoice, questionTypes.trueFalse];
+  if (choiceTypes.includes(q.questionType)) {
+    if (q.questionType === questionTypes.multipleChoice && Array.isArray(q.answers)) {
+      q.answers = q.answers.map(a => normalizeChoiceAnswer(a, q.options, sourcePath));
+    } else {
+      q.answer = normalizeChoiceAnswer(q.answer, q.options, sourcePath);
+    }
   }
   if ('blanks' in frontmatter) {
     q.blanks = Number(frontmatter.blanks) || 1;
@@ -149,7 +194,7 @@ function parseQuestionMarkdown(filePath) {
     return null;
   }
   const sections = parseSections(content, 2);
-  const q = buildQuestion(frontmatter, sections);
+  const q = buildQuestion(frontmatter, sections, filePath);
   validateQuestion(q, filePath);
   return q;
 }
@@ -201,7 +246,7 @@ function parseExamMarkdown(filePath) {
       if (qName.toLowerCase() !== 'question') continue;
       const qMatter = matter('---\n' + qRaw.replace(/^---\n/, ''));
       const qSections = parseSections(qMatter.content, 4);
-      const q = buildQuestion(qMatter.data, qSections);
+      const q = buildQuestion(qMatter.data, qSections, `${filePath} > ${secFrontmatter.title}`);
       validateQuestion(q, `${filePath} > ${secFrontmatter.title}`);
       questions.push(q);
     }

@@ -52,7 +52,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "数列极限",
     "content": "求 \\( \\displaystyle \\lim_{n\\to\\infty} \\frac{2n+1}{n+3} \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "分子分母同除以 \\( n \\)，得 \\( \\frac{2+1/n}{1+3/n}\\to 2 \\)。",
     "difficulty": 2,
     "tags": [
@@ -158,7 +158,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "极限的四则运算",
     "content": "求 \\( \\displaystyle \\lim_{x\\to\\infty} \\frac{3x^2+2x-1}{x^2+5} \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "分子分母同除以 \\( x^2 \\)，极限为 \\( 3 \\)。",
     "difficulty": 2,
     "tags": [
@@ -224,7 +224,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "无穷小的比较",
     "content": "当 \\( x\\to 0 \\) 时，\\( 1-\\cos x \\) 与 \\( x^2 \\) 是__________无穷小（填“同阶”“等价”或“高阶”）。",
-    "answer": 1,
+    "answer": "1",
     "solution": "\\( 1-\\cos x\\sim \\frac{1}{2}x^2 \\)，故为同阶非等价。",
     "difficulty": 2,
     "tags": [
@@ -268,7 +268,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "闭区间连续函数性质",
     "content": "若 \\( f(x) \\) 在 \\( [0,1] \\) 上连续，且 \\( f(0)<0<f(1) \\)，则至少存在一点 \\( \\xi\\in \\) __________ 使得 \\( f(\\xi)=0 \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "零点定理。",
     "difficulty": 2,
     "tags": [
@@ -290,7 +290,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "综合极限 1",
     "content": "求 \\( \\displaystyle \\lim_{x\\to 0}\\frac{\\tan x}{x} \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "\\( \\tan x\\sim x \\) 或化为 \\( \\frac{\\sin x}{x}\\cdot\\frac{1}{\\cos x}\\to 1 \\)。",
     "difficulty": 2,
     "tags": [
@@ -356,7 +356,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "小测：数列极限",
     "content": "求 \\( \\displaystyle \\lim_{n\\to\\infty}\\left(\\frac{1}{2}\\right)^n \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "公比绝对值小于 1 的几何数列极限为 0。",
     "difficulty": 2,
     "tags": [
@@ -378,7 +378,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "用定义求导数",
     "content": "设 \\( f(x)=x^2 \\)，用导数定义求 \\( f^{\\prime}(1) \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "\\( \\lim_{h\\to0}\\frac{(1+h)^2-1}{h}=\\lim_{h\\to0}(2+h)=2 \\)。",
     "difficulty": 2,
     "tags": [
@@ -444,7 +444,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "乘积法则",
     "content": "求 \\( y=x^2\\sin x \\) 的导数 \\( y^{\\prime} \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "乘积法则：\\( (x^2)^{\\prime}\\sin x+x^2(\\sin x)^{\\prime} \\)。",
     "difficulty": 2,
     "tags": [
@@ -466,7 +466,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "商的求导",
     "content": "求 \\( y=\\frac{e^x}{x} \\) 的导数 \\( y^{\\prime} \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "商的法则：\\( \\frac{e^x\\cdot x-e^x\\cdot1}{x^2} \\)。",
     "difficulty": 2,
     "tags": [
@@ -510,7 +510,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "隐函数求导",
     "content": "由方程 \\( x^2+y^2=1 \\) 确定的隐函数，求 \\( \\frac{dy}{dx} \\) 在点 \\( (0,1) \\) 处的值。",
-    "answer": 0,
+    "answer": "0",
     "solution": "两边求导：\\( 2x+2yy^{\\prime}=0 \\)，代入 \\( (0,1) \\) 得 \\( y^{\\prime}=0 \\)。",
     "difficulty": 2,
     "tags": [
@@ -576,7 +576,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "复合函数求导",
     "content": "求 \\( y=\\ln(\\cos x) \\) 的导数。",
-    "answer": 0,
+    "answer": "0",
     "solution": "链式法则：\\( y^{\\prime}=\\frac{1}{\\cos x}\\cdot(-\\sin x)=-\\tan x \\)。",
     "difficulty": 2,
     "tags": [
@@ -642,7 +642,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "拉格朗日中值定理应用",
     "content": "证明：当 \\( x>0 \\) 时，\\( \\ln(1+x)<x \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "设 \\( f(t)=\\ln(1+t) \\)，在 \\( [0,x] \\) 上用拉格朗日中值定理：\\( \\frac{\\ln(1+x)-\\ln1}{x}=\\frac{1}{1+\\xi}<1 \\)，其中 \\( 0<\\xi<x \\)，故 \\( \\ln(1+x)<x \\)。",
     "difficulty": 2,
     "tags": [
@@ -664,7 +664,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "洛必达法则 0/0",
     "content": "求 \\( \\displaystyle \\lim_{x\\to0}\\frac{e^x-1}{x} \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "分子分母均趋于 0，用洛必达法则：\\( \\lim_{x\\to0}\\frac{e^x}{1}=1 \\)。",
     "difficulty": 2,
     "tags": [
@@ -686,7 +686,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "洛必达法则 \\(\\infty/\\infty\\)",
     "content": "求 \\( \\displaystyle \\lim_{x\\to+\\infty}\\frac{\\ln x}{x} \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "\\(\\infty/\\infty\\) 型，洛必达得 \\( \\lim_{x\\to+\\infty}\\frac{1/x}{1}=0 \\)。",
     "difficulty": 2,
     "tags": [
@@ -708,7 +708,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "泰勒公式",
     "content": "\\( e^x \\) 在 \\( x=0 \\) 处的二阶泰勒多项式为 __________。",
-    "answer": 1,
+    "answer": "1",
     "solution": "\\( e^x=1+x+\\frac{x^2}{2!}+o(x^2) \\)。",
     "difficulty": 2,
     "tags": [
@@ -772,7 +772,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "曲线的渐近线",
     "content": "曲线 \\( y=\\frac{1}{x} \\) 的水平渐近线为 __________。",
-    "answer": 0,
+    "answer": "0",
     "solution": "\\( x\\to\\infty \\) 时 \\( y\\to0 \\)。",
     "difficulty": 2,
     "tags": [
@@ -794,7 +794,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "曲率",
     "content": "求抛物线 \\( y=x^2 \\) 在 \\( (0,0) \\) 处的曲率 \\( K \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "\\( K=\\frac{|y^{\\prime\\prime}|}{(1+(y^{\\prime})^2)^{3/2}}=\\frac{2}{(1+0)^{3/2}}=2 \\)。",
     "difficulty": 2,
     "tags": [
@@ -816,7 +816,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "证明不等式",
     "content": "证明：当 \\( x>0 \\) 时，\\( \\ln(1+x)>\\frac{x}{1+x} \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "设 \\( f(x)=\\ln(1+x)-\\frac{x}{1+x} \\)，则 \\( f(0)=0 \\)，\\( f^{\\prime}(x)=\\frac{1}{1+x}-\\frac{1}{(1+x)^2}=\\frac{x}{(1+x)^2}>0 \\)，故 \\( f(x)>0 \\)。",
     "difficulty": 2,
     "tags": [
@@ -860,7 +860,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "基本积分",
     "content": "求 \\( \\displaystyle \\int (3x^2+2x)\\,dx \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "逐项积分：\\( x^3+x^2+C \\)。",
     "difficulty": 2,
     "tags": [
@@ -904,7 +904,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "换元积分法",
     "content": "求 \\( \\displaystyle \\int 2x\\cos(x^2)\\,dx \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "令 \\( u=x^2 \\)，\\( du=2x\\,dx \\)，积分化为 \\( \\int\\cos u\\,du=\\sin u+C \\)。",
     "difficulty": 2,
     "tags": [
@@ -1080,7 +1080,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "换元法求定积分",
     "content": "求 \\( \\displaystyle \\int_0^1 x e^{x^2}\\,dx \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "令 \\( u=x^2 \\)，得 \\( \\frac12(e-1) \\approx 0.8591 \\)。",
     "difficulty": 2,
     "tags": [
@@ -1124,7 +1124,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "定积分综合",
     "content": "求 \\( \\displaystyle \\int_{-1}^1 x^3\\,dx \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "奇函数在对称区间上积分为 0。",
     "difficulty": 2,
     "tags": [
@@ -1212,7 +1212,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "弧长",
     "content": "求曲线 \\( y=x \\) 从 \\( (0,0) \\) 到 \\( (1,1) \\) 的弧长。",
-    "answer": 0,
+    "answer": "0",
     "solution": "\\( s=\\int_0^1\\sqrt{1+(y^{\\prime})^2}\\,dx=\\sqrt2 \\)。",
     "difficulty": 2,
     "tags": [
@@ -1300,7 +1300,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "可分离变量",
     "content": "求微分方程 \\( \\frac{dy}{dx}=xy \\) 满足 \\( y(0)=1 \\) 的特解。",
-    "answer": 0,
+    "answer": "0",
     "solution": "分离变量并积分：\\( \\ln|y|=\\frac{x^2}{2}+C \\)，由初值得 \\( y=e^{x^2/2} \\)。",
     "difficulty": 2,
     "tags": [
@@ -1344,7 +1344,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "二阶常系数齐次方程",
     "content": "求微分方程 \\( y^{\\prime\\prime}-5y^{\\prime}+6y=0 \\) 的通解。",
-    "answer": 1,
+    "answer": "1",
     "solution": "特征方程 \\( r^2-5r+6=0 \\)，根 \\( r=2,3 \\)。",
     "difficulty": 2,
     "tags": [
@@ -1366,7 +1366,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "微分方程综合",
     "content": "求微分方程 \\( y^{\\prime}=2x(1+y^2) \\) 的通解。",
-    "answer": 1,
+    "answer": "1",
     "solution": "分离变量：\\( \\frac{dy}{1+y^2}=2x\\,dx \\)，积分得 \\( \\arctan y=x^2+C \\)。",
     "difficulty": 2,
     "tags": [
@@ -1388,7 +1388,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "人口增长模型",
     "content": "简述马尔萨斯人口模型 \\( \\frac{dP}{dt}=kP \\) 的解及其现实意义。",
-    "answer": 1,
+    "answer": "1",
     "solution": "分离变量得指数增长模型 \\( P=P_0e^{kt} \\)，反映资源无限时人口按指数增长。",
     "difficulty": 2,
     "tags": [
@@ -1454,7 +1454,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "数量积",
     "content": "设 \\( \\boldsymbol{a}=(1,2,3) \\)，\\( \\boldsymbol{b}=(3,2,1) \\)，求 \\( \\boldsymbol{a}\\cdot\\boldsymbol{b} \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "对应分量相乘求和：\\( 1\\cdot3+2\\cdot2+3\\cdot1=10 \\)。",
     "difficulty": 2,
     "tags": [
@@ -1476,7 +1476,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "向量积",
     "content": "设 \\( \\boldsymbol{a}=(1,0,0) \\)，\\( \\boldsymbol{b}=(0,1,0) \\)，求 \\( \\boldsymbol{a}\\times\\boldsymbol{b} \\)（格式：x,y,z）。",
-    "answer": 1,
+    "answer": "1",
     "solution": "按行列式计算得 \\( (0,0,1) \\)。",
     "difficulty": 2,
     "tags": [
@@ -1520,7 +1520,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "空间曲线方程",
     "content": "空间曲线的一般方程可用 __________ 个曲面方程联立表示。",
-    "answer": 1,
+    "answer": "1",
     "solution": "空间曲线可看作两个曲面的交线，故用两个方程联立表示。",
     "difficulty": 2,
     "tags": [
@@ -1542,7 +1542,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "平面方程",
     "content": "求过点 \\( (1,0,0) \\) 且法向量为 \\( (1,1,1) \\) 的平面方程（写成“x+y+z=1”形式）。",
-    "answer": 0,
+    "answer": "0",
     "solution": "点法式：\\( 1(x-1)+1(y-0)+1(z-0)=0 \\)，即 \\( x+y+z=1 \\)。",
     "difficulty": 2,
     "tags": [
@@ -1564,7 +1564,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "空间直线方程",
     "content": "求过点 \\( (0,0,0) \\) 且方向向量为 \\( (1,2,3) \\) 的直线的对称式方程。",
-    "answer": 0,
+    "answer": "0",
     "solution": "对称式 \\( \\frac{x}{1}=\\frac{y}{2}=\\frac{z}{3} \\)。",
     "difficulty": 2,
     "tags": [
@@ -1586,7 +1586,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "距离",
     "content": "求点 \\( (1,1,1) \\) 到原点的距离。",
-    "answer": 1,
+    "answer": "1",
     "solution": "\\( d=\\sqrt{1^2+1^2+1^2}=\\sqrt3 \\)。",
     "difficulty": 2,
     "tags": [
@@ -1630,7 +1630,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "二元函数定义域",
     "content": "函数 \\( z=\\sqrt{1-x^2-y^2} \\) 的定义域是 __________（填“单位圆”或“单位圆盘”）。",
-    "answer": 0,
+    "answer": "0",
     "solution": "满足 \\( x^2+y^2\\le 1 \\)。",
     "difficulty": 2,
     "tags": [
@@ -1652,7 +1652,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "偏导数",
     "content": "设 \\( z=x^2y+y^3 \\)，求 \\( \\frac{\\partial z}{\\partial x} \\)。",
-    "answer": 0,
+    "answer": "0",
     "solution": "对 \\( x \\) 求导视 \\( y \\) 为常数。",
     "difficulty": 2,
     "tags": [
@@ -1696,7 +1696,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "全微分",
     "content": "设 \\( z=x^2+y^2 \\)，求全微分 \\( dz \\)（写成“2xdx+2ydy”）。",
-    "answer": 1,
+    "answer": "1",
     "solution": "\\( dz=\\frac{\\partial z}{\\partial x}dx+\\frac{\\partial z}{\\partial y}dy=2x\\,dx+2y\\,dy \\)。",
     "difficulty": 2,
     "tags": [
@@ -1718,7 +1718,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "复合函数求导",
     "content": "设 \\( z=\\sin u \\)，\\( u=x^2+y \\)，求 \\( \\frac{\\partial z}{\\partial x} \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "链式法则：\\( \\frac{\\partial z}{\\partial x}=\\cos u\\cdot2x \\)。",
     "difficulty": 2,
     "tags": [
@@ -1784,7 +1784,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "方向导数",
     "content": "设 \\( f(x,y)=x^2+y^2 \\)，求在点 \\( (1,0) \\) 沿方向 \\( (1,0) \\) 的方向导数。",
-    "answer": 0,
+    "answer": "0",
     "solution": "梯度 \\( \\nabla f=(2x,2y) \\)，方向导数 \\( \\nabla f\\cdot(1,0)=2 \\)。",
     "difficulty": 2,
     "tags": [
@@ -1806,7 +1806,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "无条件极值",
     "content": "求 \\( f(x,y)=x^2+y^2 \\) 的极小值。",
-    "answer": 1,
+    "answer": "1",
     "solution": "显然在 \\( (0,0) \\) 取得最小值 0。",
     "difficulty": 2,
     "tags": [
@@ -1828,7 +1828,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "多元微分综合",
     "content": "设 \\( z=\\ln(x^2+y^2) \\)，求 \\( \\frac{\\partial z}{\\partial x} \\)。",
-    "answer": 1,
+    "answer": "1",
     "solution": "链式法则。",
     "difficulty": 2,
     "tags": [
@@ -1960,7 +1960,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "质心",
     "content": "设均匀薄板 \\( D \\) 为圆盘 \\( x^2+y^2\\le R^2 \\)，求其质心的 \\( x \\) 坐标。",
-    "answer": 1,
+    "answer": "1",
     "solution": "对称性得 \\( \\bar x=0 \\)。",
     "difficulty": 2,
     "tags": [
@@ -2026,7 +2026,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "对坐标的曲线积分",
     "content": "计算 \\( \\displaystyle\\int_L x\\,dy-y\\,dx \\)，其中 \\( L \\) 为从 \\( (0,0) \\) 到 \\( (1,1) \\) 沿 \\( y=x \\) 的线段。",
-    "answer": 0,
+    "answer": "0",
     "solution": "参数化 \\( x=t,y=t \\)，得 \\( \\int_0^1(t-t)\\,dt=0 \\)。",
     "difficulty": 2,
     "tags": [
@@ -2112,7 +2112,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "高斯公式",
     "content": "高斯公式把闭曲面上的第二类曲面积分转化为该曲面所围区域上的 __________ 积分。",
-    "answer": 1,
+    "answer": "1",
     "solution": "高斯公式联系曲面积分与三重积分。",
     "difficulty": 2,
     "tags": [
@@ -2134,7 +2134,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "曲线积分综合",
     "content": "判断 \\( \\displaystyle\\int_L (2xy+1)\\,dx+x^2\\,dy \\) 是否与路径无关。",
-    "answer": 0,
+    "answer": "0",
     "solution": "\\( \\frac{\\partial Q}{\\partial x}=2x=\\frac{\\partial P}{\\partial y} \\)，且区域为单连通，故与路径无关。",
     "difficulty": 2,
     "tags": [
@@ -2242,7 +2242,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "幂级数收敛半径",
     "content": "求幂级数 \\( \\displaystyle\\sum_{n=0}^{\\infty}x^n \\) 的收敛半径。",
-    "answer": 0,
+    "answer": "0",
     "solution": "公比级数，\\( |x|<1 \\) 收敛，半径 \\( R=1 \\)。",
     "difficulty": 2,
     "tags": [
@@ -2286,7 +2286,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "傅里叶级数",
     "content": "设 \\( f(x)=x \\) 在 \\( (-\\pi,\\pi) \\) 上展开为正弦级数，其系数 \\( b_1 \\) 为多少？",
-    "answer": 0,
+    "answer": "0",
     "solution": "\\( b_1=\\frac{2}{\\pi}\\int_0^\\pi x\\sin x\\,dx=2 \\)。",
     "difficulty": 2,
     "tags": [
@@ -2308,7 +2308,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "级数综合",
     "content": "求幂级数 \\( \\displaystyle\\sum_{n=0}^{\\infty}\\frac{x^n}{n!} \\) 的和函数。",
-    "answer": 0,
+    "answer": "0",
     "solution": "指数函数的展开式。",
     "difficulty": 2,
     "tags": [
@@ -2396,7 +2396,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 2 题",
     "content": "下述关于质点运动描述的表达式正确的是（    ）",
-    "answer": "C",
+    "answer": "2",
     "solution": "**选项 (A)**：$|\\Delta \\vec{r}|$ 是位移的大小（直线距离），$\\Delta r = r_2 - r_1$ 是位矢模的增量。除非质点做通过原点的直线运动，否则二者不等。❌\n\n**选项 (B)**：$\\left| \\frac{d\\vec{r}}{dt} \\right| = |\\vec{v}|$ 是速度大小；$\\frac{dr}{dt}$ 是位矢模的变化率（径向速率）。例如匀速圆周运动中 $\\frac{dr}{dt}=0$，但 $|\\vec{v}| \\neq 0$。❌\n\n**选项 (C)**：速度大小通常不等于径向速率，符合一般曲线运动规律。✅\n\n**选项 (D)**：在微积分极限意义下，$dt \\to 0$ 时弧长无限接近弦长，故 $|d\\vec{r}| = ds$。❌",
     "difficulty": 1,
     "tags": [
@@ -2440,7 +2440,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 4 题",
     "content": "一质点沿 $x$ 轴运动，其加速度 $a$ 与位置坐标 $x$ 的关系为 $a = 2 + 6x^2$（SI）。如果质点在原点处的速度为零，则质点在 $x=2\\text{m}$ 处的速度大小 $v$ 约为（    ）",
-    "answer": "B",
+    "answer": "1",
     "solution": "本题属于质点运动学第二类问题，加速度是位置 $x$ 的函数。利用链式法则：\n\n$$a = \\frac{dv}{dt} = \\frac{dv}{dx}\\frac{dx}{dt} = v\\frac{dv}{dx}$$\n\n分离变量得 $v\\,dv = a\\,dx = (2+6x^2)\\,dx$。\n\n代入初始条件 $x=0$ 时 $v=0$，$x=2$ 时速度为 $v$，两边积分：\n\n$$\\int_0^v v\\,dv = \\int_0^2 (2+6x^2)\\,dx$$\n\n$$\\frac{1}{2}v^2 = \\left[2x+2x^3\\right]_0^2 = 4+16 = 20$$\n\n$$v = \\sqrt{40} \\approx 6.32\\text{m/s}$$\n\n最接近 $5\\text{m/s}$，故选 **B**。",
     "difficulty": 1,
     "tags": [
@@ -2564,7 +2564,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 2 题",
     "content": "质点作半径为 $R$ 的变速圆周运动时的加速度大小为（   ）（$v$ 表示任一时刻质点的速率）",
-    "answer": "D",
+    "answer": "3",
     "solution": "变速圆周运动的加速度由两个互相垂直的分量组成：\n\n- **切向加速度**：$a_t = \\frac{dv}{dt}$，改变速度大小。\n- **法向加速度**：$a_n = \\frac{v^2}{R}$，改变速度方向。\n\n加速度是矢量，需用勾股定理合成：\n\n$$a = \\sqrt{a_n^2 + a_t^2} = \\sqrt{\\left(\\frac{v^2}{R}\\right)^2 + \\left(\\frac{dv}{dt}\\right)^2}$$\n\n故选 **D**。\n\n注意：匀速圆周运动时 $\\frac{dv}{dt}=0$，则 $a=\\frac{v^2}{R}$（对应选项 B）。",
     "difficulty": 1,
     "tags": [
@@ -2608,7 +2608,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 4 题",
     "content": "质点的质量为 $m$，置于光滑球面的顶点 $A$ 处（球面固定不动），如图所示。当它由静止开始下滑到球面上 $B$ 点时（设 $OB$ 与竖直方向夹角为 $\\theta$），它的加速度的大小为（   ）",
-    "answer": "D",
+    "answer": "3",
     "solution": "质点在光滑球面上运动，只有重力做功，机械能守恒。下降高度 $h = R(1-\\cos\\theta)$，故：\n\n$$mgR(1-\\cos\\theta) = \\frac{1}{2}mv^2$$\n\n$$v^2 = 2gR(1-\\cos\\theta)$$\n\n在自然坐标系下：\n\n- **法向加速度**：$a_n = \\frac{v^2}{R} = 2g(1-\\cos\\theta)$\n- **切向加速度**：$a_t = g\\sin\\theta$\n\n总加速度大小为：\n\n$$a = \\sqrt{a_n^2 + a_t^2} = g\\sqrt{4(1-\\cos\\theta)^2 + \\sin^2\\theta}$$\n\n故选 **D**。",
     "difficulty": 1,
     "tags": [
@@ -2733,7 +2733,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 1 题",
     "content": "在足够长的管中装有粘滞液体，放入钢球由静止开始向下运动，下列说法中正确的是：（    ）",
-    "answer": "D",
+    "answer": "3",
     "solution": "钢球在粘滞液体中向下运动时，受三个力：竖直向下的重力 $G$、竖直向上的浮力 $F_{浮}$ 和竖直向上的粘滞阻力 $f$。粘滞阻力 $f$ 随速度增大而增大。\n\n1. **初始状态**：$v=0$，$f=0$，因钢球密度大于液体，$G > F_{浮}$，合力向下，钢球开始向下加速。\n2. **加速过程**：随着 $v$ 增大，$f$ 增大，向下的合力 $F_{合}=G-F_{浮}-f$ 逐渐减小，加速度 $a$ 逐渐减小。但只要 $F_{合}>0$，速度仍在增大。\n3. **最终状态**：当 $G = F_{浮}+f$ 时，$F_{合}=0$，$a=0$，钢球以此时的速度向下做匀速直线运动，即达到**收尾速度（Terminal Velocity）**。\n\n因此钢球运动越来越快，最后达到稳定的速度。故选 **D**。",
     "difficulty": 1,
     "tags": [
@@ -2755,7 +2755,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 2 题",
     "content": "质量分别为 $m$ 和 $M$ 的滑块 $A$ 和 $B$，叠放在光滑水平桌面上，如图所示。$A$、$B$ 间静摩擦系数为 $\\mu_s$，滑动摩擦系数为 $\\mu_k$，系统原处于静止。今有一水平力作用于 $A$ 上，要使 $A$、$B$ 不发生相对滑动，则应有（    ）",
-    "answer": "B",
+    "answer": "1",
     "solution": "要使 $A$、$B$ 不发生相对滑动，两者必须保持相对静止，即具有相同加速度。此时 $A$、$B$ 之间的摩擦力为静摩擦力。\n\n**整体法**：将 $A$、$B$ 看作整体，总质量为 $(M+m)$，只受水平拉力 $F$：\n\n$$F = (M+m)a$$\n\n**隔离法**：单独分析滑块 $B$，水平方向只受 $A$ 对 $B$ 的静摩擦力 $f$：\n\n$$f = Ma$$\n\n临界条件为静摩擦力达到最大静摩擦力：\n\n$$f_{max} = \\mu_s N_A = \\mu_s mg$$\n\n（$N_A$ 是 $A$ 对 $B$ 的压力，大小等于 $A$ 的重力 $mg$）\n\n由隔离法得系统最大加速度：\n\n$$Ma_{max} = \\mu_s mg \\Rightarrow a_{max} = \\frac{\\mu_s mg}{M}$$\n\n代入整体法：\n\n$$F_{max} = (M+m)a_{max} = (M+m)\\cdot\\frac{\\mu_s mg}{M} = \\mu_s mg\\left(1+\\frac{m}{M}\\right)$$\n\n故选 **B**。",
     "difficulty": 1,
     "tags": [
@@ -3596,7 +3596,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 5 题",
     "content": "质量为0.10 kg的质点，由静止开始沿曲线 $\\vec{r}=\\frac{5}{3}t^{3}\\vec{i}+2 \\vec{j}$ (SI)运动，则在t =0到t = 2s时间内，作用在该质点上的合外力所做的功为",
-    "answer": 1,
+    "answer": "1",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -3732,7 +3732,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 11 题",
     "content": "一圆盘绕过盘心且与盘面垂直的光滑固定轴O以角速度ω按图示方向转动.若如图所示的情况那样，将两个大小相等方向相反但不在同一条直线的力F沿盘面同时作用到圆盘上，则圆盘的角速度",
-    "answer": 0,
+    "answer": "0",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -3755,7 +3755,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 12 题",
     "content": "均匀细棒OA可绕通过其一端O而与棒垂直的水平固定光滑轴转动，如图所示．今使棒从水平位置由静止开始自由下落，在棒摆动到竖直位置的过程中，下述说法哪一种是正确的？",
-    "answer": 0,
+    "answer": "0",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -3824,7 +3824,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 15 题",
     "content": "一自由悬挂的匀质细棒 AB，可绕 A 端在竖直平面内自由转动，现给 B 端一初速$\\mathbf{V}_{0},$ ，则棒在向上转动过程中仅就大小而言",
-    "answer": 1,
+    "answer": "1",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -3846,7 +3846,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 16 题",
     "content": "一长为l，质量为m 的匀质细棒，绕一端作匀速转动，其中心处的速率为v，则细棒的转动动能为",
-    "answer": 1,
+    "answer": "1",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -5211,7 +5211,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 1 题",
     "content": "如图所示，波长为λ 的平行单色光垂直入射在折射率为 n2的薄膜上，经上下两个表面反射的两束光发生干涉。若薄膜厚度为 e，而且 $n_{1}>n_{2}>$ $n_{3}$ ，则两束反射光在相遇点的相位差为",
-    "answer": 0,
+    "answer": "0",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -5234,7 +5234,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 2 题",
     "content": "在双缝干涉实验中，设缝是水平的。若双缝所在的平板稍微向上平移，其它条件不变，则屏上的干涉条纹",
-    "answer": 1,
+    "answer": "1",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -5256,7 +5256,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 3 题",
     "content": "把一平凸透镜放在平玻璃上，构成牛顿环装置。当平凸透镜慢慢地向上平移时，由反射光形成的牛顿环",
-    "answer": 1,
+    "answer": "1",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -5300,7 +5300,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 5 题",
     "content": "一束自然光自空气射向一块平板玻璃(如图)，设入射角等于布儒斯特角 $i_{0}$ ，则在界面2的反射光",
-    "answer": 1,
+    "answer": "1",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -5346,7 +5346,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 7 题",
     "content": "两块平玻璃构成空气劈形膜，左边为棱边，用单色平行光垂直入射。若上面的平玻璃以棱边为轴，沿逆时针方向作微小转动，则干涉条纹的",
-    "answer": 0,
+    "answer": "0",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -5368,7 +5368,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 8 题",
     "content": "如图， $S_{1}$ 、 $S_{2}$ 是两个相干光源，它们到 P 点的距离分别为 $r_{1}$ 和 $r_{2}.$ 。路径 $S_{1}P$ 垂直穿过一块厚度为 $t_{1}$ ，折射率为 $n_{1}$ 的介质板，路径 $S_{2}P$ 垂直穿过厚度为 $t_{2}$ ，折射率为 $n_{2}$ 的另一介质板，其余部分可看作真空，这两条路径的光程差等于( )[1mm]",
-    "answer": 1,
+    "answer": "1",
     "solution": "",
     "difficulty": 1,
     "tags": [
@@ -5458,7 +5458,7 @@ export const QUESTIONS = [
     "questionType": 0,
     "title": "第 12 题",
     "content": "( xz1000A000009402 ) 波长 $\\lambda=500 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的单色垂直照射到宽度a=0.25mm 的单缝上，单缝后面放置一凸透镜，在凸透镜的焦平面上放置一屏幕，用以观测衍射条纹。今测得屏幕上中央明条纹一侧第三个暗条纹和另一侧第三个暗条纹之间的距离为 d=12mm，则凸透镜的焦距 f 为",
-    "answer": 1,
+    "answer": "1",
     "solution": "",
     "difficulty": 1,
     "tags": [

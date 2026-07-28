@@ -220,6 +220,26 @@
 
 **解决**: 移除 `router.js` 中 `showLanding` 内的 `renderSidebarContent()` 调用，以及 `main.js` 中 `updateSearch` 的 `else renderSidebarContent()` 分支。
 
+
+### 阶段 13: 修复单选题答案字母与选项索引不匹配导致误判
+
+**日期**: 2026-07-28
+
+**操作**:
+- 在 `builders/question-builder.js` 中添加 `normalizeChoiceAnswer` 答案归一化逻辑。
+- 构建阶段将单选/多选/判断题的字母答案（A/B/C/D）转换为选项索引（0/1/2/3）。
+- 同时支持判断题的中文/英文真值标签（正确/错误/true/false 等）归一化为 "1"/"0"。
+- 重新运行 `npm run build:data`，生成 291 道题、15 个理论内容、2 套试卷。
+
+**关键决策**:
+- 在构建层统一转换，而非修改前端校验器 → 保持 `exact` 校验器的简单字符串比较语义，避免运行时额外开销。
+- 兼容已有数字索引答案 → 若答案已是数字字符串则直接保留，不破坏现有数据。
+
+**产出文件**:
+- `builders/question-builder.js` - 新增 `LETTER_TO_INDEX`、`TRUTHY_LABELS`、`FALSY_LABELS` 与 `normalizeChoiceAnswer`
+- `src/data/questions.js` - 物理训练题等字母答案已转为索引
+
+**关联问题**: 物理训练题选择 C 仍被判定为错误
 ## 架构决策记录
 
 | 决策 | 说明 |
@@ -576,6 +596,11 @@
 - 将根目录重构结果提交到 `main` 分支，commit message：`refactor: move coursecore to root`。
 - 仅提交已跟踪文件的变更，未包含未跟踪的调试脚本、PDF 源文件与分析产物。
 
+
+## 更新记录 - 2026-07-28
+
+### 修复
+- 单选/判断题答案字母在构建阶段自动归一化为选项索引，修复选择正确选项仍被判错的 bug。
 ## 最后更新时间
 
-2026-07-27
+2026-07-28
