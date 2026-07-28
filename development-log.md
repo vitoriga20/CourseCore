@@ -678,11 +678,32 @@
 - 恢复 Supabase 邮箱认证或接入更安全的后端登录。
 - 管理员密码需从代码中移除，改为环境变量或数据库配置。
 
+### 阶段 17: 禁用登录弹窗中的注册与重置 tab
+
+**日期**: 2026-07-28
+
+**操作**:
+- 在 `src/components/authModal.js` 中将"注册"与"重置" tab 按钮设为 `disabled`，并添加 `title="功能暂时关闭"`。
+- `showAuthModal` 强制将非 `login` 的 tab 参数归一化为 `login`，避免外部入口直接打开已禁用的表单。
+- 在 `src/components/auth-components.css` 中为禁用的 `.auth-tab` 添加降低透明度、禁止光标及悬停不变色的样式。
+
+**关键决策**:
+- 使用原生的 `disabled` + `title` 实现禁用与提示，不依赖额外 JS 或自定义 tooltip，保持轻量。
+
+**产出文件**:
+- `src/components/authModal.js` - 禁用注册/重置 tab
+- `src/components/auth-components.css` - disabled tab 样式
+
 ## 更新记录 - 2026-07-28（第三次）
 ### 修改
 - 登录入口从 Header 右上角移到右侧 staggered 侧边栏。
 - `src/components/userMenu.js` 未登录状态不再渲染 Header 按钮。
 - `src/style.css` 新增侧边栏第 4 项动画延迟与登录项样式。
+
+## 更新记录 - 2026-07-28（第四次）
+### 修改
+- `src/components/authModal.js` 禁用"注册"与"重置" tab 按钮，悬浮提示"功能暂时关闭"。
+- `src/components/auth-components.css` 新增禁用 tab 样式。
 
 ## 最后更新时间
 
