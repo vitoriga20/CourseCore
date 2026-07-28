@@ -100,7 +100,9 @@ export function restoreLocation() {
 }
 
 export function navigateTo(path, { replace = false } = {}) {
-  const route = matchRoute(path);
+  const pathname = path.split('#')[0];
+  const hash = path.includes('#') ? '#' + path.split('#')[1] : '';
+  const route = matchRoute(pathname);
   if (!route) {
     navigateTo(buildPath('home'), { replace: true });
     return;
@@ -136,6 +138,15 @@ export function showCourse(courseId) {
   }
   setActiveNav('course');
   renderMain();
+
+  const hash = window.location.hash;
+  if (hash) {
+    const el = document.querySelector(hash);
+    if (el) {
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+      return;
+    }
+  }
   window.scrollTo({ top: 0 });
 }
 

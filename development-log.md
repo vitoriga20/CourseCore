@@ -294,6 +294,34 @@
 - `src/services/auth.js`（头像引用迁移）
 - `.trae/documents/user-page-implementation-plan.md`
 
+### 阶段 19: item 小节页墨绿色课程/章节导航栏
+
+**日期**: 2026-07-28
+
+**操作**:
+- 在 `src/views/practiceList.js` 新增 `renderItemNav(course, module, item)`，渲染墨绿色课程/章节导航条，参考 freeCodeCamp 的 `BreadCrumb` 组件结构（`challenge-title-breadcrumbs` + `breadcrumb-left` + `breadcrumb-right`）。
+- 替换 theory / inline practice 等小节页顶部的"← 返回 课程名"链接为新导航条：左侧课程名跳转 `/course/:courseId`，右侧章节名（`module.title`）跳转 `/course/:courseId#module-:moduleId`。
+- `quiz` / `training` 小节保持原有返回链接，避免与 `quiz-control-bar` 堆叠。
+- 在 `src/views/course.js` 为每个 module 卡片增加 `id="module-${m.id}"` 锚点，使章节链接可定位。
+- 在 `src/router.js` 的 `showCourse` 中处理 URL hash，渲染后滚动到对应 module 锚点。
+- 在 `src/router.js` 的 `navigateTo` 中提取 pathname 再匹配路由，使带 hash 的链接（如 `/course/calculus-1#module-c1-m1`）能被 SPA 路由正常处理。
+- 在 `src/main.js` 点击拦截中也先提取 pathname 再判断 `isInternalPath`，确保带 hash 的内部链接被 `navigateTo` 接管而非浏览器整页刷新。
+- 在 `src/style.css` 新增 `.item-nav` 系列样式：墨绿色背景 `rgba(28, 90, 62, 0.95)`、左侧课程名灰色块、右侧章节名墨绿色背景、中间 clip-path 三角形箭头分隔、sticky 固定于 header 下方（`top: 4rem`）。
+- 修复 `.item-nav-list a` 的 `overflow: hidden` 导致 `.item-nav-course a::after` 箭头被裁剪的问题：将 `overflow: hidden` 移到 `.item-nav-list a span` 上，确保箭头完整显示。
+- 在 `.worktrees/feature/item-nav` 隔离分支完成开发并验证构建。
+
+**关键决策**:
+- 不新增全局 header，而是替换现有"返回"链接位置 → 改动最小，符合用户"就在红框位置"的意图。
+- 右侧显示章节名而非小节名 → 用户明确"小节改为章节"，且 freeCodeCamp 原组件也是左侧课程 / 右侧章节（block）。
+- quiz / training 不动 → 其顶部已有 `quiz-control-bar`，避免两个 sticky bar 重叠。
+- 导航条采用墨绿色 + 左侧深色块 + CSS border 三角形箭头 → 接近 freeCodeCamp 截图风格，同时符合项目品牌色。
+
+**产出文件**:
+- `src/views/practiceList.js`（新增 `renderItemNav` 并替换返回链接）
+- `src/views/course.js`（module 卡片增加锚点 id）
+- `src/router.js`（showCourse 处理 hash 滚动）
+- `src/style.css`（新增 `.item-nav`、`.item-nav-list`、`.item-nav-course`、`.item-nav-module` 样式）
+
 ## 架构决策记录
 
 | 决策 | 说明 |
@@ -747,6 +775,22 @@
 - 侧边栏顶部入口改为头像，已登录进入 `/user`，未登录打开登录弹窗。
 - `src/services/auth.js` 与 `src/components/avatarPicker.js` 移除 dicebear 外链，改用本地占位图。
 - `src/components/auth-components.css` 用户卡片背景与热图颜色改为跟随主题变量。
+
+## 更新记录 - 2026-07-28（第六次）
+### 新增
+- item 小节页 `/item/:itemId`（theory / inline practice 等类型）顶部新增墨绿色课程/章节导航栏，参考 freeCodeCamp 的 `BreadCrumb` 样式。
+- `src/views/practiceList.js` 新增 `renderItemNav(course, module, item)`。
+- `src/views/course.js` 为每个 module 卡片增加 `id="module-${m.id}"` 锚点。
+- `src/style.css` 新增 `.item-nav`、`.item-nav-list`、`.item-nav-course`、`.item-nav-module` 样式。
+
+### 修改
+- theory / inline practice 等小节页顶部的"← 返回 课程名"链接替换为新导航条：左侧课程名跳转 `/course/:courseId`，右侧章节名（`module.title`）跳转 `/course/:courseId#module-:moduleId`。
+- 导航条 sticky 固定于 header 下方（`top: 4rem`），采用墨绿色背景 + 左侧深色块 + clip-path 三角形箭头 + 右侧浅色块。
+- `src/router.js` 的 `showCourse` 处理 URL hash，渲染后滚动到对应 module 锚点。
+- `src/router.js` 的 `navigateTo` 与 `src/main.js` 的点击拦截先提取 pathname 再匹配，确保带 hash 的内部链接被 SPA 路由接管。
+
+### 保留
+- `quiz` / `training` 小节保持原有返回链接，避免与 `quiz-control-bar` 堆叠。
 
 ## 最后更新时间
 

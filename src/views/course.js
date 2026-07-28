@@ -65,7 +65,7 @@ export function renderCourse(courseId) {
           const mTotal = m.items.length;
           const mDone = m.items.filter(i => state.progress[i.id]).length;
           const expanded = !!state.expanded[m.id];
-          return `<div class="card p-0 overflow-hidden">
+          return `<div class="card p-0 overflow-hidden" id="module-${m.id}">
             <button class="module-header rounded-none border-0 px-6 py-5" data-action="toggle-module" data-module-id="${m.id}">
               <div class="flex items-center gap-4">
                 <div class="w-10 h-10 rounded-xl border flex items-center justify-center" style="border-color: var(--line);">
