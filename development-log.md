@@ -5,9 +5,9 @@
 | 项 | 内容 |
 |---|---|
 | 项目名称 | CourseCore — 大学基础课学习平台 |
-| 当前状态 | 用户认证体系已完整落地：游客模式、邮箱+密码登录/注册/重置密码弹窗、用户菜单、本地↔Supabase 进度同步；Supabase 项目已连接并通过后端链路测试；付费与 Stripe 部分按决策延后 |
+| 当前状态 | 用户认证体系已完整落地：游客模式、邮箱+密码登录/注册/重置密码弹窗、用户菜单、本地↔Supabase 进度同步；Supabase 项目已连接并通过后端链路测试；课程内容访问权限已落地，游客可试看每个课程第一模块前 2 组内容 |
 | 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth |
-| 构建产物 | `dist/`（481 个预渲染静态路由） |
+| 构建产物 | `dist/`（482 个预渲染静态路由） |
 | 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
 
 ## 文件结构
@@ -32,6 +32,7 @@
 │   ├── background.js               # p5.js 几何背景
 │   ├── config/
 │   │   ├── routes.js               # 路由表与路径构建
+│   │   ├── access.js               # 课程内容免费访问规则与判断
 │   │   └── question-types.js       # 题型/视图/校验器/提交方式映射
 │   ├── data/
 │   │   ├── courses.js              # 课程与模块小节数据
@@ -838,6 +839,49 @@
 
 ### 保留
 - `quiz` / `training` 小节保持原有返回链接，避免与 `quiz-control-bar` 堆叠。
+
+### 阶段 20: 课程内容访问权限控制（游客试看第一模块前 2 组）
+
+**日期**: 2026-07-28
+
+**操作**:
+- 在 `.worktrees/feature/access-control` 隔离工作区完成开发，基于当前 `main` 切出 `feature/access-control` 分支。
+- 新增 `src/config/access.js`：按规则“每个课程第一个模块的前 4 个 item 对游客开放”自动计算免费 item ID 集合，提供 `isItemFree(itemId)` 判断函数。
+- 修改 `src/views/course.js`：未登录用户查看课程详情页时，非免费 item 显示锁图标与“登录解锁”提示，点击按钮通过 `data-action="auth-open"` 唤起登录弹窗。
+- 修改 `src/style.css`：新增 `.status-locked` 样式，使用虚线边框与 muted 颜色表示锁定状态。
+- 修改 `src/views/practiceList.js`：未登录用户直接访问锁定小节时，渲染登录提示卡片，提供“登录 / 注册”按钮与返回课程目录链接。
+- 修改 `src/views/practiceDetail.js`：未登录用户直接访问属于锁定小节的单题页时，同样渲染登录提示卡片。
+- 游客对免费 item 仍可正常看讲义、做题、判题；localStorage 进度保持现状。
+
+**关键决策**:
+- 规则集中配置在 `src/config/access.js` 而非分散在 courses.js → 不侵入自动生成的课程数据，调整免费范围时只改一处。
+- 权限判断放在视图层而非路由层 → 保持路由简单，同时让课程详情页、小节页、单题页各自决定展示内容或登录提示。
+- 锁定 item 仍渲染标题但不可进入，点击后弹窗而非跳转 → 保留入口可见性，降低用户流失。
+
+**产出文件**:
+- `src/config/access.js` - 免费范围规则与判断函数
+- `src/views/course.js` - 课程详情页锁图标与登录弹窗触发
+- `src/style.css` - 锁定状态样式
+- `src/views/practiceList.js` - 小节页登录提示
+- `src/views/practiceDetail.js` - 单题页登录提示
+
+**关联问题**: 无
+
+## 更新记录 - 2026-07-28（第八次）
+
+### 新增
+- `src/config/access.js`：集中管理课程内容免费访问规则。
+- 课程详情页锁定小节显示锁图标，点击唤起登录弹窗。
+- 锁定小节 `/item/:itemId` 与单题 `/question/:qid` 页面在未登录时显示登录提示卡片。
+
+### 修改
+- `src/views/course.js` 小节列表根据登录状态与 `isItemFree` 渲染锁定或正常入口。
+- `src/views/practiceList.js` 进入小节前增加权限判断。
+- `src/views/practiceDetail.js` 进入单题前增加权限判断。
+- `src/style.css` 新增 `.status-locked` 虚线锁定状态样式。
+
+### 验证
+- `npm run build` 成功，预渲染 482 条静态路由。
 
 ## 最后更新时间
 

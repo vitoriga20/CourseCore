@@ -2,12 +2,27 @@ import { COURSES } from '../data/courses.js';
 import { QUESTIONS } from '../data/questions.js';
 import { TYPE_LABELS } from '../data/labels.js';
 import { state, getTotalItems, getCompletedCount, getStatus, isItemCompleted } from '../state.js';
+import { isItemFree } from '../config/access.js';
 import { escapeHtml } from '../utils.js';
+
+const LOCK_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
 
 function renderItemRow(i) {
   const status = getStatus(i.id);
   const hasQuestions = QUESTIONS.some(q => q.itemId === i.id);
   const itemDone = isItemCompleted(i.id);
+  const locked = !state.user && !isItemFree(i.id);
+
+  if (locked) {
+    return `
+      <button type="button" class="item-row px-6 w-full text-left" data-action="auth-open" title="登录后解锁">
+        <span class="status-dot status-locked"></span>
+        <span class="type-tag">${TYPE_LABELS[i.type]}</span>
+        <span class="text-sm" style="color: var(--fg);">${escapeHtml(i.title)}</span>
+        <span class="ml-auto flex items-center gap-1 text-xs" style="color: var(--muted);">${LOCK_ICON} 登录解锁</span>
+      </button>
+    `;
+  }
 
   return `
     <a href="/item/${i.id}" class="item-row px-6 w-full text-left block">

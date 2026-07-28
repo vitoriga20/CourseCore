@@ -81,6 +81,7 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
     │   └── loading.js                  # 加载组件：spinner、skeleton、progress、page-loader、image-loader
     ├── config\                         # 全局配置
     │   ├── routes.js                   # 路由表、URL 匹配、链接生成、静态路径枚举
+    │   ├── access.js                   # 课程内容免费访问规则与 `isItemFree` 判断
     │   └── question-types.js           # 题型枚举与行为映射表
     ├── data\                           # 数据模块（由构建脚本生成）
     │   ├── platform.js                 # 平台名称与标语
@@ -391,6 +392,16 @@ state 更新 → saveProgress() → localStorage 持久化
 - `code.js`：textarea + 运行反馈。
 
 `renderQuestion(question)` 在调用具体题型模板前先渲染 `question.image` 题图；`chrome.js` 渲染题目标题、题型标签、操作按钮、反馈区、解法区、上下题导航；`preview.js` 用于列表页只展示题干与标签。
+
+### 5.10 内容访问控制
+
+- 免费范围定义在 `src/config/access.js`：每个课程的第一个模块中，按顺序前 4 个 `item` 对游客开放。
+- `isItemFree(itemId)` 在构建时计算所有免费 item ID 集合，运行时以 `Set.has` 判断。
+- 未登录用户访问非免费内容时：
+  - 课程详情页（`src/views/course.js`）小节列表显示锁图标与“登录解锁”按钮，点击通过 `data-action="auth-open"` 唤起登录弹窗。
+  - 小节独立页（`src/views/practiceList.js`）直接渲染登录提示卡片，提供登录按钮与返回课程目录链接。
+  - 单题作答页（`src/views/practiceDetail.js`）若题目所属 item 不免费，同样渲染登录提示卡片。
+- 已登录用户不受限制，可访问全部课程内容。
 
 ## 6. 依赖
 
