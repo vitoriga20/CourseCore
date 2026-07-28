@@ -30,8 +30,8 @@ function renderModalHtml() {
         <div id="auth-message" class="auth-message hidden"></div>
         <form class="auth-form" id="auth-form" onsubmit="return false;">
           <div class="auth-field">
-            <label for="auth-email">邮箱</label>
-            <input id="auth-email" type="email" class="auth-input" placeholder="you@example.com" autocomplete="email" required>
+            <label for="auth-email">账号</label>
+            <input id="auth-email" type="text" class="auth-input" placeholder="admin@coursecore.local" autocomplete="username" required>
           </div>
           <div class="auth-field ${activeTab === 'reset' ? 'hidden' : ''}">
             <label for="auth-password">密码</label>

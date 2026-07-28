@@ -1,9 +1,21 @@
 import { state, saveProgress } from '../state.js';
 import { loadPersistedData } from '../utils/progress.js';
-import { supabase, isSupabaseConfigured } from './supabase.js';
+import { isSupabaseConfigured } from './supabase.js';
 import * as sync from './sync.js';
 
 const GUEST_ID_KEY = 'cc-guest-id';
+const ADMIN_SESSION_KEY = 'cc-admin-session';
+
+const ADMIN_CREDENTIALS = {
+  email: 'admin@coursecore.local',
+  password: 'admin123456'
+};
+
+const ADMIN_USER = {
+  id: 'admin',
+  email: ADMIN_CREDENTIALS.email,
+  role: 'admin'
+};
 
 function generateGuestId() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -65,58 +77,38 @@ async function mergeGuestData(userId) {
 }
 
 export async function initAuth() {
-  if (!isSupabaseConfigured()) {
-    setAuthUser(null);
-    return;
-  }
-
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    setAuthUser(session?.user || null);
-
-    if (state.user) {
-      await mergeGuestData(state.user.id);
+    const session = localStorage.getItem(ADMIN_SESSION_KEY);
+    if (session) {
+      const user = JSON.parse(session);
+      setAuthUser(user);
+      return;
     }
-
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      const prevUser = state.user;
-      setAuthUser(session?.user || null);
-
-      if (event === 'SIGNED_IN' && state.user && (!prevUser || prevUser.id !== state.user.id)) {
-        await mergeGuestData(state.user.id);
-      }
-    });
   } catch (e) {
-    console.error('Auth init failed', e);
-    setAuthUser(null);
+    console.error('Admin session parse failed', e);
   }
+  setAuthUser(null);
 }
 
 export async function signUp(email, password) {
-  if (!supabase) throw new Error('认证服务未配置');
-  const { data, error } = await supabase.auth.signUp({ email, password });
-  if (error) throw error;
-  return data;
+  throw new Error('当前暂不开放注册，请联系管理员');
 }
 
 export async function signIn(email, password) {
-  if (!supabase) throw new Error('认证服务未配置');
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  return data;
+  if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(ADMIN_USER));
+    setAuthUser(ADMIN_USER);
+    return { user: ADMIN_USER };
+  }
+  throw new Error('账号或密码错误');
 }
 
 export async function signOut() {
-  if (!supabase) return;
-  const { error } = await supabase.auth.signOut();
-  if (error) throw error;
+  localStorage.removeItem(ADMIN_SESSION_KEY);
   clearGuestData();
+  setAuthUser(null);
 }
 
 export async function resetPassword(email) {
-  if (!supabase) throw new Error('认证服务未配置');
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/`
-  });
-  if (error) throw error;
+  throw new Error('当前暂不开放密码重置，请联系管理员');
 }
