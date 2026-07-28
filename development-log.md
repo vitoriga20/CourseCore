@@ -620,6 +620,26 @@
 - 仅提交已跟踪文件的变更，未包含未跟踪的调试脚本、PDF 源文件与分析产物。
 
 
+### 阶段 15: 修复登录弹窗误关闭并临时切换为管理员硬编码认证
+
+**日期**: 2026-07-28
+
+**操作**:
+- 修复登录/注册/重置弹窗点击卡片内部空白处会意外关闭的问题：仅在点击遮罩层背景或右上角关闭按钮时调用 `hideAuthModal`。
+- 暂时关闭 Supabase 邮箱认证链路，改为前端硬编码管理员账号密码登录。
+- 在 `src/services/auth.js` 中新增 `ADMIN_CREDENTIALS` 与 `ADMIN_USER`，登录成功后将 session 写入 `localStorage`。
+- `signUp` 与 `resetPassword` 临时抛出友好错误，提示当前不开放注册/重置。
+- `src/components/authModal.js` 将邮箱输入框标签改为"账号"，placeholder 显示管理员账号。
+
+**关键决策**:
+- 事件委托层判断 `event.target` 是否为遮罩层本身，避免误关；不阻止弹窗内部事件冒泡，保证 tab 切换、表单提交等交互正常。
+- 管理员凭据硬编码在前端仅为临时方案，后续需替换为后端认证或 Supabase 配置。
+
+**产出文件**:
+- `src/main.js` - `auth-close` 事件增加 target 校验
+- `src/services/auth.js` - 硬编码管理员认证与 session 管理
+- `src/components/authModal.js` - 账号标签与 placeholder 调整
+
 ## 更新记录 - 2026-07-28
 ### 修改
 - 答案展示层新增 `formatAnswerDisplay`，选择题索引转字母，判断题索引转中文。
@@ -627,6 +647,17 @@
 
 ### 修复
 - 单选/判断题答案字母在构建阶段自动归一化为选项索引，修复选择正确选项仍被判错的 bug。
+
+## 更新记录 - 2026-07-28（第二次）
+### 修改
+- `src/main.js` 修复登录弹窗点击卡片内部空白处意外关闭的问题。
+- `src/services/auth.js` 临时切换为硬编码管理员账号密码认证。
+- `src/components/authModal.js` 登录输入框标签由"邮箱"改为"账号"。
+
+### 待后续
+- 恢复 Supabase 邮箱认证或接入更安全的后端登录。
+- 管理员密码需从代码中移除，改为环境变量或数据库配置。
+
 ## 最后更新时间
 
 2026-07-28

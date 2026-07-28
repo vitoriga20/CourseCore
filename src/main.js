@@ -411,7 +411,15 @@ function initEventDelegation() {
       case 'prev-question': handlePrevQuestion(qid); break;
       case 'history-back': window.history.back(); break;
       case 'auth-open': showAuthModal(tab || 'login'); break;
-      case 'auth-close': hideAuthModal(); break;
+      case 'auth-close': {
+        const overlay = document.getElementById('auth-modal-overlay');
+        const isOverlayBackground = overlay && e.target === overlay;
+        const isCloseButton = e.target.closest('.auth-modal-close');
+        if (isOverlayBackground || isCloseButton) {
+          hideAuthModal();
+        }
+        break;
+      }
       case 'auth-close-navigate':
         hideAuthModal();
         if (el.dataset.target) navigateTo(el.dataset.target);
