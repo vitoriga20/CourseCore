@@ -152,6 +152,11 @@ function renderAppShell() {
             <li class="sm-panel-itemWrap">
               <a href="/kb" class="sm-panel-item" data-index="03"><span class="sm-panel-label">知识库</span></a>
             </li>
+            <li class="sm-panel-itemWrap sm-panel-auth">
+              ${state.user
+                ? `<button type="button" class="sm-panel-item" data-action="logout" data-index="04"><span class="sm-panel-label">退出登录</span></button>`
+                : `<button type="button" class="sm-panel-item" data-action="auth-open" data-tab="login" data-index="04"><span class="sm-panel-label">登录</span></button>`}
+            </li>
           </ul>
         </nav>
       </aside>
@@ -210,11 +215,29 @@ function openStaggeredMenu() {
   if (panel) panel.setAttribute('aria-hidden', 'false');
 }
 
+function updateStaggeredMenuAuth() {
+  const wrap = document.querySelector('.sm-panel-auth');
+  if (!wrap) return;
+  const label = wrap.querySelector('.sm-panel-label');
+  const btn = wrap.querySelector('button');
+  if (!label || !btn) return;
+  if (state.user) {
+    btn.dataset.action = 'logout';
+    btn.removeAttribute('data-tab');
+    label.textContent = '退出登录';
+  } else {
+    btn.dataset.action = 'auth-open';
+    btn.dataset.tab = 'login';
+    label.textContent = '登录';
+  }
+}
+
 function toggleStaggeredMenu() {
   const wrapper = document.getElementById('staggered-menu');
   if (wrapper?.getAttribute('data-open') === 'true') {
     closeStaggeredMenu();
   } else {
+    updateStaggeredMenuAuth();
     openStaggeredMenu();
   }
 }
@@ -410,7 +433,10 @@ function initEventDelegation() {
       case 'next-question': handleNextQuestion(qid); break;
       case 'prev-question': handlePrevQuestion(qid); break;
       case 'history-back': window.history.back(); break;
-      case 'auth-open': showAuthModal(tab || 'login'); break;
+      case 'auth-open':
+        closeStaggeredMenu();
+        showAuthModal(tab || 'login');
+        break;
       case 'auth-close': {
         const overlay = document.getElementById('auth-modal-overlay');
         const isOverlayBackground = overlay && e.target === overlay;
@@ -426,7 +452,10 @@ function initEventDelegation() {
         break;
       case 'auth-tab': switchAuthTab(tab || 'login'); break;
       case 'auth-submit': handleAuthSubmit(); break;
-      case 'logout': handleLogout(); break;
+      case 'logout':
+        closeStaggeredMenu();
+        handleLogout();
+        break;
       case 'toggle-user-menu': toggleUserMenu(); break;
       default: break;
     }
@@ -487,7 +516,10 @@ async function init() {
   showPageLoader('CourseCore');
   initBackground(() => state.theme);
 
-  window.addEventListener('cc-auth-change', () => updateUserMenu());
+  window.addEventListener('cc-auth-change', () => {
+    updateUserMenu();
+    updateStaggeredMenuAuth();
+  });
 
   await initAuth();
   updateUserMenu();

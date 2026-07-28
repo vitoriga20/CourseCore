@@ -16,9 +16,7 @@ export function renderUserMenu() {
       </div>
     `;
   }
-  return `
-    <button type="button" class="header-auth-btn" data-action="auth-open" data-tab="login">登录 / 注册</button>
-  `;
+  return '';
 }
 
 export function updateUserMenu() {
