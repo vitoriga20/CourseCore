@@ -64,6 +64,23 @@ function setAuthUser(user) {
   }
 }
 
+function getTodayKey() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function ensureLoginDates(user) {
+  const today = getTodayKey();
+  const dates = Array.isArray(user?.loginDates) ? user.loginDates : [];
+  if (!dates.includes(today)) {
+    return { ...user, loginDates: [...dates, today] };
+  }
+  return { ...user, loginDates: dates };
+}
+
 async function mergeGuestData(userId) {
   if (!isSupabaseConfigured()) return;
   const local = loadPersistedData() || {};
@@ -91,7 +108,9 @@ export async function initAuth() {
         ...user,
         avatar: user.avatar || getDefaultAvatar(user.name || 'Admin')
       };
-      setAuthUser(normalized);
+      const withDates = ensureLoginDates(normalized);
+      setAuthUser(withDates);
+      localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(withDates));
       return;
     }
   } catch (e) {
@@ -106,9 +125,10 @@ export async function signUp(email, password) {
 
 export async function signIn(email, password) {
   if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(ADMIN_USER));
-    setAuthUser(ADMIN_USER);
-    return { user: ADMIN_USER };
+    const user = ensureLoginDates(ADMIN_USER);
+    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(user));
+    setAuthUser(user);
+    return { user };
   }
   throw new Error('账号或密码错误');
 }

@@ -49,6 +49,9 @@ export const state = {
   // 课程页理论/练习项展开状态（不持久化）
   itemExpanded: {},
 
+  // 用户中心热力图当前展示年份
+  userHeatmapYear: new Date().getFullYear(),
+
   version: CURRENT_STATE_VERSION
 };
 

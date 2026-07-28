@@ -748,6 +748,51 @@
 - `src/services/auth.js` 与 `src/components/avatarPicker.js` 移除 dicebear 外链，改用本地占位图。
 - `src/components/auth-components.css` 用户卡片背景与热图颜色改为跟随主题变量。
 
+### 阶段 19: 用户中心统计与活动真实化
+
+**日期**: 2026-07-28
+
+**操作**:
+- 在 `src/services/auth.js` 中新增 `loginDates` 记录：登录与初始化时把当天日期追加到用户 session，持久化到 `localStorage`。
+- 重写 `src/views/user/userPage.js` 的统计与热力图逻辑：
+  - 左上角新增"返回"按钮，点击调用 `history.back()`，无历史时回到首页。
+  - "当前连续签到"与"最长连续签到"基于 `loginDates` + `completedQuestions` 的答题日期计算。
+  - 活动热力图改为整年展示（1 月 1 日 至 12 月 31 日），顶部显示 12 个月份标签，左侧显示星期标签，右侧显示年份与上一年/下一年切换器。
+  - 当天登录的格子以墨绿色高亮，并叠加答题量深浅（5 级透明度）。
+  - 新增图例（Less / level-0~4 / More）。
+- 在 `src/state.js` 中新增 `userHeatmapYear` 状态，支持年份切换后重新渲染热力图。
+- 在 `src/components/auth-components.css` 中新增返回按钮样式、整年热力图布局、年份切换器、图例与墨绿色热力图等级。
+- 在 `src/main.js` 中新增 `user-page-back`、`heatmap-prev-year`、`heatmap-next-year` 事件处理。
+
+**关键决策**:
+- 将"登录日"与"答题日"统一视为签到日 → 无需单独签到按钮，用户登录或做题即完成签到，降低交互负担。
+- 连续签到计算兼容昨天有记录、今天尚未操作的情况 → 符合 GitHub 风格，当天结束前 streak 不中断。
+- 当天墨绿色同时反映登录状态与答题活跃度 → 登录后无答题为浅墨绿，答题越多越深。
+- 热力图参考 `activity-heatmap2.0` 布局：左侧星期、中间整年格子、右侧年份切换，保持用户熟悉的 GitHub 风格。
+
+**产出文件**:
+- `src/services/auth.js` - `getTodayKey`、`ensureLoginDates`、session 写入
+- `src/state.js` - `userHeatmapYear`
+- `src/views/user/userPage.js` - 返回按钮、真实统计、整年热力图
+- `src/components/auth-components.css` - `.user-back-btn`、整年热力图布局、年份切换器、图例、`.is-today-login`
+- `src/main.js` - `user-page-back`、`heatmap-prev-year`、`heatmap-next-year` 事件
+
+## 更新记录 - 2026-07-28（第六次）
+
+### 新增
+- 用户页左上角"返回"按钮。
+- `loginDates` 登录日期记录。
+- 当天登录热力图格子墨绿色高亮。
+- 热力图年份切换器（右侧显示上一年 / 当前年 / 下一年）。
+- 热力图图例（Less / More）。
+- `state.userHeatmapYear` 状态。
+
+### 修改
+- "当前连续签到"与"最长连续签到"改为基于真实登录/答题日期计算。
+- 热力图从固定 2026-02 至 2026-07 改为整年展示（1 月 1 日 至 12 月 31 日）。
+- 热力图顶部增加 12 个月份标签，左侧增加 Mon/Wed/Fri 星期标签。
+- 热力图页脚改为图例。
+
 ## 最后更新时间
 
 2026-07-28

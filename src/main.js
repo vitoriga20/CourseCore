@@ -523,6 +523,21 @@ function initEventDelegation() {
         handleLogout();
         navigateTo('/');
         break;
+      case 'user-page-back':
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          navigateTo('/');
+        }
+        break;
+      case 'heatmap-prev-year':
+        state.userHeatmapYear = (state.userHeatmapYear || new Date().getFullYear()) - 1;
+        navigateTo('/user', { replace: true });
+        break;
+      case 'heatmap-next-year':
+        state.userHeatmapYear = (state.userHeatmapYear || new Date().getFullYear()) + 1;
+        navigateTo('/user', { replace: true });
+        break;
       case 'user-entry':
         closeStaggeredMenu();
         if (state.user) {
