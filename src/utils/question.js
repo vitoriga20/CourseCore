@@ -50,3 +50,27 @@ export function getPrevQuestionId(question) {
   const prev = ctx.all[ctx.currentIndex - 1];
   return prev ? prev.id : null;
 }
+
+export function formatAnswerDisplay(question) {
+  const { questionType, answer, answers } = question;
+
+  if ((questionType === 0 || questionType === 1) && Array.isArray(answers)) {
+    return answers
+      .map(a => /^\d+$/.test(String(a)) ? String.fromCharCode(65 + parseInt(a, 10)) : a)
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  if (questionType === 0 && /^\d+$/.test(String(answer))) {
+    const idx = parseInt(answer, 10);
+    return String.fromCharCode(65 + idx) || answer;
+  }
+
+  if (questionType === 5) {
+    const v = String(answer).trim();
+    if (v === '1') return '正确';
+    if (v === '0') return '错误';
+  }
+
+  return answer;
+}

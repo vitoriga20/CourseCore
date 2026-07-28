@@ -1,3 +1,4 @@
+import { formatAnswerDisplay } from '../utils/question.js';
 import { marked } from 'marked';
 import { state } from '../state.js';
 import { COURSES } from '../data/courses.js';
@@ -81,7 +82,7 @@ function renderTheorySolution(question) {
       <h4 class="font-bold mb-2">标准解法</h4>
       <div class="text-sm" style="color: var(--fg);">${question.solution}</div>
       ${question.answer !== undefined && question.answer !== null && question.answer !== ''
-        ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(question.answer))}</div>`
+        ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(formatAnswerDisplay(question)))}</div>`
         : ''}
     </div>
   `;

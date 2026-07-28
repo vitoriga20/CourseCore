@@ -1,7 +1,7 @@
+import { formatAnswerDisplay, getNextQuestionId, getPrevQuestionId } from '../../utils/question.js';
 import { QUESTION_TYPE_LABELS } from '../../data/labels.js';
 import { courseTitle, moduleTitle, state } from '../../state.js';
 import { escapeHtml } from '../../utils.js';
-import { getNextQuestionId, getPrevQuestionId } from '../../utils/question.js';
 import { href } from '../../config/routes.js';
 
 export function renderQuestionHeader(question) {
@@ -61,7 +61,7 @@ export function renderSolution(question) {
     <section class="question-solution solution-box mt-6 ${isVisible ? '' : 'hidden'}">
       <h3 class="font-bold mb-2">标准解法</h3>
       <div class="text-sm" style="color: var(--fg);">${question.solution}</div>
-      ${question.answer ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(question.answer))}</div>` : ''}
+      ${question.answer ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(formatAnswerDisplay(question)))}</div>` : ''}
       ${question.hint ? `<div class="question-hint hidden mt-4 p-3 rounded-lg text-sm" style="background: var(--hover); color: var(--muted);">${question.hint}</div>` : ''}
     </section>
   `;

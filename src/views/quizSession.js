@@ -1,3 +1,4 @@
+import { formatAnswerDisplay } from '../utils/question.js';
 import { QUESTIONS } from '../data/questions.js';
 import { COURSES } from '../data/courses.js';
 import { escapeHtml } from '../utils.js';
@@ -201,7 +202,7 @@ function renderSolution(question, result, showAnswer) {
       <h4 class="font-bold mb-2">解析</h4>
       <div class="text-sm" style="color: var(--fg);">${question.solution || '暂无解析'}</div>
       ${question.answer !== undefined && question.answer !== null && question.answer !== ''
-        ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(question.answer))}</div>`
+        ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(formatAnswerDisplay(question)))}</div>`
         : ''}
     </div>
   `;

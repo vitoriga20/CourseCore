@@ -240,6 +240,29 @@
 - `src/data/questions.js` - 物理训练题等字母答案已转为索引
 
 **关联问题**: 物理训练题选择 C 仍被判定为错误
+
+### 阶段 14: 答案展示层将索引转回字母/中文真值
+
+**日期**: 2026-07-28
+
+**操作**:
+- 在 `src/utils/question.js` 新增 `formatAnswerDisplay(question)`。
+- 单选题数字索引（0/1/2/3）在展示时转回 A/B/C/D。
+- 多选题 `answers` 数组同样逐个转字母，并以 ", " 连接。
+- 判断题 "1"/"0" 展示为 "正确"/"错误"。
+- 在 `chrome.js`、`inlinePractice.js`、`practiceList.js`、`quizSession.js` 中统一使用新函数渲染"答案："。
+
+**关键决策**:
+- 数据层保持索引（与选项 value 一致），展示层做可读性转换 → 不影响校验逻辑，同时满足用户看 A/B/C/D 的习惯。
+
+**产出文件**:
+- `src/utils/question.js`
+- `src/views/question/chrome.js`
+- `src/views/inlinePractice.js`
+- `src/views/practiceList.js`
+- `src/views/quizSession.js`
+
+**关联问题**: 答案展示为 0/1/2/3，用户希望显示 A/B/C/D
 ## 架构决策记录
 
 | 决策 | 说明 |
@@ -598,6 +621,9 @@
 
 
 ## 更新记录 - 2026-07-28
+### 修改
+- 答案展示层新增 `formatAnswerDisplay`，选择题索引转字母，判断题索引转中文。
+
 
 ### 修复
 - 单选/判断题答案字母在构建阶段自动归一化为选项索引，修复选择正确选项仍被判错的 bug。
