@@ -24,8 +24,8 @@ function renderModalHtml() {
         </div>
         <div class="auth-tabs">
           <button type="button" class="auth-tab ${activeTab === 'login' ? 'active' : ''}" data-action="auth-tab" data-tab="login">登录</button>
-          <button type="button" class="auth-tab ${activeTab === 'signup' ? 'active' : ''}" data-action="auth-tab" data-tab="signup">注册</button>
-          <button type="button" class="auth-tab ${activeTab === 'reset' ? 'active' : ''}" data-action="auth-tab" data-tab="reset">重置</button>
+          <button type="button" class="auth-tab ${activeTab === 'signup' ? 'active' : ''}" data-action="auth-tab" data-tab="signup" disabled title="功能暂时关闭">注册</button>
+          <button type="button" class="auth-tab ${activeTab === 'reset' ? 'active' : ''}" data-action="auth-tab" data-tab="reset" disabled title="功能暂时关闭">重置</button>
         </div>
         <div id="auth-message" class="auth-message hidden"></div>
         <form class="auth-form" id="auth-form" onsubmit="return false;">
@@ -59,7 +59,7 @@ export function renderAuthModal() {
 }
 
 export function showAuthModal(tab = 'login') {
-  activeTab = tab;
+  activeTab = tab === 'login' ? 'login' : 'login';
   const container = document.getElementById('auth-modal-container');
   if (!container) return;
   container.innerHTML = renderModalHtml();

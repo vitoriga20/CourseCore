@@ -141,6 +141,16 @@
   border-bottom-color: var(--accent);
 }
 
+.auth-tab:disabled {
+  color: var(--muted);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.auth-tab:disabled:hover {
+  color: var(--muted);
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;
