@@ -426,11 +426,14 @@ function initEventDelegation() {
     const link = e.target.closest('a[href]');
     if (link) {
       const href = link.getAttribute('href');
-      if (href && href.startsWith('/') && isInternalPath(href)) {
-        e.preventDefault();
-        closeStaggeredMenu();
-        navigateTo(href);
-        return;
+      if (href && href.startsWith('/')) {
+        const pathname = href.split('#')[0];
+        if (isInternalPath(pathname)) {
+          e.preventDefault();
+          closeStaggeredMenu();
+          navigateTo(href);
+          return;
+        }
       }
     }
 

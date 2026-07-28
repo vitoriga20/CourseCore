@@ -110,7 +110,7 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
     └── views\                          # 页面视图组件
         ├── landing.js                  # 首页（学习/知识库双板块）
         ├── course.js                   # 课程详情
-        ├── practiceList.js             # 小节练习列表（支持 theory 讲义渲染+例题面板 / quiz / practice / training）
+        ├── practiceList.js             # 小节独立页面（支持 theory 讲义渲染+例题面板 / quiz / practice / training；顶部渲染墨绿色课程/小节导航栏）
         ├── quizSession.js              # 通用测验视图（顺序/随机/字体/背景/导航/报告），被 quiz 与 training 复用
         ├── inlinePractice.js           # inline 多题训练区
         ├── practiceDetail.js           # 单题作答与解法（薄包装）

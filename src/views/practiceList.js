@@ -11,6 +11,25 @@ import { renderInlinePractice } from './inlinePractice.js';
 import { renderQuizSession } from './quizSession.js';
 import { renderQuestion } from './question/index.js';
 
+function renderItemNav(course, module, item) {
+  return `
+    <nav class="item-nav" aria-label="课程导航">
+      <ol class="item-nav-list">
+        <li class="item-nav-course">
+          <a href="${href('course', { courseId: course.id })}" title="${escapeHtml(course.title)}">
+            <span>${escapeHtml(course.title)}</span>
+          </a>
+        </li>
+        <li class="item-nav-module">
+          <a href="${href('course', { courseId: course.id })}#module-${module.id}" title="${escapeHtml(module.title)}">
+            <span>${escapeHtml(module.title)}</span>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  `;
+}
+
 function renderTheoryContent(content) {
   const html = marked.parse(content || '');
   return `<div class="lesson-content prose prose-invert max-w-none text-base leading-relaxed mb-8" style="color: var(--fg);">${html}</div>`;
@@ -166,11 +185,15 @@ export function renderPracticeList(itemId) {
     `;
   }
 
-  const wrapperClass = item.type === 'quiz' || item.type === 'training' ? 'max-w-7xl mx-auto' : 'max-w-3xl mx-auto';
+  const isQuiz = item.type === 'quiz' || item.type === 'training';
+  const wrapperClass = isQuiz ? 'max-w-7xl mx-auto' : 'max-w-3xl mx-auto';
+  const navHtml = isQuiz
+    ? `<a href="${href('course', { courseId: course.id })}" class="text-sm mb-4 inline-block" style="color: var(--muted);">← 返回 ${escapeHtml(course.title)}</a>`
+    : renderItemNav(course, module, item);
 
   return `
     <div class="${wrapperClass}">
-      <a href="${href('course', { courseId: course.id })}" class="text-sm mb-4 inline-block" style="color: var(--muted);">← 返回 ${escapeHtml(course.title)}</a>
+      ${navHtml}
       <div class="flex items-center gap-3 mb-2">
         <span class="type-tag">${TYPE_LABELS[item.type] || '练习'}</span>
         <span class="text-xs" style="color: var(--muted);">${escapeHtml(module.title)}</span>
