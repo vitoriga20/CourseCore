@@ -343,8 +343,8 @@
 - 题目内容中的 LaTeX 依赖 MathJax 异步渲染，极快切换页面时可能出现闪烁。
 - MinerU API 对少数希腊符号（如 λ）可能漏识别，当前通过 `repair_missing_lambda` 与 `patch_known_questions` 做启发式恢复，后续可升级为更完整的符号 OCR 后处理或人工抽检。
 - 训练题答案字段目前留空，需后续手动补充。
-- 当前 Supabase 项目尚未创建，`.env.local` 中配置为空，认证与同步功能处于“就绪待配置”状态；创建项目并填入 URL/Key 后即可启用。
-- 登录/注册弹窗尚未增加“同意用户协议与隐私政策”勾选框，合规页面 `/privacy`、`/terms` 待后续补充。
+- 当前 Supabase 项目已创建并配置，但登录/注册/重置密码功能已在 `src/services/auth.js` 中关闭，站点以游客模式公开运行；后续如需账号体系，需恢复 Supabase Auth 或接入更安全的后端认证。
+- 登录/注册弹窗尚未增加"同意用户协议与隐私政策"勾选框，合规页面 `/privacy`、`/terms` 已补充，但注册功能当前关闭，无需立即启用勾选框。
 - 用户账号注销、邮箱确认重发、同步失败重试提示等体验细节待后续完善。
 
 ## 阶段 3: 构建与功能验证
@@ -883,6 +883,54 @@
 ### 验证
 - `npm run build` 成功，预渲染 482 条静态路由。
 
+### 阶段 21: 公开前安全加固
+
+**日期**: 2026-07-29
+
+**操作**:
+- 在 `.worktrees/feature/security-prep-for-release` 隔离工作区完成公开前风险修复。
+- 移除 `src/services/auth.js` 中的硬编码管理员账号 `admin@coursecore.local` / `admin123456`，彻底删除 `ADMIN_CREDENTIALS`、`ADMIN_USER`、`ADMIN_SESSION_KEY` 及相关 session 逻辑。
+- `signIn`、`signUp`、`resetPassword` 统一抛出友好错误，提示当前不开放对应功能；`initAuth` 不再恢复任何 session，站点以纯游客模式运行。
+- 关闭 Vite 生产构建 sourcemap（`vite.config.js` 中 `sourcemap: false`），避免构建产物泄露源码结构。
+- 修复 `.github/workflows/deploy.yml` 中的 `coursecore/` 子目录路径：删除 `working-directory` 与 `cache-dependency-path` 中的错误前缀，artifact 路径改为 `dist`。
+- 在 `index.html` 增加 `Content-Security-Policy`：限制资源加载到同源、Google Fonts、MathJax CDN、cdnjs、Supabase；禁用 frame/object；限制 base-uri。
+- 为 `index.html` 中两个外部 JS（MathJax 3、p5.js）添加 `integrity` 与 `crossorigin="anonymous"` SRI 校验，防止 CDN 被篡改时代码执行。
+- 更新 `.env.example`：移除"纯静态前端无需后端"的过时描述，补充 `MINERU_TOKEN`、`VITE_SUPABASE_URL`、`VITE_SUPABASE_ANON_KEY` 的用途与安全说明。
+
+**关键决策**:
+- 直接关闭登录功能而非仅改密码 → 避免前端无法安全存储凭据的根本问题，公开上线期间无人能登录为管理员。
+- sourcemap 完全关闭而非条件化 → 简化配置，生产构建产物最小化。
+- CSP 保留 `'unsafe-inline'` → 兼容现有内联 MathJax 配置与大量 `innerHTML` 渲染逻辑，后续若引入 nonce 或把 MathJax 配置外置可进一步收紧。
+- GitHub Actions 路径改为根目录 → 与仓库根目录重构结果保持一致，避免 CI 找不到 `package-lock.json` 或 `dist`。
+
+**产出文件**:
+- `src/services/auth.js` - 移除硬编码管理员凭据与 session 管理
+- `vite.config.js` - 生产 sourcemap 关闭
+- `.github/workflows/deploy.yml` - 部署路径修正
+- `index.html` - CSP 与 CDN SRI
+- `.env.example` - 环境变量示例更新
+
+**关联问题**: 计划公开网站前的风险检查
+
+## 更新记录 - 2026-07-29
+
+### 修改
+- 移除 `src/services/auth.js` 硬编码管理员账号密码，关闭登录/注册/重置功能。
+- `vite.config.js` 生产构建 `sourcemap` 由 `true` 改为 `false`。
+- `.github/workflows/deploy.yml` 修正为根目录构建与上传路径。
+- `index.html` 增加 Content-Security-Policy 并为 MathJax、p5.js 添加 SRI。
+- `.env.example` 更新为包含 MinerU token 与 Supabase 配置说明的示例。
+
+### 安全修复
+- 高危：消除源码中可公开登录的管理员账号。
+- 中危：防止生产源码映射泄露、CDN 劫持执行、GitHub Actions 部署失败。
+
+### 已知限制（仍需关注）
+- `src/validators/runner.js` 仍使用 `new Function` 执行代码题测试；当前题目为本地构建生成，如后续开放用户上传题目需改用 Web Worker 沙箱。
+- 大量 `innerHTML` + `marked.parse()` 渲染存在 XSS 理论风险；当前 Markdown 源受控，上线后应定期审计源文件，并考虑引入 DOMPurify。
+- 游客进度仅存 localStorage，无法跨设备同步。
+- 内容付费/锁定依赖前端判断，题目数据本身在构建产物中公开。
+
 ## 最后更新时间
 
-2026-07-28
+2026-07-29

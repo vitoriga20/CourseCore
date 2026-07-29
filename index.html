@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CourseCore — 大学基础课学习平台</title>
   <meta name="description" content="CourseCore 是面向大学生的大学基础课学习平台，覆盖高数、大物、线代、概率统计等课程，提供课程、练习、知识库与期末试卷刷题功能。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; img-src 'self' data: blob:; frame-src 'none'; object-src 'none'; base-uri 'self';">
   <link rel="icon" type="image/svg+xml" href="/logo-mark.svg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
@@ -13,8 +14,8 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" integrity="sha384-Wuix6BuhrWbjDBs24bXrjf4ZQ5aFeFWBuKkFekO2t8xFU0iNaLQfp2K6/1Nxveei" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js" integrity="sha384-Mhzoc5EVkjFUVtIW2M3h8BgXtFlUsUpu9lTCThPrV7+k6MN6vTi079rew0LkvgFb" crossorigin="anonymous"></script>
 </head>
 <body>
   <canvas id="bg-canvas"></canvas>
