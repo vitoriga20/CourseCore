@@ -2,7 +2,29 @@ import { QUESTIONS } from '../data/questions.js';
 import { EXAM_PAPERS } from '../data/examPapers.js';
 import { state } from '../state.js';
 
+// 运行时从 Supabase 读取的题目缓存（按 itemId 分组）与本地 QUESTIONS 合并
+export function getItemQuestions(itemId) {
+  const runtime = state.runtimeQuestions[itemId] || [];
+  const local = QUESTIONS.filter(q => q.itemId === itemId);
+  if (runtime.length === 0) return local;
+
+  const mergedMap = new Map();
+  for (const q of local) mergedMap.set(q.id, q);
+  for (const q of runtime) mergedMap.set(q.id, q);
+  return Array.from(mergedMap.values()).sort((a, b) => {
+    const ai = Number(a.sort_order ?? a.order ?? 0);
+    const bi = Number(b.sort_order ?? b.order ?? 0);
+    return ai - bi;
+  });
+}
+
 export function findQuestion(qid) {
+  // 优先从运行时缓存中查找
+  for (const itemId in state.runtimeQuestions) {
+    const found = state.runtimeQuestions[itemId].find(q => q.id === qid);
+    if (found) return found;
+  }
+
   const fromQuestions = QUESTIONS.find(q => q.id === qid);
   if (fromQuestions) return fromQuestions;
 
@@ -31,7 +53,7 @@ export function getQuestionContext(question) {
   }
 
   if (state.currentPracticeItem) {
-    const all = QUESTIONS.filter(q => q.itemId === state.currentPracticeItem);
+    const all = getItemQuestions(state.currentPracticeItem);
     return { all, currentIndex: all.findIndex(q => q.id === question.id) };
   }
 

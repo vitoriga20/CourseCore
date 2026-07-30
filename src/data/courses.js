@@ -263,7 +263,8 @@ export const COURSES = [
           {
             "id": "c1-m7-i1",
             "title": "微分方程的基本概念",
-            "type": "theory"
+            "type": "theory",
+            "content": "## 这里是微分方程的基本概念"
           },
           {
             "id": "c1-m7-i2",

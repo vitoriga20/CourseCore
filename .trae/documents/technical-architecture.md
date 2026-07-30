@@ -14,6 +14,10 @@
 | 状态管理 | 中央 `state.js` + localStorage 持久化 |
 | 路由 | HTML5 History API + 集中路由表（`src/config/routes.js`）+ 构建时预渲染 |
 | 交互 | `data-action` 事件委托模式 + `<a>` 内部链接客户端拦截 |
+| 后端服务 | Supabase Auth + Supabase Postgres（RLS + RPC） |
+| 管理后台 | `src/views/admin/adminPage.js` + `src/services/admin.js` + `src/services/content.js` |
+| Markdown 编辑器 | EasyMDE |
+| 分栏拖拽 | Split.js（编辑器分栏）+ SortableJS（题目排序） |
 | 部署目标 | Vercel / Netlify / GitHub Pages |
 
 ## 2. 项目目录说明
@@ -90,10 +94,12 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
     │   ├── questions.js                # 平台题库
     │   ├── theoryContents.js           # theory 小节 Markdown 讲义 + 例题 ID 列表
     │   └── examPapers.js               # 期末试卷数据
-    ├── services\                       # 认证与同步
+    ├── services\                       # 认证、同步与管理后台服务
     │   ├── supabase.js                 # Supabase 客户端初始化
     │   ├── auth.js                     # 游客初始化、登录/注册/登出、数据合并
-    │   └── sync.js                     # 云端 answers / progress 读写与合并
+    │   ├── sync.js                     # 云端 answers / progress 读写与合并
+    │   ├── admin.js                    # 管理后台 CRUD 服务（users / courses / modules / items / questions / exam_* / theory_contents）
+    │   └── content.js                  # 非管理员运行时内容读取（theory_contents / questions）
     ├── validators\                     # 独立答案验证器
     │   ├── index.js                    # validate(question, userAnswer) 入口
     │   ├── exact.js                    # 精确匹配
@@ -409,6 +415,10 @@ state 更新 → saveProgress() → localStorage 持久化
 - 网络：首次加载需要 MathJax CDN 与 Google Fonts（Inter）。
 - 本地构建：Node.js >= 18，npm >= 9。
 - 构建产物：`dist/` 目录，可直接作为静态站点部署。
+- 主要 npm 依赖：
+  - 运行时：`@supabase/supabase-js`、`marked`、`easymde`、`split.js`、`sortablejs`。
+  - 开发时：`vite`、`tailwindcss`、`postcss`、`autoprefixer`、`gray-matter`、`sharp`、`ws`。
+- 后台编辑器：`easymde` 提供 Markdown 工具栏与双栏预览；`split.js` 实现理论/训练/测试编辑器的可拖拽分栏；`sortablejs` 实现训练/测试题目列表的拖拽排序。
 
 ## 7. 可复现构建步骤
 
@@ -462,5 +472,5 @@ npm run preview           # 本地预览生产产物
 - 用户进度保存在浏览器 `localStorage`，跨设备/浏览器不互通；后续可通过接入后端或云存储解决。
 - 填空/简答题答案匹配基于字符串归一化，不处理复杂等价变形；计算题使用数值容差，可接受近似值。
 - 代码题 `runner` 验证器当前使用 `new Function()` 沙箱，仅用于内置代码题；涉及用户可输入代码时必须迁移到 iframe 隔离环境。
-- 大学物理B（上）理论小节当前为占位内容，正式讲义待后续补充；物理综合测验的解答题按 `proof` 处理，学生需对照参考答案自查。
+- 大学物理B（上）理论讲义与训练题答案已补充；后台编辑器支持 theory 小节、训练/测试题的实时编辑与保存，保存后学生侧通过运行时 Supabase 读取即可看到更新（静态构建环境仍需 `npm run fetch:data` 重新生成数据文件）。
 - MathJax 公式渲染依赖外部 CDN，离线环境需改为本地 MathJax 包。

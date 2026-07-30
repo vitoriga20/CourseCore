@@ -566,7 +566,8 @@ function initEventDelegation() {
         startEditUserName();
         break;
       case 'toggle-user-menu': toggleUserMenu(); break;
-      case 'admin-tab':
+      case 'admin-section':
+      case 'admin-toggle-group':
       case 'admin-add':
       case 'admin-edit':
       case 'admin-delete':
@@ -574,6 +575,20 @@ function initEventDelegation() {
       case 'admin-modal-noop':
       case 'admin-modal-save':
       case 'admin-refresh':
+      case 'admin-edit-theory':
+      case 'admin-edit-practice':
+      case 'admin-back-list':
+      case 'admin-add-example':
+      case 'admin-remove-example':
+      case 'admin-toggle-example':
+      case 'admin-save-theory':
+      case 'admin-practice-select':
+      case 'admin-practice-add':
+      case 'admin-practice-remove':
+      case 'admin-practice-move-up':
+      case 'admin-practice-move-down':
+      case 'admin-practice-type':
+      case 'admin-save-practice':
         handleAdminAction(action, el);
         break;
       default: break;
@@ -642,10 +657,10 @@ async function init() {
 
   await initAuth();
   updateUserMenu();
-  restoreLocation();
+  await restoreLocation();
 
-  window.addEventListener('popstate', () => {
-    restoreLocation();
+  window.addEventListener('popstate', async () => {
+    await restoreLocation();
   });
 
   document.addEventListener('keydown', e => {

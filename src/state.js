@@ -1,5 +1,6 @@
 import { COURSES } from './data/courses.js';
 import { QUESTIONS } from './data/questions.js';
+import { findQuestion, getItemQuestions } from './utils/question.js';
 import {
   loadPersistedData,
   storeState,
@@ -52,6 +53,12 @@ export const state = {
   // 用户中心热力图当前展示年份
   userHeatmapYear: new Date().getFullYear(),
 
+  // 运行时从 Supabase 拉取的理论内容缓存（key: itemId）
+  runtimeTheoryContent: {},
+
+  // 运行时从 Supabase 拉取的题目缓存（key: itemId，value: Question[]）
+  runtimeQuestions: {},
+
   version: CURRENT_STATE_VERSION
 };
 
@@ -102,7 +109,7 @@ export function markQuestion(qid, result) {
   saveProgress();
 
   if (state.user && isSupabaseConfigured()) {
-    const question = QUESTIONS.find(q => q.id === qid);
+    const question = findQuestion(qid);
     const itemId = question?.itemId || null;
     sync.pushAnswer(state.user.id, qid, itemId, result.userAnswer ?? null, result.manual ? null : Boolean(result.passed))
       .catch(err => console.error('Sync answer failed', err));
@@ -158,7 +165,7 @@ export function getTotalItems(course) {
 }
 
 export function isItemCompleted(itemId) {
-  const itemQuestions = QUESTIONS.filter(q => q.itemId === itemId);
+  const itemQuestions = getItemQuestions(itemId);
   if (itemQuestions.length > 0) {
     return itemQuestions.every(q => state.completedQuestions[q.id]);
   }
@@ -174,7 +181,7 @@ export function getStatus(itemId) {
 }
 
 export function syncItemProgress(itemId) {
-  const itemQuestions = QUESTIONS.filter(q => q.itemId === itemId);
+  const itemQuestions = getItemQuestions(itemId);
   if (itemQuestions.length === 0) return;
   const allDone = itemQuestions.every(q => state.completedQuestions[q.id]);
   if (allDone && !state.progress[itemId]) {

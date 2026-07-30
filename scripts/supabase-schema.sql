@@ -201,6 +201,46 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+CREATE OR REPLACE FUNCTION public.admin_list_users()
+RETURNS TABLE (
+  id uuid,
+  email text,
+  role text,
+  display_name text,
+  avatar_url text,
+  created_at timestamptz,
+  last_sign_in_at timestamptz
+) AS $$
+BEGIN
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Forbidden';
+  END IF;
+  RETURN QUERY
+  SELECT
+    u.id,
+    u.email::text,
+    COALESCE(p.role, 'free')::text AS role,
+    p.display_name,
+    p.avatar_url,
+    u.created_at,
+    u.last_sign_in_at
+  FROM auth.users u
+  LEFT JOIN public.profiles p ON p.id = u.id
+  ORDER BY u.created_at DESC;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.admin_delete_user(target_user_id uuid)
+RETURNS void AS $$
+BEGIN
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Forbidden';
+  END IF;
+  DELETE FROM public.profiles WHERE id = target_user_id;
+  DELETE FROM auth.users WHERE id = target_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- 11. RLS 策略：内容表公开可读，admin 可写
 DROP POLICY IF EXISTS "courses_readable_by_everyone" ON public.courses;
 CREATE POLICY "courses_readable_by_everyone"

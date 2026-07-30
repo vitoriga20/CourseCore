@@ -1,12 +1,11 @@
 import { state, saveProgress, markQuestion, toggleItem, toggleModule, setUserAnswer, clearQuestionState, syncItemProgress, startInlinePractice, clearInlineState, setInlineResult, setInlineShowAnswer, setTheoryAnswer, setTheoryResult, setTheoryShowAnswer } from './state.js';
 import { COURSES } from './data/courses.js';
-import { QUESTIONS } from './data/questions.js';
 import { THEORY_CONTENTS } from './data/theoryContents.js';
 import { EXAM_PAPERS } from './data/examPapers.js';
 import { submitTypes } from './config/question-types.js';
 import { validate } from './validators/index.js';
 import { collectUserAnswer, isEmptyAnswer } from './utils/answer-collector.js';
-import { findQuestion, getNextQuestionId, getPrevQuestionId } from './utils/question.js';
+import { findQuestion, getNextQuestionId, getPrevQuestionId, getItemQuestions } from './utils/question.js';
 import { matchRoute, buildPath, isInternalPath } from './config/routes.js';
 export { isInternalPath };
 
@@ -23,6 +22,7 @@ import { renderPrivacy, renderTerms } from './views/legal.js';
 import { renderUserPage } from './views/user/userPage.js';
 import { renderAdminPage, initAdminPage } from './views/admin/adminPage.js';
 import { initGooeyNav } from './components/gooeyNav.js';
+import { loadTheoryContent, loadQuestions } from './services/content.js';
 import { showPageLoader, hidePageLoader, initImageLoaders, renderButtonLoader } from './components/loading.js';
 
 let activeQuizItemId = null;
@@ -40,7 +40,7 @@ export function setActiveNav(view) {
   }
 }
 
-function applyRoute(route) {
+async function applyRoute(route) {
   switch (route.name) {
     case 'home':
       showLanding(state.landingTab || 'learn');
@@ -70,7 +70,7 @@ function applyRoute(route) {
       showCourse(route.params.courseId);
       break;
     case 'item':
-      showPracticeItem(route.params.itemId);
+      await showPracticeItem(route.params.itemId);
       break;
     case 'question':
       showPracticeDetail(route.params.qid);
@@ -88,27 +88,27 @@ function applyRoute(route) {
 
 const LOADER_DELAY = 120;
 
-function applyRouteWithLoader(route) {
+async function applyRouteWithLoader(route) {
   showPageLoader();
   if (route) {
-    applyRoute(route);
+    await applyRoute(route);
   } else {
     showLanding('learn');
   }
   window.setTimeout(() => hidePageLoader(), LOADER_DELAY);
 }
 
-export function restoreLocation() {
+export async function restoreLocation() {
   const route = matchRoute(window.location.pathname);
-  applyRouteWithLoader(route);
+  await applyRouteWithLoader(route);
 }
 
-export function navigateTo(path, { replace = false } = {}) {
+export async function navigateTo(path, { replace = false } = {}) {
   const pathname = path.split('#')[0];
   const hash = path.includes('#') ? '#' + path.split('#')[1] : '';
   const route = matchRoute(pathname);
   if (!route) {
-    navigateTo(buildPath('home'), { replace: true });
+    await navigateTo(buildPath('home'), { replace: true });
     return;
   }
   if (replace) {
@@ -116,7 +116,7 @@ export function navigateTo(path, { replace = false } = {}) {
   } else {
     history.pushState(null, '', path);
   }
-  applyRouteWithLoader(route);
+  await applyRouteWithLoader(route);
 }
 
 export function showLanding(tab) {
@@ -236,7 +236,7 @@ export function showPracticeDetail(questionId) {
   window.scrollTo({ top: 0 });
 }
 
-export function showPracticeItem(itemId) {
+export async function showPracticeItem(itemId) {
   state.view = "practice-list";
   state.currentPracticeItem = itemId;
   clearQuestionState();
@@ -244,8 +244,36 @@ export function showPracticeItem(itemId) {
   startInlinePractice(itemId);
   syncItemProgress(itemId);
   setActiveNav('landing');
+
+  // 先用本地数据渲染，避免等待网络
   renderMain();
   window.scrollTo({ top: 0 });
+
+  // theory / training / quiz 小节尝试从 Supabase 实时读取最新内容，避免每次保存后都要手动 fetch:data
+  const course = COURSES.find(c => c.modules.some(m => m.items.some(i => i.id === itemId)));
+  const item = course?.modules.flatMap(m => m.items).find(i => i.id === itemId);
+  if (item?.type === 'theory') {
+    const runtime = await loadTheoryContent(itemId);
+    if (runtime) {
+      const local = THEORY_CONTENTS.find(t => t.itemId === itemId);
+      const localContent = local?.content || item.content;
+      // 仅当 Supabase 数据比本地新或本地为空时才更新视图
+      if (runtime.content && runtime.content !== localContent) {
+        state.runtimeTheoryContent[itemId] = runtime;
+        renderMain();
+      }
+    }
+  } else if (item?.type === 'quiz' || item?.type === 'training') {
+    const runtime = await loadQuestions(itemId);
+    if (runtime.length > 0) {
+      const localIds = new Set(getItemQuestions(itemId).map(q => q.id));
+      const hasNewOrUpdated = runtime.some(q => !localIds.has(q.id));
+      if (hasNewOrUpdated) {
+        state.runtimeQuestions[itemId] = runtime;
+        renderMain();
+      }
+    }
+  }
 }
 
 export function showExamQuestion(examId, qid) {
@@ -307,7 +335,7 @@ export function handleClosePractice(itemId) {
 }
 
 export function handleSubmitItem(itemId) {
-  const questions = QUESTIONS.filter(q => q.itemId === itemId);
+  const questions = getItemQuestions(itemId);
   if (questions.length === 0) return;
 
   const root = document.querySelector(`.inline-practice[data-item-id="${itemId}"]`);
@@ -360,7 +388,7 @@ export function handleSubmitItem(itemId) {
 }
 
 export function handleRetryItem(itemId) {
-  const questions = QUESTIONS.filter(q => q.itemId === itemId);
+  const questions = getItemQuestions(itemId);
   for (const q of questions) {
     delete state.inlineResults[q.id];
     delete state.inlineAnswers[q.id];
@@ -374,12 +402,30 @@ export function handleShowInlineAnswer(qid) {
   renderMain();
 }
 
+// 支持两种例题格式：旧格式（题目 ID 字符串）和新格式（内联对象）
+function normalizeTheoryExamplesForSubmit(theory, itemId) {
+  const raw = theory?.examples || [];
+  if (raw.length === 0) return [];
+  if (typeof raw[0] === 'string') {
+    return raw.map(id => findQuestion(id)).filter(Boolean);
+  }
+  return raw.map((ex, idx) => ({
+    id: `${itemId}-ex${idx}`,
+    questionType: 0,
+    title: `\u4f8b\u9898 ${idx + 1}`,
+    content: ex.text || '',
+    image: ex.image || '',
+    options: ex.options || [],
+    answer: ex.answer !== undefined ? String(ex.answer) : '0',
+    solution: ex.solution || '',
+    itemId: itemId,
+  }));
+}
+
 export function handleSubmitTheoryExamples(itemId) {
+  const runtime = state.runtimeTheoryContent[itemId];
   const theory = THEORY_CONTENTS.find(t => t.itemId === itemId);
-  const exampleIds = theory?.examples || [];
-  const examples = exampleIds
-    .map(id => QUESTIONS.find(q => q.id === id))
-    .filter(Boolean);
+  const examples = normalizeTheoryExamplesForSubmit(runtime || theory, itemId);
   if (examples.length === 0) return;
 
   const root = document.querySelector(`.theory-examples[data-item-id="${itemId}"]`);

@@ -1,8 +1,7 @@
-import { formatAnswerDisplay } from '../utils/question.js';
+import { formatAnswerDisplay, getItemQuestions, findQuestion } from '../utils/question.js';
 import { marked } from 'marked';
 import { state } from '../state.js';
 import { COURSES } from '../data/courses.js';
-import { QUESTIONS } from '../data/questions.js';
 import { THEORY_CONTENTS } from '../data/theoryContents.js';
 import { TYPE_LABELS, QUESTION_TYPE_LABELS } from '../data/labels.js';
 import { escapeHtml } from '../utils.js';
@@ -37,8 +36,9 @@ function renderTheoryContent(content) {
 }
 
 function renderTheoryPlaceholder(item) {
+  const runtime = state.runtimeTheoryContent[item.id];
   const theory = THEORY_CONTENTS.find(t => t.itemId === item.id);
-  const content = theory?.content || item.content;
+  const content = runtime?.content || theory?.content || item.content;
 
   if (content) {
     return renderTheoryContent(content);
@@ -128,12 +128,30 @@ function renderTheoryExample(question, idx) {
   `;
 }
 
+// 支持两种例题格式：旧格式（题目 ID 字符串数组）和新格式（内联对象数组）
+function normalizeTheoryExamples(theory, itemId) {
+  const raw = theory?.examples || [];
+  if (raw.length === 0) return [];
+  if (typeof raw[0] === 'string') {
+    return raw.map(id => findQuestion(id)).filter(Boolean);
+  }
+  return raw.map((ex, idx) => ({
+    id: `${itemId}-ex${idx}`,
+    questionType: 0,
+    title: `\u4f8b\u9898 ${idx + 1}`,
+    content: ex.text || '',
+    image: ex.image || '',
+    options: ex.options || [],
+    answer: ex.answer !== undefined ? String(ex.answer) : '0',
+    solution: ex.solution || '',
+    itemId: itemId,
+  }));
+}
+
 function renderTheoryExamples(item) {
+  const runtime = state.runtimeTheoryContent[item.id];
   const theory = THEORY_CONTENTS.find(t => t.itemId === item.id);
-  const exampleIds = theory?.examples || [];
-  const examples = exampleIds
-    .map(id => QUESTIONS.find(q => q.id === id))
-    .filter(Boolean);
+  const examples = normalizeTheoryExamples(runtime || theory, item.id);
 
   if (examples.length === 0) return '';
 
@@ -181,7 +199,7 @@ function renderLockedPrompt(course) {
 }
 
 export function renderPracticeList(itemId) {
-  const questions = QUESTIONS.filter(q => q.itemId === itemId);
+  const questions = getItemQuestions(itemId);
   const course = COURSES.find(c => c.modules.some(m => m.items.some(i => i.id === itemId)));
   if (!course) return '';
   const module = course.modules.find(m => m.items.some(i => i.id === itemId));

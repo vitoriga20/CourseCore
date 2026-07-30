@@ -2416,6 +2416,29 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 - `src/main.js`：顶部导航与页脚的品牌标识替换为 `public/logo-lockup.svg`，并移除重复文字。
 - `public/logo-lockup.svg`："Course" 文字颜色改为 `#0aa866`。
 
+## 更新记录 - 2026-07-30
+
+### 新增
+- 管理后台左侧分组折叠侧边栏（内容管理 / 系统管理），替换原顶部 Tab 导航。
+- 全局深色主题（黑底 #050505 / 白字 #f5f5f7 / 墨绿点缀 #1a3c34 / #4ade80 / #0d1f1b），CSS 变量全部 scoped 在 `.admin-page` 下，不污染前台主题。
+- 理论编辑器：左栏 Markdown 正文 + 可折叠例题面板（题干 / 四选项 / 答案 / 解析），右栏 marked + MathJax 实时预览；例题以内联 JSON 对象形式存入 `theory_contents.examples`。
+- 训练/测试编辑器：三栏布局（题目列表 | 编辑表单 | 实时预览），支持单选/填空/解答三种题型动态切换、上下移动、新增删除；新题客户端生成 ID `${itemId}-q${Date.now().toString(36)}`。
+- 理论例题旧格式（题目 ID 字符串数组）自动迁移：打开理论编辑器时拉取对应 questions 并转为内联对象。
+
+### 修改
+- `src/views/admin/adminPage.js`：完全重写。`adminState` 新增 `section` / `collapsedGroups` / `theoryEditor` / `practiceEditor` / `previewListenerAttached`；导出 `renderAdminPage` / `initAdminPage` / `handleAdminAction` 保持不变，`router.js` 无需改动。`handleAdminAction` 新增 16 个 action 分支（admin-section / admin-toggle-group / admin-edit-theory / admin-edit-practice / admin-back-list / admin-add-example / admin-remove-example / admin-toggle-example / admin-save-theory / admin-practice-select / admin-practice-add / admin-practice-remove / admin-practice-move-up / admin-practice-move-down / admin-practice-type / admin-save-practice），原有 admin-add / admin-edit / admin-delete / admin-modal-* / admin-refresh 逻辑完整保留。
+- `src/main.js`：click 委托 switch 中移除已废弃的 `admin-tab`，新增上述 16 个 admin action case，确保新侧边栏与编辑器事件能路由到 `handleAdminAction`。
+
+### 关键决策
+- 实时预览监听挂在稳定的 `#main` 上（flag 防重复），而非 `#admin-content`（每次 rerender 会被替换导致监听丢失）。
+- 编辑器输入时不 rerender，仅同步表单值到 state 并刷新预览 div，避免输入框失焦。
+- 任何触发 rerender 的编辑器操作（增删例题、切题、改题型）前先调用 `syncTheoryFormToState` / `syncPracticeFormToState`，保证已输入内容不丢失。
+- 折叠例题的表单字段不渲染，sync 时对缺失字段回退到原 state，保证折叠态数据不丢。
+- 保存理论时同时 `upsertTheoryContent`（content + examples）与 `updateItem(content)`，保持 items 表与 theory_contents 表一致。
+
+### 关联问题
+- 旧后台 Tab 导航与模态 CRUD 已下线；如有外部链接指向 `admin-tab` action 将失效（已从 main.js 移除）。
+
 ## 最后更新时间
 
-2026-07-29 12:00
+2026-07-30 00:00

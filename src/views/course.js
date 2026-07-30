@@ -1,5 +1,5 @@
 import { COURSES } from '../data/courses.js';
-import { QUESTIONS } from '../data/questions.js';
+import { getItemQuestions } from '../utils/question.js';
 import { TYPE_LABELS } from '../data/labels.js';
 import { state, getTotalItems, getCompletedCount, getStatus, isItemCompleted } from '../state.js';
 import { isItemFree } from '../config/access.js';
@@ -9,7 +9,7 @@ const LOCK_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
 
 function renderItemRow(i) {
   const status = getStatus(i.id);
-  const hasQuestions = QUESTIONS.some(q => q.itemId === i.id);
+  const hasQuestions = getItemQuestions(i.id).length > 0;
   const itemDone = isItemCompleted(i.id);
   const locked = !state.user && !isItemFree(i.id);
 

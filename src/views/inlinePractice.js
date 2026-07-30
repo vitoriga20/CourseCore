@@ -1,7 +1,6 @@
-import { formatAnswerDisplay } from '../utils/question.js';
+import { formatAnswerDisplay, getItemQuestions } from '../utils/question.js';
 import { state } from '../state.js';
 import { COURSES } from '../data/courses.js';
-import { QUESTIONS } from '../data/questions.js';
 import { QUESTION_TYPE_LABELS } from '../data/labels.js';
 import { escapeHtml } from '../utils.js';
 import { renderQuestion } from './question/index.js';
@@ -91,7 +90,7 @@ function renderInlineQuestion(question, idx) {
 }
 
 export function renderInlinePractice(itemId) {
-  const questions = QUESTIONS.filter(q => q.itemId === itemId);
+  const questions = getItemQuestions(itemId);
   const course = COURSES.find(c => c.modules.some(m => m.items.some(i => i.id === itemId)));
   if (!course) return '';
   const module = course.modules.find(m => m.items.some(i => i.id === itemId));

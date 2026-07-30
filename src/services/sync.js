@@ -1,8 +1,8 @@
 import { supabase } from './supabase.js';
-import { QUESTIONS } from '../data/questions.js';
+import { findQuestion } from '../utils/question.js';
 
 function getItemIdForQuestion(questionId) {
-  const q = QUESTIONS.find(x => x.id === questionId);
+  const q = findQuestion(questionId);
   return q?.itemId || null;
 }
 

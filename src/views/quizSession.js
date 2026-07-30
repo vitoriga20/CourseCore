@@ -1,5 +1,4 @@
-import { formatAnswerDisplay } from '../utils/question.js';
-import { QUESTIONS } from '../data/questions.js';
+import { formatAnswerDisplay, getItemQuestions } from '../utils/question.js';
 import { COURSES } from '../data/courses.js';
 import { escapeHtml } from '../utils.js';
 import { renderQuestion } from './question/index.js';
@@ -70,7 +69,7 @@ function getItemTitle(itemId) {
 }
 
 function createState(itemId) {
-  const allQuestions = QUESTIONS.filter(q => q.itemId === itemId).sort((a, b) => {
+  const allQuestions = getItemQuestions(itemId).sort((a, b) => {
     const idxA = Number(a.id.split('-').pop());
     const idxB = Number(b.id.split('-').pop());
     return idxA - idxB;

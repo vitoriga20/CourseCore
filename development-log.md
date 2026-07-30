@@ -5,8 +5,8 @@
 | 项 | 内容 |
 |---|---|
 | 项目名称 | CourseCore — 大学基础课学习平台 |
-| 当前状态 | 管理后台 theory 内容链路已打通：`/admin` 编辑小节时自动从 `theory_contents` 读取内容/例题，保存时同步写入 `items` 与 `theory_contents`；`fetch-from-supabase.js` 构建 courses 时 theory 小节优先从 `theory_contents` 取内容；本地 `npm run build` 通过，预渲染 483 条路由（含 `/admin`）。仍待补充 `updateExamSection` / `deleteUser` 以闭合大题编辑与用户删除 |
-| 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth + Supabase Postgres (RLS + RPC) |
+| 当前状态 | 管理后台内容编辑器已完善：`updateExamSection` / `deleteUser` 已补全；理论例题与训练/测试题均支持题图 URL；训练/测试编辑器支持多选题；已引入 EasyMDE / Split.js / SortableJS 优化编辑体验；`npm run build` 通过，预渲染 483 条路由（含 `/admin`） |
+| 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth + Supabase Postgres (RLS + RPC) + EasyMDE + Split.js + SortableJS |
 | 构建产物 | `dist/`（483 个预渲染静态路由，含 `/admin`） |
 | 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
 
@@ -64,7 +64,7 @@
 │       ├── user/                   # 用户中心
 │       │   └── userPage.js         # /user 页面渲染
 │       ├── admin/                  # 管理后台
-│       │   └── adminPage.js        # /admin 页面渲染 + 事件处理
+│       │   └── adminPage.js        # /admin 页面渲染 + 事件处理（含 EasyMDE / Split.js / SortableJS 内容编辑器）
 │       └── question/               # 单题渲染组件
 ├── curriculum/raw/questions/       # 题目 Markdown 源文件
 ├── scripts/
@@ -350,9 +350,11 @@
 - 题目内容中的 LaTeX 依赖 MathJax 异步渲染，极快切换页面时可能出现闪烁。
 - MinerU API 对少数希腊符号（如 λ）可能漏识别，当前通过 `repair_missing_lambda` 与 `patch_known_questions` 做启发式恢复，后续可升级为更完整的符号 OCR 后处理或人工抽检。
 - 训练题答案字段目前留空，需后续手动补充。
-- 当前 Supabase 项目已创建并配置，但登录/注册/重置密码功能已在 `src/services/auth.js` 中关闭，站点以游客模式公开运行；后续如需账号体系，需恢复 Supabase Auth 或接入更安全的后端认证。
+- 当前 Supabase 项目已创建并配置，登录/注册/重置密码功能已在 `src/services/auth.js` 中恢复；管理员需在 Supabase Dashboard 手动将 `profiles.role` 设为 `'admin'` 才能看到 `/admin` 入口。
 - 登录/注册弹窗尚未增加"同意用户协议与隐私政策"勾选框，合规页面 `/privacy`、`/terms` 已补充，但注册功能当前关闭，无需立即启用勾选框。
 - 用户账号注销、邮箱确认重发、同步失败重试提示等体验细节待后续完善。
+- 后台题图仅支持 URL 输入，如需本地上传需后续接入 Supabase Storage 或图床。
+- 全局题库 `practiceBank.js` / `knowledgeBase.js` 仍只读本地 `QUESTIONS`，后台新增题目不会实时出现在题库页。
 
 ## 阶段 3: 构建与功能验证
 
@@ -980,8 +982,8 @@
 **关联问题**: 无
 
 **待后续**:
-- Supabase MCP 恢复后，依次执行 `scripts/seed/02-questions-*.sql` / `03-theory-contents.sql` / `04-exam-papers-*.sql` 完成剩余 seed 导入，使 `questions.js` 数量与本地 Markdown 一致（291）、`theoryContents.js` / `examPapers.js` 由 Supabase 接管。
-- `src/services/admin.js` 补充 `updateExamSection` 与（可选）`deleteUser` RPC，或在 Supabase 创建对应 RPC 后由 `admin_list_users` 返回更多字段。
+- Supabase MCP 恢复后，依次执行 `scripts/seed/02-questions-*.sql` / `03-theory-contents.sql` / `04-exam-papers-*.sql` 完成剩余 seed 导入，使 `questions.js` 数量与本地 Markdown 一致（291）、`theoryContents.js` / `examPapers.js` 由 Supabase 接管。→ 阶段 24 已完成。
+- ~~`src/services/admin.js` 补充 `updateExamSection` 与（可选）`deleteUser` RPC~~ → 阶段 30 已补全。
 - profiles 表若未含 `display_name` / `avatar_url` 列，需在 Supabase SQL Editor 执行 `ALTER TABLE public.profiles ADD COLUMN display_name TEXT, ADD COLUMN avatar_url TEXT;`。
 - 管理后台首次使用前需在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
 
@@ -1014,9 +1016,9 @@
 **关联问题**: 无
 
 **待后续**:
-- 在 `src/main.js` 的事件委托 switch 中增加 `admin-tab` / `admin-add` / `admin-edit` / `admin-delete` / `admin-modal-close` / `admin-modal-noop` / `admin-modal-save` / `admin-refresh` 分支，统一转发到 `handleAdminAction(action, el)`。
-- 在 `src/router.js` 与 `src/config/routes.js` 注册 `/admin` 路由，渲染 `renderAdminPage()` 并在 DOM 就绪后调用 `initAdminPage()`。
-- 在 `src/services/admin.js` 补充 `updateExamSection` 与 `deleteUser`（如需在面板内闭环），或在 Supabase 创建 RPC 后由 `admin_list_users` 返回 `display_name` / `avatar_url` / `last_sign_in_at` 等字段。
+- 在 `src/main.js` 的事件委托 switch 中增加 `admin-tab` / `admin-add` / `admin-edit` / `admin-delete` / `admin-modal-close` / `admin-modal-noop` / `admin-modal-save` / `admin-refresh` 分支，统一转发到 `handleAdminAction(action, el)`。→ 阶段 23 已完成。
+- 在 `src/router.js` 与 `src/config/routes.js` 注册 `/admin` 路由，渲染 `renderAdminPage()` 并在 DOM 就绪后调用 `initAdminPage()`。→ 阶段 23 已完成。
+- ~~在 `src/services/admin.js` 补充 `updateExamSection` 与 `deleteUser`~~ → 阶段 30 已补全。
 - profiles 表若未含 `display_name` / `avatar_url` 列，需在 Supabase SQL Editor 中执行 `ALTER TABLE public.profiles ADD COLUMN display_name TEXT, ADD COLUMN avatar_url TEXT;`。
 
 ### 阶段 24: MCP 恢复后剩余 seed 数据导入与一致性校验
@@ -1069,7 +1071,7 @@
 - 观察 Cloudflare Pages `cea9a76` 部署是否成功；如仍失败，继续看日志。
 - 如部署成功但线上仍无法登录，检查 Cloudflare Pages 环境变量 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` / `NODE_VERSION=20` 是否已设置。
 - 在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
-- `src/services/admin.js` 仍缺 `updateExamSection` 与 `deleteUser`，如需面板内闭环再补。
+- ~~`src/services/admin.js` 仍缺 `updateExamSection` 与 `deleteUser`~~ → 阶段 30 已补全。
 
 ### 阶段 26: 修复管理后台 theory 小节内容为空及服务器链路未打通问题
 
@@ -1098,9 +1100,158 @@
 - `src/data/courses.js` / `src/data/theoryContents.js` — 重新拉取生成
 
 **待后续**:
-- `src/services/admin.js` 仍缺 `updateExamSection` / `deleteUser`，如需面板内闭环再补。
+- ~~`src/services/admin.js` 仍缺 `updateExamSection` / `deleteUser`~~ → 阶段 30 已补全。
 - 在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
+
+### 阶段 27: 按 admin-content-editor-design.md 实现后台内容编辑器
+
+**日期**: 2026-07-30
+
+**操作**:
+- 依据 [.trae/documents/admin-content-editor-design.md](file:///c:/Users/vitoriga/OneDrive/Desktop/CourseCore/.trae/documents/admin-content-editor-design.md) 的 A+C 方案（左侧分组折叠侧边栏 + 右侧三栏/双栏内容区），将管理后台从单一表格 CRUD 升级为完整的「内容编辑器」。
+- `src/views/admin/adminPage.js` 整体重写：
+  - 侧边栏拆为「内容管理」（课程 / 模块小节 / 平台题库 / 理论编辑器 / 训练编辑器 / 测试编辑器 / 期末试卷）与「系统管理」（用户 / 设置）两个可折叠分组；
+  - 新增「理论编辑器」视图：左栏 Markdown textarea + 动态例题表单（题干/4 选项/正确答案/解析 + 折叠/删除/添加），右栏 marked + MathJax 实时预览；保存时 `upsertTheoryContent` 写入 `theory_contents`，并 `updateItem` 同步 `items.content`；
+  - 新增「训练/测试编辑器」视图：三栏布局（题目列表 | 编辑表单 | 预览），支持单选/填空/解答题型切换、题目增删、上移/下移排序；保存时遍历题目分别 `createQuestion` / `updateQuestion`，新题客户端生成 `${itemId}-q${ts}-${rand}` 形式 ID；
+  - 表格 CRUD 沿用 modal 表单，但样式切深色主题，CSS 变量 scoped 到 `.admin-page` 避免污染主站；
+  - 引入 `syncTheoryFormToState` / `syncPracticeFormToState`，在每次 rerender / preview / save 前把 DOM 表单值同步回 `adminState`，避免 rerender 丢用户输入；
+  - 实时预览监听挂在稳定 `#main` 上（`previewListenerAttached` flag 防重复），`input` 事件触发 `updateTheoryPreview` / `updatePracticePreview`。
+- `src/views/practiceList.js` 新增 `normalizeTheoryExamples(theory, itemId)`：兼容旧格式（`examples` 为题目 ID 字符串数组，从 `QUESTIONS` 反查）与新格式（内联对象数组，转成带 `id`/`questionType`/`content`/`options`/`answer`/`solution` 的题目对象），保证学生侧例题渲染链路不断。
+- `src/router.js` 新增 `normalizeTheoryExamplesForSubmit(theory, itemId)`：提交例题答案时复用同一归一化逻辑，使 `handleSubmitTheoryExamples` 同时支持两种格式。
+- `src/main.js` 在 `initEventDelegation` 中将所有 `admin-*` action（`admin-section` / `admin-toggle-group` / `admin-add` / `admin-edit` / `admin-delete` / `admin-modal-*` / `admin-edit-theory` / `admin-edit-practice` / `admin-back-list` / `admin-add-example` / `admin-remove-example` / `admin-toggle-example` / `admin-save-theory` / `admin-practice-*` / `admin-save-practice`）统一委托给 `handleAdminAction`。
+- 验证：`npm run build` 通过，预渲染 483 条静态路由，gzip 188 KB，构建时间 3.08s。
+
+**关键决策**:
+- 理论例题不进入 `questions` 表，内嵌 `theory_contents.examples` JSON → 例题结构固定（4 选项单选），不参与随机抽题与进度统计，JSON 内嵌最轻量；学生侧通过 `normalizeTheoryExamples` 兼容旧 ID 格式与内联格式，迁移平滑。
+- 训练/测试共用 `questions` 表，仅通过 `items.type` 区分入口 → 字段完全一致，避免拆表冗余。
+- 表单值在 rerender 前主动同步回 state → 模态切换、题型切换、增删题目等 rerender 触发点都不会丢用户当前输入。
+- 深色主题 CSS 全部 scoped 到 `.admin-page` → 主站浅色/深色主题与后台视觉互不污染。
+- 题目预览直接复用 `marked` + `MathJax` 渲染 → 与学生侧题目样式一致，避免双套渲染逻辑。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — 整体重写，新增侧边栏分组 / 理论编辑器 / 训练测试编辑器 / 深色主题样式
+- `src/views/practiceList.js` — 新增 `normalizeTheoryExamples`
+- `src/router.js` — 新增 `normalizeTheoryExamplesForSubmit`
+- `src/main.js` — 新增 `admin-*` action 委托分支
+
+**待后续**:
+- ~~EasyMDE / Split.js / SortableJS 等开源模块暂未引入~~ → 阶段 30 已引入。
+- ~~`updateExamSection` / `deleteUser` 仍未补~~ → 阶段 30 已补全。
+- ~~理论例题暂不支持图片上传；训练/测试暂不支持多选题~~ → 阶段 30 已支持。
+
+### 阶段 28: 修复后台保存 theory 内容后学生页不实时展示
+
+**日期**: 2026-07-30
+
+**操作**:
+- 排查 `/admin` 保存理论内容后，`/item/:itemId` 仍显示占位符：根因是学生侧只读本地构建产物 `src/data/theoryContents.js`，而后台保存写入 Supabase，需要手动 `npm run fetch:data` 才能同步。
+- 新增 `src/services/content.js`，导出非管理员运行时查询 `loadTheoryContent(itemId)`，从 Supabase `theory_contents` 按 `item_id` 读取。
+- `src/state.js` 新增 `runtimeTheoryContent: {}` 缓存，避免重复请求。
+- `src/router.js`：
+  - `applyRoute` / `applyRouteWithLoader` / `restoreLocation` / `navigateTo` 改为 async，以支持 theory 小节异步加载；
+  - `showPracticeItem` 改为先使用本地数据渲染，再异步调用 `loadTheoryContent`；仅当 Supabase 返回的内容与本地不一致时，写入 `state.runtimeTheoryContent` 并 `renderMain()` 刷新。
+- `src/views/practiceList.js`：
+  - `renderTheoryPlaceholder` 优先读 `state.runtimeTheoryContent[item.id]`，再回退 `THEORY_CONTENTS`，最后 `item.content`；
+  - `renderTheoryExamples` 同样优先使用 runtime cache 的 examples。
+- `src/router.js` 的 `handleSubmitTheoryExamples` 也优先使用 runtime cache 的 examples，保证新保存的例题可提交。
+- `src/main.js` 的 `init` 与 `popstate` 回调中 `await restoreLocation()`，确保初始加载 theory 小节时内容已就位。
+- 验证：`npm run build` 通过，483 路由预渲染成功。
+
+**关键决策**:
+- 先本地渲染、后异步补数据 → 避免网络等待导致页面白屏或阻塞。
+- 仅当 Supabase 内容与本地不一致才 rerender → 减少无意义刷新。
+- 运行时读取只用于 dev / 已配置 Supabase 的部署；静态构建生产环境仍依赖 `fetch:data` 产物 → 不改变项目静态站点本质。
+
+**产出文件**:
+- `src/services/content.js` — 新增运行时 theory content 查询
+- `src/state.js` — 新增 `runtimeTheoryContent`
+- `src/router.js` — `showPracticeItem` 异步加载 + applyRoute 链路 async 化
+- `src/views/practiceList.js` — theory 渲染优先 runtime cache
+- `src/main.js` — init / popstate await restoreLocation
+
+**待后续**:
+- 训练/测试题目目前仍依赖本地 `src/data/questions.js`；如需保存后实时看到训练题变化，可参照 theory 方案增加运行时 questions 读取缓存。
+
+### 阶段 29: 训练/测试题保存后学生侧实时同步
+
+**日期**: 2026-07-30
+
+**操作**:
+- 解决阶段 28 遗留的"训练/测试题仍依赖本地 `src/data/questions.js`"问题：后台保存训练/测试题到 Supabase `questions` 表后，学生页刷新即可看到新题，无需手动 `npm run fetch:data`。
+- `src/services/content.js`：新增 `loadQuestions(itemId)`，按 `item_id` 从 Supabase 读取 questions 并按 `sort_order` 排序；新增 `snakeToCamel` 把 Supabase 下划线字段名转成项目使用的驼峰字段名（如 `question_type` → `questionType`）。
+- `src/state.js`：新增 `runtimeQuestions: {}` 缓存；`isItemCompleted` / `syncItemProgress` / `markQuestion` 改用 `getItemQuestions` / `findQuestion`，使进度统计与答案同步都识别运行时新题。
+- `src/utils/question.js`：新增 `getItemQuestions(itemId)`，合并 `state.runtimeQuestions[itemId]` 与本地 `QUESTIONS`（runtime 覆盖本地同 ID），并按 `sort_order` / `order` 排序；`findQuestion` 优先查 runtime cache；`getQuestionContext` 对当前 item 使用 `getItemQuestions`。
+- `src/router.js`：
+  - `showPracticeItem` 对 `quiz` / `training` 类型异步调用 `loadQuestions`；若 Supabase 返回的题集中包含本地没有的题，则写入 `state.runtimeQuestions` 并 `renderMain()` 刷新；
+  - `handleSubmitItem` / `handleRetryItem` / `normalizeTheoryExamplesForSubmit` 改用 `getItemQuestions` / `findQuestion`。
+- `src/views/practiceList.js`：`renderPracticeList` 使用 `getItemQuestions(itemId)`；`normalizeTheoryExamples` 使用 `findQuestion`。
+- `src/views/quizSession.js`：`createState` 使用 `getItemQuestions(itemId)`。
+- `src/views/inlinePractice.js`：`renderInlinePractice` 使用 `getItemQuestions(itemId)`。
+- `src/views/course.js`：`renderItemRow` 使用 `getItemQuestions(i.id).length > 0` 判断是否存在题目。
+- `src/services/sync.js`：`getItemIdForQuestion` 使用 `findQuestion`，保证同步答案时能找到运行时新题。
+- 验证：`npm run build` 通过，483 路由预渲染成功。
+
+**关键决策**:
+- 学生页先本地渲染、后异步补 runtime 数据 → 不阻塞首屏；仅当 Supabase 有新题时才 rerender → 避免无意义刷新。
+- runtime cache 以 itemId 为 key，覆盖本地同 ID 题目 → 支持修改现有题目后实时生效。
+- 把查找/合并逻辑收敛到 `utils/question.js` → 一处改动，所有视图同步生效，避免多处重复拼接 runtime 与本地数据。
+
+**产出文件**:
+- `src/services/content.js` — 新增 `loadQuestions`
+- `src/state.js` — 新增 `runtimeQuestions` + 使用 `getItemQuestions`/`findQuestion`
+- `src/utils/question.js` — 新增 `getItemQuestions`、更新 `findQuestion` / `getQuestionContext`
+- `src/router.js` — `showPracticeItem` 异步加载训练题 + 多处改用 `getItemQuestions`
+- `src/views/practiceList.js` / `src/views/quizSession.js` / `src/views/inlinePractice.js` / `src/views/course.js` — 使用 `getItemQuestions`
+- `src/services/sync.js` — `getItemIdForQuestion` 使用 `findQuestion`
+
+**待后续**:
+- 全局题库 `practiceBank.js` / `knowledgeBase.js` 仍只读本地 `QUESTIONS`；如需在题库页也实时看到后台新增题，可参照本阶段增加全局 runtime questions 缓存。
+- ~~EasyMDE / Split.js / SortableJS 等开源模块仍未引入~~ → 阶段 30 已引入。
+- ~~`updateExamSection` / `deleteUser` 仍未补~~ → 阶段 30 已补全。
+- ~~理论例题暂不支持图片上传；训练/测试暂不支持多选题~~ → 阶段 30 已支持。
+
+### 阶段 30: 完善管理后台待解决三项功能
+
+**日期**: 2026-07-30
+
+**操作**:
+- 补全 `src/services/admin.js` 缺失的两个方法：
+  - `updateExamSection(id, updates)`：管理员校验后更新 `exam_sections` 表；
+  - `deleteUser(userId)`：管理员校验后调用 `admin_delete_user` RPC，先删除 `public.profiles` 再删除 `auth.users`。
+- 在 `scripts/supabase-schema.sql` 中新增 `admin_delete_user(target_user_id uuid)` RPC，使用 `SECURITY DEFINER` 并前置 `is_admin()` 校验。
+- 理论例题支持题图 URL：
+  - `src/views/admin/adminPage.js` 的理论例题表单新增“题图 URL (可选)”输入框；
+  - `syncTheoryFormToState` 读取并保存 `image` 字段；
+  - `updateTheoryPreview` 渲染例题图片预览；
+  - `src/views/practiceList.js` 的 `normalizeTheoryExamples` 透传 `image` 字段，学生侧 `renderQuestion` 自动展示题图。
+- 训练/测试题支持题图 URL 与多选题：
+  - 练习表单新增“题图 URL (可选)”输入框；
+  - `PRACTICE_TYPES` 增加多选题（`question_type: 1`）；
+  - 多选题答案使用 checkbox 组，保存时写入 `answers` 数组并删除 `answer`；
+  - `syncPracticeFormToState` / `updatePracticePreview` / `savePractice` 均按题型分支处理单选/多选/填空/解答；
+  - 学生侧 `src/config/question-types.js` 已配置多选题 validator 为 `set`，`src/validators/set.js` 负责答案集合比对。
+- 引入开源编辑器增强模块：
+  - `package.json` 新增 `easymde`、`split.js`、`sortablejs` 依赖；
+  - `src/views/admin/adminPage.js` import 并初始化：理论编辑器双栏 Split、训练/测试编辑器三栏 Split；所有 Markdown textarea 替换为 EasyMDE；题目列表启用 SortableJS 拖拽排序；
+  - 新增 `cleanupEditors()` 在 rerender 前销毁旧 EasyMDE / Split / Sortable 实例，防止内存泄漏与 DOM 冲突。
+- 验证：`npm run build` 通过，291 题 / 16 个 theory / 2 套试卷，483 条静态路由预渲染成功。
+
+**关键决策**:
+- 用户删除走 RPC 而非前端直删 `auth.users` → 避免泄露 Supabase 内部表结构，RLS + RPC 双重校验保证仅管理员可执行。
+- 多选题答案在学生侧仍用字符串索引数组存储 → 与 `setValidator` 预期一致，无需改动校验器。
+- 题图以 URL 字符串而非文件上传实现 → 与现有 public 资源路径兼容，最简单且无需新增存储桶/上传后端。
+- EasyMDE 仅用于后台编辑，学生侧继续用 marked + MathJax → 不增加学生侧 bundle 体积。
+- Split.js / SortableJS 在 rerender 前必须 `destroy()` → 否则多次进入编辑器会生成重复 gutter 与 ghost 实例。
+
+**产出文件**:
+- `src/services/admin.js` — 新增 `updateExamSection` / `deleteUser`
+- `scripts/supabase-schema.sql` — 新增 `admin_delete_user` RPC
+- `src/views/admin/adminPage.js` — 多选题、题图 URL、EasyMDE、Split.js、SortableJS
+- `src/views/practiceList.js` — `normalizeTheoryExamples` 透传 `image`
+- `package.json` — 新增 `easymde`、`split.js`、`sortablejs`
+
+**关联问题**: 阶段 25~29 “待后续”中的 `updateExamSection` / `deleteUser` / 多选题 / 例题图片 / EasyMDE / Split.js / SortableJS 全部完成。
 
 ## 最后更新时间
 
-2026-07-30 23:15
+2026-07-31 03:57

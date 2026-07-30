@@ -309,9 +309,27 @@ export async function createExamSection(section) {
   return data;
 }
 
+export async function updateExamSection(id, updates) {
+  ensureAdmin();
+  const { data, error } = await supabase
+    .from('exam_sections')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 export async function deleteExamSection(id) {
   ensureAdmin();
   const { error } = await supabase.from('exam_sections').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteUser(userId) {
+  ensureAdmin();
+  const { error } = await supabase.rpc('admin_delete_user', { target_user_id: userId });
   if (error) throw error;
 }
 
