@@ -55,6 +55,7 @@ import { showAuthModal, hideAuthModal, switchAuthTab, getActiveAuthTab } from '.
 import { updateUserMenu } from './components/userMenu.js';
 import { renderUserPage } from './views/user/userPage.js';
 import { renderAvatarPicker } from './components/avatarPicker.js';
+import { handleAdminAction } from './views/admin/adminPage.js';
 
 function renderAppShell() {
   const app = document.getElementById('app');
@@ -62,11 +63,8 @@ function renderAppShell() {
   app.innerHTML = `
     <header class="sticky top-0 z-30 header-glass border-b">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3">
-        <a href="/" class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full border flex items-center justify-center" style="border-color: var(--accent);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
-          </div>
-          <span class="text-xl font-bold tracking-tight">${escapeHtml(PLATFORM.name)}</span>
+        <a href="/" class="flex items-center">
+          <img src="/logo-lockup.svg" class="h-8 w-auto" alt="CourseCore">
         </a>
         <div class="hidden md:flex items-center gap-6">
           <div class="search-wrap w-56">
@@ -89,11 +87,8 @@ function renderAppShell() {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <div class="flex items-center gap-2 mb-4">
-              <div class="w-7 h-7 rounded-full border flex items-center justify-center" style="border-color: var(--accent);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
-              </div>
-              <span class="font-bold">${escapeHtml(PLATFORM.name)}</span>
+            <div class="flex items-center mb-4">
+              <img src="/logo-lockup.svg" class="h-7 w-auto" alt="CourseCore">
             </div>
             <p class="text-sm" style="color: var(--muted);">帮助大学生系统掌握基础课，从概念到考题逐步拆解。</p>
           </div>
@@ -571,6 +566,16 @@ function initEventDelegation() {
         startEditUserName();
         break;
       case 'toggle-user-menu': toggleUserMenu(); break;
+      case 'admin-tab':
+      case 'admin-add':
+      case 'admin-edit':
+      case 'admin-delete':
+      case 'admin-modal-close':
+      case 'admin-modal-noop':
+      case 'admin-modal-save':
+      case 'admin-refresh':
+        handleAdminAction(action, el);
+        break;
       default: break;
     }
   });

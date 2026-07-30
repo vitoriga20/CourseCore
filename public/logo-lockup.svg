@@ -44,7 +44,7 @@
     </g>
   </g>
 
-  <text x="148" y="73" fill="#030503" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="0">Course<tspan fill="#0aa866">Core</tspan></text>
+  <text x="148" y="73" fill="#0aa866" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="0">Course<tspan fill="#0aa866">Core</tspan></text>
   <path d="M151 88H340" stroke="#19f28b" stroke-width="4" stroke-linecap="round"/>
   <circle cx="358" cy="88" r="4" fill="#19f28b"/>
   <circle cx="374" cy="88" r="4" fill="#030503"/>

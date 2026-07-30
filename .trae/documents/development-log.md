@@ -2374,6 +2374,48 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
   - 根因是 `coursecore/curriculum/raw/questions/physics-b-1/` 下 training Markdown 源文件与 `public/physics/training/` 配图被误删，重新 build:data 后 `src/data/questions.js` 缺失 training 题目，`itemId` 与 `courses.js` 不匹配。
   - 恢复被删源文件与配图，重新运行 `npm run build:data`，验证 `/item/p1b-m1-01-training` 可正常渲染 9 道训练题。
 
+### 阶段 81: 更新首页 Hero badge 文案与图标
+
+**日期**: 2026-07-29
+
+**操作**:
+- 用户要求将首页 Hero 区域 badge 文案从“免费学习 · 进度自动保存 · 题型解法全覆盖”改为“真题突破·学霸解题·分层练习”，更贴合 PRD 中“本校真题 + 学霸答案 + 结构化练习”的核心价值主张。
+- 将 badge 左侧的 accent 圆点替换为 CourseCore logo lockup：圆形边框内嵌堆叠图层图标，与顶部导航品牌标识保持一致。
+- 修改文件：`src/views/landing.js`。
+
+**关键决策**:
+- 文案采用 PRD 定位关键词：真题突破、学霸解题、分层练习，直接传递产品差异点。
+- 图标使用 inline SVG，不引入额外依赖；颜色跟随 `var(--accent)`，与原有圆点视觉权重一致。
+
+**产出文件**:
+- `src/views/landing.js`（更新）
+
+### 阶段 82: 顶部导航与页脚 Logo 改为 logo-lockup.svg
+
+**日期**: 2026-07-29
+
+**操作**:
+- 用户指出顶部 header 的 CourseCore logo（红框区域）未按预期修改，并明确应使用 `public/logo-lockup.svg`。
+- 将 header 与 footer 的品牌标识从 `favicon.svg` 替换为 `public/logo-lockup.svg`（包含图标 + CourseCore 文字 + 品牌下划线）。
+- 由于 `logo-lockup.svg` 已包含文字，移除 header 与 footer 中多余的 `${PLATFORM.name}` 文本节点。
+- 用户要求文字改为 Core 同款绿色，将 `logo-lockup.svg` 中 "Course" 文字颜色从 `#030503` 改为 `#0aa866`，使其在深色 header 上可见。
+- 修改文件：`src/main.js`、`public/logo-lockup.svg`。
+
+**关键决策**:
+- 直接引用 `public/logo-lockup.svg`，与浏览器标签、favicon 区分，使用独立的品牌 lockup 资源。
+- 使用 `<img>` 引用静态 SVG，由 Vite 构建时原样复制到 `dist/`，不增加额外构建复杂度。
+
+**产出文件**:
+- `src/main.js`（更新）
+- `public/logo-lockup.svg`（更新）
+
+## 更新记录 - 2026-07-29
+
+### 修改
+- `src/views/landing.js`：首页 Hero badge 文案改为“真题突破·学霸解题·分层练习”，圆点图标替换为 CourseCore logo lockup。
+- `src/main.js`：顶部导航与页脚的品牌标识替换为 `public/logo-lockup.svg`，并移除重复文字。
+- `public/logo-lockup.svg`："Course" 文字颜色改为 `#0aa866`。
+
 ## 最后更新时间
 
-2026-07-27 21:10
+2026-07-29 12:00

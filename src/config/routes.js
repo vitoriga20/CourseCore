@@ -6,6 +6,7 @@ export const ROUTES = {
   privacy: { path: '/privacy', view: 'privacy' },
   terms: { path: '/terms', view: 'terms' },
   user: { path: '/user', view: 'user' },
+  admin: { path: '/admin', view: 'admin' },
   course: { path: '/course/:courseId', view: 'course', params: ['courseId'] },
   item: { path: '/item/:itemId', view: 'practice-list', params: ['itemId'] },
   question: { path: '/question/:qid', view: 'practice', params: ['qid'] },
@@ -56,7 +57,8 @@ export function getStaticPaths(courses, questions, examPapers) {
     '/exams',
     '/privacy',
     '/terms',
-    '/user'
+    '/user',
+    '/admin'
   ];
 
   for (const course of courses) {

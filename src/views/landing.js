@@ -71,8 +71,14 @@ export function renderLanding() {
   return `
     <section class="max-w-4xl mx-auto text-center pt-10 pb-12">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6 border" style="border-color: var(--line); color: var(--muted);">
-        <span class="w-1.5 h-1.5 rounded-full" style="background: var(--accent);"></span>
-        免费学习 · 进度自动保存 · 题型解法全覆盖
+        <div class="w-5 h-5 rounded-full border flex items-center justify-center" style="border-color: var(--accent);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        真题突破·学霸解题·分层练习
       </div>
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6" style="color: var(--fg);">
         ${PLATFORM.name}

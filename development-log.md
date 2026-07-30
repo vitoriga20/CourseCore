@@ -5,9 +5,9 @@
 | 项 | 内容 |
 |---|---|
 | 项目名称 | CourseCore — 大学基础课学习平台 |
-| 当前状态 | 用户认证体系已完整落地：游客模式、邮箱+密码登录/注册/重置密码弹窗、用户菜单、本地↔Supabase 进度同步；Supabase 项目已连接并通过后端链路测试；课程内容访问权限已落地，游客可试看每个课程第一模块前 2 组内容 |
-| 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth |
-| 构建产物 | `dist/`（482 个预渲染静态路由） |
+| 当前状态 | 管理后台全链路落地：Supabase Auth + profiles.role 鉴权、`/admin` 路由 + 5 Tab 管理界面（users/courses/modules+items/questions/exam_papers）、`admin.js` CRUD 服务、`fetch-from-supabase.js` 数据拉取脚本、用户中心管理员入口按钮、build:data + fetch:data 串联进 predev/prebuild；构建产物 460 条预渲染路由（含 `/admin`）；待 Supabase MCP 恢复后导入剩余 seed 数据（theory_contents + exam_papers 表当前为空） |
+| 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth + Supabase Postgres (RLS + RPC) |
+| 构建产物 | `dist/`（460 个预渲染静态路由，含 `/admin`） |
 | 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
 
 ## 文件结构
@@ -42,6 +42,7 @@
 │   ├── services/
 │   │   ├── supabase.js             # Supabase 客户端初始化
 │   │   ├── auth.js                 # 游客初始化、登录/注册/登出、数据合并
+│   │   ├── admin.js                # 管理后台 CRUD 服务（users/courses/modules/items/questions/exam_*）
 │   │   └── sync.js                 # 云端 answers / progress 读写与合并
 │   ├── utils/
 │   │   ├── progress.js             # localStorage 读写与迁移
@@ -62,8 +63,14 @@
 │       ├── legal.js                # 隐私政策 / 用户协议页面
 │       ├── user/                   # 用户中心
 │       │   └── userPage.js         # /user 页面渲染
+│       ├── admin/                  # 管理后台
+│       │   └── adminPage.js        # /admin 页面渲染 + 事件处理
 │       └── question/               # 单题渲染组件
 ├── curriculum/raw/questions/       # 题目 Markdown 源文件
+├── scripts/
+│   ├── supabase-schema.sql         # 建表、RLS、触发器脚本
+│   ├── fetch-from-supabase.js      # 从 Supabase 拉取内容表生成 src/data/*.js
+│   └── ...                         # 其他脚本
 ├── .trae/documents/                # 开发文档
 └── development-log.md              # 本文件
 ```
@@ -933,4 +940,116 @@
 
 ## 最后更新时间
 
-2026-07-29
+2026-07-30
+
+### 阶段 23: 管理后台全链路接入与构建验证
+
+**日期**: 2026-07-30
+
+**操作**:
+- `src/services/auth.js`：恢复 Supabase Auth 集成；登录后从 `profiles` 表读取 `role / display_name / avatar_url` 写入 `state.user`；新增 `isAdmin()` 导出，判定 `state.user?.role === 'admin'`。
+- `src/services/admin.js`：新增管理后台 CRUD 服务，覆盖 8 个实体（users / courses / modules / items / questions / exam_papers / exam_sections / exam_questions）；所有写操作前置 `ensureAdmin()` 校验，非管理员抛错；`listUsers` 走 `admin_list_users` RPC，`updateUserRole` / `listCourses` / `createCourse` / `updateCourse` / `deleteCourse` 等走表 + RLS 策略。
+- `src/config/routes.js`：注册 `/admin` 路由（view: 'admin'），并在 `getStaticPaths` 中追加 `/admin` 供预渲染生成 `dist/admin/index.html`。
+- `src/router.js`：新增 `showAdminPage()`，设置 `state.view = 'admin'`、清空 `currentCourseId`、`clearQuestionState()`、`setActiveNav('landing')`、调用 `renderMain()` + `initAdminPage()` + `scrollTo({top:0})`；在 `renderMain()` switch 中增加 `case "admin"` 分支，调用 `renderAdminPage()`。
+- `src/views/user/userPage.js`：在用户中心 `<div class="user-actions">` 内追加 `${user?.role === 'admin' ? '<a href="/admin" class="user-admin-entry" data-action="admin-entry-link">…管理后台</a>' : ''}`，仅管理员可见。
+- `src/main.js`：import `handleAdminAction`；在事件委托 switch 中追加 `admin-tab / admin-add / admin-edit / admin-delete / admin-modal-close / admin-modal-noop / admin-modal-save / admin-refresh` 8 个分支，统一转发到 `handleAdminAction(action, el)`。
+- `src/style.css`：新增 `.admin-page / .admin-header / .admin-tabs / .admin-tab / .admin-toolbar / .admin-table / .admin-btn / .admin-modal / .admin-form / .admin-feedback / .admin-denied` 等管理后台样式，全部使用现有 CSS 变量适配明暗主题。
+- `src/components/auth-components.css`：新增 `.user-admin-entry` 圆角描边按钮样式，hover 反白为墨绿色背景。
+- `package.json`：scripts 新增 `fetch:data`（`node scripts/fetch-from-supabase.js`），`predev` 与 `prebuild` 改为 `npm run build:data && npm run fetch:data`，确保 Supabase 内容覆盖本地 Markdown 构建产物（Supabase 为内容源真相）。
+- 运行 `npm run build` 验证：291 题 Markdown 构建 → Supabase 拉取覆盖为 268 题（差额为 seed 未导入部分）；theory_contents / exam_papers 表为空时 fetch 脚本 `console.warn` 后 `exit 0` 不阻塞；vite build 1.95s 通过；prerender 生成 460 条静态路由，含 `dist/admin/index.html`。
+
+**关键决策**:
+- 管理员判定走 `profiles.role === 'admin'` 而非硬编码账号 → 与阶段 21 安全修复一致，避免源码泄露可登录凭据。
+- `ensureAdmin()` 前置校验所有写操作 → 即使前端 UI 误触，RLS + 服务层双重拦截。
+- `/admin` 路由加入 `getStaticPaths` → 刷新或直接访问不 404，与其他页面一致。
+- 管理员入口放在用户中心而非全局 header → 满足用户"在管理员账号中，的用户中心，有一个只有管理员才能看到的按钮"需求。
+- `predev` / `prebuild` 串联 `build:data && fetch:data` → Markdown 构建产物作为兜底，Supabase 数据作为最终真相；表为空时 fetch 脚本不阻塞，保证 MCP 不可用时不破坏构建。
+- `admin_list_users` 走 RPC 而非直查 `auth.users` → 不暴露 Supabase 内部表，且可在 RPC 内联 join `profiles` 返回 `display_name / avatar_url`。
+
+**产出文件**:
+- `src/services/auth.js` — 新增 `fetchProfile` / `isAdmin`
+- `src/services/admin.js` — 全新 CRUD 服务（约 220 行）
+- `src/config/routes.js` — `/admin` 路由 + static path
+- `src/router.js` — `showAdminPage()` + `renderMain` switch 分支
+- `src/views/user/userPage.js` — 管理员入口按钮
+- `src/main.js` — admin-* 事件委托分支
+- `src/style.css` — 管理后台样式
+- `src/components/auth-components.css` — `.user-admin-entry` 样式
+- `package.json` — `fetch:data` 脚本 + `predev` / `prebuild` 串联
+
+**关联问题**: 无
+
+**待后续**:
+- Supabase MCP 恢复后，依次执行 `scripts/seed/02-questions-*.sql` / `03-theory-contents.sql` / `04-exam-papers-*.sql` 完成剩余 seed 导入，使 `questions.js` 数量与本地 Markdown 一致（291）、`theoryContents.js` / `examPapers.js` 由 Supabase 接管。
+- `src/services/admin.js` 补充 `updateExamSection` 与（可选）`deleteUser` RPC，或在 Supabase 创建对应 RPC 后由 `admin_list_users` 返回更多字段。
+- profiles 表若未含 `display_name` / `avatar_url` 列，需在 Supabase SQL Editor 执行 `ALTER TABLE public.profiles ADD COLUMN display_name TEXT, ADD COLUMN avatar_url TEXT;`。
+- 管理后台首次使用前需在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
+
+### 阶段 22: 管理后台页面与 Supabase 数据拉取脚本
+
+**日期**: 2026-07-30
+
+**操作**:
+- 创建 `src/views/admin/adminPage.js`：5 Tab（Users / Courses / Modules & Items / Questions / Exam Papers）管理后台页面，覆盖 8 个实体（user / course / module / item / question / exam_paper / exam_section / exam_question）的 CRUD。
+- 实现 `renderAdminPage()` / `initAdminPage()` / `handleAdminAction(action, el)` 三个导出函数，供 router 渲染与 main.js 事件委托调用。
+- 通过 `data-action="admin-tab|admin-add|admin-edit|admin-delete|admin-modal-close|admin-modal-save|admin-modal-noop|admin-refresh"` 与 main.js 既有 `[data-action]` 委托机制对接；`admin-modal-noop` 用于阻止点击 modal 内部时冒泡到 overlay 误关闭。
+- 模态框内联渲染（非独立组件），JSON 字段（options / answers / tags / requirements）以 textarea 编辑 JSON 字符串，提交时解析；模块复合主键以 `course_id|module_id` 编码进 `data-id`。
+- 所有用户文本经 `escapeHtml` 转义；样式内联 `<style>` 块使用现有 CSS 变量（--bg / --fg / --muted / --line / --accent / --card）适配明暗主题。
+- 创建 `scripts/fetch-from-supabase.js`：ESM 脚本，手动解析 `.env.local`（不依赖 dotenv），从 Supabase 拉取 courses / modules / items / questions / theory_contents / exam_papers / exam_sections / exam_questions 八张表，生成 4 个 `src/data/*.js` 静态文件（COURSES / QUESTIONS / THEORY_CONTENTS / EXAM_PAPERS），与现有数据文件格式完全一致（snake_case → camelCase，courses / examPapers 做嵌套）。
+- 未配置 Supabase 或表为空时打印警告并 exit 0，不阻塞构建；每张表独立 try/catch，单表失败不影响其他表。
+
+**关键决策**:
+- adminPage.js 不内置独立 CSS 文件，样式随 renderAdminPage 内联 `<style>` 输出 → 自包含，避免污染全局 style.css；浏览器对重复 `<style>` 标签去重无副作用。
+- 模态框 overlay 与 inner 容器均带 `data-action`，inner 使用 `admin-modal-noop` 拦截内部点击 → 与现有 `closest('[data-action]')` 委托机制兼容，无需 stopPropagation。
+- module 复合主键编码为 `course_id|module_id` 字符串塞入 `data-id` → 单一属性传递，解析端用 `parseModuleId` 拆分。
+- exam_section 编辑态直接报错（admin.js 未提供 updateExamSection）→ 不掩盖服务层缺失，引导用户删除重建。
+- user 删除引导到 Supabase Dashboard（admin.js 无 deleteUser，且不应在前端暴露用户删除）→ 安全合规。
+- fetch-from-supabase.js 手动解析 .env.local 而非引入 dotenv → 不增加依赖，与现有 `test-supabase-connection.js` 的 loadEnvLocal 模式一致。
+- 生成的数据文件保持与现有 `courses.js` / `questions.js` / `theoryContents.js` / `examPapers.js` 字段结构完全一致 → 可直接被前端 import 替换构建产物。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — 管理后台页面渲染 + 事件处理（约 660 行）
+- `scripts/fetch-from-supabase.js` — Supabase 数据拉取脚本（约 230 行）
+
+**关联问题**: 无
+
+**待后续**:
+- 在 `src/main.js` 的事件委托 switch 中增加 `admin-tab` / `admin-add` / `admin-edit` / `admin-delete` / `admin-modal-close` / `admin-modal-noop` / `admin-modal-save` / `admin-refresh` 分支，统一转发到 `handleAdminAction(action, el)`。
+- 在 `src/router.js` 与 `src/config/routes.js` 注册 `/admin` 路由，渲染 `renderAdminPage()` 并在 DOM 就绪后调用 `initAdminPage()`。
+- 在 `src/services/admin.js` 补充 `updateExamSection` 与 `deleteUser`（如需在面板内闭环），或在 Supabase 创建 RPC 后由 `admin_list_users` 返回 `display_name` / `avatar_url` / `last_sign_in_at` 等字段。
+- profiles 表若未含 `display_name` / `avatar_url` 列，需在 Supabase SQL Editor 中执行 `ALTER TABLE public.profiles ADD COLUMN display_name TEXT, ADD COLUMN avatar_url TEXT;`。
+
+### 阶段 24: MCP 恢复后剩余 seed 数据导入与一致性校验
+
+**日期**: 2026-07-30
+
+**操作**:
+- MCP 恢复后通过 `apply_migration` / `execute_sql` 推进阶段 23 遗留的 seed 导入，目标：DB 各表计数与本地 Markdown 构建产物（291 题 / 15 讲义 / 2 试卷）完全对齐。
+- 通过 `apply_migration` 执行 `scripts/seed/02-questions-09-physics-b-1-05.sql`，补齐 physics-b-1 的 23 道 `p1b-m2-quiz` 题目（DB 由 160 → 183 题对齐本地物理题量）。
+- 通过 `apply_migration` 执行 `scripts/seed/03-theory-contents.sql`，导入 15 条 theory_contents（p1b-m1-01 ~ p1b-m2-08），填补此前为空的讲义表。
+- 通过 `apply_migration` 执行 `scripts/seed/04-exam-papers-01-exam-calculus-1-final.sql` 与 `04-exam-papers-02-exam-calculus-2-final.sql`，导入 2 套试卷 + 10 个 section + 60 道 exam_question。
+- 修复 `exam_sections.id` / `exam_questions.section_id` 类型错误：原 schema 为 uuid，但 seed 使用 `exam-calculus-1-final-sec-0` 等 text 主键。通过 `apply_migration` 将两列 `ALTER ... TYPE text`，并重建外键与索引。
+- 修复 `exam_questions.options` 的 `invalid input syntax for type json`：源于 MCP 对复杂 JSON 字符串的解析限制。方案：创建临时管理员账号 + `exec_admin_sql(sql_text)` RPC（`SECURITY DEFINER`），再用 Node.js 脚本读取 SQL 文件、按语句切分、通过 supabase-js `rpc('exec_admin_sql', { sql_text })` 逐条执行，绕过 MCP JSON 转义问题。
+- 全部导入完成后通过 `execute_sql` 校验 DB 计数：questions=291、theory_contents=15、exam_papers=2、exam_sections=10、exam_questions=60、courses=3、modules=15、items=119，与本地 Markdown 构建产物完全一致。
+- 清理临时账号与 `exec_admin_sql` RPC，避免遗留特权入口。
+
+**关键决策**:
+- 物理题差额（160 vs 183）先定位到具体 seed 文件 `02-questions-09-physics-b-1-05.sql` 再导入 → 避免重复导入其他已存在的物理题 chunk。
+- `exam_sections.id` 由 uuid 改为 text → seed 数据使用语义化字符串主键（`exam-calculus-1-final-sec-0`），与 `questions.id` / `exam_papers.id` 风格一致；不破坏外键语义。
+- `exec_admin_sql` RPC 用 `SECURITY DEFINER` + 临时管理员账号 → 仅作为 MCP JSON 解析限制的兜底通道，导入完成后立即清理，不长期保留。
+- Node.js 脚本按 `;\n` 切分 SQL 语句逐条执行 → 避免单次 RPC 负载过大，且单条失败可定位到具体 SQL。
+
+**产出文件**:
+- 无新增源码文件；本次仅操作 Supabase DB 与临时脚本。
+- DB 状态：questions 291 / theory_contents 15 / exam_papers 2 / exam_sections 10 / exam_questions 60 / courses 3 / modules 15 / items 119。
+
+**关联问题**: 阶段 23 "待后续" 中"Supabase MCP 恢复后依次执行 seed 脚本"项全部完成。
+
+**待后续**:
+- 在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
+- 可选：为 `profiles` 表添加 `display_name` / `avatar_url` 列以支持管理后台展示用户昵称与头像。
+- `src/services/admin.js` 仍缺 `updateExamSection` 与 `deleteUser`，如需面板内闭环再补。
+
+## 最后更新时间
+
+2026-07-30

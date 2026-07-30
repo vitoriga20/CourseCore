@@ -21,6 +21,7 @@ import { renderExamPapers } from './views/examPapers.js';
 import { renderExamDetail } from './views/examDetail.js';
 import { renderPrivacy, renderTerms } from './views/legal.js';
 import { renderUserPage } from './views/user/userPage.js';
+import { renderAdminPage, initAdminPage } from './views/admin/adminPage.js';
 import { initGooeyNav } from './components/gooeyNav.js';
 import { showPageLoader, hidePageLoader, initImageLoaders, renderButtonLoader } from './components/loading.js';
 
@@ -61,6 +62,9 @@ function applyRoute(route) {
       break;
     case 'user':
       showUserPage();
+      break;
+    case 'admin':
+      showAdminPage();
       break;
     case 'course':
       showCourse(route.params.courseId);
@@ -201,6 +205,16 @@ export function showUserPage() {
   clearQuestionState();
   setActiveNav('landing');
   renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showAdminPage() {
+  state.view = "admin";
+  state.currentCourseId = null;
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  initAdminPage();
   window.scrollTo({ top: 0 });
 }
 
@@ -530,6 +544,9 @@ export function renderMain() {
       break;
     case "user":
       main.innerHTML = renderUserPage();
+      break;
+    case "admin":
+      main.innerHTML = renderAdminPage();
       break;
     default:
       main.innerHTML = renderLanding();

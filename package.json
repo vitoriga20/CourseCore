@@ -11,11 +11,12 @@
   "scripts": {
     "build:training": "node builders/training-builder.js",
     "build:data": "node builders/question-builder.js",
+    "fetch:data": "node scripts/fetch-from-supabase.js",
     "validate:data": "node builders/question-builder.js --validate",
     "compress:images": "node builders/compress-images.js",
-    "predev": "npm run build:data",
+    "predev": "npm run build:data && npm run fetch:data",
     "dev": "vite",
-    "prebuild": "npm run build:data",
+    "prebuild": "npm run build:data && npm run fetch:data",
     "build": "vite build && node scripts/prerender.js",
     "preview": "vite preview"
   },
