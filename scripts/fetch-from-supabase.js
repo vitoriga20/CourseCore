@@ -10,6 +10,7 @@
 // 未配置 Supabase 或表为空时打印警告并以 exit 0 退出，不阻塞构建。
 
 import { createClient } from '@supabase/supabase-js';
+import { WebSocket } from 'ws';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -55,7 +56,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: { persistSession: false, autoRefreshToken: false },
-  realtime: { enabled: false }
+  realtime: { enabled: false, transport: WebSocket }
 });
 
 // ─── 通用 fetch ───
