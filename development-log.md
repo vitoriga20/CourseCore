@@ -1052,18 +1052,21 @@
 **操作**:
 - Cloudflare Pages 部署 commit `dab6f85` 构建失败，日志显示 `scripts/fetch-from-supabase.js` 创建 Supabase 客户端时初始化 realtime WebSocket 失败："Ensure you are running Node.js 22+ or provide a WebSocket implementation"。
 - 原因：`@supabase/supabase-js` 默认启用 realtime，Cloudflare Pages 的 Node 20 构建容器没有全局 `WebSocket` 实现。
-- 在 `scripts/fetch-from-supabase.js` 的 `createClient` 选项中加入 `realtime: { enabled: false }`，该脚本仅做构建时只读拉取，不需要 realtime 订阅。
-- 重新提交并推送 `main` 与 `deploy/coursecore-pages`，新 commit `921c5c8`。
+- 第一次修复：在 `scripts/fetch-from-supabase.js` 的 `createClient` 选项中加入 `realtime: { enabled: false }`（commit `921c5c8`）。Cloudflare Pages 仍报错，因为 `@supabase/supabase-js@2.110.8` 在创建客户端时仍会实例化 `RealtimeClient`，Node 20 缺少原生 WebSocket 导致实例化失败。
+- 第二次修复：安装 `ws` 作为 `devDependency`，并在 `createClient` 的 `realtime` 选项中传入 `transport: WebSocket`，为 realtime 客户端提供 WebSocket 实现。
+- 本地验证 `npm run fetch:data` 成功拉取 3 courses / 291 questions / 15 theory / 2 exam papers。
+- 重新提交并推送 `main` 与 `deploy/coursecore-pages`，新 commit `cea9a76`。
 
 **关键决策**:
 - 仅禁用 build-time fetch 脚本的 realtime，浏览器端 `src/services/supabase.js` 保持默认（浏览器有原生 WebSocket）→ 不影响运行时实时功能。
 - 不升级 Node 22 → Cloudflare Pages 项目记忆约束要求 `NODE_VERSION=20`。
 
 **产出文件**:
-- `scripts/fetch-from-supabase.js` - `createClient` 增加 `realtime: { enabled: false }`
+- `scripts/fetch-from-supabase.js` - `createClient` 增加 `realtime: { enabled: false, transport: WebSocket }`
+- `package.json` / `package-lock.json` - 新增 `ws` 作为 `devDependency`
 
 **待后续**:
-- 观察 Cloudflare Pages `921c5c8` 部署是否成功；如仍失败，继续看日志。
+- 观察 Cloudflare Pages `cea9a76` 部署是否成功；如仍失败，继续看日志。
 - 如部署成功但线上仍无法登录，检查 Cloudflare Pages 环境变量 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` / `NODE_VERSION=20` 是否已设置。
 - 在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
 - `src/services/admin.js` 仍缺 `updateExamSection` 与 `deleteUser`，如需面板内闭环再补。
