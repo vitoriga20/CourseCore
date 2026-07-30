@@ -1045,9 +1045,27 @@
 
 **关联问题**: 阶段 23 "待后续" 中"Supabase MCP 恢复后依次执行 seed 脚本"项全部完成。
 
+### 阶段 25: 修复 Cloudflare Pages 构建时 Supabase realtime WebSocket 报错
+
+**日期**: 2026-07-30
+
+**操作**:
+- Cloudflare Pages 部署 commit `dab6f85` 构建失败，日志显示 `scripts/fetch-from-supabase.js` 创建 Supabase 客户端时初始化 realtime WebSocket 失败："Ensure you are running Node.js 22+ or provide a WebSocket implementation"。
+- 原因：`@supabase/supabase-js` 默认启用 realtime，Cloudflare Pages 的 Node 20 构建容器没有全局 `WebSocket` 实现。
+- 在 `scripts/fetch-from-supabase.js` 的 `createClient` 选项中加入 `realtime: { enabled: false }`，该脚本仅做构建时只读拉取，不需要 realtime 订阅。
+- 重新提交并推送 `main` 与 `deploy/coursecore-pages`，新 commit `921c5c8`。
+
+**关键决策**:
+- 仅禁用 build-time fetch 脚本的 realtime，浏览器端 `src/services/supabase.js` 保持默认（浏览器有原生 WebSocket）→ 不影响运行时实时功能。
+- 不升级 Node 22 → Cloudflare Pages 项目记忆约束要求 `NODE_VERSION=20`。
+
+**产出文件**:
+- `scripts/fetch-from-supabase.js` - `createClient` 增加 `realtime: { enabled: false }`
+
 **待后续**:
+- 观察 Cloudflare Pages `921c5c8` 部署是否成功；如仍失败，继续看日志。
+- 如部署成功但线上仍无法登录，检查 Cloudflare Pages 环境变量 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` / `NODE_VERSION=20` 是否已设置。
 - 在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
-- 可选：为 `profiles` 表添加 `display_name` / `avatar_url` 列以支持管理后台展示用户昵称与头像。
 - `src/services/admin.js` 仍缺 `updateExamSection` 与 `deleteUser`，如需面板内闭环再补。
 
 ## 最后更新时间
