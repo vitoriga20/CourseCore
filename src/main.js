@@ -589,6 +589,13 @@ function initEventDelegation() {
       case 'admin-practice-move-down':
       case 'admin-practice-type':
       case 'admin-save-practice':
+      case 'admin-tree-select':
+      case 'admin-tree-toggle':
+      case 'admin-tree-add':
+      case 'admin-tree-delete':
+      case 'admin-tree-check':
+      case 'admin-tree-clear-checks':
+      case 'admin-tree-batch-delete':
         handleAdminAction(action, el);
         break;
       default: break;

@@ -340,3 +340,14 @@ CREATE INDEX IF NOT EXISTS idx_exam_questions_section
 
 CREATE INDEX IF NOT EXISTS idx_exam_questions_exam
   ON public.exam_questions(exam_id);
+
+-- 13. 级联删除说明
+-- 所有内容表的外键已声明 ON DELETE CASCADE：
+--   modules.course_id → courses.id
+--   items.course_id → courses.id
+--   items.(course_id, module_id) → modules
+--   questions.item_id → items.id
+--   theory_contents.item_id → items.id
+-- 因此删除 course / module / item 时，DB 会自动级联清理子节点，
+-- 前端只需调用 deleteCourse / deleteModule / deleteItem 即可，
+-- 无需额外 RPC。

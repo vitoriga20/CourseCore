@@ -1,5 +1,5 @@
 // 管理后台页面：左侧分组折叠侧边栏 + 深色主题。
-// 内容管理：课程 / 模块小节 / 平台题库 / 理论编辑器 / 训练编辑器 / 测试编辑器 / 期末试卷
+// 内容管理：内容树（课程→模块→小节→题目，分层耦合）/ 期末试卷
 // 系统管理：用户 / 设置
 // 表格 CRUD 沿用 modal 表单；理论/训练/测试编辑器为内置双栏/三栏布局，实时预览。
 // 所有用户输入经 escapeHtml 转义后输出；事件通过 main.js 的 [data-action] 委托分发到 handleAdminAction。
@@ -15,7 +15,7 @@ import * as adminApi from '../../services/admin.js';
 
 // ─── Admin state ───
 const adminState = {
-  section: 'courses',
+  section: 'content-tree',
   collapsedGroups: {}, // { groupId: true }
   data: {
     users: [],
@@ -28,13 +28,18 @@ const adminState = {
     examSections: [],
     examQuestions: []
   },
-  editing: null, // { entity, row, isNew } — modal 表单
+  tree: {
+    expanded: {},        // { 'course:<id>': true, 'module:<courseId>|<moduleId>': true }
+    selected: null,      // { type: 'course'|'module'|'item', id, courseId?, moduleId? }
+    checked: new Set()   // 批量操作选中：key 形如 'course:<id>' / 'module:<courseId>|<moduleId>' / 'item:<id>'
+  },
+  editing: null, // { entity, row, isNew, context? } — modal 表单；context 用于树上下文预填
   theoryEditor: null, // { itemId, title, course_id, module_id, content, examples, collapsed }
   practiceEditor: null, // { itemId, itemType, title, questions, selectedIndex }
   loading: false,
   feedback: null, // { type: 'success'|'error', message }
   previewListenerAttached: false,
-  editorInstances: { easyMDEs: [], splits: [], sortable: null }
+  editorInstances: { easyMDEs: [], splits: [], sortable: null, treeSortables: [] }
 };
 
 // ─── Sidebar config ───
@@ -43,12 +48,7 @@ const SIDEBAR_GROUPS = [
     id: 'content',
     label: '内容管理',
     items: [
-      { id: 'courses', label: '课程' },
-      { id: 'modules', label: '模块 / 小节' },
-      { id: 'questions', label: '平台题库' },
-      { id: 'theory-editor', label: '理论编辑器' },
-      { id: 'training-editor', label: '训练编辑器' },
-      { id: 'test-editor', label: '测试编辑器' },
+      { id: 'content-tree', label: '内容树' },
       { id: 'exams', label: '期末试卷' }
     ]
   },
@@ -63,24 +63,30 @@ const SIDEBAR_GROUPS = [
 ];
 
 const SECTION_TITLES = {
-  courses: '课程管理',
-  modules: '模块 / 小节',
-  questions: '平台题库',
-  'theory-editor': '理论编辑器',
-  'training-editor': '训练编辑器',
-  'test-editor': '测试编辑器',
+  'content-tree': '内容树',
   exams: '期末试卷',
   users: '用户管理',
   settings: '设置'
 };
 
 const SECTION_ENTITIES = {
-  courses: ['course'],
-  modules: ['module', 'item'],
-  questions: ['question'],
   exams: ['exam_paper', 'exam_section', 'exam_question'],
   users: ['user']
 };
+
+// 小节类型标签：树节点显示用
+const ITEM_TYPE_LABELS = {
+  theory: '理论',
+  practice: '练习',
+  quiz: '测验',
+  training: '训练',
+  test: '测试',
+  project: '项目',
+  review: '复习'
+};
+
+// 可在树中创建子项的小节类型（theory 进入理论编辑器，其余进入题集编辑器）
+const PRACTICE_ITEM_TYPES = ['practice', 'quiz', 'training', 'test'];
 
 const PRACTICE_TYPES = [
   { value: 0, label: '单选题' },
@@ -410,6 +416,284 @@ function renderEditorItemList(section) {
   `;
 }
 
+// ─── Render: content tree (course → module → item) ───
+function treeKey(type, node) {
+  if (type === 'course') return `course:${node.id}`;
+  if (type === 'module') return `module:${node.course_id}|${node.module_id}`;
+  return `item:${node.id}`;
+}
+
+function isExpanded(key) {
+  return !!adminState.tree.expanded[key];
+}
+
+function isSelected(type, node) {
+  const sel = adminState.tree.selected;
+  if (!sel || sel.type !== type) return false;
+  if (type === 'course') return sel.id === node.id;
+  if (type === 'module') return sel.courseId === node.course_id && sel.moduleId === node.module_id;
+  if (type === 'item') return sel.id === node.id;
+  return false;
+}
+
+// 批量勾选：key 与 treeKey 同构
+function isChecked(type, node) {
+  return adminState.tree.checked.has(treeKey(type, node));
+}
+
+// 解析 checked key 还原 entity + id（供批量删除用）
+function parseCheckedKey(key) {
+  const sep = key.indexOf(':');
+  if (sep === -1) return null;
+  const type = key.slice(0, sep);
+  const raw = key.slice(sep + 1);
+  if (type === 'course') return { entity: 'course', id: raw };
+  if (type === 'module') return { entity: 'module', id: raw }; // raw 形如 courseId|moduleId
+  if (type === 'item') return { entity: 'item', id: raw };
+  return null;
+}
+
+function modulesOfCourse(courseId) {
+  return (adminState.data.modules || [])
+    .filter(m => m.course_id === courseId)
+    .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
+}
+
+function itemsOfModule(courseId, moduleId) {
+  return (adminState.data.items || [])
+    .filter(it => it.course_id === courseId && it.module_id === moduleId)
+    .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
+}
+
+function questionsOfItem(itemId) {
+  return (adminState.data.questions || []).filter(q => q.item_id === itemId);
+}
+
+function renderTreePane() {
+  const courses = (adminState.data.courses || []).slice();
+  if (courses.length === 0) {
+    return `<div class="admin-empty">暂无课程，点击右上角「新增课程」开始</div>`;
+  }
+  return courses.map(c => renderCourseNode(c)).join('');
+}
+
+function renderCourseNode(course) {
+  const key = treeKey('course', course);
+  const expanded = isExpanded(key);
+  const selected = isSelected('course', course);
+  const checked = isChecked('course', course);
+  const modules = modulesOfCourse(course.id);
+  const childCount = modules.length;
+  return `
+    <div class="tree-node tree-level-1 ${selected ? 'selected' : ''}">
+      <div class="tree-node-row" data-action="admin-tree-select" data-tree-type="course" data-id="${escapeHtml(course.id)}">
+        <input type="checkbox" class="tree-checkbox" data-action="admin-tree-check" data-tree-type="course" data-id="${escapeHtml(course.id)}" ${checked ? 'checked' : ''} title="勾选批量操作">
+        <span class="tree-toggle" data-action="admin-tree-toggle" data-tree-type="course" data-id="${escapeHtml(course.id)}">${expanded ? '▾' : '▸'}</span>
+        <span class="tree-icon">▶</span>
+        <span class="tree-label">${escapeHtml(course.title || course.id)}</span>
+        <span class="tree-meta">${childCount} 模块</span>
+        <span class="tree-actions">
+          <button type="button" class="tree-action-btn" data-action="admin-tree-add" data-tree-type="course" data-id="${escapeHtml(course.id)}" title="新增模块">+</button>
+        </span>
+      </div>
+      ${expanded ? `<div class="tree-children" data-tree-children-of="course:${escapeHtml(course.id)}">${modules.map(m => renderModuleNode(m)).join('')}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderModuleNode(module) {
+  const key = treeKey('module', module);
+  const expanded = isExpanded(key);
+  const selected = isSelected('module', module);
+  const checked = isChecked('module', module);
+  const items = itemsOfModule(module.course_id, module.module_id);
+  const childCount = items.length;
+  return `
+    <div class="tree-node tree-level-2 ${selected ? 'selected' : ''}" data-module-row="${escapeHtml(module.course_id)}|${escapeHtml(module.module_id)}">
+      <div class="tree-node-row" data-action="admin-tree-select" data-tree-type="module" data-id="${escapeHtml(module.course_id)}" data-module-id="${escapeHtml(module.module_id)}">
+        <input type="checkbox" class="tree-checkbox" data-action="admin-tree-check" data-tree-type="module" data-id="${escapeHtml(module.course_id)}" data-module-id="${escapeHtml(module.module_id)}" ${checked ? 'checked' : ''} title="勾选批量操作">
+        <span class="tree-drag-handle" title="拖拽排序">⋮</span>
+        <span class="tree-toggle" data-action="admin-tree-toggle" data-tree-type="module" data-id="${escapeHtml(module.course_id)}" data-module-id="${escapeHtml(module.module_id)}">${expanded ? '▾' : '▸'}</span>
+        <span class="tree-icon">■</span>
+        <span class="tree-label">${escapeHtml(module.title || module.module_id)}</span>
+        <span class="tree-meta">${childCount} 小节</span>
+        <span class="tree-actions">
+          <button type="button" class="tree-action-btn" data-action="admin-tree-add" data-tree-type="module" data-id="${escapeHtml(module.course_id)}" data-module-id="${escapeHtml(module.module_id)}" title="新增小节">+</button>
+        </span>
+      </div>
+      ${expanded ? `<div class="tree-children" data-tree-children-of="module:${escapeHtml(module.course_id)}|${escapeHtml(module.module_id)}">${items.map(it => renderItemNode(it)).join('')}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderItemNode(item) {
+  const selected = isSelected('item', item);
+  const checked = isChecked('item', item);
+  const typeLabel = ITEM_TYPE_LABELS[item.type] || item.type || '—';
+  const isTheory = item.type === 'theory';
+  const qCount = isTheory ? (Array.isArray(item.examples) ? item.examples.length : 0) : questionsOfItem(item.id).length;
+  const countLabel = isTheory ? `${qCount} 例题` : `${qCount} 题`;
+  return `
+    <div class="tree-node tree-level-3 ${selected ? 'selected' : ''}" data-item-row="${escapeHtml(item.id)}">
+      <div class="tree-node-row" data-action="admin-tree-select" data-tree-type="item" data-id="${escapeHtml(item.id)}">
+        <input type="checkbox" class="tree-checkbox" data-action="admin-tree-check" data-tree-type="item" data-id="${escapeHtml(item.id)}" ${checked ? 'checked' : ''} title="勾选批量操作">
+        <span class="tree-drag-handle" title="拖拽排序">⋮</span>
+        <span class="tree-toggle tree-leaf">•</span>
+        <span class="tree-icon tree-icon-${escapeHtml(item.type || 'default')}">${isTheory ? 'T' : 'Q'}</span>
+        <span class="tree-label">${escapeHtml(item.title || item.id)}</span>
+        <span class="tree-type-badge type-${escapeHtml(item.type || 'default')}">${escapeHtml(typeLabel)}</span>
+        <span class="tree-meta">${countLabel}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderTreeDetail() {
+  const sel = adminState.tree.selected;
+  if (!sel) {
+    return `<div class="admin-placeholder">从左侧选择一个节点查看详情，或点击节点旁的 + 添加子项</div>`;
+  }
+  if (sel.type === 'course') return renderCourseDetail(sel.id);
+  if (sel.type === 'module') return renderModuleDetail(sel.courseId, sel.moduleId);
+  if (sel.type === 'item') return renderItemDetail(sel.id);
+  return '';
+}
+
+function renderCourseDetail(courseId) {
+  const course = (adminState.data.courses || []).find(c => c.id === courseId);
+  if (!course) return `<div class="admin-placeholder">课程不存在</div>`;
+  const modules = modulesOfCourse(courseId);
+  return `
+    <section class="admin-entity-section">
+      <header class="admin-entity-header">
+        <h3 class="admin-entity-title">课程：${escapeHtml(course.title || course.id)}</h3>
+        <div class="admin-main-actions">
+          <button type="button" class="admin-btn admin-btn-sm" data-action="admin-tree-add" data-tree-type="course" data-id="${escapeHtml(course.id)}">+ 模块</button>
+          <button type="button" class="admin-btn admin-btn-sm" data-action="admin-edit" data-entity="course" data-id="${escapeHtml(course.id)}">编辑</button>
+          <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" data-action="admin-tree-delete" data-entity="course" data-id="${escapeHtml(course.id)}">删除</button>
+        </div>
+      </header>
+      <div class="admin-tree-meta">
+        <div><span class="admin-form-label">ID</span><code>${escapeHtml(course.id)}</code></div>
+        <div><span class="admin-form-label">描述</span><span>${escapeHtml(course.description || '—')}</span></div>
+      </div>
+    </section>
+    <section class="admin-entity-section">
+      <header class="admin-entity-header">
+        <h3 class="admin-entity-title">模块 (${modules.length})</h3>
+      </header>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>模块 ID</th><th>标题</th><th>顺序</th><th>小节数</th><th class="admin-actions-col">操作</th></tr>
+          </thead>
+          <tbody>
+            ${modules.length === 0
+              ? `<tr><td colspan="5" class="admin-empty">暂无模块</td></tr>`
+              : modules.map(m => {
+                const cnt = itemsOfModule(m.course_id, m.module_id).length;
+                const modEnc = `${m.course_id}|${m.module_id}`;
+                return `
+                  <tr>
+                    <td>${escapeHtml(m.module_id)}</td>
+                    <td>${escapeHtml(m.title || '')}</td>
+                    <td>${escapeHtml(String(m.order_index ?? ''))}</td>
+                    <td>${cnt}</td>
+                    <td class="admin-actions">
+                      <button type="button" class="admin-btn admin-btn-sm" data-action="admin-tree-select" data-tree-type="module" data-id="${escapeHtml(m.course_id)}" data-module-id="${escapeHtml(m.module_id)}">查看</button>
+                      <button type="button" class="admin-btn admin-btn-sm" data-action="admin-edit" data-entity="module" data-id="${escapeHtml(modEnc)}">编辑</button>
+                      <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" data-action="admin-tree-delete" data-entity="module" data-id="${escapeHtml(modEnc)}">删除</button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+function renderModuleDetail(courseId, moduleId) {
+  const mod = (adminState.data.modules || []).find(m => m.course_id === courseId && m.module_id === moduleId);
+  if (!mod) return `<div class="admin-placeholder">模块不存在</div>`;
+  const items = itemsOfModule(courseId, moduleId);
+  return `
+    <section class="admin-entity-section">
+      <header class="admin-entity-header">
+        <h3 class="admin-entity-title">模块：${escapeHtml(mod.title || mod.module_id)}</h3>
+        <div class="admin-main-actions">
+          <button type="button" class="admin-btn admin-btn-sm" data-action="admin-tree-add" data-tree-type="module" data-id="${escapeHtml(courseId)}" data-module-id="${escapeHtml(moduleId)}">+ 小节</button>
+          <button type="button" class="admin-btn admin-btn-sm" data-action="admin-edit" data-entity="module" data-id="${escapeHtml(`${courseId}|${moduleId}`)}">编辑</button>
+          <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" data-action="admin-tree-delete" data-entity="module" data-id="${escapeHtml(`${courseId}|${moduleId}`)}">删除</button>
+        </div>
+      </header>
+      <div class="admin-tree-meta">
+        <div><span class="admin-form-label">课程</span><code>${escapeHtml(courseId)}</code></div>
+        <div><span class="admin-form-label">模块 ID</span><code>${escapeHtml(moduleId)}</code></div>
+        <div><span class="admin-form-label">顺序</span><span>${escapeHtml(String(mod.order_index ?? ''))}</span></div>
+      </div>
+    </section>
+    <section class="admin-entity-section">
+      <header class="admin-entity-header">
+        <h3 class="admin-entity-title">小节 (${items.length})</h3>
+      </header>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>ID</th><th>标题</th><th>类型</th><th>题数</th><th class="admin-actions-col">操作</th></tr>
+          </thead>
+          <tbody>
+            ${items.length === 0
+              ? `<tr><td colspan="5" class="admin-empty">暂无小节</td></tr>`
+              : items.map(it => {
+                const isTheory = it.type === 'theory';
+                const cnt = isTheory
+                  ? (Array.isArray(it.examples) ? it.examples.length : 0)
+                  : questionsOfItem(it.id).length;
+                return `
+                  <tr>
+                    <td>${escapeHtml(it.id)}</td>
+                    <td>${escapeHtml(it.title || '')}</td>
+                    <td><span class="tree-type-badge type-${escapeHtml(it.type || 'default')}">${escapeHtml(ITEM_TYPE_LABELS[it.type] || it.type || '—')}</span></td>
+                    <td>${cnt}</td>
+                    <td class="admin-actions">
+                      <button type="button" class="admin-btn admin-btn-sm" data-action="admin-tree-select" data-tree-type="item" data-id="${escapeHtml(it.id)}">打开</button>
+                      <button type="button" class="admin-btn admin-btn-sm" data-action="admin-edit" data-entity="item" data-id="${escapeHtml(it.id)}">编辑</button>
+                      <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" data-action="admin-tree-delete" data-entity="item" data-id="${escapeHtml(it.id)}">删除</button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+function renderItemDetail(itemId) {
+  // 选中 item 节点：交给 openTheoryEditor / openPracticeEditor 在 mountAdmin 后跳转。
+  // 此处仅返回占位，实际切换由 selectTreeNode 在 rerender 前完成。
+  const item = (adminState.data.items || []).find(it => it.id === itemId);
+  if (!item) return `<div class="admin-placeholder">小节不存在</div>`;
+  return `<div class="admin-placeholder">正在打开「${escapeHtml(item.title || item.id)}」编辑器…</div>`;
+}
+
+function renderContentTree() {
+  return `
+    <div class="admin-tree-layout">
+      <div class="admin-tree-pane">
+        <div class="admin-tree-pane-header">
+          <span class="admin-form-label">内容结构</span>
+        </div>
+        <div class="admin-tree-pane-body">${renderTreePane()}</div>
+      </div>
+      <div class="admin-tree-detail">${renderTreeDetail()}</div>
+    </div>
+  `;
+}
+
 // ─── Render: theory editor ───
 function renderTheoryEditor() {
   const ed = adminState.theoryEditor;
@@ -616,11 +900,11 @@ function renderContent() {
   if (section === 'settings') {
     return `<div class="admin-placeholder">设置功能开发中</div>`;
   }
+  if (section === 'content-tree') {
+    return renderContentTree();
+  }
   const entities = SECTION_ENTITIES[section];
   if (entities) return entities.map(renderTable).join('');
-  if (section === 'theory-editor' || section === 'training-editor' || section === 'test-editor') {
-    return renderEditorItemList(section);
-  }
   return '';
 }
 
@@ -631,11 +915,14 @@ function renderFeedback() {
   return `<div class="admin-feedback ${cls}">${escapeHtml(message)}</div>`;
 }
 
-function renderField(field, row) {
+function renderField(field, row, isNew) {
   const value = row ? row[field.name] : '';
   const fieldId = `admin-field-${field.name}`;
-  const isEditing = !!row;
-  const disabled = field.readOnly || (isEditing && field.immutable);
+  const isEditing = !!row && !isNew;
+  // 新增时若字段由树上下文提供（context），同样禁用
+  const ctx = adminState.editing && adminState.editing.context || null;
+  const fromContext = isNew && ctx && Object.prototype.hasOwnProperty.call(ctx, field.name);
+  const disabled = field.readOnly || (isEditing && field.immutable) || fromContext;
   const common = `id="${fieldId}" data-field="${escapeHtml(field.name)}"`;
   let control;
 
@@ -654,10 +941,11 @@ function renderField(field, row) {
     control = `<input type="text" ${common} value="${escapeHtml(value ?? '')}" ${disabled ? 'disabled' : ''}>`;
   }
 
+  const hint = fromContext ? `<span class="admin-field-hint">由树上下文自动关联</span>` : '';
   return `
     <div class="admin-form-row">
       <label for="${fieldId}" class="admin-form-label">${escapeHtml(field.label)}${field.json ? ' (JSON)' : ''}</label>
-      <div class="admin-form-control">${control}</div>
+      <div class="admin-form-control">${control}${hint}</div>
     </div>
   `;
 }
@@ -677,7 +965,7 @@ function renderModal() {
           <button type="button" class="admin-modal-close" data-action="admin-modal-close" aria-label="关闭">×</button>
         </header>
         <form class="admin-modal-body" id="admin-modal-form" autocomplete="off">
-          ${fields.map(f => renderField(f, row)).join('')}
+          ${fields.map(f => renderField(f, row, isNew)).join('')}
         </form>
         <footer class="admin-modal-footer">
           <button type="button" class="admin-btn" data-action="admin-modal-close">取消</button>
@@ -895,9 +1183,89 @@ const ADMIN_STYLES = `
 .admin-page .practice-preview .admin-preview { flex: 1; }
 .admin-page .admin-denied { text-align: center; padding: 4rem 1rem; color: var(--ad-muted); }
 .admin-page .admin-denied h2 { color: var(--ad-fg); margin-bottom: 0.5rem; }
+/* Content tree */
+.admin-page .admin-tree-layout { display: flex; gap: 1rem; min-height: 70vh; }
+.admin-page .admin-tree-pane {
+  width: 320px; flex-shrink: 0;
+  background: var(--ad-bg-card); border: 1px solid var(--ad-border); border-radius: 8px;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.admin-page .admin-tree-pane-header {
+  padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--ad-border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.admin-page .admin-tree-pane-body { flex: 1; overflow-y: auto; padding: 0.4rem; }
+.admin-page .admin-tree-detail { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
+.admin-page .tree-node { display: flex; flex-direction: column; }
+.admin-page .tree-node-row {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.35rem 0.5rem; border-radius: 6px;
+  cursor: pointer; font-size: 0.85rem; color: var(--ad-fg);
+  user-select: none; position: relative;
+}
+.admin-page .tree-node-row:hover { background: var(--ad-bg-hover); }
+.admin-page .tree-node.selected > .tree-node-row {
+  background: var(--ad-green-soft); color: var(--ad-green-hl);
+  box-shadow: inset 2px 0 0 var(--ad-green-hl);
+}
+.admin-page .tree-toggle {
+  width: 1rem; text-align: center; color: var(--ad-muted);
+  cursor: pointer; font-size: 0.7rem; flex-shrink: 0;
+}
+.admin-page .tree-toggle:hover { color: var(--ad-green-hl); }
+.admin-page .tree-leaf { cursor: default; }
+.admin-page .tree-checkbox {
+  width: 0.95rem; height: 0.95rem; cursor: pointer; flex-shrink: 0;
+  accent-color: var(--ad-green-hl, #2dd288);
+  margin: 0;
+}
+.admin-page .tree-drag-handle {
+  width: 0.9rem; text-align: center; color: var(--ad-muted);
+  cursor: grab; font-size: 0.85rem; flex-shrink: 0; opacity: 0;
+  transition: opacity 0.12s;
+}
+.admin-page .tree-node-row:hover .tree-drag-handle { opacity: 1; }
+.admin-page .tree-drag-handle:active { cursor: grabbing; }
+.admin-page .tree-drag-handle:hover { color: var(--ad-green-hl); }
+.admin-page .tree-children > .tree-node.sortable-ghost { opacity: 0.4; }
+.admin-page .tree-children > .tree-node.sortable-chosen { background: var(--ad-green-soft); border-radius: 6px; }
+.admin-page .tree-icon {
+  width: 1.2rem; height: 1.2rem; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: var(--ad-muted);
+  border: 1px solid var(--ad-border); border-radius: 4px; flex-shrink: 0;
+}
+.admin-page .tree-icon-theory { color: #6ee7b7; border-color: #1a3c34; background: rgba(106,233,183,0.06); }
+.admin-page .tree-icon-practice, .admin-page .tree-icon-training { color: #93c5fd; border-color: #1e3a5f; background: rgba(147,197,253,0.06); }
+.admin-page .tree-icon-quiz, .admin-page .tree-icon-test { color: #fbbf24; border-color: #4a3a1a; background: rgba(251,191,36,0.06); }
+.admin-page .tree-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-page .tree-meta { font-size: 0.7rem; color: var(--ad-muted); flex-shrink: 0; }
+.admin-page .tree-node.selected .tree-meta { color: var(--ad-green-hl); opacity: 0.8; }
+.admin-page .tree-actions { display: none; gap: 0.2rem; flex-shrink: 0; }
+.admin-page .tree-node-row:hover .tree-actions { display: flex; }
+.admin-page .tree-action-btn {
+  width: 1.4rem; height: 1.4rem; padding: 0;
+  border: 1px solid var(--ad-border); background: var(--ad-bg);
+  color: var(--ad-muted); border-radius: 4px;
+  cursor: pointer; font-size: 0.85rem; line-height: 1; font-family: inherit;
+}
+.admin-page .tree-action-btn:hover { border-color: var(--ad-green-hl); color: var(--ad-green-hl); background: var(--ad-green-soft); }
+.admin-page .tree-children { padding-left: 1rem; border-left: 1px dashed var(--ad-border); margin-left: 0.85rem; margin-top: 0.1rem; }
+.admin-page .tree-type-badge {
+  font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 3px;
+  border: 1px solid var(--ad-border); color: var(--ad-muted); flex-shrink: 0;
+}
+.admin-page .tree-type-badge.type-theory { color: #6ee7b7; border-color: #1a3c34; }
+.admin-page .tree-type-badge.type-practice, .admin-page .tree-type-badge.type-training { color: #93c5fd; border-color: #1e3a5f; }
+.admin-page .tree-type-badge.type-quiz, .admin-page .tree-type-badge.type-test { color: #fbbf24; border-color: #4a3a1a; }
+.admin-page .admin-tree-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.6rem; padding: 0.6rem 0; }
+.admin-page .admin-tree-meta > div { display: flex; flex-direction: column; gap: 0.2rem; }
+.admin-page .admin-tree-meta code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.8rem; color: var(--ad-green-hl); word-break: break-all; }
+.admin-page .admin-field-hint { display: block; font-size: 0.7rem; color: var(--ad-muted); margin-top: 0.2rem; font-style: italic; }
 @media (max-width: 900px) {
   .admin-page .admin-editor { flex-direction: column; }
   .admin-page .practice-list { width: 100%; }
+  .admin-page .admin-tree-layout { flex-direction: column; }
+  .admin-page .admin-tree-pane { width: 100%; max-height: 40vh; }
 }
 `;
 
@@ -929,6 +1297,17 @@ export function renderAdminPage() {
                 ${adminState.theoryEditor ? `<button type="button" class="admin-btn admin-btn-primary" data-action="admin-save-theory">保存</button>` : ''}
                 ${adminState.practiceEditor ? `<button type="button" class="admin-btn admin-btn-primary" data-action="admin-save-practice">保存全部</button>` : ''}
               ` : `
+                ${adminState.section === 'content-tree' ? `
+                  <button type="button" class="admin-btn admin-btn-primary" data-action="admin-add" data-entity="course">+ 新增课程</button>
+                  <button type="button" class="admin-btn admin-btn-danger"
+                    data-action="admin-tree-batch-delete"
+                    ${adminState.tree.checked.size === 0 ? 'disabled' : ''}>
+                    批量删除 (${adminState.tree.checked.size})
+                  </button>
+                  <button type="button" class="admin-btn"
+                    data-action="admin-tree-clear-checks"
+                    ${adminState.tree.checked.size === 0 ? 'disabled' : ''}>清空勾选</button>
+                ` : ''}
                 <button type="button" class="admin-btn" data-action="admin-refresh">刷新</button>
               `}
             </div>
@@ -1034,6 +1413,40 @@ function initSortable() {
   });
 }
 
+// 内容树拖拽排序：仅对展开的 .tree-children 容器挂载，handle 用 .tree-drag-handle
+function initTreeSortables() {
+  if (adminState.section !== 'content-tree') return;
+  if (adminState.theoryEditor || adminState.practiceEditor) return;
+  const containers = document.querySelectorAll('.tree-children');
+  containers.forEach(container => {
+    const childrenOf = container.dataset.treeChildrenOf;
+    if (!childrenOf) return;
+    const inst = Sortable.create(container, {
+      handle: '.tree-drag-handle',
+      animation: 150,
+      onEnd: evt => {
+        if (evt.oldIndex === evt.newIndex) return;
+        // 收集拖后顺序：从 DOM 上读 data-module-row / data-item-row
+        const rows = container.querySelectorAll(':scope > .tree-node');
+        const orderedIds = [];
+        rows.forEach(r => {
+          if (childrenOf.startsWith('course:')) {
+            const enc = r.dataset.moduleRow;
+            if (enc) orderedIds.push(enc);
+          } else if (childrenOf.startsWith('module:')) {
+            const id = r.dataset.itemRow;
+            if (id) orderedIds.push(id);
+          }
+        });
+        if (orderedIds.length > 0) {
+          handleTreeReorder(childrenOf, orderedIds);
+        }
+      }
+    });
+    adminState.editorInstances.treeSortables.push(inst);
+  });
+}
+
 function mountAdmin() {
   // 实时预览：在稳定的 #main 上挂一次 input 监听，用 flag 防重复
   const main = document.getElementById('main');
@@ -1051,6 +1464,7 @@ function mountAdmin() {
   initEditors();
   initSplits();
   initSortable();
+  initTreeSortables();
 }
 
 function cleanupEditors() {
@@ -1067,6 +1481,10 @@ function cleanupEditors() {
     try { editorInstances.sortable.destroy(); } catch (_) {}
     editorInstances.sortable = null;
   }
+  editorInstances.treeSortables.forEach(s => {
+    try { s.destroy(); } catch (_) {}
+  });
+  editorInstances.treeSortables = [];
 }
 
 function rerender() {
@@ -1077,8 +1495,11 @@ function rerender() {
   mountAdmin();
 }
 
-function openModal(entity, row, isNew) {
-  adminState.editing = { entity, row: row || {}, isNew };
+function openModal(entity, row, isNew, context) {
+  const baseRow = row || {};
+  // 新增时合并 context 作为预填值
+  const merged = isNew && context ? { ...context, ...baseRow } : baseRow;
+  adminState.editing = { entity, row: merged, isNew, context: isNew && context ? context : null };
   rerender();
 }
 
@@ -1110,22 +1531,26 @@ function collectFormValues(entity) {
 async function loadSectionData(section) {
   adminState.loading = true;
   adminState.feedback = null;
+  // 仅在切换 section 时清空编辑器；树形内部 select 不清空
   adminState.theoryEditor = null;
   adminState.practiceEditor = null;
   rerender();
   try {
     if (section === 'users') {
       adminState.data.users = await adminApi.listUsers();
-    } else if (section === 'courses') {
-      adminState.data.courses = await adminApi.listCourses();
-    } else if (section === 'modules') {
-      const [modules, items, theoryContents] = await Promise.all([
+    } else if (section === 'content-tree') {
+      // 内容树需加载全部内容数据：courses/modules/items/theoryContents/questions
+      const [courses, modules, items, theoryContents, questions] = await Promise.all([
+        adminApi.listCourses(),
         adminApi.listModules(),
         adminApi.listItems(),
-        adminApi.listTheoryContents()
+        adminApi.listTheoryContents(),
+        adminApi.listQuestions()
       ]);
+      adminState.data.courses = courses;
       adminState.data.modules = modules;
       adminState.data.theoryContents = theoryContents;
+      adminState.data.questions = questions;
       const theoryMap = new Map(theoryContents.map(t => [t.item_id, t]));
       adminState.data.items = items.map(it => {
         const t = theoryMap.get(it.id);
@@ -1136,8 +1561,6 @@ async function loadSectionData(section) {
           examples: Array.isArray(t.examples) ? t.examples : []
         };
       });
-    } else if (section === 'questions') {
-      adminState.data.questions = await adminApi.listQuestions();
     } else if (section === 'exams') {
       const [papers, sections, questions] = await Promise.all([
         adminApi.listExamPapers(),
@@ -1147,13 +1570,42 @@ async function loadSectionData(section) {
       adminState.data.examPapers = papers;
       adminState.data.examSections = sections;
       adminState.data.examQuestions = questions;
-    } else if (section === 'theory-editor' || section === 'training-editor' || section === 'test-editor') {
-      adminState.data.items = await adminApi.listItems();
     }
   } catch (e) {
     adminState.feedback = { type: 'error', message: `加载失败: ${e.message}` };
   } finally {
     adminState.loading = false;
+    rerender();
+  }
+}
+
+// 内容树内部刷新（保留选中/展开状态，不清编辑器）
+async function refreshTreeData() {
+  try {
+    const [courses, modules, items, theoryContents, questions] = await Promise.all([
+      adminApi.listCourses(),
+      adminApi.listModules(),
+      adminApi.listItems(),
+      adminApi.listTheoryContents(),
+      adminApi.listQuestions()
+    ]);
+    adminState.data.courses = courses;
+    adminState.data.modules = modules;
+    adminState.data.theoryContents = theoryContents;
+    adminState.data.questions = questions;
+    const theoryMap = new Map(theoryContents.map(t => [t.item_id, t]));
+    adminState.data.items = items.map(it => {
+      const t = theoryMap.get(it.id);
+      if (!t || it.type !== 'theory') return it;
+      return {
+        ...it,
+        content: t.content || it.content || '',
+        examples: Array.isArray(t.examples) ? t.examples : []
+      };
+    });
+    rerender();
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `刷新失败: ${e.message}` };
     rerender();
   }
 }
@@ -1232,7 +1684,12 @@ async function handleSave(entity, id) {
 
     adminState.editing = null;
     adminState.feedback = { type: 'success', message: '保存成功' };
-    await loadSectionData(adminState.section);
+    // 内容树 section 用 refreshTreeData 保留展开/选中状态
+    if (adminState.section === 'content-tree') {
+      await refreshTreeData();
+    } else {
+      await loadSectionData(adminState.section);
+    }
   } catch (e) {
     adminState.feedback = { type: 'error', message: `保存失败: ${e.message}` };
     rerender();
@@ -1241,7 +1698,12 @@ async function handleSave(entity, id) {
 
 async function handleDelete(entity, id) {
   const label = ENTITY_LABELS[entity] || entity;
-  if (!confirm(`确认删除此${label}？此操作不可撤销。`)) return;
+  // 内容树下的 course/module/item 由 DB 外键级联删除子节点
+  const isTreeEntity = entity === 'course' || entity === 'module' || entity === 'item';
+  const cascadeHint = (adminState.section === 'content-tree' && isTreeEntity)
+    ? '\n该节点下的所有子节点（模块/小节/题目/理论内容）将一并删除。'
+    : '';
+  if (!confirm(`确认删除此${label}？此操作不可撤销。${cascadeHint}`)) return;
 
   try {
     if (entity === 'user') {
@@ -1263,11 +1725,96 @@ async function handleDelete(entity, id) {
       await adminApi.deleteExamQuestion(id);
     }
 
+    // 删除节点后清掉对应选中状态
+    if (adminState.tree.selected) {
+      const sel = adminState.tree.selected;
+      const matches = (sel.type === 'course' && entity === 'course' && sel.id === id)
+        || (sel.type === 'module' && entity === 'module' && `${sel.courseId}|${sel.moduleId}` === id)
+        || (sel.type === 'item' && entity === 'item' && sel.id === id);
+      if (matches) adminState.tree.selected = null;
+    }
+
     adminState.feedback = { type: 'success', message: '删除成功' };
-    await loadSectionData(adminState.section);
+    if (adminState.section === 'content-tree') {
+      await refreshTreeData();
+    } else {
+      await loadSectionData(adminState.section);
+    }
   } catch (e) {
     adminState.feedback = { type: 'error', message: `删除失败: ${e.message}` };
     rerender();
+  }
+}
+
+// ─── 批量删除 / 拖拽排序 ───
+async function handleBatchDelete() {
+  const keys = Array.from(adminState.tree.checked);
+  if (keys.length === 0) return;
+  if (!confirm(`确认删除选中的 ${keys.length} 个节点？\n所有子节点（模块/小节/题目/理论内容）将一并删除。此操作不可撤销。`)) return;
+
+  adminState.loading = true;
+  rerender();
+  const failed = [];
+  for (const key of keys) {
+    const parsed = parseCheckedKey(key);
+    if (!parsed) continue;
+    try {
+      if (parsed.entity === 'course') {
+        await adminApi.deleteCourse(parsed.id);
+      } else if (parsed.entity === 'module') {
+        const { course_id, module_id } = parseModuleId(parsed.id);
+        await adminApi.deleteModule(course_id, module_id);
+      } else if (parsed.entity === 'item') {
+        await adminApi.deleteItem(parsed.id);
+      }
+    } catch (e) {
+      failed.push({ key, message: e.message });
+    }
+  }
+  adminState.tree.checked.clear();
+  // 删除后清掉对应选中状态
+  if (adminState.tree.selected) {
+    const sel = adminState.tree.selected;
+    const stillExists = keys.every(k => {
+      const p = parseCheckedKey(k);
+      if (!p) return true;
+      if (p.entity === 'course' && sel.type === 'course') return p.id !== sel.id;
+      if (p.entity === 'module' && sel.type === 'module') return p.id !== `${sel.courseId}|${sel.moduleId}`;
+      if (p.entity === 'item' && sel.type === 'item') return p.id !== sel.id;
+      return true;
+    });
+    if (!stillExists) adminState.tree.selected = null;
+  }
+  adminState.loading = false;
+  if (failed.length > 0) {
+    adminState.feedback = { type: 'error', message: `${keys.length - failed.length} 项删除成功，${failed.length} 项失败：${failed[0].message}` };
+  } else {
+    adminState.feedback = { type: 'success', message: `${keys.length} 项删除成功` };
+  }
+  await refreshTreeData();
+}
+
+// 拖拽排序：根据容器 data-tree-children-of 与新顺序批量更新 order_index
+async function handleTreeReorder(childrenOfKey, orderedIds) {
+  try {
+    if (childrenOfKey.startsWith('course:')) {
+      // 课程下模块排序
+      const courseId = childrenOfKey.slice('course:'.length);
+      const updates = orderedIds.map((enc, idx) => {
+        const { module_id } = parseModuleId(enc);
+        return adminApi.updateModule(courseId, module_id, { order_index: idx });
+      });
+      await Promise.all(updates);
+    } else if (childrenOfKey.startsWith('module:')) {
+      // 模块下小节排序
+      const orderedItems = orderedIds.map((id, idx) => adminApi.updateItem(id, { order_index: idx }));
+      await Promise.all(orderedItems);
+    }
+    adminState.feedback = { type: 'success', message: '排序已保存' };
+    await refreshTreeData();
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `排序保存失败: ${e.message}` };
+    await refreshTreeData();
   }
 }
 
@@ -1433,7 +1980,11 @@ async function saveTheory() {
     try { await adminApi.updateItem(ed.itemId, { content: ed.content }); } catch (_) { /* ignore */ }
     adminState.feedback = { type: 'success', message: '理论内容已保存' };
     adminState.theoryEditor = null;
-    await loadSectionData(adminState.section);
+    if (adminState.section === 'content-tree') {
+      await refreshTreeData();
+    } else {
+      await loadSectionData(adminState.section);
+    }
   } catch (e) {
     adminState.feedback = { type: 'error', message: `保存失败: ${e.message}` };
     rerender();
@@ -1677,7 +2228,11 @@ async function savePractice() {
     }
     adminState.feedback = { type: 'success', message: '题目已保存' };
     adminState.practiceEditor = null;
-    await loadSectionData(adminState.section);
+    if (adminState.section === 'content-tree') {
+      await refreshTreeData();
+    } else {
+      await loadSectionData(adminState.section);
+    }
   } catch (e) {
     adminState.feedback = { type: 'error', message: `保存失败: ${e.message}` };
     rerender();
@@ -1711,7 +2266,11 @@ export async function handleAdminAction(action, el) {
       break;
     }
     case 'admin-refresh': {
-      await loadSectionData(adminState.section);
+      if (adminState.section === 'content-tree') {
+        await refreshTreeData();
+      } else {
+        await loadSectionData(adminState.section);
+      }
       break;
     }
     case 'admin-add': {
@@ -1770,6 +2329,10 @@ export async function handleAdminAction(action, el) {
     case 'admin-back-list': {
       adminState.theoryEditor = null;
       adminState.practiceEditor = null;
+      // 内容树模式下返回时清掉 item 选中，避免立即重新打开编辑器
+      if (adminState.section === 'content-tree' && adminState.tree.selected?.type === 'item') {
+        adminState.tree.selected = null;
+      }
       rerender();
       break;
     }
@@ -1829,6 +2392,104 @@ export async function handleAdminAction(action, el) {
     }
     case 'admin-save-practice': {
       await savePractice();
+      break;
+    }
+    // ─── 内容树 actions ───
+    case 'admin-tree-toggle': {
+      const t = el.dataset.treeType;
+      if (t === 'course') {
+        const key = `course:${el.dataset.id}`;
+        adminState.tree.expanded[key] = !adminState.tree.expanded[key];
+      } else if (t === 'module') {
+        const key = `module:${el.dataset.id}|${el.dataset.moduleId}`;
+        adminState.tree.expanded[key] = !adminState.tree.expanded[key];
+      }
+      rerender();
+      break;
+    }
+    case 'admin-tree-select': {
+      const t = el.dataset.treeType;
+      if (t === 'course') {
+        const id = el.dataset.id;
+        adminState.tree.selected = { type: 'course', id };
+        // 选中即展开
+        adminState.tree.expanded[`course:${id}`] = true;
+        rerender();
+      } else if (t === 'module') {
+        const courseId = el.dataset.id;
+        const moduleId = el.dataset.moduleId;
+        adminState.tree.selected = { type: 'module', courseId, moduleId };
+        adminState.tree.expanded[`module:${courseId}|${moduleId}`] = true;
+        // 确保父课程也展开
+        adminState.tree.expanded[`course:${courseId}`] = true;
+        rerender();
+      } else if (t === 'item') {
+        const itemId = el.dataset.id;
+        const item = (adminState.data.items || []).find(it => it.id === itemId);
+        if (!item) return;
+        adminState.tree.selected = { type: 'item', id: itemId };
+        // 展开父链
+        adminState.tree.expanded[`course:${item.course_id}`] = true;
+        adminState.tree.expanded[`module:${item.course_id}|${item.module_id}`] = true;
+        // 根据类型打开编辑器
+        if (item.type === 'theory') {
+          await openTheoryEditor(itemId);
+        } else if (PRACTICE_ITEM_TYPES.includes(item.type)) {
+          await openPracticeEditor(itemId, item.type);
+        } else {
+          // 未知类型仅刷新右侧详情
+          rerender();
+        }
+      }
+      break;
+    }
+    case 'admin-tree-add': {
+      const t = el.dataset.treeType;
+      if (t === 'course') {
+        // 在该课程下新增模块
+        const courseId = el.dataset.id;
+        openModal('module', null, true, { course_id: courseId });
+      } else if (t === 'module') {
+        // 在该模块下新增小节
+        const courseId = el.dataset.id;
+        const moduleId = el.dataset.moduleId;
+        openModal('item', null, true, { course_id: courseId, module_id: moduleId });
+      }
+      break;
+    }
+    case 'admin-tree-delete': {
+      const entity = el.dataset.entity;
+      const id = el.dataset.id;
+      if (!entity || !id) return;
+      await handleDelete(entity, id);
+      break;
+    }
+    case 'admin-tree-check': {
+      const t = el.dataset.treeType;
+      let key = null;
+      if (t === 'course') {
+        key = `course:${el.dataset.id}`;
+      } else if (t === 'module') {
+        key = `module:${el.dataset.id}|${el.dataset.moduleId}`;
+      } else if (t === 'item') {
+        key = `item:${el.dataset.id}`;
+      }
+      if (!key) return;
+      if (adminState.tree.checked.has(key)) {
+        adminState.tree.checked.delete(key);
+      } else {
+        adminState.tree.checked.add(key);
+      }
+      rerender();
+      break;
+    }
+    case 'admin-tree-clear-checks': {
+      adminState.tree.checked.clear();
+      rerender();
+      break;
+    }
+    case 'admin-tree-batch-delete': {
+      await handleBatchDelete();
       break;
     }
     default: break;

@@ -2439,6 +2439,113 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 ### 关联问题
 - 旧后台 Tab 导航与模态 CRUD 已下线；如有外部链接指向 `admin-tab` action 将失效（已从 main.js 移除）。
 
+### 阶段 83: 后台改树形耦合内容结构（课程→模块→小节→题目）
+
+**日期**: 2026-07-30
+
+**操作**:
+- 用户要求把课程、理论、理论后的练习与例题、训练和测试在后台耦合成分层结构，类似文件夹可依次展开。优势：新增题目无需手填归属，查找特定章节题目更便捷。
+- 颗粒度对齐：只改后台 UI（不动 Supabase schema、Markdown 源目录、builders），9 Tab 合并为 4 Tab（内容树 / 期末试卷 / 用户 / 设置），理论例题不显叶子（仍内嵌 `theory_contents.examples`），practice 小节同 training 处理，新增入口「节点悬停 + 按钮」与「选中后右侧工具栏」两者都要。
+- 改造 `src/views/admin/adminPage.js`：
+  - `SIDEBAR_GROUPS` 从 9 Tab（课程 / 模块小节 / 平台题库 / 理论编辑器 / 训练编辑器 / 测试编辑器 / 期末试卷 / 用户 / 设置）合并为 4 Tab（内容树 / 期末试卷 / 用户 / 设置）。
+  - `SECTION_TITLES` / `SECTION_ENTITIES` 同步收缩；新增 `ITEM_TYPE_LABELS` 与 `PRACTICE_ITEM_TYPES` 常量。
+  - `adminState` 新增 `tree: { expanded: {}, selected: null }`，记录展开状态与选中节点。
+  - 新增 `renderContentTree` / `renderTreePane` / `renderCourseNode` / `renderModuleNode` / `renderItemNode` / `renderTreeDetail` / `renderCourseDetail` / `renderModuleDetail` / `renderItemDetail` 函数族，递归渲染课程→模块→小节三层树。
+  - 树节点支持展开/折叠（▸▾）、悬停浮出 `+` 按钮（课程节点 + 模块、模块节点 + 小节）、选中高亮、类型徽章（理论=绿、练习/训练=蓝、测验/测试=黄）。
+  - 选中 course/module → 右侧显示元数据 + 子节点表格 + 工具栏（编辑/删除/+子项）。
+  - 选中 theory item → 直接调 `openTheoryEditor(itemId)` 进入理论编辑器（无需先选小节列表）。
+  - 选中 training/quiz/practice/test item → 直接调 `openPracticeEditor(itemId, type)` 进入题集编辑器。
+  - `loadSectionData('content-tree')` 一次性加载 courses/modules/items/theoryContents/questions 全部数据。
+  - 新增 `refreshTreeData()`：内容树内部 CRUD 后的轻量刷新，保留 `tree.expanded` 与 `tree.selected` 状态（避免每次保存都清空编辑器与选中）。
+  - `handleSave` / `handleDelete` / `saveTheory` / `savePractice` 在 `section === 'content-tree'` 时改调 `refreshTreeData`，其他 section 仍走 `loadSectionData`。
+  - `openModal(entity, row, isNew, context)` 新增 context 参数：新增 module 时预填 `course_id`，新增 item 时预填 `course_id` + `module_id`，新增 question 时预填 `item_id` + `course_id` + `module_id`。
+  - `renderField(field, row, isNew)` 改造：新增时若字段值由 context 提供（`adminState.editing.context` 中有该字段名），自动禁用并显示「由树上下文自动关联」提示。
+  - `handleAdminAction` 新增 4 个 action：`admin-tree-toggle`（只切展开）/ `admin-tree-select`（选中 + 自动展开父链 + item 类型自动打开编辑器）/ `admin-tree-add`（按节点类型打开 modal 并传 context）/ `admin-tree-delete`（复用 `handleDelete`）。
+  - `admin-back-list` 在 `content-tree` section 下额外清掉 `tree.selected.type === 'item'`，避免返回后立即重新打开编辑器。
+  - `admin-refresh` 在 `content-tree` section 下改调 `refreshTreeData`。
+  - 顶部工具栏在 `content-tree` section 下增加「+ 新增课程」按钮（顶层无 + 悬停按钮）。
+- 改造 `src/main.js`：click 委托 switch 中追加 `admin-tree-select` / `admin-tree-toggle` / `admin-tree-add` / `admin-tree-delete` 4 个 case。
+- CSS（仍 scoped 在 `.admin-page` 下）新增 `.admin-tree-layout` / `.admin-tree-pane` / `.admin-tree-detail` / `.tree-node` / `.tree-node-row` / `.tree-toggle` / `.tree-icon` / `.tree-label` / `.tree-meta` / `.tree-actions` / `.tree-action-btn` / `.tree-children` / `.tree-type-badge`（含 `type-theory` / `type-practice` / `type-training` / `type-quiz` / `type-test` 颜色变体）/ `.admin-tree-meta` / `.admin-field-hint` 等样式；移动端 `< 900px` 时树形布局改为上下排列。
+- 构建验证：`npm run build` 通过，291 题 / 16 理论 / 2 试卷构建产物正常，483 routes prerendered，含 `/admin`。
+
+**关键决策**:
+- 只改后台 UI，不动数据层与构建链路。Supabase schema、`scripts/supabase-schema.sql`、`builders/*`、`curriculum/raw/` Markdown 源目录全部不变，降低改动风险。
+- 树形渲染用原生 JS 递归，不引入新依赖。`tree.expanded` 用对象键值（`course:<id>` / `module:<courseId>|<moduleId>`）记录，避免 Set 序列化问题。
+- 选中 item 节点直接打开对应编辑器（theory → 理论编辑器，training/quiz/practice/test → 题集编辑器），消除「先选小节列表再点编辑」的中间步骤。
+- 新增子项时 context 预填外键并禁用，避免用户手动填错归属；编辑已有记录时外键仍可改（保留迁移能力）。
+- `refreshTreeData` 与 `loadSectionData` 分工：前者保留 tree state 用于树内部 CRUD 后刷新，后者清空编辑器用于 section 切换。
+- 理论例题仍内嵌 `theory_contents.examples` JSON，不进 `questions` 表，与 [admin-content-editor-design.md](file:///c:/Users/vitoriga/OneDrive/Desktop/CourseCore/.trae/documents/admin-content-editor-design.md) 决策一致。
+
+**产出文件**:
+- `src/views/admin/adminPage.js`（大改：SIDEBAR_GROUPS 9→4 / 新增 renderContentTree 函数族 / 新增 4 个 tree action / openModal 加 context / renderField 加 context 禁用 / loadSectionData 加 content-tree 分支 / 新增 refreshTreeData / CSS 追加树形样式）
+- `src/main.js`（click 委托 switch 追加 4 个 admin-tree-* case）
+
+**影响面**:
+- 仅后台 `/admin` 路由受影响。前台学生侧路由、数据层、构建链路、Supabase schema 全不动。
+- 旧 9 Tab 中 `courses` / `modules` / `questions` / `theory-editor` / `training-editor` / `test-editor` 6 个 Tab 入口下线，统一进「内容树」。若有外部链接指向这些 section 值将失效（侧边栏 data-section 已变）。
+- 旧 `renderEditorItemList` / `editorItemFilter` 函数保留但不再被调用（后续可清理）。
+
+**已知限制与待改进项**:
+- 题目（question）不进树显示，仍由训练/测试编辑器内部管理。如需在树中显示题目叶子，需扩展 `renderItemNode` 之下递归 `questionsOfItem`，但会增加树深度与渲染压力。
+- ~~节点删除未做级联（删课程不会自动删其下模块/小节/题目，依赖 Supabase 外键约束或后续补级联 RPC）。~~ 阶段 84 已确认 DB 外键 `ON DELETE CASCADE` 自动级联，confirm 文案已加级联提示。
+- ~~节点拖拽排序未实现（树节点顺序由 `order_index` 决定，目前只能通过编辑 modal 改 `order_index`）。~~ 阶段 84 已实现 SortableJS 拖拽排序。
+- ~~批量操作未实现（多选删除/移动）。~~ 阶段 84 已实现 checkbox 多选 + 批量删除 + 清空勾选。
+
+### 阶段 84: 后台内容树补级联删除提示 + 批量操作 + 拖拽排序
+
+**日期**: 2026-07-30
+
+**操作**:
+- 用户要求把阶段 83 的「剩余待改进项」全部做掉：节点删除级联、批量操作、节点拖拽排序。
+- 排查发现 schema 中 `modules.course_id` / `items.course_id` / `items.(course_id, module_id)` / `questions.item_id` / `theory_contents.item_id` 全部已声明 `ON DELETE CASCADE`，删 course/module/item 时 DB 自动级联清理子节点，无需新增 RPC。
+  - `scripts/supabase-schema.sql` 第 13 节新增注释说明外键级联关系，避免后续重复维护。
+  - `src/services/admin.js` `deleteCourse` / `deleteModule` / `deleteItem` 不动，仅补注释指向 schema 第 13 节。
+  - `src/views/admin/adminPage.js` `handleDelete` 的 confirm 文案在 `section === 'content-tree'` 且 entity 为 `course` / `module` / `item` 时追加「该节点下的所有子节点（模块/小节/题目/理论内容）将一并删除」提示。
+- 批量操作：
+  - `adminState.tree.checked` 新增 `Set`，key 形如 `course:<id>` / `module:<courseId>|<moduleId>` / `item:<id>`，与 `treeKey` 同构。
+  - 新增 `isChecked(type, node)` / `parseCheckedKey(key)` helper。
+  - `renderCourseNode` / `renderModuleNode` / `renderItemNode` 节点行最左侧加 `<input type="checkbox" class="tree-checkbox" data-action="admin-tree-check">`，根据 `isChecked` 设置 `checked` 属性。点击 checkbox 通过 `closest('[data-action]')` 路由到 `admin-tree-check`，不触发 `admin-tree-select`。
+  - 顶部 main header 在 `content-tree` section 下追加「批量删除 (N)」+「清空勾选」按钮，`checked.size === 0` 时 `disabled`。
+  - 新增 `handleBatchDelete()`：confirm 后遍历 `tree.checked` 逐个调 `deleteCourse` / `deleteModule` / `deleteItem`，记录失败项，结束后清空 checked + 修正 `tree.selected`（若被删则置 null）+ `refreshTreeData`。
+  - 新增 3 个 action：`admin-tree-check`（toggle Set） / `admin-tree-clear-checks`（clear Set） / `admin-tree-batch-delete`（调 `handleBatchDelete`）。
+- 拖拽排序（复用已引入的 SortableJS）：
+  - `renderModuleNode` / `renderItemNode` 加 `<span class="tree-drag-handle">⋮</span>`，仅 hover 显示。course 节点无 `order_index` 字段不加。
+  - `.tree-children` 容器加 `data-tree-children-of="course:<id>"` / `"module:<courseId>|<moduleId>"` 标识所属父节点。
+  - `renderModuleNode` 根节点加 `data-module-row="<courseId>|<moduleId>"`，`renderItemNode` 根节点加 `data-item-row="<id>"`，供 onEnd 读新顺序。
+  - 新增 `initTreeSortables()`：仅在 `section === 'content-tree'` 且无 theoryEditor/practiceEditor 时，遍历所有 `.tree-children` 容器，`Sortable.create` + `handle: '.tree-drag-handle'` + `animation: 150`，onEnd 从 DOM 读 `data-module-row` / `data-item-row` 收集新顺序调 `handleTreeReorder`。
+  - `mountAdmin` 追加 `initTreeSortables()` 调用。
+  - `cleanupEditors` 追加销毁 `editorInstances.treeSortables` 数组。
+  - `adminState.editorInstances` 新增 `treeSortables: []`。
+  - 新增 `handleTreeReorder(childrenOfKey, orderedIds)`：根据 `childrenOfKey` 前缀判断 course/module 层级，`Promise.all` 批量调 `updateModule` / `updateItem` 更新 `order_index` 为 0..N-1，结束调 `refreshTreeData`。
+- CSS（仍 scoped 在 `.admin-page`）新增 `.tree-checkbox`（accent-color 用墨绿）/ `.tree-drag-handle`（hover 显示 + grab 光标）/ `.sortable-ghost` / `.sortable-chosen` 样式。
+- 改造 `src/main.js`：click 委托 switch 追加 `admin-tree-check` / `admin-tree-clear-checks` / `admin-tree-batch-delete` 3 个 case。
+- 构建验证：`npm run build` 通过，291 题 / 16 理论 / 2 试卷构建产物正常，483 routes prerendered。CSS 66.77 → 67.00 kB，JS 1012.29 → 1017.27 kB。
+
+**关键决策**:
+- 不加级联 RPC：DB 外键 `ON DELETE CASCADE` 已覆盖所有子节点清理，加 RPC 会与外键重复维护。schema 仅补注释说明，admin.js 仅补注释指向 schema，handleDelete 仅改 confirm 文案。最小改动。
+- 批量删除逐个调 API 而非批量 RPC：Supabase 客户端无批量 DELETE，逐个调可复用现有 `deleteCourse` / `deleteModule` / `deleteItem`，失败可精确定位单条。`Promise.all` 并发可能触发 RLS 速率限制，改串行 `for...of` + `await`。
+- 拖拽排序复用 SortableJS（practice-list 已引入）：避免新增依赖。`initTreeSortables` 仅对展开的 `.tree-children` 挂载，rerender 时 `cleanupEditors` 销毁、`mountAdmin` 重建，避免内存泄漏与僵尸实例。
+- 拖拽 onEnd 从 DOM 读 `data-module-row` / `data-item-row` 而非用 `evt.oldIndex` / `evt.newIndex`：因为 SortableJS 已重排 DOM，直接读新顺序更可靠，避免单次拖拽外其他并发改动导致索引错位。
+- checkbox 用原生 `<input type="checkbox">` + `closest('[data-action]')` 路由：不写 stopPropagation，依赖 closest 返回最近 data-action 元素的语义，checkbox 点击不会冒泡到节点行的 `admin-tree-select`。
+- `tree.checked` 用 `Set` 而非对象：key 是字符串，Set 有序去重，`size` 直接取数量，`clear` / `has` / `add` / `delete` 语义清晰。
+
+**产出文件**:
+- `scripts/supabase-schema.sql`（追加第 13 节级联删除说明注释）
+- `src/services/admin.js`（`deleteCourse` / `deleteModule` / `deleteItem` 各补一行注释指向 schema 第 13 节）
+- `src/views/admin/adminPage.js`（大改：state 加 `tree.checked` + `editorInstances.treeSortables` / `isChecked` + `parseCheckedKey` helper / 树节点渲染加 checkbox + drag handle / `handleDelete` confirm 加级联提示 / 新增 `handleBatchDelete` + `handleTreeReorder` / 新增 `initTreeSortables` / `mountAdmin` + `cleanupEditors` 接入 / 新增 3 个 action / 顶部 toolbar 加批量删除按钮 / CSS 加 checkbox + drag handle + sortable ghost 样式）
+- `src/main.js`（click 委托 switch 追加 3 个 admin-tree-* case）
+
+**影响面**:
+- 仅后台 `/admin` 路由的 `content-tree` section 受影响。前台学生侧、数据层、构建链路全不动。
+- Supabase schema 仅加注释，不加 RPC，无需执行 migration。
+- `admin.js` 的 `deleteCourse` / `deleteModule` / `deleteItem` 函数签名不变，调用方无感。
+- 批量删除与拖拽排序均通过现有 `deleteCourse` / `deleteModule` / `deleteItem` / `updateModule` / `updateItem` API，无新增后端接口。
+
+**已知限制与待改进项**:
+- 批量删除串行调 API，量大时较慢（每条等一次网络往返）。若需优化可改后端批量 RPC。
+- 拖拽排序仅支持 module / item 两层，course 层级无 `order_index` 字段不可拖。
+- 批量勾选无「全选当前展开节点」入口，仅支持逐个勾选 + 清空。
+
 ## 最后更新时间
 
-2026-07-30 00:00
+2026-07-31 00:30

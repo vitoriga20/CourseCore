@@ -74,6 +74,9 @@ export async function deleteCourse(id) {
   if (error) throw error;
 }
 
+// 注：DB 外键 ON DELETE CASCADE 会自动清理 modules/items/questions/theory_contents
+// 见 scripts/supabase-schema.sql 第 13 节说明。
+
 // ─── Modules ───
 
 export async function listModules(courseId) {
@@ -119,6 +122,8 @@ export async function deleteModule(courseId, moduleId) {
   if (error) throw error;
 }
 
+// 注：DB 外键 ON DELETE CASCADE 会自动清理 items/questions/theory_contents
+
 // ─── Items ───
 
 export async function listItems(courseId) {
@@ -158,6 +163,8 @@ export async function deleteItem(id) {
   const { error } = await supabase.from('items').delete().eq('id', id);
   if (error) throw error;
 }
+
+// 注：DB 外键 ON DELETE CASCADE 会自动清理 questions/theory_contents
 
 // ─── Questions ───
 
