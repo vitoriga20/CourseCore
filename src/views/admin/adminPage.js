@@ -15,6 +15,7 @@ const adminState = {
     courses: [],
     modules: [],
     items: [],
+    theoryContents: [],
     questions: [],
     examPapers: [],
     examSections: [],
@@ -83,7 +84,8 @@ const ENTITY_FIELDS = {
     { name: 'title', label: '标题', type: 'text' },
     { name: 'type', label: '类型', type: 'select', options: ['theory', 'practice', 'quiz', 'training', 'project', 'review'] },
     { name: 'order_index', label: '顺序', type: 'number' },
-    { name: 'content', label: '内容', type: 'textarea' }
+    { name: 'content', label: '内容', type: 'textarea' },
+    { name: 'examples', label: '例题 ID (JSON)', type: 'textarea', json: true }
   ],
   question: [
     { name: 'id', label: 'ID', type: 'text', immutable: true },
@@ -156,6 +158,7 @@ function dataKeyFor(entity) {
   if (entity === 'exam_paper') return 'examPapers';
   if (entity === 'exam_section') return 'examSections';
   if (entity === 'exam_question') return 'examQuestions';
+  if (entity === 'theory_content') return 'theoryContents';
   return entity + 's';
 }
 
@@ -458,12 +461,23 @@ async function loadTabData(tab) {
     } else if (tab === 'courses') {
       adminState.data.courses = await adminApi.listCourses();
     } else if (tab === 'modules-items') {
-      const [modules, items] = await Promise.all([
+      const [modules, items, theoryContents] = await Promise.all([
         adminApi.listModules(),
-        adminApi.listItems()
+        adminApi.listItems(),
+        adminApi.listTheoryContents()
       ]);
       adminState.data.modules = modules;
-      adminState.data.items = items;
+      adminState.data.theoryContents = theoryContents;
+      const theoryMap = new Map(theoryContents.map(t => [t.item_id, t]));
+      adminState.data.items = items.map(it => {
+        const t = theoryMap.get(it.id);
+        if (!t || it.type !== 'theory') return it;
+        return {
+          ...it,
+          content: t.content || it.content || '',
+          examples: Array.isArray(t.examples) ? t.examples : []
+        };
+      });
     } else if (tab === 'questions') {
       adminState.data.questions = await adminApi.listQuestions();
     } else if (tab === 'exam-papers') {
@@ -510,11 +524,21 @@ async function handleSave(entity, id) {
         await adminApi.createModule(values);
       }
     } else if (entity === 'item') {
+      const { examples, ...itemUpdates } = values;
       if (id) {
-        const { id: _omit, ...updates } = values;
-        await adminApi.updateItem(id, updates);
+        await adminApi.updateItem(id, itemUpdates);
       } else {
         await adminApi.createItem(values);
+      }
+      // theory 小节同步写入 theory_contents，保持内容表与 items 一致
+      if (values.type === 'theory') {
+        await adminApi.upsertTheoryContent({
+          item_id: id || values.id,
+          course_id: values.course_id,
+          module_id: values.module_id,
+          content: itemUpdates.content || '',
+          examples: Array.isArray(examples) ? examples : []
+        });
       }
     } else if (entity === 'question') {
       if (id) {

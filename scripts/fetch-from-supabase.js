@@ -68,11 +68,15 @@ async function fetchAll(table, orderBy = 'id') {
 
 // ─── Courses: 课程 → 模块 → 小节 嵌套 ───
 async function buildCourses() {
-  const [courses, modules, items] = await Promise.all([
+  const [courses, modules, items, theories] = await Promise.all([
     fetchAll('courses', 'id'),
     fetchAll('modules', 'order_index'),
-    fetchAll('items', 'order_index')
+    fetchAll('items', 'order_index'),
+    fetchAll('theory_contents', 'item_id')
   ]);
+
+  // theory_contents 按 item_id 索引
+  const theoryMap = new Map(theories.map(t => [t.item_id, t]));
 
   // items 按 (course_id, module_id) 分组
   const itemsByCourseModule = new Map();
@@ -100,7 +104,14 @@ async function buildCourses() {
       items: (itemsByCourseModule.get(`${c.id}|${m.module_id}`) || []).map(it => {
         // 与现有 courses.js 格式一致：theory 小节带 content，其余仅 id/title/type
         const item = { id: it.id, title: it.title, type: it.type };
-        if (it.content) item.content = it.content;
+        // theory 小节优先从 theory_contents 取内容，保证后台编辑与静态构建产物一致
+        if (it.type === 'theory') {
+          const t = theoryMap.get(it.id);
+          if (t?.content) item.content = t.content;
+          else if (it.content) item.content = it.content;
+        } else if (it.content) {
+          item.content = it.content;
+        }
         return item;
       })
     }))

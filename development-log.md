@@ -5,9 +5,9 @@
 | 项 | 内容 |
 |---|---|
 | 项目名称 | CourseCore — 大学基础课学习平台 |
-| 当前状态 | 管理后台全链路落地：Supabase Auth + profiles.role 鉴权、`/admin` 路由 + 5 Tab 管理界面（users/courses/modules+items/questions/exam_papers）、`admin.js` CRUD 服务、`fetch-from-supabase.js` 数据拉取脚本、用户中心管理员入口按钮、build:data + fetch:data 串联进 predev/prebuild；构建产物 460 条预渲染路由（含 `/admin`）；待 Supabase MCP 恢复后导入剩余 seed 数据（theory_contents + exam_papers 表当前为空） |
+| 当前状态 | 管理后台 theory 内容链路已打通：`/admin` 编辑小节时自动从 `theory_contents` 读取内容/例题，保存时同步写入 `items` 与 `theory_contents`；`fetch-from-supabase.js` 构建 courses 时 theory 小节优先从 `theory_contents` 取内容；本地 `npm run build` 通过，预渲染 483 条路由（含 `/admin`）。仍待补充 `updateExamSection` / `deleteUser` 以闭合大题编辑与用户删除 |
 | 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth + Supabase Postgres (RLS + RPC) |
-| 构建产物 | `dist/`（460 个预渲染静态路由，含 `/admin`） |
+| 构建产物 | `dist/`（483 个预渲染静态路由，含 `/admin`） |
 | 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
 
 ## 文件结构
@@ -1071,6 +1071,36 @@
 - 在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
 - `src/services/admin.js` 仍缺 `updateExamSection` 与 `deleteUser`，如需面板内闭环再补。
 
+### 阶段 26: 修复管理后台 theory 小节内容为空及服务器链路未打通问题
+
+**日期**: 2026-07-30
+
+**操作**:
+- 排查 `/admin` 编辑小节时"内容"字段为空：根因是数据分裂存储——小节元数据在 `items` 表，理论内容在 `theory_contents` 表；后台仅读取 `items.content`，导致 theory 小节内容空白。
+- `src/services/admin.js` 新增 `getTheoryContent(itemId)` 与 `upsertTheoryContent(record)`，提供 theory 内容按 `item_id` 读取与 upsert 能力；保留原有 `updateTheoryContent` 以兼容。
+- `src/views/admin/adminPage.js`：
+  - `modules-items` Tab 加载时并行拉取 `theory_contents`；
+  - 将 `theory_contents.content` / `examples` 合并到对应 `theory` 类型 item 行，编辑弹窗正确回显；
+  - item 表单增加"例题 ID (JSON)"字段，支持维护 theory 小节关联例题；
+  - 保存 item 时同步 `upsertTheoryContent`，并保留 `items.content` 同步更新，确保双表一致。
+- `scripts/fetch-from-supabase.js` 的 `buildCourses` 改为 theory 小节优先从 `theory_contents` 取 `content`，再回退 `items.content`，保证后台保存后静态构建产物立即生效。
+- 运行 `npm run fetch:data` 重新拉取，验证 `src/data/courses.js` 中 theory 小节已带内容；运行 `npm run build`，成功预渲染 483 条静态路由。
+
+**关键决策**:
+- 后台统一把 `theory_contents` 作为 theory 小节内容的权威来源，`items.content` 作为冗余同步 → 前端 `practiceList.js` 已优先读 `THEORY_CONTENTS`，静态构建产物也跟随 `theory_contents`，链路彻底打通。
+- 保存时双表同步写入 → 避免 `items.content` 与 `theory_contents.content` 不一致导致不同入口看到不同内容。
+- 例题 `examples` 作为 theory 小节属性在后台维护 → 与 `theory_contents` 表结构一致，减少跨表操作。
+
+**产出文件**:
+- `src/services/admin.js` — 新增 `getTheoryContent` / `upsertTheoryContent`
+- `src/views/admin/adminPage.js` — 合并 `theory_contents` 读取/保存，新增 `examples` 字段
+- `scripts/fetch-from-supabase.js` — `buildCourses` theory 小节优先从 `theory_contents` 取内容
+- `src/data/courses.js` / `src/data/theoryContents.js` — 重新拉取生成
+
+**待后续**:
+- `src/services/admin.js` 仍缺 `updateExamSection` / `deleteUser`，如需面板内闭环再补。
+- 在 Supabase Dashboard 手动将至少一个账号的 `profiles.role` 改为 `'admin'`，否则 `/admin` 入口与页面均不可见。
+
 ## 最后更新时间
 
-2026-07-30
+2026-07-30 23:15

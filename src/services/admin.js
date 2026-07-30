@@ -212,12 +212,34 @@ export async function listTheoryContents() {
   return data || [];
 }
 
+export async function getTheoryContent(itemId) {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from('theory_contents')
+    .select('*')
+    .eq('item_id', itemId)
+    .single();
+  if (error && error.code !== 'PGRST116') throw error;
+  return data || null;
+}
+
 export async function updateTheoryContent(itemId, updates) {
   ensureAdmin();
   const { data, error } = await supabase
     .from('theory_contents')
     .update(updates)
     .eq('item_id', itemId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertTheoryContent(record) {
+  ensureAdmin();
+  const { data, error } = await supabase
+    .from('theory_contents')
+    .upsert(record, { onConflict: 'item_id' })
     .select()
     .single();
   if (error) throw error;
