@@ -54,7 +54,8 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: { persistSession: false, autoRefreshToken: false }
+  auth: { persistSession: false, autoRefreshToken: false },
+  realtime: { enabled: false }
 });
 
 // ─── 通用 fetch ───
