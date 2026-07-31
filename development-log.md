@@ -1406,6 +1406,61 @@
 
 **关联问题**: 用户在管理后台「新增小节」弹窗的下拉框中发现 `test` 选项。
 
+### 阶段 37: 修复管理后台 theory / 例题保存时报 `Cannot read properties of null (reading 'itemId')`
+
+**日期**: 2026-07-31
+
+**操作**:
+- 排查管理后台「理论+例题」保存失败问题：报错 `保存失败: Cannot read properties of null (reading 'itemId')`。
+- 定位根因：`saveTheory()` / `savePractice()` 在 `adminState.theoryEditor` / `adminState.practiceEditor` 为 null 时仍读取 `ed.itemId`。
+- 在 `src/views/admin/adminPage.js` 中：
+  - `saveTheory()` 增加 `if (!ed)` 守卫，避免 null 读取并给出友好提示；
+  - `savePractice()` 增加同样的 `if (!ed)` 守卫；
+  - `admin-tree-select` 处理 item 节点时，在 `rerender()` 前立即清空 `theoryEditor` / `practiceEditor`，防止切换小节加载期间仍显示旧的「保存」按钮并触发脏保存。
+
+**关键决策**:
+- 保存函数自身必须防御 null，不能依赖 UI 渲染条件；UI 状态切换时也应主动清理编辑器，避免竞态。
+- 切换树节点时立即清空旧编辑器比等待新编辑器加载完成再清空更安全，可彻底消除加载期间出现旧保存按钮的窗口。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — 增加保存 null 守卫、切换 item 时清空编辑器
+- `development-log.md` — 补充阶段 37 与更新记录
+
+**关联问题**: 用户在管理后台编辑「映射与函数」等 theory 小节并保存时报 `Cannot read properties of null (reading 'itemId')`。
+
+### 阶段 38: 修复 Supabase `profiles.role` check constraint 不同步导致无法改 admin
+
+**日期**: 2026-07-31
+
+**操作**:
+- 用户在 Supabase Dashboard 直接修改 `profiles` 表，把某账号 role 从 `free` 改为 `admin` 时报错：
+  `ERROR: 23514: new row for relation "profiles" violates check constraint "profiles_role_check"`。
+- 排查发现仓库 `scripts/supabase-schema.sql` 中定义的是 `CHECK (role IN ('free', 'paid', 'admin'))`，但线上 Supabase 实际 constraint 仍是旧版（只允许 `free` / `paid`）。
+- 提供修复 SQL：先 `DROP CONSTRAINT IF EXISTS profiles_role_check`，再 `ADD CONSTRAINT profiles_role_check CHECK (role IN ('free', 'paid', 'admin'))`。
+- 在 `development-log.md` 记录该问题，提醒后续若再改 role 枚举需同步执行到线上 DB。
+
+**关键决策**:
+- `CREATE TABLE IF NOT EXISTS` 不会修改已存在表的 check constraint；role 枚举扩展后必须通过显式 `DROP/ADD CONSTRAINT` 同步到已有数据库。
+- 前端 `updateUserRole()` 逻辑无需改动，因为错误来自数据库层 constraint。
+
+**产出文件**:
+- `development-log.md` — 补充阶段 38 与更新记录
+
+**关联问题**: 用户在 Supabase Dashboard 修改 `profiles.role` 为 `admin` 时报 check constraint 错误。
+
+## 更新记录 - 2026-07-31（第五次）
+
+### 修复
+- 修复 Supabase `profiles.role` check constraint 未同步问题：线上约束只允许 `free` / `paid`，导致无法设为 `admin`。
+- 提供线上修复 SQL（DROP + ADD CONSTRAINT）。
+
+## 更新记录 - 2026-07-31（第四次）
+
+### 修复
+- 修复管理后台 theory / 例题保存时 `Cannot read properties of null (reading 'itemId')` 报错。
+- `saveTheory()` 与 `savePractice()` 增加编辑器状态 null 守卫。
+- 切换内容树 item 节点时立即清空旧编辑器，避免加载期间误用旧保存按钮。
+
 ## 更新记录 - 2026-07-31（第三次）
 
 ### 修改
@@ -1417,4 +1472,4 @@
 
 ## 最后更新时间
 
-2026-07-31
+2026-07-31 19:15

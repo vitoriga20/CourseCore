@@ -17,7 +17,8 @@ export const COURSES = [
           {
             "id": "c1-m1-i1",
             "title": "映射与函数",
-            "type": "theory"
+            "type": "theory",
+            "content": "## 这里是映射与函数\n"
           },
           {
             "id": "c1-m1-i2",

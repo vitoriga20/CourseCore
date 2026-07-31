@@ -2026,6 +2026,11 @@ async function saveTheory() {
   try {
     syncTheoryFormToState();
     const ed = adminState.theoryEditor;
+    if (!ed) {
+      adminState.feedback = { type: 'error', message: '编辑器未打开，无法保存' };
+      rerender();
+      return;
+    }
     await adminApi.upsertTheoryContent({
       item_id: ed.itemId,
       course_id: ed.course_id,
@@ -2255,6 +2260,11 @@ async function savePractice() {
   try {
     syncPracticeFormToState();
     const ed = adminState.practiceEditor;
+    if (!ed) {
+      adminState.feedback = { type: 'error', message: '编辑器未打开，无法保存' };
+      rerender();
+      return;
+    }
     const itemId = ed.itemId;
     for (let i = 0; i < ed.questions.length; i++) {
       const q = ed.questions[i];
@@ -2486,9 +2496,13 @@ export async function handleAdminAction(action, el) {
         const item = (adminState.data.items || []).find(it => it.id === itemId);
         if (!item) return;
         adminState.tree.selected = { type: 'item', id: itemId };
+        // 切换小节时立即清空旧编辑器，避免加载期间仍显示旧保存按钮
+        adminState.theoryEditor = null;
+        adminState.practiceEditor = null;
         // 展开父链
         adminState.tree.expanded[`course:${item.course_id}`] = true;
         adminState.tree.expanded[`module:${item.course_id}|${item.module_id}`] = true;
+        rerender();
         // 根据类型打开编辑器
         if (item.type === 'theory') {
           await openTheoryEditor(itemId);
