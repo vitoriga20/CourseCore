@@ -296,52 +296,6 @@ export const QUESTIONS = [
     ]
   },
   {
-    "id": "q-calculus-1-c1-m1-014",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m1",
-    "itemId": "c1-m1-i10",
-    "questionType": 0,
-    "title": "综合极限 1",
-    "content": "求 \\( \\displaystyle \\lim_{x\\to 0}\\frac{\\tan x}{x} \\)。",
-    "answer": "0",
-    "solution": "\\( \\tan x\\sim x \\) 或化为 \\( \\frac{\\sin x}{x}\\cdot\\frac{1}{\\cos x}\\to 1 \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "极限"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "1",
-      "2",
-      "0",
-      "-1"
-    ]
-  },
-  {
-    "id": "q-calculus-1-c1-m1-015",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m1",
-    "itemId": "c1-m1-i10",
-    "questionType": 0,
-    "title": "综合极限 2",
-    "content": "求 \\( \\displaystyle \\lim_{x\\to\\infty}\\left(1+\\frac{2}{x}\\right)^x \\)。",
-    "answer": "3",
-    "solution": "化为 \\( \\left[\\left(1+\\frac{2}{x}\\right)^{x/2}\\right]^2\\to e^2 \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "极限"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "7.38906",
-      "6.38906",
-      "8.38906",
-      "7.389056"
-    ]
-  },
-  {
     "id": "q-calculus-1-c1-m1-016",
     "courseId": "calculus-1",
     "moduleId": "c1-m1",
@@ -569,52 +523,6 @@ export const QUESTIONS = [
       "f(x)dx+1",
       "选项1",
       "f(x)dx"
-    ]
-  },
-  {
-    "id": "q-calculus-1-c1-m2-009",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m2",
-    "itemId": "c1-m2-i6",
-    "questionType": 0,
-    "title": "参数方程求导",
-    "content": "设 \\( \\begin{cases}x=t^2,\\\\ y=t^3,\\end{cases} \\) 求 \\( \\frac{dy}{dx} \\)。",
-    "answer": "3",
-    "solution": "\\( \\frac{dy}{dx}=\\frac{dy/dt}{dx/dt}=\\frac{3t^2}{2t}=\\frac{3t}{2} \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "参数方程"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "3t/2+1",
-      "选项1",
-      "3t/2-1",
-      "3t/2"
-    ]
-  },
-  {
-    "id": "q-calculus-1-c1-m2-010",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m2",
-    "itemId": "c1-m2-i6",
-    "questionType": 0,
-    "title": "复合函数求导",
-    "content": "求 \\( y=\\ln(\\cos x) \\) 的导数。",
-    "answer": "0",
-    "solution": "链式法则：\\( y^{\\prime}=\\frac{1}{\\cos x}\\cdot(-\\sin x)=-\\tan x \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "求导法则"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "-tanx",
-      "选项1",
-      "-tanx-1",
-      "-tanx+1"
     ]
   },
   {
@@ -846,29 +754,6 @@ export const QUESTIONS = [
     ]
   },
   {
-    "id": "q-calculus-1-c1-m3-010",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m3",
-    "itemId": "c1-m3-i6",
-    "questionType": 0,
-    "title": "证明不等式",
-    "content": "证明：当 \\( x>0 \\) 时，\\( \\ln(1+x)>\\frac{x}{1+x} \\)。",
-    "answer": "0",
-    "solution": "设 \\( f(x)=\\ln(1+x)-\\frac{x}{1+x} \\)，则 \\( f(0)=0 \\)，\\( f^{\\prime}(x)=\\frac{1}{1+x}-\\frac{1}{(1+x)^2}=\\frac{x}{(1+x)^2}>0 \\)，故 \\( f(x)>0 \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "不等式"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "见解析",
-      "以上都不是",
-      "证明见解析",
-      "略"
-    ]
-  },
-  {
     "id": "q-calculus-1-c1-m3-011",
     "courseId": "calculus-1",
     "moduleId": "c1-m3",
@@ -1004,29 +889,6 @@ export const QUESTIONS = [
       "arctanx+1",
       "arctanx",
       "arctanx+C"
-    ]
-  },
-  {
-    "id": "q-calculus-1-c1-m4-006",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m4",
-    "itemId": "c1-m4-i5",
-    "questionType": 0,
-    "title": "综合积分",
-    "content": "求 \\( \\displaystyle \\int \\frac{\\ln x}{x}\\,dx \\)。",
-    "answer": "3",
-    "solution": "令 \\( u=\\ln x \\)，\\( du=\\frac{1}{x}dx \\)，积分得 \\( \\frac{u^2}{2}+C \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "不定积分"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "(lnx)^2/2+1",
-      "(lnx)^2/2-C",
-      "(lnx)^2/2",
-      "(lnx)^2/2+C"
     ]
   },
   {
@@ -1168,29 +1030,6 @@ export const QUESTIONS = [
     ]
   },
   {
-    "id": "q-calculus-1-c1-m5-006",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m5",
-    "itemId": "c1-m5-i5",
-    "questionType": 0,
-    "title": "定积分综合",
-    "content": "求 \\( \\displaystyle \\int_{-1}^1 x^3\\,dx \\)。",
-    "answer": "1",
-    "solution": "奇函数在对称区间上积分为 0。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "定积分"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "2",
-      "0",
-      "1",
-      "-1"
-    ]
-  },
-  {
     "id": "q-calculus-1-c1-m5-007",
     "courseId": "calculus-1",
     "moduleId": "c1-m5",
@@ -1280,29 +1119,6 @@ export const QUESTIONS = [
       "0",
       "2.41421",
       "0.414214"
-    ]
-  },
-  {
-    "id": "q-calculus-1-c1-m6-004",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m6",
-    "itemId": "c1-m6-i4",
-    "questionType": 0,
-    "title": "变力做功",
-    "content": "一物体在变力 \\( F(x)=2x \\) 作用下沿直线从 \\( x=0 \\) 移动到 \\( x=3 \\)，求力所做的功。",
-    "answer": "2",
-    "solution": "\\( W=\\int_0^3 2x\\,dx=9 \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "物理应用"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "8",
-      "18",
-      "9",
-      "10"
     ]
   },
   {
@@ -1418,52 +1234,6 @@ export const QUESTIONS = [
       "C_1e^{2x}+C_2e^{3x}",
       "C_1e^{2x}-C_2e^{3x}",
       "C_1e^{2x}+1_2e^{3x}"
-    ]
-  },
-  {
-    "id": "q-calculus-1-c1-m7-005",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m7",
-    "itemId": "c1-m7-i5",
-    "questionType": 0,
-    "title": "微分方程综合",
-    "content": "求微分方程 \\( y^{\\prime}=2x(1+y^2) \\) 的通解。",
-    "answer": "1",
-    "solution": "分离变量：\\( \\frac{dy}{1+y^2}=2x\\,dx \\)，积分得 \\( \\arctan y=x^2+C \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "微分方程"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "arctany=0",
-      "arctany=x^2+C",
-      "arctany=1",
-      "arctany=-1"
-    ]
-  },
-  {
-    "id": "q-calculus-1-c1-m7-006",
-    "courseId": "calculus-1",
-    "moduleId": "c1-m7",
-    "itemId": "c1-m7-i6",
-    "questionType": 0,
-    "title": "人口增长模型",
-    "content": "简述马尔萨斯人口模型 \\( \\frac{dP}{dt}=kP \\) 的解及其现实意义。",
-    "answer": "1",
-    "solution": "分离变量得指数增长模型 \\( P=P_0e^{kt} \\)，反映资源无限时人口按指数增长。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "应用"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "P=1",
-      "P=P_0e^{kt}",
-      "P=-1",
-      "P=0"
     ]
   },
   {
@@ -1648,29 +1418,6 @@ export const QUESTIONS = [
       "x/1=1",
       "x/1=0",
       "x/1=-1"
-    ]
-  },
-  {
-    "id": "q-calculus-2-c2-m1-008",
-    "courseId": "calculus-2",
-    "moduleId": "c2-m1",
-    "itemId": "c2-m1-i7",
-    "questionType": 0,
-    "title": "距离",
-    "content": "求点 \\( (1,1,1) \\) 到原点的距离。",
-    "answer": "1",
-    "solution": "\\( d=\\sqrt{1^2+1^2+1^2}=\\sqrt3 \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "向量"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "0",
-      "1.732051",
-      "0.732051",
-      "1.73205"
     ]
   },
   {
@@ -1904,29 +1651,6 @@ export const QUESTIONS = [
     ]
   },
   {
-    "id": "q-calculus-2-c2-m2-010",
-    "courseId": "calculus-2",
-    "moduleId": "c2-m2",
-    "itemId": "c2-m2-i9",
-    "questionType": 0,
-    "title": "多元微分综合",
-    "content": "设 \\( z=\\ln(x^2+y^2) \\)，求 \\( \\frac{\\partial z}{\\partial x} \\)。",
-    "answer": "1",
-    "solution": "链式法则。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "偏导数"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "2x/(x^2-y^2)",
-      "2x/(x^2+y^2)",
-      "2x/(x^2+y^2)-1",
-      "2x/(x^2+y^2)+1"
-    ]
-  },
-  {
     "id": "q-calculus-2-c2-m2-011",
     "courseId": "calculus-2",
     "moduleId": "c2-m2",
@@ -2065,29 +1789,6 @@ export const QUESTIONS = [
     ]
   },
   {
-    "id": "q-calculus-2-c2-m3-006",
-    "courseId": "calculus-2",
-    "moduleId": "c2-m3",
-    "itemId": "c2-m3-i5",
-    "questionType": 0,
-    "title": "重积分综合",
-    "content": "求 \\( \\displaystyle\\iint_D xy\\,d\\sigma \\)，其中 \\( D \\) 为 \\( [0,1]\\times[0,1] \\)。",
-    "answer": "2",
-    "solution": "\\( \\int_0^1 x\\,dx\\cdot\\int_0^1 y\\,dy=\\frac14 \\)。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "二重积分"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "-0.75",
-      "1.25",
-      "0.25",
-      "0"
-    ]
-  },
-  {
     "id": "q-calculus-2-c2-m4-001",
     "courseId": "calculus-2",
     "moduleId": "c2-m4",
@@ -2221,29 +1922,6 @@ export const QUESTIONS = [
       "三重",
       "一重",
       "曲线"
-    ]
-  },
-  {
-    "id": "q-calculus-2-c2-m4-007",
-    "courseId": "calculus-2",
-    "moduleId": "c2-m4",
-    "itemId": "c2-m4-i7",
-    "questionType": 0,
-    "title": "曲线积分综合",
-    "content": "判断 \\( \\displaystyle\\int_L (2xy+1)\\,dx+x^2\\,dy \\) 是否与路径无关。",
-    "answer": "0",
-    "solution": "\\( \\frac{\\partial Q}{\\partial x}=2x=\\frac{\\partial P}{\\partial y} \\)，且区域为单连通，故与路径无关。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "曲线积分"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "无关",
-      "相关",
-      "线性相关",
-      "线性无关"
     ]
   },
   {
@@ -2403,29 +2081,6 @@ export const QUESTIONS = [
       "3",
       "4",
       "1"
-    ]
-  },
-  {
-    "id": "q-calculus-2-c2-m5-008",
-    "courseId": "calculus-2",
-    "moduleId": "c2-m5",
-    "itemId": "c2-m5-i6",
-    "questionType": 0,
-    "title": "级数综合",
-    "content": "求幂级数 \\( \\displaystyle\\sum_{n=0}^{\\infty}\\frac{x^n}{n!} \\) 的和函数。",
-    "answer": "0",
-    "solution": "指数函数的展开式。",
-    "hint": null,
-    "difficulty": 2,
-    "tags": [
-      "幂级数"
-    ],
-    "source": "高等数学（第六版）",
-    "options": [
-      "e^x",
-      "e^x+1",
-      "选项1",
-      "e^x-1"
     ]
   },
   {

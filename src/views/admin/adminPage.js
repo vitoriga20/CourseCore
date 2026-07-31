@@ -77,16 +77,13 @@ const SECTION_ENTITIES = {
 // 小节类型标签：树节点显示用
 const ITEM_TYPE_LABELS = {
   theory: '理论',
-  practice: '练习',
   quiz: '测验',
   training: '训练',
-  test: '测试',
-  project: '项目',
   review: '复习'
 };
 
 // 可在树中创建子项的小节类型（theory 进入理论编辑器，其余进入题集编辑器）
-const PRACTICE_ITEM_TYPES = ['practice', 'quiz', 'training', 'test'];
+const PRACTICE_ITEM_TYPES = ['quiz', 'training'];
 
 const PRACTICE_TYPES = [
   { value: 0, label: '单选题' },
@@ -135,7 +132,7 @@ const ENTITY_FIELDS = {
     { name: 'course_id', label: '课程 ID', type: 'text' },
     { name: 'module_id', label: '模块 ID', type: 'text' },
     { name: 'title', label: '标题', type: 'text' },
-    { name: 'type', label: '类型', type: 'select', options: ['theory', 'practice', 'quiz', 'training', 'project', 'review'] },
+    { name: 'type', label: '类型', type: 'select', options: ['theory', 'quiz', 'training', 'review'] },
     { name: 'order_index', label: '顺序', type: 'number' },
     { name: 'content', label: '内容', type: 'textarea' },
     { name: 'examples', label: '例题 ID (JSON)', type: 'textarea', json: true }
@@ -366,11 +363,10 @@ function renderTable(entity) {
   `;
 }
 
-// ─── Render: editor item list (theory / training / test) ───
+// ─── Render: editor item list (theory / training) ───
 function editorItemFilter(section) {
   if (section === 'theory-editor') return it => it.type === 'theory';
-  if (section === 'training-editor') return it => it.type === 'training' || it.type === 'practice';
-  if (section === 'test-editor') return it => it.type === 'quiz';
+  if (section === 'training-editor') return it => it.type === 'training';
   return () => false;
 }
 
@@ -1279,8 +1275,8 @@ const ADMIN_STYLES = `
   border: 1px solid var(--ad-border); border-radius: 4px; flex-shrink: 0;
 }
 .admin-page .tree-icon-theory { color: #6ee7b7; border-color: #1a3c34; background: rgba(106,233,183,0.06); }
-.admin-page .tree-icon-practice, .admin-page .tree-icon-training { color: #93c5fd; border-color: #1e3a5f; background: rgba(147,197,253,0.06); }
-.admin-page .tree-icon-quiz, .admin-page .tree-icon-test { color: #fbbf24; border-color: #4a3a1a; background: rgba(251,191,36,0.06); }
+.admin-page .tree-icon-training { color: #93c5fd; border-color: #1e3a5f; background: rgba(147,197,253,0.06); }
+.admin-page .tree-icon-quiz { color: #fbbf24; border-color: #4a3a1a; background: rgba(251,191,36,0.06); }
 .admin-page .tree-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .admin-page .tree-meta { font-size: 0.7rem; color: var(--ad-muted); flex-shrink: 0; }
 .admin-page .tree-node.selected .tree-meta { color: var(--ad-green-hl); opacity: 0.8; }
@@ -1299,8 +1295,8 @@ const ADMIN_STYLES = `
   border: 1px solid var(--ad-border); color: var(--ad-muted); flex-shrink: 0;
 }
 .admin-page .tree-type-badge.type-theory { color: #6ee7b7; border-color: #1a3c34; }
-.admin-page .tree-type-badge.type-practice, .admin-page .tree-type-badge.type-training { color: #93c5fd; border-color: #1e3a5f; }
-.admin-page .tree-type-badge.type-quiz, .admin-page .tree-type-badge.type-test { color: #fbbf24; border-color: #4a3a1a; }
+.admin-page .tree-type-badge.type-training { color: #93c5fd; border-color: #1e3a5f; }
+.admin-page .tree-type-badge.type-quiz { color: #fbbf24; border-color: #4a3a1a; }
 .admin-page .admin-tree-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.6rem; padding: 0.6rem 0; }
 .admin-page .admin-tree-meta > div { display: flex; flex-direction: column; gap: 0.2rem; }
 .admin-page .admin-tree-meta code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.8rem; color: var(--ad-green-hl); word-break: break-all; }

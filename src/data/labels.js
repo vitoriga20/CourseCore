@@ -1,8 +1,6 @@
 export const TYPE_LABELS = {
   theory: "理论",
   example: "示例",
-  practice: "练习",
-  project: "项目",
   quiz: "测验",
   training: "训练",
   review: "复习"

@@ -5,10 +5,10 @@
 | 项 | 内容 |
 |---|---|
 | 项目名称 | CourseCore — 大学基础课学习平台 |
-| 当前状态 | 管理后台内容编辑器已完善：`updateExamSection` / `deleteUser` 已补全；理论例题与训练/测试题均支持题图 URL；训练/测试编辑器支持多选题；已引入 EasyMDE / Split.js / SortableJS 优化编辑体验；`npm run build` 通过，预渲染 483 条路由（含 `/admin`） |
+| 当前状态 | 已清理 `practice` / `project` 小节类型与对应题目：删除 13 个 `practice` / `project` items、15 道关联题目源文件、seed SQL 中的相关 INSERT，并同步清理 Supabase 中 item_id 为 NULL 的 orphan questions；`npm run build` 通过，预渲染 455 条路由（含 `/admin`） |
 | 技术栈 | Vite 5 + Tailwind CSS 3 + PostCSS + p5.js + gray-matter + MinerU (mineru-open-sdk API) + Supabase Auth + Supabase Postgres (RLS + RPC) + EasyMDE + Split.js + SortableJS |
-| 构建产物 | `dist/`（483 个预渲染静态路由，含 `/admin`） |
-| 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js` |
+| 构建产物 | `dist/`（455 个预渲染静态路由，含 `/admin`） |
+| 数据格式 | Markdown + YAML frontmatter → `src/data/questions.js`；课程小节类型限定为 `theory` / `quiz` / `training` / `review` |
 
 ## 文件结构
 
@@ -1336,6 +1336,84 @@
 - `src/views/admin/adminPage.js` — 修复 `normalizeTheoryExamples` 旧格式 ID 数组查询逻辑
 
 **关联问题**: 管理后台物理理论小节例题列表为空
+
+### 阶段 35: 清理 `practice` / `project` 小节类型与关联题目
+
+**日期**: 2026-07-31
+
+**操作**:
+- 用户决策：删除 `practice` / `project` 两种小节类型，未来每节理论后的训练统一使用 `training`，`quiz` / `review` 保持不变。
+- 更新 `src/data/labels.js`：移除 `practice` / `project` 类型标签（此前已完成）。
+- 更新 `src/views/admin/adminPage.js`：
+  - `PRACTICE_ITEM_TYPES` 由 `['practice', 'quiz', 'training', 'test']` 改为 `['quiz', 'training', 'test']`；
+  - item 类型下拉选项由 `['theory', 'practice', 'quiz', 'training', 'project', 'review']` 改为 `['theory', 'quiz', 'training', 'test', 'review']`；
+  - `training-editor` 过滤不再包含 `practice`；
+  - 移除 `.tree-icon-practice` / `.tree-type-badge.type-practice` 样式，避免类型不存在时样式冗余。
+- 删除 `curriculum/raw/questions/` 下 15 道关联 `practice` / `project` itemId 的 Markdown 源文件（高等数学上/下模块末尾综合练习与项目）。
+- 过滤 `scripts/seed-content.sql`，移除 13 条 `type = 'practice'` / `type = 'project'` 的 `public.items` INSERT 语句。
+- 通过 MCP `execute_sql` 清理 Supabase 中已 orphaned 的 15 道 questions（`item_id IS NULL`），保证云端与本地题量一致。
+- 运行 `npm run build`：本地 `build:data` 生成 276 题 / 16 个 theory / 2 套试卷，`fetch:data` 拉取云端 276 题，vite 构建成功，预渲染 455 条静态路由。
+
+**关键决策**:
+- 先删内容（items / questions / 源文件 / seed SQL），再删字段（labels / admin 选项 / CSS），符合用户"先把对应内容删掉，然后再把字段删掉"的要求。
+- 云端 orphan questions 通过 `item_id IS NULL` 定位并清理 → 外键已声明 `ON DELETE CASCADE`，items 删除后 questions 的 `item_id` 被置空；删除这些孤儿题避免 `fetch:data` 与本地构建数量不一致。
+- `test` 类型原计划作为 `quiz` 的别名保留，但后续用户确认无此需求，故在阶段 36 中一并移除。
+
+**产出文件**:
+- `src/data/labels.js` — 移除 `practice` / `project` 标签
+- `src/views/admin/adminPage.js` — 移除 `practice` / `project` 类型选项与样式
+- `scripts/seed-content.sql` — 移除 13 条相关 INSERT
+- `src/data/courses.js` / `src/data/questions.js` / `src/data/theoryContents.js` / `src/data/examPapers.js` — 重新构建生成
+
+**关联问题**: 用户要求合并/清理相似小节类型 `practice` / `project`。
+
+## 更新记录 - 2026-07-31（第二次）
+
+### 修改
+- 移除 `practice` / `project` 小节类型；`training` 成为理论后唯一训练类型。
+- `src/views/admin/adminPage.js` 中 item 类型选项更新为 `theory` / `quiz` / `training` / `review`（后续阶段 36 移除 `test`）。
+- 删除 15 道 `practice` / `project` 关联题目源文件。
+- 删除 `scripts/seed-content.sql` 中 13 条 `practice` / `project` 的 items INSERT。
+- 同步清理 Supabase 中 15 道 `item_id IS NULL` 的 orphan questions。
+
+### 验证
+- `npm run build` 通过，本地与 Supabase 均为 276 题，预渲染 455 条静态路由。
+
+### 阶段 36: 移除 `test` 小节类型
+
+**日期**: 2026-07-31
+
+**操作**:
+- 用户反馈后台「新增小节」下拉框中出现未使用的 `test` 类型，要求删除。
+- 更新 `src/views/admin/adminPage.js`：
+  - `ITEM_TYPE_LABELS` 移除 `test: '测试'`；
+  - `PRACTICE_ITEM_TYPES` 由 `['quiz', 'training', 'test']` 改为 `['quiz', 'training']`；
+  - item 类型下拉选项由 `['theory', 'quiz', 'training', 'test', 'review']` 改为 `['theory', 'quiz', 'training', 'review']`；
+  - `editorItemFilter` 移除 `test-editor` 分支（该分支实际过滤的是 `quiz`），注释改为 `theory / training`；
+  - 移除 `.tree-icon-test` / `.tree-type-badge.type-test` CSS 选择器。
+- 更新 `.trae/documents/technical-architecture.md`：小节 `type` 枚举由 `theory / quiz / training / test / review` 改为 `theory / quiz / training / review`。
+- 更新 `development-log.md` 项目概览表中的数据格式说明。
+- 运行 `npm run build`：构建通过，276 题 / 16 个 theory / 2 套试卷，预渲染 455 条静态路由。
+
+**关键决策**:
+- `test` 类型在数据库和现有课程数据中从未使用，仅作为后台 UI 选项和样式残留；直接移除不会影响现有内容。
+- `test-editor` 分支原本映射到 `quiz` 类型，属于无入口的死代码，一并移除避免误导。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — 移除 `test` 类型与相关样式
+- `.trae/documents/technical-architecture.md` — 更新类型枚举说明
+- `development-log.md` — 补充阶段 36 与更新记录
+
+**关联问题**: 用户在管理后台「新增小节」弹窗的下拉框中发现 `test` 选项。
+
+## 更新记录 - 2026-07-31（第三次）
+
+### 修改
+- 移除 `test` 小节类型及其在管理后台的下拉选项、树图标样式、类型徽章样式。
+- `src/views/admin/adminPage.js` 中 item 类型选项最终确定为 `theory` / `quiz` / `training` / `review`。
+
+### 验证
+- `npm run build` 通过，预渲染 455 条静态路由。
 
 ## 最后更新时间
 

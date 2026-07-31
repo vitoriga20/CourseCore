@@ -60,11 +60,6 @@ export const COURSES = [
             "type": "theory"
           },
           {
-            "id": "c1-m1-i10",
-            "title": "极限综合练习",
-            "type": "practice"
-          },
-          {
             "id": "c1-m1-i11",
             "title": "函数与极限小测",
             "type": "quiz"
@@ -99,11 +94,6 @@ export const COURSES = [
             "id": "c1-m2-i5",
             "title": "函数的微分",
             "type": "theory"
-          },
-          {
-            "id": "c1-m2-i6",
-            "title": "求导综合练习",
-            "type": "practice"
           },
           {
             "id": "c1-m2-i7",
@@ -142,11 +132,6 @@ export const COURSES = [
             "type": "theory"
           },
           {
-            "id": "c1-m3-i6",
-            "title": "中值定理与导数应用练习",
-            "type": "practice"
-          },
-          {
             "id": "c1-m3-i7",
             "title": "微分中值定理小测",
             "type": "quiz"
@@ -176,11 +161,6 @@ export const COURSES = [
             "id": "c1-m4-i4",
             "title": "有理函数的积分",
             "type": "theory"
-          },
-          {
-            "id": "c1-m4-i5",
-            "title": "不定积分综合练习",
-            "type": "practice"
           },
           {
             "id": "c1-m4-i6",
@@ -214,11 +194,6 @@ export const COURSES = [
             "type": "theory"
           },
           {
-            "id": "c1-m5-i5",
-            "title": "定积分综合练习",
-            "type": "practice"
-          },
-          {
             "id": "c1-m5-i6",
             "title": "定积分小测",
             "type": "quiz"
@@ -243,11 +218,6 @@ export const COURSES = [
             "id": "c1-m6-i3",
             "title": "平面曲线的弧长",
             "type": "theory"
-          },
-          {
-            "id": "c1-m6-i4",
-            "title": "定积分应用练习",
-            "type": "practice"
           },
           {
             "id": "c1-m6-i5",
@@ -280,16 +250,6 @@ export const COURSES = [
             "id": "c1-m7-i4",
             "title": "二阶常系数线性微分方程",
             "type": "theory"
-          },
-          {
-            "id": "c1-m7-i5",
-            "title": "微分方程练习",
-            "type": "practice"
-          },
-          {
-            "id": "c1-m7-i6",
-            "title": "人口增长模型项目",
-            "type": "project"
           },
           {
             "id": "c1-m7-i7",
@@ -345,11 +305,6 @@ export const COURSES = [
             "type": "theory"
           },
           {
-            "id": "c2-m1-i7",
-            "title": "空间解析几何练习",
-            "type": "practice"
-          },
-          {
             "id": "c2-m1-i8",
             "title": "空间解析几何小测",
             "type": "quiz"
@@ -401,11 +356,6 @@ export const COURSES = [
             "type": "theory"
           },
           {
-            "id": "c2-m2-i9",
-            "title": "多元微分练习",
-            "type": "practice"
-          },
-          {
             "id": "c2-m2-i10",
             "title": "多元函数微分小测",
             "type": "quiz"
@@ -435,11 +385,6 @@ export const COURSES = [
             "id": "c2-m3-i4",
             "title": "重积分的应用",
             "type": "theory"
-          },
-          {
-            "id": "c2-m3-i5",
-            "title": "重积分练习",
-            "type": "practice"
           },
           {
             "id": "c2-m3-i6",
@@ -483,11 +428,6 @@ export const COURSES = [
             "type": "theory"
           },
           {
-            "id": "c2-m4-i7",
-            "title": "曲线曲面积分练习",
-            "type": "practice"
-          },
-          {
             "id": "c2-m4-i8",
             "title": "曲线曲面积分小测",
             "type": "quiz"
@@ -522,11 +462,6 @@ export const COURSES = [
             "id": "c2-m5-i5",
             "title": "函数的傅里叶级数",
             "type": "theory"
-          },
-          {
-            "id": "c2-m5-i6",
-            "title": "无穷级数练习",
-            "type": "practice"
           },
           {
             "id": "c2-m5-i7",

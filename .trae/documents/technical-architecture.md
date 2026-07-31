@@ -117,7 +117,7 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
     └── views\                          # 页面视图组件
         ├── landing.js                  # 首页（学习/知识库双板块）
         ├── course.js                   # 课程详情
-        ├── practiceList.js             # 小节独立页面（支持 theory 讲义渲染+例题面板 / quiz / practice / training；顶部渲染墨绿色课程/小节导航栏）
+        ├── practiceList.js             # 小节独立页面（支持 theory 讲义渲染+例题面板 / quiz / training；顶部渲染墨绿色课程/小节导航栏）
         ├── quizSession.js              # 通用测验视图（顺序/随机/字体/背景/导航/报告），被 quiz 与 training 复用
         ├── inlinePractice.js           # inline 多题训练区
         ├── practiceDetail.js           # 单题作答与解法（薄包装）
@@ -199,7 +199,7 @@ state 更新 → saveProgress() → localStorage 持久化
           type: 'theory',
           content: '数列是按自然数编号的一列实数...'  // 可选：内联 Markdown + LaTeX 教学文本
         },
-        { id: 'i2', title: '函数极限综合练习', type: 'practice' },
+        { id: 'i2', title: '函数极限综合训练', type: 'training' },
         { id: 'i3', title: '极限小测', type: 'quiz' }
       ]
     }
@@ -207,7 +207,7 @@ state 更新 → saveProgress() → localStorage 持久化
 }
 ```
 
-小节 `type` 支持 `theory` / `example` / `practice` / `project` / `quiz` / `review`。
+小节 `type` 支持 `theory` / `quiz` / `training` / `review`。
 `theory` 小节的正文可内联在 `courses.js` 的 `content` 字段，也可由 `src/data/theoryContents.js` 提供（用于占位或后续替换真实讲义）。
 `quiz` 小节进入 `src/views/quizSession.js` 通用测验视图，题目顺序/随机切换（答题状态按题目 ID 跟随）、字体切换、几何/素白背景切换、题号导航、完成报告均在该视图内完成；几何背景由 `src/quiz-background.js` 通过 p5.js 渲染，并在离开测验视图时由 `router.js` 调用 `cleanupQuizSession` 清理。
 
