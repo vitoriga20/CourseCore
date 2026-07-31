@@ -1252,6 +1252,91 @@
 
 **关联问题**: 阶段 25~29 “待后续”中的 `updateExamSection` / `deleteUser` / 多选题 / 例题图片 / EasyMDE / Split.js / SortableJS 全部完成。
 
+### 阶段 31: 修复管理后台 EasyMDE 编辑器黑底黑字问题
+
+**日期**: 2026-07-31
+
+**操作**:
+- 定位 `/admin` 理论编辑器中 EasyMDE 编辑区为纯黑、无法看到文字的问题：引入的 `easymde/dist/easymde.min.css` 为默认浅色主题，而 `ADMIN_STYLES` 未覆盖 `.CodeMirror` / `.editor-toolbar` / `.editor-statusbar` 等 EasyMDE 生成的元素，导致编辑区背景被染成深色后文字仍为深色，形成黑底黑字。
+- 在 `src/views/admin/adminPage.js` 的 `ADMIN_STYLES` 中追加一套 `.admin-page .EasyMDEContainer .CodeMirror` 深色覆盖：
+  - 编辑区背景使用 `--ad-bg`、文字使用 `--ad-fg`、光标与选中区使用墨绿色高亮；
+  - 标题、链接、字符串/标签等 token 使用 `--ad-green-hl` 区分；
+  - 工具栏、状态栏、预览浮层统一使用 `--ad-bg-card` / `--ad-fg` 适配深色主题。
+- 运行 `npm run build` 验证：291 题 / 16 个 theory / 2 套试卷，483 条静态路由预渲染成功。
+
+**关键决策**:
+- 不更换 EasyMDE 主题文件，而是在现有 `ADMIN_STYLES` 内联样式中追加覆盖 → 改动最小，避免新增 CSS 文件或依赖。
+- 覆盖范围限定在 `.admin-page .EasyMDEContainer` 下 → 不影响站点其他区域的 CodeMirror（如未来引入）。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — `ADMIN_STYLES` 追加 EasyMDE 深色主题覆盖
+
+**关联问题**: 管理后台理论编辑器黑底黑字、内容不可见
+
+### 阶段 32: 修复管理后台 EasyMDE 工具栏图标不可见
+
+**日期**: 2026-07-31
+
+**操作**:
+- 排查到上一阶段后编辑器正文已可见，但工具栏仍为黑底且看不到图标：EasyMDE 默认使用 Font Awesome 图标，且 `initEasyMDE` 已设置 `autoDownloadFontAwesome: false`；项目 `index.html` 未引入 Font Awesome，导致工具栏按钮里的 `<i class="fa fa-bold"></i>` 等图标全部空白。
+- 在 `index.html` 引入 Font Awesome 4.7 CSS：`https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css`（带 SRI）。
+- 同步放宽 CSP：
+  - `style-src` 增加 `https://cdnjs.cloudflare.com`；
+  - `font-src` 增加 `https://cdnjs.cloudflare.com`（Font Awesome 会加载字体文件）。
+- 运行 `npm run build` 验证：483 条静态路由预渲染成功，`index.html` 体积增加来自新增 link 标签。
+
+**关键决策**:
+- 使用 Font Awesome 4.7 而非让 EasyMDE 自动下载 → 明确控制依赖来源、可配 SRI、避免 `maxcdn.bootstrapcdn.com` 与现有 CSP 冲突。
+- 全局引入 CSS → 仅影响首屏一次额外请求；未来若其他页面需要图标也可复用。
+
+**产出文件**:
+- `index.html` — 引入 Font Awesome CSS 并更新 CSP
+
+**关联问题**: 管理后台 EasyMDE 工具栏图标不可见、点击黑区才出现 Markdown 语法
+
+### 阶段 33: 修复管理后台 EasyMDE 编辑后预览不更新与保存失效
+
+**日期**: 2026-07-31
+
+**操作**:
+- 定位 `/admin` 理论编辑器中「左侧删除内容后右侧预览不变、保存未生效」问题：EasyMDE 基于 CodeMirror，用户输入不会同步回原始 `<textarea>` 的 `value`；而 `syncTheoryFormToState` / `syncPracticeFormToState` 此前直接读取 `textarea.value`，导致取到的是初始值或旧值。
+- 在 `src/views/admin/adminPage.js` 中新增 `editorInstances.easyMDEMap`，按 `textareaId` 保存每个 EasyMDE 实例；`cleanupEditors()` 时清空，避免 rerender 后拿到过期实例。
+- 新增 `getEasyMDEValue(textareaId, fallbackEl)` 辅助函数：优先调用 `editor.value()` 取 CodeMirror 实际内容，实例不存在时回退到 DOM 元素 `value`。
+- `syncTheoryFormToState` 改用 `getEasyMDEValue` 读取理论正文、例题题干/选项/解析；`syncPracticeFormToState` 改用 `getEasyMDEValue` 读取题干与解析。
+- `initEasyMDE` 中例题相关 textarea 的 `change` 事件也触发 `syncTheoryFormToState + updateTheoryPreview`，保证例题字段改动时预览实时刷新。
+- 运行 `npm run build` 验证：291 题 / 16 个 theory / 2 套试卷，483 条静态路由预渲染成功。
+
+**关键决策**:
+- EasyMDE 实例按 ID 缓存而非遍历数组查找 → 时间复杂度 O(1)，代码更直接。
+- 保留 fallback 到 DOM `value` → 实例未初始化或异常时仍能取到初始值，降级安全。
+- 例题字段改动也走统一 `syncTheoryFormToState` → 与主内容一致，预览与保存同源。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — 新增 `easyMDEMap` / `getEasyMDEValue`，修复 `syncTheoryFormToState` / `syncPracticeFormToState` 取值逻辑
+
+**关联问题**: 管理后台理论编辑器预览不随编辑更新、保存后内容未变化
+
+### 阶段 34: 修复管理后台理论例题（旧 ID 格式）不显示
+
+**日期**: 2026-07-31
+
+**操作**:
+- 定位 `/admin` 打开物理理论小节时例题列表为空的问题：物理 `theory_contents.examples` 为旧格式字符串 ID 数组（如 `q-physics-b-1-p1b-m1-02-training-002`），这些题目实际挂在同模块的 `training` 小节下（`itemId` 为 `p1b-m1-02-training`），与理论小节 `itemId` 不同。
+- `normalizeTheoryExamples` 旧格式分支原先用 `adminApi.listQuestions({ itemId })` 按理论小节 ID 查题，结果为空，导致例题被过滤掉。
+- 改为优先使用 `adminState.data.questions` 缓存（内容树加载时已拉取全部题目）建立 `id → question` Map，按例题 ID 直接查找；缓存未命中时兜底拉取全部题目。
+- 转换时同时透传 `image` 字段，保证例题题图不丢失。
+- 运行 `npm run build` 验证：291 题 / 16 个 theory / 2 套试卷，483 条静态路由预渲染成功。
+
+**关键决策**:
+- 例题 ID 可能跨小节引用训练题 → 不能按 `itemId` 查，必须按 `id` 查。
+- 复用 `adminState.data.questions` 缓存 → 避免重复请求，打开编辑器更快；无缓存时兜底全量拉取，保证旧入口兼容。
+- 透传 `image` → 旧题目转例题后题图可继续展示。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — 修复 `normalizeTheoryExamples` 旧格式 ID 数组查询逻辑
+
+**关联问题**: 管理后台物理理论小节例题列表为空
+
 ## 最后更新时间
 
-2026-07-31 03:57
+2026-07-31

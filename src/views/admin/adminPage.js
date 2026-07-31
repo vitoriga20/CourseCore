@@ -39,7 +39,7 @@ const adminState = {
   loading: false,
   feedback: null, // { type: 'success'|'error', message }
   previewListenerAttached: false,
-  editorInstances: { easyMDEs: [], splits: [], sortable: null, treeSortables: [] }
+  editorInstances: { easyMDEs: [], easyMDEMap: {}, splits: [], sortable: null, treeSortables: [] }
 };
 
 // ─── Sidebar config ───
@@ -1117,6 +1117,50 @@ const ADMIN_STYLES = `
 .admin-page .admin-form-control textarea:focus {
   outline: none; border-color: var(--ad-green-hl);
 }
+/* EasyMDE dark theme override (fixes black-on-black invisible text) */
+.admin-page .EasyMDEContainer .CodeMirror {
+  background: var(--ad-bg);
+  color: var(--ad-fg);
+  border-color: var(--ad-border);
+}
+.admin-page .EasyMDEContainer .CodeMirror-scroll,
+.admin-page .EasyMDEContainer .CodeMirror-gutters {
+  background: var(--ad-bg);
+}
+.admin-page .EasyMDEContainer .CodeMirror-cursor { border-color: var(--ad-fg); }
+.admin-page .EasyMDEContainer .CodeMirror-selected { background: rgba(74, 222, 128, 0.2) !important; }
+.admin-page .EasyMDEContainer .cm-header { color: var(--ad-green-hl); }
+.admin-page .EasyMDEContainer .cm-strong { color: var(--ad-fg); font-weight: 700; }
+.admin-page .EasyMDEContainer .cm-em { color: var(--ad-fg); font-style: italic; }
+.admin-page .EasyMDEContainer .cm-link,
+.admin-page .EasyMDEContainer .cm-url { color: var(--ad-green-hl); }
+.admin-page .EasyMDEContainer .cm-quote,
+.admin-page .EasyMDEContainer .cm-comment { color: var(--ad-muted); }
+.admin-page .EasyMDEContainer .cm-string,
+.admin-page .EasyMDEContainer .cm-tag { color: var(--ad-green-hl); }
+.admin-page .EasyMDEContainer .editor-toolbar {
+  background: var(--ad-bg-card);
+  border-color: var(--ad-border);
+}
+.admin-page .EasyMDEContainer .editor-toolbar button {
+  color: var(--ad-fg) !important;
+}
+.admin-page .EasyMDEContainer .editor-toolbar button:hover,
+.admin-page .EasyMDEContainer .editor-toolbar button.active {
+  background: var(--ad-bg-hover);
+  border-color: var(--ad-border);
+}
+.admin-page .EasyMDEContainer .editor-statusbar {
+  background: var(--ad-bg-card);
+  color: var(--ad-muted);
+  border-color: var(--ad-border);
+}
+.admin-page .EasyMDEContainer .editor-preview,
+.admin-page .EasyMDEContainer .editor-preview-side {
+  background: var(--ad-bg-card);
+  color: var(--ad-fg);
+  border-color: var(--ad-border);
+}
 .admin-page .practice-form input:disabled,
 .admin-page .practice-form select:disabled,
 .admin-page .practice-form textarea:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -1322,6 +1366,12 @@ export function renderAdminPage() {
 }
 
 // ─── Mount / rerender ───
+function getEasyMDEValue(textareaId, fallbackEl) {
+  const editor = adminState.editorInstances.easyMDEMap[textareaId];
+  if (editor) return editor.value();
+  return fallbackEl ? fallbackEl.value : '';
+}
+
 function initEasyMDE(textareaId) {
   const el = document.getElementById(textareaId);
   if (!el) return null;
@@ -1344,12 +1394,16 @@ function initEasyMDE(textareaId) {
     if (textareaId === 'theory-content') {
       syncTheoryFormToState();
       updateTheoryPreview();
+    } else if (textareaId.startsWith('theory-ex-')) {
+      syncTheoryFormToState();
+      updateTheoryPreview();
     } else {
       syncPracticeFormToState();
       updatePracticePreview();
     }
   });
   adminState.editorInstances.easyMDEs.push(editor);
+  adminState.editorInstances.easyMDEMap[textareaId] = editor;
   return editor;
 }
 
@@ -1473,6 +1527,7 @@ function cleanupEditors() {
     try { e.toTextArea(); } catch (_) {}
   });
   editorInstances.easyMDEs = [];
+  editorInstances.easyMDEMap = {};
   editorInstances.splits.forEach(s => {
     try { s.destroy(); } catch (_) {}
   });
@@ -1821,16 +1876,21 @@ async function handleTreeReorder(childrenOfKey, orderedIds) {
 // ─── Theory editor ───
 async function normalizeTheoryExamples(itemId, rawExamples) {
   if (!Array.isArray(rawExamples) || rawExamples.length === 0) return [];
-  // 旧格式：元素为字符串 ID → 拉取题目转内联对象
+  // 旧格式：元素为字符串 ID → 按 ID 查题目转内联对象（例题可能来自同模块的训练题，itemId 与理论小节不同）
   if (typeof rawExamples[0] === 'string') {
     try {
-      const questions = await adminApi.listQuestions({ itemId });
+      let questions = adminState.data.questions || [];
+      // 本地未缓存时兜底拉取全部题目
+      if (questions.length === 0) {
+        questions = await adminApi.listQuestions();
+      }
       const qMap = new Map(questions.map(q => [q.id, q]));
       return rawExamples
         .map(qid => qMap.get(qid))
         .filter(Boolean)
         .map(q => ({
           text: q.content || q.title || '',
+          image: q.image || '',
           options: padOptions(q.options),
           answer: parseInt(q.answer, 10) || 0,
           solution: q.solution || ''
@@ -1842,6 +1902,7 @@ async function normalizeTheoryExamples(itemId, rawExamples) {
   // 已是内联对象
   return rawExamples.map(ex => ({
     text: ex.text || '',
+    image: ex.image || '',
     options: padOptions(ex.options),
     answer: typeof ex.answer === 'number' ? ex.answer : 0,
     solution: ex.solution || ''
@@ -1888,19 +1949,19 @@ function syncTheoryFormToState() {
   const ed = adminState.theoryEditor;
   if (!ed) return;
   const contentEl = document.getElementById('theory-content');
-  if (contentEl) ed.content = contentEl.value;
+  ed.content = getEasyMDEValue('theory-content', contentEl);
   ed.examples = ed.examples.map((ex, idx) => {
-    const text = document.getElementById(`theory-ex-${idx}-text`);
-    const image = document.getElementById(`theory-ex-${idx}-image`);
-    const answer = document.getElementById(`theory-ex-${idx}-answer`);
-    const solution = document.getElementById(`theory-ex-${idx}-solution`);
-    const opts = [0, 1, 2, 3].map(i => document.getElementById(`theory-ex-${idx}-opt-${i}`));
+    const textEl = document.getElementById(`theory-ex-${idx}-text`);
+    const imageEl = document.getElementById(`theory-ex-${idx}-image`);
+    const answerEl = document.getElementById(`theory-ex-${idx}-answer`);
+    const solutionEl = document.getElementById(`theory-ex-${idx}-solution`);
+    const optEls = [0, 1, 2, 3].map(i => document.getElementById(`theory-ex-${idx}-opt-${i}`));
     return {
-      text: text ? text.value : ex.text,
-      image: image ? image.value.trim() : (ex.image || ''),
-      options: opts.map((el, i) => el ? el.value : (ex.options[i] || '')),
-      answer: answer ? parseInt(answer.value, 10) : ex.answer,
-      solution: solution ? solution.value : (ex.solution || '')
+      text: getEasyMDEValue(`theory-ex-${idx}-text`, textEl),
+      image: imageEl ? imageEl.value.trim() : (ex.image || ''),
+      options: optEls.map((el, i) => getEasyMDEValue(`theory-ex-${idx}-opt-${i}`, el)),
+      answer: answerEl ? parseInt(answerEl.value, 10) : ex.answer,
+      solution: getEasyMDEValue(`theory-ex-${idx}-solution`, solutionEl)
     };
   });
 }
@@ -2048,9 +2109,10 @@ function syncPracticeFormToState() {
   const q = ed.questions[ed.selectedIndex];
   if (!q) return;
   const get = id => { const el = document.getElementById(id); return el ? el.value : null; };
+  const getMd = id => { const el = document.getElementById(id); return getEasyMDEValue(id, el); };
   const title = get('pq-title');
-  const content = get('pq-content');
-  const solution = get('pq-solution');
+  const content = getMd('pq-content');
+  const solution = getMd('pq-solution');
   const difficulty = get('pq-difficulty');
   const image = get('pq-image');
   if (title != null) q.title = title;
