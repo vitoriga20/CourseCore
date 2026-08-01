@@ -23,7 +23,8 @@ export const COURSES = [
           {
             "id": "c1-m1-i2",
             "title": "数列极限",
-            "type": "theory"
+            "type": "theory",
+            "content": "理论正文"
           },
           {
             "id": "c1-m1-i3",

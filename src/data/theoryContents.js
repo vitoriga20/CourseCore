@@ -18,9 +18,18 @@ export const THEORY_CONTENTS = [
           "3",
           "4"
         ],
-        "solution": "你猜"
+        "solution": "你猜是多少"
       }
     ]
+  },
+  {
+    "id": "c1-m1-i2-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m1",
+    "itemId": "c1-m1-i2",
+    "title": "数列极限",
+    "content": "理论正文",
+    "examples": []
   },
   {
     "id": "c1-m7-i1-theory",
