@@ -687,7 +687,7 @@
   width: 12px;
   height: 12px;
   border-radius: 0.1875rem;
-  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  background: #313234;
 }
 
 .user-heatmap-cell.out-of-year {
@@ -695,19 +695,17 @@
   pointer-events: none;
 }
 
-.user-heatmap-cell.level-1 { background: color-mix(in srgb, var(--fg) 25%, transparent); }
-.user-heatmap-cell.level-2 { background: color-mix(in srgb, var(--fg) 45%, transparent); }
-.user-heatmap-cell.level-3 { background: color-mix(in srgb, var(--fg) 65%, transparent); }
-.user-heatmap-cell.level-4 { background: color-mix(in srgb, var(--fg) 90%, transparent); }
+.user-heatmap-cell.level-1 { background: #26563E; }
+.user-heatmap-cell.level-2 { background: #2A8958; }
+.user-heatmap-cell.level-3 { background: #2EBD72; }
+.user-heatmap-cell.level-4 { background: #32F08C; }
 
-.user-heatmap-cell.is-today-login { background: rgba(28, 90, 62, 0.45); }
-.user-heatmap-cell.is-today-login.level-1 { background: rgba(28, 90, 62, 0.55); }
-.user-heatmap-cell.is-today-login.level-2 { background: rgba(28, 90, 62, 0.7); }
-.user-heatmap-cell.is-today-login.level-3 { background: rgba(28, 90, 62, 0.85); }
-.user-heatmap-cell.is-today-login.level-4 { background: rgba(28, 90, 62, 1); }
+.user-heatmap-cell.is-today-login {
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.7);
+}
 
 .user-heatmap-cell.is-today-login:hover {
-  box-shadow: 0 0 0 2px rgba(28, 90, 62, 0.35);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.9), 0 0 0 2px rgba(255, 255, 255, 0.25);
 }
 
 .user-heatmap-year-switcher {
