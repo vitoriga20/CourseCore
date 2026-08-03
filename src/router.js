@@ -18,10 +18,16 @@ import { initQuizSession, cleanupQuizSession } from './views/quizSession.js';
 import { renderPracticeDetail } from './views/practiceDetail.js';
 import { renderExamPapers } from './views/examPapers.js';
 import { renderExamDetail } from './views/examDetail.js';
+import {
+  renderPracticeOverview, renderPracticeExams, renderPracticeTypes,
+  renderWrongBook, renderFavorites,
+  renderCommunity, renderCommunityDetail,
+  renderUserRecords
+} from './views/practice/index.js';
 import { renderPrivacy, renderTerms } from './views/legal.js';
 import { renderUserPage } from './views/user/userPage.js';
 import { renderAdminPage, initAdminPage } from './views/admin/adminPage.js';
-import { initGooeyNav } from './components/gooeyNav.js';
+import { initPillNav } from './components/pillNav.js';
 import { loadTheoryContent, loadQuestions } from './services/content.js';
 import { showPageLoader, hidePageLoader, initImageLoaders, renderButtonLoader } from './components/loading.js';
 
@@ -53,6 +59,30 @@ async function applyRoute(route) {
       break;
     case 'exams':
       showExamPapers();
+      break;
+    case 'practice':
+      showPracticeOverview();
+      break;
+    case 'practiceExams':
+      showPracticeExams();
+      break;
+    case 'practiceTypes':
+      showPracticeTypes();
+      break;
+    case 'wrongBook':
+      showWrongBook();
+      break;
+    case 'favorites':
+      showFavorites();
+      break;
+    case 'community':
+      showCommunity();
+      break;
+    case 'communityPost':
+      showCommunityPost(route.params.postId);
+      break;
+    case 'userRecords':
+      showUserRecords();
       break;
     case 'privacy':
       showPrivacy();
@@ -177,6 +207,76 @@ export function showExamPapers() {
   state.currentCourseId = null;
   clearQuestionState();
   setActiveNav('bank');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+// === 刷题板块 ===
+export function showPracticeOverview() {
+  state.view = "practice-overview";
+  state.currentCourseId = null;
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showPracticeExams() {
+  state.view = "practice-exams";
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showPracticeTypes() {
+  state.view = "practice-types";
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+// === 知识库细分 ===
+export function showWrongBook() {
+  state.view = "wrong-book";
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showFavorites() {
+  state.view = "favorites";
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+// === 社区 ===
+export function showCommunity() {
+  state.view = "community";
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showCommunityPost(postId) {
+  state.view = "community-detail";
+  state.currentPostId = postId;
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+// === 我的刷题记录 ===
+export function showUserRecords() {
+  state.view = "user-records";
+  clearQuestionState();
+  setActiveNav('landing');
   renderMain();
   window.scrollTo({ top: 0 });
 }
@@ -529,17 +629,12 @@ export function renderMain() {
   switch (state.view) {
     case "landing": {
       main.innerHTML = renderLanding();
-      const gooeyContainer = main.querySelector('[data-gooey-nav]');
-      if (gooeyContainer) {
-        initGooeyNav(gooeyContainer, {
-          animationTime: 600,
-          particleCount: 15,
-          particleDistances: [90, 10],
-          particleR: 100,
-          timeVariance: 300,
-          colors: [1, 2, 3, 1, 2, 3, 1, 4],
+      const pillContainer = main.querySelector('[data-pill-nav]');
+      if (pillContainer) {
+        initPillNav(pillContainer, {
           onChange: (index) => {
-            const value = index === 1 ? 'kb' : 'learn';
+            const tabs = ['learn', 'practice', 'kb', 'community', 'me'];
+            const value = tabs[index] || 'learn';
             if (state.landingTab === value) return;
             state.landingTab = value;
             saveProgress();
@@ -581,6 +676,30 @@ export function renderMain() {
       break;
     case "exam-detail":
       main.innerHTML = renderExamDetail(state.currentExamId);
+      break;
+    case "practice-overview":
+      main.innerHTML = renderPracticeOverview();
+      break;
+    case "practice-exams":
+      main.innerHTML = renderPracticeExams();
+      break;
+    case "practice-types":
+      main.innerHTML = renderPracticeTypes();
+      break;
+    case "wrong-book":
+      main.innerHTML = renderWrongBook();
+      break;
+    case "favorites":
+      main.innerHTML = renderFavorites();
+      break;
+    case "community":
+      main.innerHTML = renderCommunity();
+      break;
+    case "community-detail":
+      main.innerHTML = renderCommunityDetail(state.currentPostId);
+      break;
+    case "user-records":
+      main.innerHTML = renderUserRecords();
       break;
     case "privacy":
       main.innerHTML = renderPrivacy();

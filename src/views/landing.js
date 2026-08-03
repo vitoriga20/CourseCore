@@ -3,7 +3,7 @@ import { COURSES } from '../data/courses.js';
 import { state, getTotalItems, getCompletedCount } from '../state.js';
 import { escapeHtml } from '../utils.js';
 import { href } from '../config/routes.js';
-import { renderGooeyNav } from '../components/gooeyNav.js';
+import { renderPillNav } from '../components/pillNav.js';
 
 function renderLearnPanel() {
   return `
@@ -56,17 +56,80 @@ function renderKBSummaryPanel() {
   `;
 }
 
+function renderPracticePanel() {
+  return `
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="card text-center">
+          <div class="text-3xl font-extrabold mb-1" style="color: var(--practice-accent);">0</div>
+          <div class="text-xs" style="color: var(--muted);">试卷套数</div>
+        </div>
+        <div class="card text-center">
+          <div class="text-3xl font-extrabold mb-1" style="color: var(--practice-accent);">0</div>
+          <div class="text-xs" style="color: var(--muted);">题目数量</div>
+        </div>
+        <div class="card text-center">
+          <div class="text-3xl font-extrabold mb-1" style="color: var(--practice-accent);">—</div>
+          <div class="text-xs" style="color: var(--muted);">平均正确率</div>
+        </div>
+        <div class="card text-center">
+          <div class="text-3xl font-extrabold mb-1" style="color: var(--practice-accent);">0h</div>
+          <div class="text-xs" style="color: var(--muted);">刷题耗时</div>
+        </div>
+      </div>
+      <p class="mb-8" style="color: var(--muted);">按试卷或按题型刷题，即时评判或模拟考试，错题自动收录复习。</p>
+      <a href="/practice" class="btn-pill btn-primary" style="background: var(--practice-accent); border-color: var(--practice-accent);">进入刷题中心</a>
+    </div>
+  `;
+}
+
+function renderCommunityPanel() {
+  return `
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="card mb-8">
+        <div class="text-4xl font-extrabold mb-2" style="color: var(--fg);">社区</div>
+        <div class="text-sm" style="color: var(--muted);">刷题技巧分享 · 方法讨论 · 经验交流</div>
+      </div>
+      <p class="mb-8" style="color: var(--muted);">分享你的刷题技巧和学习方法，或浏览其他同学的经验分享。</p>
+      <a href="/community" class="btn-pill btn-primary">进入社区</a>
+    </div>
+  `;
+}
+
+function renderMePanel() {
+  return `
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="card mb-8">
+        <div class="text-4xl font-extrabold mb-2" style="color: var(--fg);">我的</div>
+        <div class="text-sm" style="color: var(--muted);">刷题记录 · 收藏 · 错题统计</div>
+      </div>
+      <p class="mb-8" style="color: var(--muted);">查看你的刷题历史、正确率趋势和复习计划。</p>
+      <a href="/user/records" class="btn-pill btn-primary">查看刷题记录</a>
+    </div>
+  `;
+}
+
 export function renderLandingContent() {
-  if (state.landingTab === 'learn') return renderLearnPanel();
-  return renderKBSummaryPanel();
+  switch (state.landingTab) {
+    case 'learn': return renderLearnPanel();
+    case 'practice': return renderPracticePanel();
+    case 'kb': return renderKBSummaryPanel();
+    case 'community': return renderCommunityPanel();
+    case 'me': return renderMePanel();
+    default: return renderLearnPanel();
+  }
 }
 
 export function renderLanding() {
   const items = [
-    { label: '学习板块', value: 'learn' },
-    { label: '知识库板块', value: 'kb' }
+    { label: '学习', value: 'learn' },
+    { label: '刷题', value: 'practice' },
+    { label: '知识库', value: 'kb' },
+    { label: '社区', value: 'community' },
+    { label: '我的', value: 'me' }
   ];
-  const activeIndex = state.landingTab === 'kb' ? 1 : 0;
+  const tabOrder = ['learn', 'practice', 'kb', 'community', 'me'];
+  const activeIndex = Math.max(0, tabOrder.indexOf(state.landingTab));
 
   return `
     <section class="max-w-4xl mx-auto text-center pt-10 pb-12">
@@ -90,9 +153,7 @@ export function renderLanding() {
 
     <section class="max-w-6xl mx-auto pb-16">
       <div class="flex items-center justify-center mb-8">
-        <div class="gooey-nav-wrapper">
-          ${renderGooeyNav(items, activeIndex)}
-        </div>
+        ${renderPillNav(items, activeIndex)}
       </div>
 
       <div id="landing-content">

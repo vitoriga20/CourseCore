@@ -2194,8 +2194,45 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 
 ## 任务完成检查清单
 
+### 阶段 78: 首页 GooeyNav 替换为原生 JS PillNav 胶囊导航
+
+**日期**: 2026-08-03
+
+**操作**:
+- 用户反馈首页 tab 区域因 GooeyNav 固定黑底胶囊容器而出现黑色色块，与页面深色背景不协调。
+- 参考 React Bits 官方 PillNav 实现，在 `src/components/pillNav.js` 中重写原生 JS 版胶囊导航：
+  - 采用与官方一致的双层 label 结构（`.pill-nav-label` + `.pill-nav-label-hover`）与 `.pill-nav-circle` hover 圆形。
+  - 初始化时通过 `layoutCircles()` 按每个 pill 宽度/高度计算圆形直径、下沉量与 transform-origin，还原官方的几何升起效果。
+  - 保留 click/Enter/Space 切换、`onChange` 回调与 `aria-*` 无障碍属性，并监听 `resize` 与 `document.fonts.ready` 重算圆形尺寸。
+- 删除 `src/components/gooeyNav.js` 及其全部 SVG filter/contrast 粘滞效果与粒子动画逻辑。
+- 修改 `src/views/landing.js`：移除 `.gooey-nav-wrapper` 外层容器，直接调用 `renderPillNav()` 渲染 5 个 tab（学习/刷题/知识库/社区/我的）。
+- 修改 `src/router.js`：landing 分支改用 `initPillNav()` 初始化，保留原有的 tab → `state.landingTab` 映射与 `#landing-content` 局部刷新逻辑。
+- 修改 `src/style.css`：删除 GooeyNav 全部样式，新增 PillNav 样式。
+  - 胶囊容器使用半透明毛玻璃背景（`color-mix(in srgb, var(--card) 86%, transparent)` + `backdrop-filter: blur(12px)`），跟随主题变量，不再是一块纯黑。
+  - dark 主题下使用 `--practice-card` 半透明混合，与页面深色背景自然融合。
+  - hover 时圆形背景从底部升起并 scale(1.2)，原文字上滑、hover 文字滑入，过渡使用 `cubic-bezier(0.22, 1, 0.36, 1)`。
+  - active 项使用 `--pill-bg` 填充药丸背景，并在底部显示 10px 圆形指示器（与官方 PillNav 一致）。
+- 同步更新 `.trae/documents/technical-architecture.md`：组件目录说明由 `gooeyNav.js` 改为 `pillNav.js`。
+- 构建验证：`npm run build` 通过，预渲染 913 条静态路由；本地 dev server 已启动供预览。
+
+**关键决策**:
+- 不引入 React 运行时与 gsap，保持项目原生 ES Modules 架构；参考 React Bits PillNav 视觉风格手写实现。
+- 胶囊背景采用半透明毛玻璃而非纯黑，既消除黑色色块，又保留 tab 区域的悬浮层次感。
+- active 药丸使用白色/深色填充 + 底部圆点指示器，视觉重心明确，同时避免在黑/深色页面中产生突兀色块。
+- 保留 `onChange` 回调与 `#landing-content` 局部刷新，不破坏现有首页内容切换逻辑。
+
+**产出文件**:
+- `src/components/pillNav.js` - 原生 JS PillNav 渲染与初始化（双层 label + 几何圆形）
+- `src/style.css` - PillNav 样式，GooeyNav 样式已删除
+- `src/views/landing.js` - 使用 PillNav 渲染首页 tab
+- `src/router.js` - landing 视图初始化 PillNav
+- `src/components/gooeyNav.js` - 已删除
+
+## 任务完成检查清单
+
 - [x] 已读取现有开发文档（`development-log.md`、`technical-architecture.md`、`prd.md`）。
-- [x] 大学物理综合测验顺序/随机切换已修复，答题状态按题目 ID 跟随。
+- [x] 首页 GooeyNav 已替换为 PillNav，黑色色块问题已解决。
+- [x] `npm run build` 构建通过，预渲染 913 条静态路由。
 - [x] p5.js 几何背景已接入测验视图并在离开时正确清理。
 - [x] 测验布局与毛玻璃视觉已调整。
 - [x] Windows CRLF 导致的 `Unknown questionType: undefined` 已修复。
@@ -2204,6 +2241,26 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 - [x] `technical-architecture.md` 与 `prd.md` 已同步更新。
 - [x] 文档中的"最后更新时间"已更新。
 - [x] 代码和文档描述一致。
+
+### 阶段 79: 调整 PillNav hover/active 颜色
+
+**日期**: 2026-08-03
+
+**操作**:
+- 用户反馈希望 PillNav hover 时为纯白背景，点击后（active）为主题绿色。
+- 修改 `src/style.css`：
+  - `.pill-nav-circle` 不透明度改为 `0.95`，仅在 hover 时显示为接近纯白的圆形背景。
+  - active 项隐藏 `.pill-nav-circle`。
+  - active 项 `.pill-nav-link` 背景改为 `var(--practice-accent, var(--accent))`，文字与悬浮文字均改为 `#ffffff`。
+  - active 项底部指示器也改为主题绿色，与药丸背景统一。
+- 预览验证：本地 dev server 启动后，hover 项显示纯白圆形背景，active 项显示绿色填充药丸。
+
+**关键决策**:
+- hover 与 active 使用两套独立视觉：hover 用白色圆形托起文字，active 用主题绿色填充整个药丸，状态区分明确。
+- active 时隐藏 hover-circle，避免白色圆形与绿色药丸背景重叠造成脏色。
+
+**产出文件**:
+- `src/style.css` - PillNav hover/active 颜色与状态样式调整
 
 ### 阶段 77: 为 CourseCore 平台添加 shadcn 风格加载动画
 

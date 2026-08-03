@@ -81,7 +81,7 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
     │   ├── auth-components.css         # 认证组件样式
     │   ├── userMenu.js                 # 右上角用户状态菜单
     │   ├── avatarPicker.js             # 头像选择弹窗
-    │   ├── gooeyNav.js                 # GooeyNav 粘性流体导航
+    │   ├── pillNav.js                  # PillNav 胶囊导航（原生 JS，毛玻璃主题色背景）
     │   └── loading.js                  # 加载组件：spinner、skeleton、progress、page-loader、image-loader
     ├── config\                         # 全局配置
     │   ├── routes.js                   # 路由表、URL 匹配、链接生成、静态路径枚举
