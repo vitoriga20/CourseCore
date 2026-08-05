@@ -2603,6 +2603,123 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 - 拖拽排序仅支持 module / item 两层，course 层级无 `order_index` 字段不可拖。
 - 批量勾选无「全选当前展开节点」入口，仅支持逐个勾选 + 清空。
 
+### 阶段 85: 新增考点系统（knowledge_points + question_kp）
+
+**日期**: 2026-08-04
+
+**操作**:
+- 在 [scripts/supabase-schema.sql](scripts/supabase-schema.sql) 第 14 节追加 `knowledge_points` 考点字典表与 `question_kp` 题-考点关联表（含 RLS、索引、CHECK 约束、primary 至多 1 个的部分唯一索引）。
+- 在 [src/services/admin.js](src/services/admin.js) 新增 `listKnowledgePoints` / `createKnowledgePoint` / `updateKnowledgePoint` / `deleteKnowledgePoint` / `listQuestionKps` / `replaceQuestionKps` / `addQuestionKp` / `removeQuestionKp` 八个 RPC 包装，并在 `deleteQuestion` / `deleteExamQuestion` 中加入应用层 `question_kp` 关联清理（因 `questions.id` / `exam_questions.id` 不是 `question_kp` 外键，不级联）。
+- 在 [src/services/content.js](src/services/content.js) 新增 `loadQuestionKps(source, questionId)` 运行时只读 API，返回 `[{ id, role, weight, kp: { code, name, ... } }]`。
+- 在 [src/views/question/chrome.js](src/views/question/chrome.js) 新增 `renderQuestionKps(kps)` 渲染主考点（主题色高亮）/ 次考点（淡灰）chip；`renderQuestionHeader` 自动留占位 `<div data-question-kps>` 待异步填充。
+- 在 [src/views/practiceDetail.js](src/views/practiceDetail.js) 新增 `hydrateQuestionKps(questionId)` 异步填充函数；[src/router.js](src/router.js) 在 `case "practice"` 渲染后立即调用。
+- 在 [src/views/admin/adminPage.js](src/views/admin/adminPage.js) 新增「考点」侧边栏 section、`knowledge_point` 实体的字段定义 / 列定义 / 标签 / dataKey 映射、`loadSectionData` 加载 kp+courses、`handleSave` / `handleDelete` 加 knowledge_point 分支、顶部 actions 加「+ 新增考点」按钮、`source='exam'` 时自动置空 `item_id`。
+- 在 [src/style.css](src/style.css) 新增 `.kp-chip` / `.kp-chip-primary` / `.kp-chip-secondary` 样式。
+- 跑 `npm run build` 全链路通过（build:data / fetch:data / vite build / prerender）。
+
+**关键决策**:
+- 颗粒度选「知识点级」：item 下挂 kp，1 题挂 1 主考点 + N 次考点 → 决定 `question_kp.role` 字段。
+- 存储选「独立表 + 关联表」：`knowledge_points` 字典 + `question_kp` 多对多关联 → 决定新增 2 张表 + migration。
+- kp 字典「item 下挂」：`platform` kp 必填 `item_id`，`exam` kp `item_id=NULL` 跨题库；用 `source` 字段 + `kp_platform_requires_item` CHECK 约束兜底。
+- `question_kp` 用 `(source, question_id)` 联合主键语义区分两套题库 id（`questions.id` 与 `exam_questions.id` 均为 TEXT 但无全局唯一保证）。
+- 主考点权重 1.0 / 次考点权重 0.5 由应用层强制（admin.js），DB 仅存 `weight NUMERIC`。
+- 现有 `questions.tags` / `exam_questions.tags` 保留不动，视为"自由标签"，与 `question_kp` 关联表互补不冲突。
+- 学生侧考点 chip 异步加载：`renderQuestionHeader` 留占位 → router 渲染后调 `hydrateQuestionKps` → `loadQuestionKps` fetch → `outerHTML` 替换占位，避免改 `renderPracticeDetail` 为异步。
+
+**产出文件**:
+- `scripts/supabase-schema.sql` - 第 14 节追加 knowledge_points / question_kp 表 + RLS + 索引
+- `src/services/admin.js` - kp 字典 CRUD + 题考点关联 CRUD + deleteQuestion/deleteExamQuestion 关联清理
+- `src/services/content.js` - loadQuestionKps 运行时读取
+- `src/views/question/chrome.js` - renderQuestionKps + renderQuestionHeader 占位逻辑
+- `src/views/practiceDetail.js` - hydrateQuestionKps 异步填充
+- `src/router.js` - practice 路由 hydrate 调用
+- `src/views/admin/adminPage.js` - 考点管理 section + knowledge_point 实体 CRUD
+- `src/style.css` - .kp-chip 样式
+
+**影响面**:
+- DB: 新增 2 张表 + RLS + 部分唯一索引；需在 Supabase Dashboard 跑 migration
+- 后端服务层: admin.js 加 8 个导出 + 2 处关联清理补丁；content.js 加 1 个导出
+- 学生侧: 题目作答页（`/question/:qid` 与 `/exams/:examId/questions/:qid`）头部新增考点 chip 异步填充
+- 管理后台: 新增「考点」section，支持 kp 字典 CRUD（题-考点关联的 UI 暂未做，目前仅 API 层具备 `replaceQuestionKps` / `addQuestionKp` / `removeQuestionKp`，后续可在 question 表单加「考点关联」子区）
+- 现有 `tags` 字段: 不动，与 kp 互补
+
+**破坏性变更**: 无（新增表 + 新增 API + 新增渲染分支，未改动现有字段语义）
+
+**已知限制与待改进项**:
+- ~~`question_kp` 关联的 UI 编辑入口（在 question / exam_question 表单中选取主/次考点）尚未实现，目前只能通过 API 直接写表标注。~~ → 已在阶段 86 实现。
+- 试卷题 `exam_questions` 无 `course_id` 字段，kp 表的 `course_id` 对 exam kp 为"学科归属"软挂，需人工指定。
+- 题列表页（practiceBank / examDetail）未显示考点，仅单题作答页头部展示。
+- `kp.parent_id` 预留层级扩展字段，当前未在 UI 暴露层级关系。
+
+### 阶段 86: 考点关联 UI + Supabase migration
+
+**日期**: 2026-08-04
+
+**操作**:
+- 通过 Supabase MCP `apply_migration` 在线上 DB 创建 `knowledge_points` + `question_kp` 两张表（含 RLS、索引、CHECK 约束、primary 至多 1 个的部分唯一索引），migration 名 `create_knowledge_points_system`。
+- 在 [src/views/admin/adminPage.js](src/views/admin/adminPage.js) 的 `renderTable` 通用表格渲染器中，为 `question` / `exam_question` 实体行的操作列追加「考点」按钮（`data-action="admin-kp-edit"`，携带 source/id/title/item_id）。
+- 新增 `adminState.kpEditor` 状态对象 + `renderKpEditor()` 函数：modal 风格的考点关联编辑器，含主考点下拉（至多 1 个）+ 次考点列表（可增删）+ 添加下拉（排除已加入）+ 空考点提示。
+- 新增 4 个 helper：`openKpEditor`（异步加载当前 kps + 可用 kps）、`addKpSecondary`（从下拉添加次考点）、`removeKp`（移除考点）、`saveKpEditor`（读主考点下拉 + 当前次考点 → `replaceQuestionKps` 保存）。
+- 在 `handleAdminAction` 加 5 个 action 分支：`admin-kp-edit` / `admin-kp-close` / `admin-kp-add-secondary` / `admin-kp-remove` / `admin-kp-save`；`admin-section` 切换时清 `kpEditor`。
+- 在 `ADMIN_STYLES` 加 `.admin-kp-*` 样式（section title / select / chip-row / empty / add-row / warn / loading）。
+- `renderKpEditor()` 挂载到 `renderAdminPage` 输出（与 `renderModal()` 并列）。
+- 跑 `npm run build` 全链路通过（build:data / fetch:data / vite build / prerender 915 路由）。
+
+**关键决策**:
+- 关联 UI 选「独立 modal」而非「嵌入 question 编辑表单」：question 表单已含 15+ 字段，嵌入 kp 会让保存逻辑复杂化（需先存题再存关联 + 错误回滚）；独立 modal 单独调 `replaceQuestionKps`，职责清晰。
+- 主考点用 `<select>` 下拉（含"未设置"空选项）而非 chip 点选：primary 至多 1 个，下拉语义更明确，避免"加多了"。
+- 次考点用"下拉 + 添加按钮 + 列表移除"模式：与主考点区分，支持多选。
+- 可用 kp 列表按 source 过滤：platform kp 按 `item_id` 过滤（同小节考点），exam kp 按 `source='exam'` 全量。
+- `openKpEditor` 先 `loading:true` rerender 显示加载态，再 Promise.all 并发拉 kps + availableKps，避免空白闪烁。
+- `saveKpEditor` 读 DOM 下拉值（而非状态对象）：因主考点改动不写状态、仅改 DOM，保存时从 DOM 读保证与用户所见一致。
+
+**产出文件**:
+- `scripts/supabase-schema.sql` - （阶段 85 已追加，本次线上 migration 落地）
+- `src/views/admin/adminPage.js` - kpEditor 状态 + renderKpEditor + 4 helper + 5 action 分支 + 表格「考点」按钮 + .admin-kp-* 样式
+
+**影响面**:
+- DB: 线上 Supabase 已建 2 张表（migration `create_knowledge_points_system`）
+- 管理后台: question / exam_question 表格行新增「考点」按钮 → 打开 kp 关联 modal → 可选主/次考点 → 保存写 `question_kp` 表
+- 学生侧: 无变化（阶段 85 已实现 chip 异步填充，本阶段仅后台标注能力）
+
+**破坏性变更**: 无
+
+**已知限制与待改进项**:
+- 试卷题 `exam_questions` 无 `course_id` 字段，kp 表的 `course_id` 对 exam kp 为"学科归属"软挂，需人工指定。
+- 题列表页（practiceBank / examDetail）未显示考点，仅单题作答页头部展示。
+- `kp.parent_id` 预留层级扩展字段，当前未在 UI 暴露层级关系。
+- 考点字典（kp）的批量导入脚本未实现，需逐条在「考点管理」section 手动新建。
+
+### 阶段 87: 刷题 tab 复用刷题板块渲染，消除内容重叠
+
+**日期**: 2026-08-04
+
+**背景**: 用户发现"刷题"tab 下面内容与"刷题板块"（/practice）大部分重叠（继续上次 / 今日待复习 / 薄弱考点 / 统计）。经对齐颗粒度确认：1) 保留 /practice 独立路由；2) "刷题"tab 完整照搬刷题板块内容。
+
+**操作**:
+- `src/views/landing.js` `renderPracticePanel`：删除原自定义模板（个人核心任务 + 学习诊断 + 功能入口），改为 `return renderPracticeOverview()`。
+- `src/views/landing.js` `initLandingContent`：删除 practice 分支（今日待复习 / 薄弱考点 / 刷题统计 / 近期趋势 的 `landing-practice-*` 数据加载逻辑），因这些元素已不存在，逻辑变死代码。仅保留 kb 分支。
+- `src/views/landing.js`：删除不再使用的 `supabase` import；更新 `initLandingContent` 注释为"首页知识库 tab 异步补充数据"。
+
+**关键决策**:
+- 复用 `renderPracticeOverview`（practice/index.js）而非复制：单一数据源（`_loadOverviewData`），避免两处渲染逻辑漂移。
+- 数据加载由 `renderPracticeOverview` 内的 `_loadOverviewData` 统一负责，tab 与 /practice 路由共用，无需在 landing 再补加载。
+
+**产出文件**:
+- `src/views/landing.js` — 刷题 tab 复用刷题板块渲染；删除死代码与未用 import
+
+**影响面**:
+- 刷题 tab：内容与 /practice 页完全一致（状态仪表盘 + 统计 + 排行榜 + 最近练习 + 添加试卷 + 开始刷题）
+- /practice 路由：不变（保留独立入口）
+- 知识库 tab：不变（initLandingContent 仅保留 kb 分支）
+
+**破坏性变更**: 无
+
+**验证**:
+- `npx vite build` 通过（765 modules transformed，gzip CSS 14.67 KB）。
+
+**关联问题**: 用户要求刷题 tab 与刷题板块内容去重，先对齐颗粒度再实施。
+
 ## 最后更新时间
 
-2026-07-31 00:30
+2026-08-04 23:30

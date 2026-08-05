@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CourseCore 前端重设计稿 · 全页面</title>
+<style>
+  :root{
+    --bg:#0B0E0D;
+    --surface:#121815;
+    --surface-2:#0E1311;
+    --line:rgba(255,255,255,.09);
+    --line-2:rgba(255,255,255,.05);
+    --text:#E8EDEA;
+    --muted:#8A9792;
+    --muted-2:#5C6A65;
+    --primary:#2F9E6E;
+    --primary-2:#34C98A;
+    --primary-dim:rgba(47,158,110,.14);
+    --accent:#9B7BFF;
+    --accent-dim:rgba(155,123,255,.14);
+    --warn:#FFB800;
+    --warn-dim:rgba(255,184,0,.14);
+    --danger:#EF5350;
+    --danger-dim:rgba(239,83,80,.14);
+    --radius:16px;
+    --radius-sm:10px;
+    --font-serif:Georgia,"Times New Roman","Noto Serif SC",serif;
+    --font-sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .geo-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(var(--line-2) 1px,transparent 1px),linear-gradient(90deg,var(--line-2) 1px,transparent 1px),radial-gradient(circle at 50% 50%,transparent 0,var(--bg) 78%);
+    background-size:56px 56px,56px 56px,100% 100%}
+  .geo-bg::before,.geo-bg::after{content:"";position:absolute;background-image:radial-gradient(var(--line-2) 1.2px,transparent 1.2px);background-size:18px 18px;width:320px;height:320px}
+  .geo-bg::before{top:-60px;right:-40px;transform:rotate(15deg)}
+  .geo-bg::after{bottom:-80px;left:-40px;transform:rotate(-12deg)}
+
+  .mock-nav{position:sticky;top:0;z-index:50;background:rgba(11,14,13,.82);backdrop-filter:blur(18px) saturate(160%);border-bottom:1px solid var(--line)}
+  .mock-nav-inner{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+  .brand-logo{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;font-weight:800;font-size:13px}
+  .brand-name{font-family:var(--font-serif);font-weight:700;letter-spacing:.02em}
+  .brand-tag{font-size:11px;color:var(--muted)}
+  .mock-pills{display:flex;gap:6px;flex-wrap:wrap}
+  .mock-pill{padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line);color:var(--muted);background:transparent;transition:.2s}
+  .mock-pill:hover{color:var(--text);border-color:var(--line-2)}
+  .mock-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+  .page{display:none;position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:40px 24px 80px}
+  .page.active{display:block;animation:fadeIn .4s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .card-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .card-title .dot{width:5px;height:5px;border-radius:50%;background:var(--primary)}
+  .muted{color:var(--muted)}
+  .muted2{color:var(--muted-2)}
+  .serif{font-family:var(--font-serif)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:.2s;text-decoration:none}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{background:var(--primary-2)}
+  .btn-ghost{background:transparent;color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.22)}
+  .btn-sm{padding:7px 13px;font-size:12.5px}
+  .progress{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line-2)}
+  .progress .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--primary-2))}
+  .progress .fill.warn{background:linear-gradient(90deg,var(--warn),#FFD166)}
+  .progress .fill.danger{background:linear-gradient(90deg,var(--danger),#FF8A80)}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .chip.green{background:var(--primary-dim);color:var(--primary-2);border-color:transparent}
+  .chip.purple{background:var(--accent-dim);color:var(--accent);border-color:transparent}
+  .chip.warn{background:var(--warn-dim);color:var(--warn);border-color:transparent}
+  .chip.danger{background:var(--danger-dim);color:var(--danger);border-color:transparent}
+  .stat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .stat-tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+  .stat-tile .num{font-size:30px;font-weight:800;font-family:var(--font-serif);line-height:1.1}
+  .stat-tile .lbl{font-size:12px;color:var(--muted);margin-top:4px}
+  .page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:16px;flex-wrap:wrap}
+  .page-head h1{font-family:var(--font-serif);font-size:26px;font-weight:800;letter-spacing:.01em}
+  .page-head .sub{font-size:13px;color:var(--muted);margin-top:4px}
+
+  /* 首页 5 tab pill */
+  .home-pill{display:flex;gap:4px;justify-content:center;margin:0 auto 34px;max-width:560px}
+  .home-pill a{flex:1;text-align:center;padding:10px 0;border-radius:99px;font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;position:relative;transition:.2s}
+  .home-pill a:hover{color:var(--text)}
+  .home-pill a.active{color:var(--text)}
+  .home-pill a.active::after{content:"";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:18px;height:3px;border-radius:99px;background:var(--primary)}
+
+  /* ===== 学习 tab（理论学习）===== */
+  .learn-resume{background:linear-gradient(150deg,var(--surface) 0%,#14201B 100%);border:1px solid rgba(47,158,110,.35);border-radius:var(--radius);padding:26px;position:relative;overflow:hidden;margin-bottom:20px}
+  .learn-resume::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(47,158,110,.18),transparent 70%)}
+  .learn-badge{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--primary-2);background:var(--primary-dim);padding:4px 11px;border-radius:99px;display:inline-block;margin-bottom:14px}
+  .learn-title{font-family:var(--font-serif);font-size:22px;font-weight:800;margin-bottom:4px}
+  .learn-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+  .learn-meta{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:16px 0 14px}
+  .learn-meta b{color:var(--text);font-weight:700}
+  .learn-actions{display:flex;gap:10px;align-items:center}
+  .learn-grid{display:grid;grid-template-columns:1fr 1.7fr;gap:16px;align-items:start}
+  /* 章节树 */
+  .tree-module{margin-bottom:6px}
+  .tree-module-h{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer}
+  .tree-module-h:hover{background:var(--surface-2)}
+  .tree-module-h .st{font-size:10px;color:var(--primary-2);background:var(--primary-dim);padding:1px 7px;border-radius:99px;margin-left:auto;font-weight:600}
+  .tree-item{display:flex;align-items:center;gap:9px;padding:8px 10px 8px 26px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer}
+  .tree-item:hover{background:var(--surface-2);color:var(--text)}
+  .tree-item .sd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .tree-item.done .sd{background:var(--primary)}
+  .tree-item.done{color:var(--muted-2)}
+  .tree-item.current{background:var(--primary-dim);color:var(--text);font-weight:600}
+  .tree-item.current .sd{background:var(--primary-2);box-shadow:0 0 0 3px var(--primary-dim)}
+  .tree-item.todo .sd{background:transparent;border:1px solid var(--line)}
+  /* 理论内容 */
+  .theory-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .theory-head .t{font-family:var(--font-serif);font-size:19px;font-weight:800}
+  .theory-body{font-size:14px;color:var(--muted);margin-bottom:18px}
+  .theory-body p{margin-bottom:12px}
+  .theory-formula{display:block;font-family:var(--font-serif);text-align:center;font-size:16px;color:var(--text);padding:14px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:var(--radius-sm);margin:12px 0}
+  .theory-examples{margin-top:6px}
+  .theory-examples .eh{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .theory-examples .eh .n{font-size:11px;color:var(--primary-2);background:var(--primary-dim);padding:2px 8px;border-radius:99px}
+  .ex-card{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--primary);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px}
+  .ex-card .q{font-size:13.5px;font-weight:600;margin-bottom:8px}
+  .ex-card .ops{display:flex;gap:8px}
+  .ex-card .ans{font-size:12.5px;color:var(--primary-2);margin-top:8px;font-weight:600}
+
+  /* ===== 刷题 tab ===== */
+  .btn-tab{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:stretch}
+  .resume-card{background:linear-gradient(150deg,var(--surface) 0%,#14201B 100%);border:1px solid rgba(47,158,110,.35);border-radius:var(--radius);padding:26px;position:relative;overflow:hidden}
+  .resume-card::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(47,158,110,.18),transparent 70%)}
+  .resume-top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .resume-badge{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--primary-2);background:var(--primary-dim);padding:4px 11px;border-radius:99px}
+  .resume-title{font-family:var(--font-serif);font-size:22px;font-weight:800;margin-bottom:6px}
+  .resume-meta{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:16px 0 14px}
+  .resume-meta b{color:var(--text);font-weight:700}
+  .resume-actions{display:flex;gap:10px;align-items:center}
+  .right-stack{display:flex;flex-direction:column;gap:16px}
+  .mini-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+  .mini-card .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .mini-card .head .t{font-size:14px;font-weight:700}
+  .mini-card .head .n{font-size:24px;font-weight:800;font-family:var(--font-serif)}
+  .weak-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .weak-row:last-child{margin-bottom:0}
+  .weak-row .name{font-size:13px;color:var(--text);width:110px;flex-shrink:0}
+  .weak-row .progress{flex:1}
+  .weak-row .pct{font-size:12px;color:var(--muted);width:34px;text-align:right}
+  .trend{display:flex;align-items:flex-end;gap:6px;height:64px;margin-top:6px}
+  .trend .bar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--primary-2),rgba(47,158,110,.25));position:relative}
+  .trend .bar span{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted-2)}
+  .paper-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .paper-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2);cursor:pointer;transition:.2s}
+  .paper-item:hover{border-color:rgba(255,255,255,.18)}
+  .paper-ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--primary-dim);color:var(--primary-2);font-weight:700;font-size:14px}
+  .paper-item .pt{font-size:13.5px;font-weight:600}
+  .paper-item .ps{font-size:11.5px;color:var(--muted-2)}
+
+  /* ===== 总结页（横向 2 列）===== */
+  .summary-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:16px;align-items:start}
+  .summary-hero{text-align:center;padding:30px 26px;border-radius:20px;background:linear-gradient(160deg,var(--surface) 0%,#14201B 100%);border:1px solid rgba(47,158,110,.3);position:relative;overflow:hidden}
+  .summary-hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(47,158,110,.14),transparent 60%)}
+  .summary-score{font-family:var(--font-serif);font-size:58px;font-weight:800;line-height:1}
+  .summary-score small{font-size:22px;color:var(--muted);font-weight:600}
+  .summary-rate{font-size:14px;color:var(--muted);margin-top:6px}
+  .summary-status{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:5px 14px;border-radius:99px;background:var(--primary-dim);color:var(--primary-2);font-size:13px;font-weight:700}
+  .summary-delta{font-size:12px;color:var(--muted);margin-top:8px}
+  .summary-delta .up{color:var(--primary-2)}
+  .summary-delta .down{color:var(--danger)}
+  .sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .sec-title{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .sec-title .dot{width:5px;height:5px;border-radius:50%;background:var(--primary)}
+  .reason-row{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+  .reason-row:last-child{margin-bottom:0}
+  .reason-row .name{font-size:12.5px;width:80px;flex-shrink:0}
+  .reason-row .progress{flex:1}
+  .reason-row .cnt{font-size:12px;color:var(--muted);width:22px;text-align:right}
+  .kp-cluster{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .wrong-list{display:flex;flex-direction:column;gap:8px}
+  .wrong-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2)}
+  .wrong-row .no{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:var(--danger-dim);color:var(--danger);font-size:11px;font-weight:700;flex-shrink:0}
+  .wrong-row .t{flex:1;font-size:13px;font-weight:600}
+  .wrong-row .c{font-size:11px;color:var(--muted)}
+  .summary-actions{display:flex;gap:9px;flex-wrap:wrap}
+  .summary-actions .btn{flex:1;min-width:110px;padding:9px 10px}
+
+  /* ===== 知识库 ===== */
+  .kb-head{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .kb-head h1{font-family:var(--font-serif);font-size:24px;font-weight:800}
+  .kb-today{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;background:var(--primary-dim);color:var(--primary-2);font-size:13px;font-weight:700;border:1px solid rgba(47,158,110,.35)}
+  .subject-pills{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .subject-pill{padding:7px 14px;border-radius:99px;font-size:13px;font-weight:600;border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .subject-pill.active{border-color:var(--primary);color:var(--text);background:var(--surface)}
+  .subject-pill b{color:var(--primary-2);margin-right:4px}
+  .kb-grid{display:grid;grid-template-columns:1.7fr 1fr;gap:16px;align-items:start}
+  .review-table{width:100%;border-collapse:collapse}
+  .review-table th{font-size:11.5px;color:var(--muted-2);text-align:left;font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);letter-spacing:.03em}
+  .review-table td{padding:12px 10px;border-bottom:1px solid var(--line-2);font-size:13px;vertical-align:middle}
+  .review-table tr:last-child td{border-bottom:none}
+  .review-table .name{font-weight:600}
+  .review-table .prow{display:flex;align-items:center;gap:8px}
+  .review-table .prow .progress{width:110px;flex-shrink:0}
+  .review-table .pct{font-size:12px;color:var(--muted);width:32px}
+  .review-table .btn-sm{padding:5px 10px;font-size:11.5px}
+  .radar-box{height:300px;display:grid;place-items:center;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface-2);position:relative}
+  .radar-box .caption{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted-2)}
+  .radar-grid{position:relative;width:190px;height:190px}
+  .radar-grid svg{width:100%;height:100%}
+
+  /* ===== 错题闭环 ===== */
+  .wrong-item{display:flex;gap:14px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px}
+  .wrong-item .ck{width:18px;height:18px;accent-color:var(--primary);margin-top:4px;flex-shrink:0}
+  .wrong-item .body{flex:1;min-width:0}
+  .wrong-item .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .wrong-item .qt{font-size:14px;font-weight:600;margin-bottom:4px}
+  .wrong-item .meta{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .wrong-item .ops{display:flex;gap:8px;flex-wrap:wrap}
+  .link-btn{font-size:12.5px;font-weight:600;color:var(--primary-2);background:transparent;border:none;cursor:pointer;padding:6px 10px;border-radius:8px;transition:.2s;display:inline-flex;align-items:center;gap:5px}
+  .link-btn:hover{background:var(--primary-dim)}
+  .link-btn.purple{color:var(--accent)}
+  .link-btn.purple:hover{background:var(--accent-dim)}
+
+  /* ===== 收藏 ===== */
+  .fav-filter{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .fav-filter .chip{cursor:pointer;padding:7px 14px;font-size:13px}
+  .fav-filter .chip.active{background:var(--primary);color:#fff;border-color:transparent}
+  .fav-card{display:flex;align-items:flex-start;gap:14px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px}
+  .fav-ic{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+  .fav-ic.g{background:var(--primary-dim);color:var(--primary-2)}
+  .fav-ic.p{background:var(--accent-dim);color:var(--accent)}
+  .fav-ic.w{background:var(--warn-dim);color:var(--warn)}
+  .fav-body{flex:1;min-width:0}
+  .fav-body .tags{display:flex;gap:6px;margin-bottom:6px}
+  .fav-body .t{font-size:14px;font-weight:600;margin-bottom:2px}
+  .fav-body .s{font-size:12px;color:var(--muted)}
+  .fav-side{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+  .star{font-size:20px;color:var(--warn);cursor:pointer;background:none;border:none}
+
+  @media(max-width:900px){
+    .btn-tab,.stat,.kb-grid,.learn-grid,.summary-grid{grid-template-columns:1fr}
+    .paper-list{grid-template-columns:1fr}
+    .right-stack{flex-direction:row;flex-wrap:wrap}
+    .mini-card{flex:1;min-width:200px}
+  }
+</style>
+</head>
+<body>
+<div class="geo-bg"></div>
+
+<nav class="mock-nav">
+  <div class="mock-nav-inner">
+    <div class="brand">
+      <div class="brand-logo">C</div>
+      <div><div class="brand-name">CourseCore · 设计稿</div><div class="brand-tag">V2.1 · 状态→诊断→行动</div></div>
+    </div>
+    <div class="mock-pills" id="mockPills">
+      <button class="mock-pill active" data-page="learn">首页·学习</button>
+      <button class="mock-pill" data-page="practice">首页·刷题</button>
+      <button class="mock-pill" data-page="summary">总结页</button>
+      <button class="mock-pill" data-page="kb">知识库</button>
+      <button class="mock-pill" data-page="wrong">错题闭环</button>
+      <button class="mock-pill" data-page="fav">收藏</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ 首页 · 学习（理论学习）============ -->
+<section class="page active" id="page-learn">
+  <div class="page-head">
+    <div><h1>学习</h1><div class="sub">理论学习 · 讲义与例题，先打牢概念再刷题</div></div>
+  </div>
+
+  <div class="home-pill">
+    <a class="active">学习</a><a>刷题</a><a>知识库</a><a>社区</a><a>我的</a>
+  </div>
+
+  <!-- 当前学习位置 -->
+  <div class="learn-resume">
+    <span class="learn-badge">继续学习</span>
+    <div class="learn-title">高等数学 A2 · 第 3 章 不定积分</div>
+    <div class="learn-sub">3.2 换元积分法 · 第 2 节</div>
+    <div class="progress"><div class="fill" style="width:58%"></div></div>
+    <div class="learn-meta">
+      <span>章节进度 <b>2 / 4 节</b></span>
+      <span>上次学习 <b>昨天 21:10</b></span>
+      <span>预计剩余 <b>约 20 分钟</b></span>
+    </div>
+    <div class="learn-actions">
+      <a class="btn btn-primary">继续学习 →</a>
+      <span class="chip">学习路径：极限 → 微分 → 积分</span>
+    </div>
+  </div>
+
+  <div class="learn-grid">
+    <!-- 左：章节树 -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>课程目录</div>
+      <div style="margin-top:14px">
+        <div class="tree-module">
+          <div class="tree-module-h">第 1 章 极限与连续 <span class="st">已完成</span></div>
+        </div>
+        <div class="tree-module">
+          <div class="tree-module-h">第 2 章 一元微分 <span class="st">已完成</span></div>
+        </div>
+        <div class="tree-module" style="border-left:2px solid var(--primary);padding-left:6px">
+          <div class="tree-module-h">第 3 章 不定积分 <span class="st">进行中</span></div>
+          <div class="tree-item done"><span class="sd"></span>3.1 原函数与不定积分</div>
+          <div class="tree-item current"><span class="sd"></span>3.2 换元积分法</div>
+          <div class="tree-item todo"><span class="sd"></span>3.3 分部积分法</div>
+          <div class="tree-item todo"><span class="sd"></span>3.4 有理函数积分</div>
+        </div>
+        <div class="tree-module">
+          <div class="tree-module-h">第 4 章 定积分 <span class="st">未开始</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右：理论内容 -->
+    <div class="card">
+      <div class="theory-head">
+        <span class="t">3.2 换元积分法</span>
+        <span class="chip green">理论</span>
+      </div>
+      <div class="theory-body">
+        <p>当被积函数含有复合函数时，可作变量代换 <span class="serif">u = φ(x)</span>，将积分化为更简单的形式。第一类换元（凑微分法）：</p>
+        <span class="theory-formula">∫ f(φ(x))·φ′(x) dx = ∫ f(u) du,&nbsp;&nbsp;u = φ(x)</span>
+        <p>第二类换元则通过逆向代换 <span class="serif">x = ψ(t)</span> 消去根号或化简被积函数，常用于含根式、三角函数的积分。</p>
+      </div>
+      <div class="theory-examples">
+        <div class="eh">本节例题 <span class="n">3 题 · 完成 2</span></div>
+        <div class="ex-card">
+          <div class="q">求 ∫ sin³x·cos x dx</div>
+          <div class="ops"><button class="btn btn-ghost btn-sm">查看解析</button><span class="chip green">已完成</span></div>
+        </div>
+        <div class="ex-card">
+          <div class="q">求 ∫ x·e^(x²) dx</div>
+          <div class="ops"><button class="btn btn-ghost btn-sm">查看解析</button><span class="chip green">已完成</span></div>
+        </div>
+        <div class="ex-card" style="border-left-color:var(--warn)">
+          <div class="q">求 ∫ dx / (1 + x²)</div>
+          <div class="ops"><button class="btn btn-primary btn-sm">做这道题</button><span class="chip warn">待完成</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 首页 · 刷题 ============ -->
+<section class="page" id="page-practice">
+  <div class="page-head">
+    <div><h1>刷题中心</h1><div class="sub">先解决「现在做什么」—— 继续、复习、补薄弱，再谈题库</div></div>
+  </div>
+
+  <div class="home-pill">
+    <a>学习</a><a class="active">刷题</a><a>知识库</a><a>社区</a><a>我的</a>
+  </div>
+
+  <div class="btn-tab">
+    <div class="resume-card">
+      <div class="resume-top"><span class="resume-badge">继续上次练习</span></div>
+      <div class="resume-title serif">高等数学 A2 · 期末模拟卷</div>
+      <div class="progress"><div class="fill" style="width:62%"></div></div>
+      <div class="resume-meta">
+        <span>上次做到 <b>第 18 / 30 题</b></span>
+        <span>最近 <b>昨天 21:10</b></span>
+        <span>预计剩余 <b>约 12 分钟</b></span>
+      </div>
+      <div class="resume-actions">
+        <a class="btn btn-primary">继续刷题 →</a>
+        <span class="chip">当前薄弱：不定积分</span>
+      </div>
+    </div>
+
+    <div class="right-stack">
+      <div class="mini-card">
+        <div class="head"><span class="t">今日待复习</span><span class="n">6 题</span></div>
+        <a class="btn btn-ghost btn-sm" style="width:100%">开始复习 →</a>
+      </div>
+      <div class="mini-card">
+        <div class="head"><span class="t">薄弱知识点</span></div>
+        <div class="weak-row"><span class="name">不定积分</span><div class="progress"><div class="fill danger" style="width:42%"></div></div><span class="pct">42%</span></div>
+        <div class="weak-row"><span class="name">极限与连续</span><div class="progress"><div class="fill warn" style="width:55%"></div></div><span class="pct">55%</span></div>
+        <div class="weak-row"><span class="name">微分方程</span><div class="progress"><div class="fill" style="width:70%"></div></div><span class="pct">70%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1.8fr;gap:16px;margin-top:16px">
+    <div class="mini-card">
+      <div class="head"><span class="t">近 7 天正确率</span></div>
+      <div class="trend">
+        <div class="bar" style="height:38%"><span>一</span></div>
+        <div class="bar" style="height:52%"><span>二</span></div>
+        <div class="bar" style="height:45%"><span>三</span></div>
+        <div class="bar" style="height:66%"><span>四</span></div>
+        <div class="bar" style="height:58%"><span>五</span></div>
+        <div class="bar" style="height:78%"><span>六</span></div>
+        <div class="bar" style="height:72%"><span>日</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>我的试卷 / 按题型练习</div>
+      <div class="paper-list" style="margin-top:14px">
+        <div class="paper-item"><div class="paper-ic">期末</div><div><div class="pt">高等数学 A2 期末</div><div class="ps">30 题 · 顺序</div></div></div>
+        <div class="paper-item"><div class="paper-ic">线代</div><div><div class="pt">线性代数 2023</div><div class="ps">25 题 · 随机</div></div></div>
+        <div class="paper-item"><div class="paper-ic">填空</div><div><div class="pt">按题型 · 填空</div><div class="ps">专项练习</div></div></div>
+        <div class="paper-item"><div class="paper-ic">选择</div><div><div class="pt">按题型 · 单选</div><div class="ps">专项练习</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 总结页（横向 2 列）============ -->
+<section class="page" id="page-summary">
+  <div class="page-head"><div><h1>练习总结</h1><div class="sub">成绩 → 诊断 → 错题 → 下一步</div></div></div>
+
+  <div class="summary-grid">
+    <!-- 左列 -->
+    <div>
+      <div class="summary-hero">
+        <div class="summary-score">21<small> / 30</small></div>
+        <div class="summary-rate">正确率 70%</div>
+        <div class="summary-status">基础掌握 · 需要巩固</div>
+        <div class="summary-delta">较上次 <span class="down">▼ 3 分</span> · 用时 26 分 40 秒</div>
+      </div>
+
+      <div class="sec" style="margin-top:16px">
+        <div class="sec-title"><span class="dot"></span>错误原因分布</div>
+        <div class="reason-row"><span class="name">概念不清</span><div class="progress"><div class="fill danger" style="width:44%"></div></div><span class="cnt">4</span></div>
+        <div class="reason-row"><span class="name">计算错误</span><div class="progress"><div class="fill warn" style="width:33%"></div></div><span class="cnt">3</span></div>
+        <div class="reason-row"><span class="name">审题错误</span><div class="progress"><div class="fill" style="width:22%"></div></div><span class="cnt">2</span></div>
+        <div class="sec-title" style="margin-top:18px;margin-bottom:10px"><span class="dot"></span>薄弱知识点</div>
+        <div class="kp-cluster">
+          <span class="chip danger">不定积分 42%</span>
+          <span class="chip warn">极限与连续 55%</span>
+          <span class="chip">微分方程 70%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右列 -->
+    <div>
+      <div class="sec">
+        <div class="sec-title"><span class="dot"></span>错题 9 题</div>
+        <div class="wrong-list">
+          <div class="wrong-row"><span class="no">3</span><div><div class="t">∫ sin³x dx 的换元选择</div><div class="c">不定积分 · 概念不清</div></div></div>
+          <div class="wrong-row"><span class="no">7</span><div><div class="t">等价无穷小替换条件</div><div class="c">极限与连续 · 计算错误</div></div></div>
+          <div class="wrong-row"><span class="no">12</span><div><div class="t">二阶常系数齐次方程</div><div class="c">微分方程 · 审题错误</div></div></div>
+        </div>
+      </div>
+
+      <div class="sec" style="margin-top:16px">
+        <div class="sec-title"><span class="dot"></span>下一步</div>
+        <div class="summary-actions">
+          <a class="btn btn-primary">复习错题</a>
+          <a class="btn btn-ghost">查看知识点</a>
+          <a class="btn btn-ghost">练相似题</a>
+          <a class="btn btn-ghost">重新开始</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 知识库 ============ -->
+<section class="page" id="page-kb">
+  <div class="kb-head">
+    <h1>知识库</h1>
+    <span class="kb-today">今日待复习 6 题</span>
+    <span class="kb-today" style="background:var(--warn-dim);color:var(--warn);border-color:transparent">即将遗忘 3 项</span>
+  </div>
+
+  <div class="stat" style="margin-bottom:22px">
+    <div class="stat-tile"><div class="num" style="color:var(--primary-2)">6</div><div class="lbl">今日待复习题数</div></div>
+    <div class="stat-tile"><div class="num">3</div><div class="lbl">即将遗忘知识点</div></div>
+    <div class="stat-tile"><div class="num" style="color:var(--danger)">42%</div><div class="lbl">最薄弱章节掌握度</div></div>
+  </div>
+
+  <div class="subject-pills">
+    <span class="subject-pill active"><b>18</b>全部</span>
+    <span class="subject-pill"><b>9</b>高等数学</span>
+    <span class="subject-pill"><b>6</b>线性代数</span>
+    <span class="subject-pill"><b>3</b>大学物理</span>
+  </div>
+
+  <div class="kb-grid">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>复习进度表 <span class="muted2" style="font-size:11px;font-weight:500">· 按掌握度升序</span></div>
+      <table class="review-table" style="margin-top:14px">
+        <thead><tr><th>章节</th><th>掌握度</th><th>错题</th><th>最近复习</th><th>下次复习</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="name">不定积分</td><td><div class="prow"><div class="progress"><div class="fill danger" style="width:42%"></div></div><span class="pct">42%</span></div></td><td>7</td><td class="muted">3 天前</td><td class="muted">今天</td><td><button class="btn btn-ghost btn-sm">复习</button></td></tr>
+          <tr><td class="name">极限与连续</td><td><div class="prow"><div class="progress"><div class="fill warn" style="width:55%"></div></div><span class="pct">55%</span></div></td><td>5</td><td class="muted">昨天</td><td class="muted">明天</td><td><button class="btn btn-ghost btn-sm">复习</button></td></tr>
+          <tr><td class="name">微分方程</td><td><div class="prow"><div class="progress"><div class="fill" style="width:70%"></div></div><span class="pct">70%</span></div></td><td>3</td><td class="muted">2 天前</td><td class="muted">3 天后</td><td><button class="btn btn-ghost btn-sm">复习</button></td></tr>
+          <tr><td class="name">级数</td><td><div class="prow"><div class="progress"><div class="fill" style="width:82%"></div></div><span class="pct">82%</span></div></td><td>1</td><td class="muted">5 天前</td><td class="muted">下周</td><td><button class="btn btn-ghost btn-sm">复习</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="radar-box">
+      <div class="radar-grid">
+        <svg viewBox="0 0 190 190">
+          <polygon points="95,18 162,70 132,150 58,150 28,70" fill="rgba(47,158,110,.08)" stroke="rgba(47,158,110,.5)" stroke-width="1.5"/>
+          <polygon points="95,38 150,80 128,140 62,140 40,80" fill="none" stroke="rgba(255,255,255,.08)"/>
+          <polygon points="95,55 138,88 124,132 66,132 52,88" fill="none" stroke="rgba(255,255,255,.06)"/>
+          <line x1="95" y1="18" x2="95" y2="150" stroke="rgba(255,255,255,.06)"/>
+          <line x1="28" y1="70" x2="162" y2="70" stroke="rgba(255,255,255,.06)"/>
+          <line x1="58" y1="150" x2="132" y2="150" stroke="rgba(255,255,255,.06)"/>
+          <line x1="28" y1="70" x2="132" y2="150" stroke="rgba(255,255,255,.06)"/>
+          <line x1="162" y1="70" x2="58" y2="150" stroke="rgba(255,255,255,.06)"/>
+          <circle cx="95" cy="18" r="3" fill="var(--primary-2)"/>
+          <circle cx="162" cy="70" r="3" fill="var(--accent)"/>
+          <circle cx="132" cy="150" r="3" fill="var(--warn)"/>
+          <circle cx="58" cy="150" r="3" fill="var(--danger)"/>
+          <circle cx="28" cy="70" r="3" fill="var(--primary-2)"/>
+        </svg>
+      </div>
+      <div class="caption">掌握度雷达 · 辅助分析（可排序表为主）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 错题闭环 ============ -->
+<section class="page" id="page-wrong">
+  <div class="page-head"><div><h1>错题闭环</h1><div class="sub">每道错题都能定位知识点、看解析、练相似题、标记掌握</div></div></div>
+  <div style="max-width:760px">
+
+    <div class="wrong-item">
+      <input type="checkbox" class="ck">
+      <div class="body">
+        <div class="tags"><span class="chip green">单选</span><span class="chip danger">未掌握</span><span class="chip">概念不清</span></div>
+        <div class="qt">∫ sin³x dx 的换元应选择（　）</div>
+        <div class="meta">错 2 次 · 下次复习 今天</div>
+        <div class="ops">
+          <button class="link-btn">关联知识点 不定积分</button>
+          <button class="link-btn purple">查看解析</button>
+          <button class="link-btn">练相似题</button>
+          <button class="btn btn-ghost btn-sm">标记已掌握</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrong-item">
+      <input type="checkbox" class="ck">
+      <div class="body">
+        <div class="tags"><span class="chip green">填空</span><span class="chip warn">复习中</span><span class="chip">计算错误</span></div>
+        <div class="qt">lim(x→0) (eˣ − 1 − x)/x² = ______</div>
+        <div class="meta">错 1 次 · 下次复习 明天</div>
+        <div class="ops">
+          <button class="link-btn">关联知识点 极限与连续</button>
+          <button class="link-btn purple">查看解析</button>
+          <button class="link-btn">练相似题</button>
+          <button class="btn btn-ghost btn-sm">标记已掌握</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrong-item">
+      <input type="checkbox" class="ck">
+      <div class="body">
+        <div class="tags"><span class="chip green">解答</span><span class="chip green">已掌握</span><span class="chip">方法不熟</span></div>
+        <div class="qt">求二阶常系数齐次线性方程通解</div>
+        <div class="meta">错 3 次 · 最近掌握度 82%</div>
+        <div class="ops">
+          <button class="link-btn">关联知识点 微分方程</button>
+          <button class="link-btn purple">查看解析</button>
+          <button class="link-btn">练相似题</button>
+          <button class="btn btn-primary btn-sm">标记已掌握 ✓</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 收藏 ============ -->
+<section class="page" id="page-fav">
+  <div class="page-head"><div><h1>收藏</h1><div class="sub">理论 / 题目 / 试卷 / 文章 统一管理与跳转</div></div></div>
+
+  <div class="fav-filter">
+    <span class="chip active">全部</span>
+    <span class="chip">理论</span>
+    <span class="chip">题目</span>
+    <span class="chip">试卷</span>
+    <span class="chip">文章</span>
+  </div>
+
+  <div style="max-width:760px">
+    <div class="fav-card">
+      <div class="fav-ic g">📕</div>
+      <div class="fav-body">
+        <div class="tags"><span class="chip green">理论</span><span class="chip">线性代数 · 第 1 章</span></div>
+        <div class="t">错题收集：概念的充要条件</div>
+        <div class="s">收藏于 昨天 · 复习 3 次</div>
+      </div>
+      <div class="fav-side"><button class="btn btn-primary btn-sm">继续刷题</button><button class="star">★</button></div>
+    </div>
+    <div class="fav-card">
+      <div class="fav-ic p">📝</div>
+      <div class="fav-body">
+        <div class="tags"><span class="chip purple">题目</span><span class="chip">线性代数 · 第 2 章</span></div>
+        <div class="t">错题：a+b+c 的充要条件</div>
+        <div class="s">收藏于 3 天前</div>
+      </div>
+      <div class="fav-side"><button class="btn btn-ghost btn-sm">阅读</button><button class="star">★</button></div>
+    </div>
+    <div class="fav-card">
+      <div class="fav-ic g">📄</div>
+      <div class="fav-body">
+        <div class="tags"><span class="chip green">试卷</span><span class="chip">高等数学 A2 · 2019 期末</span></div>
+        <div class="t">已收藏 3 题</div>
+        <div class="s">收藏于 上周</div>
+      </div>
+      <div class="fav-side"><button class="btn btn-primary btn-sm">继续刷题</button><button class="star">★</button></div>
+    </div>
+    <div class="fav-card">
+      <div class="fav-ic w">📰</div>
+      <div class="fav-body">
+        <div class="tags"><span class="chip warn">文章</span><span class="chip">高等数学 第 1 章</span></div>
+        <div class="t">错题集详解：第 2 章的 1.2 节</div>
+        <div class="s">收藏于 今天</div>
+      </div>
+      <div class="fav-side"><button class="btn btn-ghost btn-sm">阅读</button><button class="star">★</button></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const pills = document.querySelectorAll('.mock-pill');
+  const pages = document.querySelectorAll('.page');
+  pills.forEach(p => p.addEventListener('click', () => {
+    pills.forEach(x => x.classList.remove('active'));
+    pages.forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    document.getElementById('page-' + p.dataset.page).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }));
+</script>
+</body>
+</html>

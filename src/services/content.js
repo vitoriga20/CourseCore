@@ -41,3 +41,28 @@ export async function loadQuestions(itemId) {
   }
   return snakeToCamel(data || []);
 }
+
+// 运行时读取题的考点列表 (公开可读, 学生侧展示)
+// source: 'platform' | 'exam'
+// 返回: [{ id, role, weight, kp: { id, code, name, courseId, itemId, source } }]
+export async function loadQuestionKps(source, questionId) {
+  if (!supabase || !questionId) return [];
+  const { data, error } = await supabase
+    .from('question_kp')
+    .select('id, role, weight, knowledge_points(id, code, name, course_id, item_id, source)')
+    .eq('source', source)
+    .eq('question_id', questionId);
+  if (error) {
+    console.error('loadQuestionKps failed', error);
+    return [];
+  }
+  return (data || []).map(row => {
+    const kp = Array.isArray(row.knowledge_points) ? row.knowledge_points[0] : row.knowledge_points;
+    return {
+      id: row.id,
+      role: row.role,
+      weight: row.weight,
+      kp: kp ? snakeToCamel(kp) : null
+    };
+  });
+}

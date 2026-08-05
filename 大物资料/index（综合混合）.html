@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理综合混合刷题</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-color: #f3f6f4;
+            --text-color: #2d4e3e;
+            --border-color: rgba(45, 78, 62, 0.18);
+            --accent-color: #2d4e3e;
+            --muted-color: rgba(45, 78, 62, 0.58);
+            --text-on-accent-color: #f3f6f4;
+            --card-bg: rgba(255, 255, 255, 0.76);
+            --card-shadow: 0 20px 60px rgba(45, 78, 62, 0.08), 0 8px 24px rgba(45, 78, 62, 0.04);
+            --correct-bg: rgba(45, 78, 62, 0.10);
+            --correct-border: #2d4e3e;
+            --hover-text-color: #3d6b56;
+            --wrong-bg: rgba(139, 58, 58, 0.08);
+            --wrong-border: #8b3a3a;
+            --question-font: var(--font-serif);
+            --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+            --font-serif: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", serif;
+            --font-mono: "SF Mono", "JetBrains Mono", SFMono-Regular, Consolas, monospace;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: var(--font-sans);
+            background: transparent;
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body[data-bg="plain"] {
+            background: #f3f6f4;
+        }
+        body[data-bg="plain"] #bg-canvas { display: none; }
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .font-serif { font-family: var(--font-serif); }
+        .font-mono { font-family: var(--font-mono); }
+        .geo-border { border: 1px solid var(--border-color); }
+        .geo-card {
+            background: var(--card-bg);
+            background-clip: padding-box;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+        }
+        .geo-btn {
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--text-color);
+            font-family: var(--font-sans);
+            border-radius: 9999px;
+            transition: all 0.2s ease-out;
+        }
+        .geo-btn:hover:not(:disabled) {
+            background: var(--accent-color);
+            color: var(--text-on-accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 14px rgba(45, 78, 62, 0.14);
+            transform: translateY(-1px);
+        }
+        .geo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .geo-primary {
+            background: var(--accent-color);
+            color: var(--text-on-accent-color);
+            border: 1px solid var(--accent-color);
+            border-radius: 9999px;
+        }
+        .geo-primary:hover:not(:disabled) {
+            background: #3d6b56;
+            border-color: #3d6b56;
+            color: #f3f6f4;
+            box-shadow: 0 6px 20px rgba(45, 78, 62, 0.18);
+            transform: translateY(-1px);
+        }
+        .control-bar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.78);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+        }
+        .theme-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 0.875rem;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--text-color);
+            font-size: 0.8rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease-out;
+        }
+        .theme-chip:hover {
+            background: var(--accent-color);
+            color: var(--text-on-accent-color);
+            border-color: var(--accent-color);
+        }
+        .progress-bar { height: 3px; background: var(--border-color); }
+        .progress-bar > div { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.3s ease-out; }
+        .nav-btn {
+            aspect-ratio: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--text-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+        }
+        .nav-btn:hover:not(.current):not(.correct):not(.wrong):not(:disabled) {
+            background: rgba(45, 78, 62, 0.08);
+            color: var(--hover-text-color);
+            transform: scale(1.05);
+        }
+        .nav-btn.current { background: var(--accent-color); color: #ffffff; border-color: var(--accent-color); }
+        .nav-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-border); }
+        .nav-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-border); }
+        .option-btn {
+            text-align: left;
+            padding: 1rem 1.125rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--text-color);
+            display: block;
+            width: 100%;
+            font-family: var(--question-font);
+            font-size: 1rem;
+            line-height: 1.7;
+            border-radius: 16px;
+            transition: all 0.2s ease-out;
+            cursor: pointer;
+        }
+        .option-btn:hover:not(:disabled) {
+            background: rgba(45, 78, 62, 0.05);
+            color: var(--hover-text-color);
+            border-color: rgba(45, 78, 62, 0.28);
+            transform: translateY(-1px);
+        }
+        .option-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); }
+        .option-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); }
+        .option-btn.correct, .option-btn.wrong { color: var(--text-color); }
+        .question-body {
+            font-family: var(--question-font);
+            font-size: 1.125rem;
+            line-height: 1.85;
+        }
+        .question-figure {
+            margin: 1.25rem 0;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            background: rgba(45, 78, 62, 0.04);
+            border-radius: 16px;
+        }
+        .question-figure img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 8px; }
+        .feedback {
+            border-left: 3px solid var(--border-color);
+            padding-left: 1rem;
+            margin-top: 1rem;
+            font-family: var(--question-font);
+            line-height: 1.75;
+            color: var(--text-color);
+        }
+        .feedback.correct { border-color: var(--correct-border); }
+        .feedback.wrong { border-color: var(--wrong-border); }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        input, textarea {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--text-color);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(45, 78, 62, 0.45);
+            box-shadow: 0 0 0 3px rgba(45, 78, 62, 0.08);
+        }
+        @media (max-width: 640px) {
+            .geo-card { border-radius: 20px; }
+            .nav-btn { border-radius: 10px; }
+        }
+    </style>
+    <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      chtml: { fontURL: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2' }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+<body data-bg="geo">
+    <div id="bg-canvas"></div>
+    <script>
+        (function() {
+            const params = {
+                seed: 12345,
+                sphereRadius: 1200,
+                gridDensity: 6,
+                noiseAmp: 12,
+                rotationSpeed: 0.00015,
+                viewOffsetX: Math.PI / 2,
+                starCount: 28,
+                equatorStarCount: 6,
+                lineWeight: 0.8,
+                particleCount: 0,
+                trailLength: 10
+            };
+            let particles = [];
+            let stars = [];
+            let spherePoints = [];
+            let time = 0;
+            let focalLength = 1500;
+            let container;
+            let canvas;
+            let isVisible = true;
+            let primaryColor, secondaryColor, bgColor;
+
+            function setup() {
+                container = document.getElementById('bg-canvas');
+                if (!container) return;
+                canvas = createCanvas(container.clientWidth, container.clientHeight);
+                canvas.parent('bg-canvas');
+                pixelDensity(1);
+                frameRate(15);
+                updateColors();
+                initializeSystem();
+                window.addEventListener('resize', onResize);
+            }
+
+            function onResize() {
+                if (!container) return;
+                resizeCanvas(container.clientWidth, container.clientHeight);
+            }
+
+            function updateColors() {
+                const style = getComputedStyle(document.body);
+                primaryColor = style.getPropertyValue('--text-color').trim() || '#2d4e3e';
+                secondaryColor = style.getPropertyValue('--muted-color').trim() || 'rgba(45,78,62,0.58)';
+                bgColor = style.getPropertyValue('--bg-color').trim() || '#f3f6f4';
+            }
+
+            function initializeSystem() {
+                randomSeed(params.seed);
+                noiseSeed(params.seed);
+                time = 0;
+                precomputeSpherePoints();
+                stars = [];
+                let eqCount = params.equatorStarCount || 0;
+                for (let i = 0; i < eqCount; i++) {
+                    let theta = HALF_PI + map(i, 0, eqCount - 1, -1.2, 1.2) + random(-0.12, 0.12);
+                    let phi = HALF_PI + random(-0.25, 0.25);
+                    stars.push({
+                        pos: perturbedPoint(theta, phi, params.sphereRadius),
+                        size: random(35, 48),
+                        phase: random(TWO_PI)
+                    });
+                }
+                for (let i = 0; i < params.starCount; i++) {
+                    let theta = random(TWO_PI);
+                    let phi = random(PI);
+                    stars.push({
+                        pos: perturbedPoint(theta, phi, params.sphereRadius),
+                        size: random(12, 18),
+                        phase: random(TWO_PI)
+                    });
+                }
+                particles = [];
+                for (let i = 0; i < params.particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function precomputeSpherePoints() {
+                spherePoints = [];
+                let latCount = params.gridDensity;
+                let lonCount = params.gridDensity * 2;
+                for (let i = 0; i <= latCount; i++) {
+                    spherePoints[i] = [];
+                    let phi = map(i, 0, latCount, 0.08, PI - 0.08);
+                    for (let j = 0; j <= lonCount; j++) {
+                        let theta = map(j, 0, lonCount, 0, TWO_PI);
+                        spherePoints[i][j] = perturbedPoint(theta, phi, params.sphereRadius);
+                    }
+                }
+            }
+
+            function draw() {
+                if (!isVisible) return;
+                background(bgColor);
+                time += params.rotationSpeed;
+                let rotX = time * 0.7 + params.viewOffsetX;
+                let rotY = time * 0.5;
+                let rotZ = time * 0.3;
+                drawSphereGrid(rotX, rotY, rotZ);
+                drawStars(rotX, rotY, rotZ);
+                for (let p of particles) {
+                    p.update();
+                    p.draw(rotX, rotY, rotZ);
+                }
+            }
+
+            function sphericalToCartesian(r, theta, phi) {
+                return {
+                    x: r * sin(phi) * cos(theta),
+                    y: r * sin(phi) * sin(theta),
+                    z: r * cos(phi)
+                };
+            }
+
+            function rotate3D(x, y, z, rx, ry, rz) {
+                let y1 = y * cos(rx) - z * sin(rx);
+                let z1 = y * sin(rx) + z * cos(rx);
+                let x2 = x * cos(ry) + z1 * sin(ry);
+                let z2 = -x * sin(ry) + z1 * cos(ry);
+                let x3 = x2 * cos(rz) - y1 * sin(rz);
+                let y3 = x2 * sin(rz) + y1 * cos(rz);
+                return { x: x3, y: y3, z: z2 };
+            }
+
+            function project(x, y, z) {
+                let scale = focalLength / (focalLength + z);
+                return {
+                    x: x * scale + width / 2,
+                    y: y * scale + height / 2,
+                    scale: scale,
+                    visible: z > -focalLength + 50
+                };
+            }
+
+            function perturbedPoint(theta, phi, r) {
+                let base = sphericalToCartesian(r, theta, phi);
+                let nx = base.x / r, ny = base.y / r, nz = base.z / r;
+                let amp = params.noiseAmp;
+                let n = noise(base.x * 0.004, base.y * 0.004, base.z * 0.004);
+                let n2 = noise(base.x * 0.012 + 1000, base.y * 0.012 + 1000, base.z * 0.012 + 1000);
+                let displacement = (n - 0.5) * amp + (n2 - 0.5) * amp * 0.4;
+                return {
+                    x: base.x + nx * displacement,
+                    y: base.y + ny * displacement,
+                    z: base.z + nz * displacement
+                };
+            }
+
+            function drawSphereGrid(rotX, rotY, rotZ) {
+                let latCount = params.gridDensity;
+                let lonCount = params.gridDensity * 2;
+                let c = color(primaryColor);
+                c.setAlpha(120);
+                stroke(c);
+                strokeWeight(params.lineWeight);
+                noFill();
+                let projected = [];
+                for (let i = 0; i <= latCount; i++) {
+                    projected[i] = [];
+                    for (let j = 0; j <= lonCount; j++) {
+                        let p = spherePoints[i][j];
+                        let rp = rotate3D(p.x, p.y, p.z, rotX, rotY, rotZ);
+                        projected[i][j] = project(rp.x, rp.y, rp.z);
+                    }
+                }
+                for (let i = 1; i < latCount; i++) {
+                    beginShape();
+                    for (let j = 0; j <= lonCount; j++) {
+                        let pt = projected[i][j];
+                        if (pt.visible) vertex(pt.x, pt.y);
+                    }
+                    endShape();
+                }
+                for (let j = 0; j <= lonCount; j++) {
+                    beginShape();
+                    for (let i = 0; i <= latCount; i++) {
+                        let pt = projected[i][j];
+                        if (pt.visible) vertex(pt.x, pt.y);
+                    }
+                    endShape();
+                }
+            }
+
+            function drawStars(rotX, rotY, rotZ) {
+                let c = color(primaryColor);
+                for (let s of stars) {
+                    let rp = rotate3D(s.pos.x, s.pos.y, s.pos.z, rotX, rotY, rotZ);
+                    let proj = project(rp.x, rp.y, rp.z);
+                    if (!proj.visible) continue;
+                    let pulse = 0.6 + 0.4 * sin(time * 2 + s.phase);
+                    let alpha = 230 * pulse + 20;
+                    let size = s.size * proj.scale;
+                    let x = proj.x, y = proj.y;
+                    noStroke();
+                    // outer glow
+                    c.setAlpha(alpha * 0.15);
+                    fill(c);
+                    ellipse(x, y, size * 4.0, size * 4.0);
+                    // middle glow
+                    c.setAlpha(alpha * 0.4);
+                    fill(c);
+                    ellipse(x, y, size * 2.2, size * 2.2);
+                    // main dot
+                    c.setAlpha(alpha * 0.8);
+                    fill(c);
+                    ellipse(x, y, size, size);
+                    // bright core
+                    c.setAlpha(alpha);
+                    fill(c);
+                    ellipse(x, y, size * 0.45, size * 0.45);
+                    // cross rays
+                    c.setAlpha(alpha * 0.4);
+                    stroke(c);
+                    strokeWeight(params.lineWeight * 0.8);
+                    line(x - size * 1.2, y, x + size * 1.2, y);
+                    line(x, y - size * 1.2, x, y + size * 1.2);
+                    noStroke();
+                }
+            }
+
+            class Particle {
+                constructor() {
+                    this.theta = random(TWO_PI);
+                    this.phi = random(0.2, PI - 0.2);
+                    this.speedTheta = random(-0.0008, 0.0008);
+                    this.speedPhi = random(-0.0003, 0.0003);
+                    this.trail = [];
+                    this.r = params.sphereRadius * random(0.97, 1.03);
+                }
+                update() {
+                    this.theta += this.speedTheta;
+                    this.phi += this.speedPhi;
+                    this.phi = constrain(this.phi, 0.15, PI - 0.15);
+                    let p = perturbedPoint(this.theta, this.phi, this.r);
+                    this.trail.push({ x: p.x, y: p.y, z: p.z });
+                    if (this.trail.length > params.trailLength) this.trail.shift();
+                }
+                draw(rotX, rotY, rotZ) {
+                    if (this.trail.length < 2) return;
+                    let c = color(secondaryColor);
+                    for (let i = 0; i < this.trail.length - 1; i++) {
+                        let rp1 = rotate3D(this.trail[i].x, this.trail[i].y, this.trail[i].z, rotX, rotY, rotZ);
+                        let proj1 = project(rp1.x, rp1.y, rp1.z);
+                        if (!proj1.visible) continue;
+                        let rp2 = rotate3D(this.trail[i+1].x, this.trail[i+1].y, this.trail[i+1].z, rotX, rotY, rotZ);
+                        let proj2 = project(rp2.x, rp2.y, rp2.z);
+                        if (!proj2.visible) continue;
+                        let alpha = map(i, 0, this.trail.length, 0, 55);
+                        c.setAlpha(alpha);
+                        stroke(c);
+                        strokeWeight(params.lineWeight * 0.5 * proj1.scale);
+                        line(proj1.x, proj1.y, proj2.x, proj2.y);
+                    }
+                }
+            }
+
+            function updateVisibility() {
+                isVisible = (document.body.getAttribute('data-bg') || 'geo') === 'geo';
+            }
+            const observer = new MutationObserver(updateVisibility);
+            observer.observe(document.body, { attributes: true, attributeFilter: ['data-bg'] });
+            updateVisibility();
+            window.setup = setup;
+            window.draw = draw;
+        })();
+    </script>
+
+    <div class="control-bar">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <h1 class="font-serif text-lg md:text-xl font-bold tracking-tight truncate">物理综合混合刷题</h1>
+                <span id="mode-badge" class="font-mono text-xs px-2.5 py-1 rounded-full border shrink-0" style="border-color:var(--border-color);color:var(--muted-color);background:rgba(255,255,255,0.6)">顺序</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button id="font-btn" class="theme-chip hidden sm:inline-flex">字体：宋体</button>
+                <button id="bg-btn" class="theme-chip hidden sm:inline-flex">背景：几何</button>
+                <button id="order-btn" class="theme-chip">切换随机</button>
+            </div>
+        </div>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+    </div>
+
+    <div id="app" class="max-w-7xl mx-auto px-4 md:px-6 py-6 grid grid-cols-1 lg:grid-cols-[1fr_17rem] gap-6">
+        <main id="main-column">
+            <div id="quiz-view" class="geo-card p-6 md:p-8">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h2 class="font-serif text-2xl font-bold" id="question-header">综合</h2>
+                            <span id="question-meta" class="font-mono text-xs px-2 py-0.5 rounded-md border" style="border-color:var(--border-color);color:var(--muted-color)"></span>
+                        </div>
+                        <p class="text-sm" style="color:var(--muted-color)">点击右侧题号可跳转，答完后显示解析</p>
+                    </div>
+                    <div class="font-mono text-sm shrink-0" style="color:var(--muted-color)" id="question-counter">第 1 / 76 题</div>
+                </div>
+
+                <div id="question-body" class="question-body mb-6"></div>
+                <div id="answer-area" class="mb-8"></div>
+
+                <div class="flex flex-wrap justify-between items-center gap-3 pt-6 border-t" style="border-color:var(--border-color)">
+                    <button id="prev-btn" class="geo-btn px-5 py-2.5 text-sm font-medium">← 上一题</button>
+                    <button id="finish-btn" class="lg:hidden geo-primary px-5 py-2.5 text-sm font-medium">完成练习</button>
+                    <button id="next-btn" class="geo-btn px-5 py-2.5 text-sm font-medium">下一题 →</button>
+                </div>
+            </div>
+
+            <div id="result-view" class="hidden geo-card p-8 md:p-12 text-center">
+                <h2 class="font-serif text-4xl font-bold mb-3">练习完成</h2>
+                <div class="w-16 h-px mx-auto mb-6" style="background:var(--border-color)"></div>
+                <p id="score-text" class="font-serif text-2xl mb-10"></p>
+                <button id="restart-btn" class="geo-primary px-8 py-3 text-lg font-medium">重新开始</button>
+            </div>
+        </main>
+
+        <aside id="sidebar" class="hidden lg:block">
+            <div class="geo-card p-4 sticky top-20">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-serif text-lg font-bold">题号导航</h3>
+                    <span id="progress-text" class="font-mono text-xs" style="color:var(--muted-color)">0 / 0</span>
+                </div>
+                <div id="navbar-container" class="grid grid-cols-5 gap-2"></div>
+                <div class="mt-5">
+                    <button id="sidebar-finish-btn" class="geo-primary w-full py-2.5 text-sm font-medium">完成练习</button>
+                </div>
+                <div class="mt-4 space-y-2 text-xs" style="color:var(--muted-color)">
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm border" style="border-color:var(--border-color);background:transparent"></span> 未答</div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:var(--correct-bg);border:1px solid var(--correct-border)"></span> 正确</div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:var(--wrong-bg);border:1px solid var(--wrong-border)"></span> 错误</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div id="bottom-navbar" class="lg:hidden fixed bottom-0 left-0 right-0 border-t py-2 px-3" style="background:rgba(255,255,255,0.82);border-color:var(--border-color);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+        <div id="bottom-navbar-container" class="flex items-center gap-2 overflow-x-auto whitespace-nowrap custom-scrollbar"></div>
+    </div>
+
+    <script>
+        function normalizeAnswer(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/\$/g, '')
+                .replace(/\\mathrm\{([^}]*)\}/g, '$1')
+                .replace(/\\,/g, '')
+                .replace(/\\;/g, '')
+                .replace(/[\u3000\s]+/g, '')
+                .replace(/；/g, ';')
+                .replace(/，/g, ',')
+                .replace(/（/g, '(')
+                .replace(/）/g, ')')
+                .toLowerCase();
+        }
+
+        function shuffleArray(array, seed) {
+            const result = array.slice();
+            let s = seed;
+            for (let i = result.length - 1; i > 0; i--) {
+                s = (s * 9301 + 49297) % 233280;
+                const j = Math.floor((s / 233280) * (i + 1));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+            return result;
+        }
+
+        function mainApp() {
+            const state = {
+                allQuestions: [],
+                order: [],
+                userAnswers: [],
+                currentIndex: 0,
+                mode: 'sequential',
+                seed: 42,
+            };
+
+            const quizView = document.getElementById('quiz-view');
+            const resultView = document.getElementById('result-view');
+            const questionHeader = document.getElementById('question-header');
+            const questionMeta = document.getElementById('question-meta');
+            const questionCounter = document.getElementById('question-counter');
+            const questionBody = document.getElementById('question-body');
+            const answerArea = document.getElementById('answer-area');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+            const sidebarFinishBtn = document.getElementById('sidebar-finish-btn');
+            const orderBtn = document.getElementById('order-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const scoreText = document.getElementById('score-text');
+            const navbarContainer = document.getElementById('navbar-container');
+            const bottomNavbarContainer = document.getElementById('bottom-navbar-container');
+            const fontBtn = document.getElementById('font-btn');
+            const bgBtn = document.getElementById('bg-btn');
+            const modeBadge = document.getElementById('mode-badge');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+
+            const questionBankData = [
+  {
+    "question": "某质点作直线运动的运动学方程为 $x=3 t-5 t^{3}+6$ (SI)，则该质点作",
+    "options": [
+      "匀加速直线运动，加速度沿 x 轴正方向",
+      "匀加速直线运动，加速度沿x轴负方向",
+      "变加速直线运动，加速度沿x轴正方向",
+      "变加速直线运动，加速度沿x轴负方向"
+    ],
+    "answer": "D",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 1
+  },
+  {
+    "question": "某物体的运动规律为 $\\frac{dv}{d t}=-k v^{2}t$ ，式中的k 为大于零的常量。当t = 0时，初速为$v_{0}$ ，则速度v 与时间t 的函数关系是",
+    "options": [
+      "$v=\\frac{1}{2}k t^{2}+v_{0}$",
+      "$v=-\\frac{1}{2}k t^{2}+v_{0}$",
+      "$\\frac{1}{v}=\\frac{k t^{2}}{2}+\\frac{1}{v_{0}}$",
+      "$\\frac{1}{v}=-\\frac{k t^{2}}{2}+\\frac{1}{v_{0}}$"
+    ],
+    "answer": "C",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 2
+  },
+  {
+    "question": "一质点沿x方向运动，其加速度随时间变化关系为a=3+2t (SI)，如果初始时质点的速度 $v_{0}$ 为5m/s ， 则在t = 4s 时刻质点的速度v =",
+    "options": [
+      "15m/s",
+      "23m/s",
+      "33m/s",
+      "45m/s"
+    ],
+    "answer": "C",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 3
+  },
+  {
+    "question": "一质点在平面上作一般曲线运动，其瞬时速度为$\\vec{v}$ ，瞬时速率为v ，某一时间内的平均速度为 $\\overline{\\vec{v}}$ ，平均速率为v ，它们之间的关系必定有：",
+    "options": [
+      "$\\left| \\vec{v}\\right|=v , \\left| \\overline{\\vec{v}}\\right|=\\overline{v}$",
+      "$\\left| \\vec{v}\\right| \\neq v , \\left| \\overline{\\vec{v}}\\right|=\\overline{v}$",
+      "$\\left| \\bar{v}\\right| \\neq v , \\ \\left| \\overline{\\bar{v}}\\right| \\neq \\overline{v}$",
+      "$\\left| \\vec{v}\\right|=v , \\left| \\overline{\\vec{v}}\\right| \\neq \\overline{v}$"
+    ],
+    "answer": "D",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 4
+  },
+  {
+    "question": "质量为0.10 kg的质点，由静止开始沿曲线 $\\vec{r}=\\frac{5}{3}t^{3}\\vec{i}+2 \\vec{j}$ (SI)运动，则在t =0到t = 2s时间内，作用在该质点上的合外力所做的功为",
+    "options": [
+      "$\\frac{5}{4}\\mathrm{J}$",
+      "20J",
+      "$\\frac{75}{4}\\mathrm{J}$",
+      "40J"
+    ],
+    "answer": "B",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 5
+  },
+  {
+    "question": "如图所示，子弹射入放在水平光滑地面上静止的木块而不穿出．以地面为参考系，下列说法中正确的说法是",
+    "options": [
+      "子弹的动能转变为木块的动能",
+      "子弹─木块系统的机械能守恒",
+      "子弹动能的减少等于子弹克服木块阻力所作的功",
+      "子弹克服木块阻力所作的功等于这一过程中产生的热"
+    ],
+    "answer": "C",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 6,
+    "image": "assets/q006.jpg"
+  },
+  {
+    "question": "一质量为m 的滑块，由静止开始沿着 1/4 圆弧形光滑的木槽滑下。设木槽的质量也是m。槽的圆半径为R，放在光滑水平地面上，如图所示。则滑块离开槽时的速度是",
+    "options": [
+      "$\\sqrt{2Rg}$",
+      "$2 \\sqrt{Rg}$",
+      "$\\sqrt{Rg}$ ：",
+      "$\\frac{1}{2}\\sqrt{Rg}$"
+    ],
+    "answer": "C",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 7,
+    "image": "assets/q007.jpg"
+  },
+  {
+    "question": "一均匀细杆原来静止放在光滑的水平面上，现在其一端给予一垂直于杆身的水平方向的打击，此后杆的运动情况是：",
+    "options": [
+      "杆沿力的方向平动",
+      "杆绕其未受打击的端点转动",
+      "杆的质心沿打击力的方向运动，杆又绕质心转动",
+      "杆的质心不动，而杆绕质心转动"
+    ],
+    "answer": "C",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 8
+  },
+  {
+    "question": "如图所示，一个小物体，位于光滑的水平桌面上，与一绳的一端相连结，绳的另一端穿过桌面中心的小孔O. 该物体原以角速度ω在半径为R的圆周上绕O旋转，今将绳从小孔缓慢往下拉．则物体",
+    "options": [
+      "动能不变，动量改变;",
+      "动量不变，动能改变;",
+      "角动量不变，动量不变;",
+      "角动量改变，动量改变;",
+      "角动量不变，动能、动量都改变"
+    ],
+    "answer": "E",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 9,
+    "image": "assets/q009.jpg"
+  },
+  {
+    "question": "人造地球卫星，绕地球作椭圆轨道运动，地球在椭圆的一个焦点上，则卫星的",
+    "options": [
+      "动量不守恒，动能守恒",
+      "动量守恒，动能不守恒",
+      "对地心的角动量守恒，动能不守恒",
+      "对地心的角动量不守恒，动能守恒"
+    ],
+    "answer": "C",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 10
+  },
+  {
+    "question": "一圆盘绕过盘心且与盘面垂直的光滑固定轴O以角速度ω按图示方向转动.若如图所示的情况那样，将两个大小相等方向相反但不在同一条直线的力F沿盘面同时作用到圆盘上，则圆盘的角速度",
+    "options": [
+      "必然增大;",
+      "必然减少;",
+      "不会改变;",
+      "如何变化，不能确定"
+    ],
+    "answer": "A",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 11,
+    "image": "assets/q011.jpg"
+  },
+  {
+    "question": "均匀细棒OA可绕通过其一端O而与棒垂直的水平固定光滑轴转动，如图所示．今使棒从水平位置由静止开始自由下落，在棒摆动到竖直位置的过程中，下述说法哪一种是正确的？",
+    "options": [
+      "角速度从小到大，角加速度从大到小;",
+      "角速度从小到大，角加速度从小到大;",
+      "角速度从大到小，角加速度从大到小;",
+      "角速度从大到小，角加速度从小到大"
+    ],
+    "answer": "A",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 12,
+    "image": "assets/q012.jpg"
+  },
+  {
+    "question": "图(a)为一绳长为l 、质量为m 的单摆。图(b)为一长度为l、质量m为能绕水平固定轴O自由转动的匀质细棒。现将单摆和细棒同时从与竖直线成θ 角度的位置由静止释放。若运动到竖直位置时，单摆、细棒角速度分别以 $\\omega_{1}, \\ \\omega_{2}$ 表示。则：",
+    "options": [
+      "$\\omega_{1}{=}2 \\omega_{2}$",
+      "$\\omega_{1}{=}\\omega_{2}$",
+      "$\\omega_{1}=\\frac{2}{3}\\omega_{2}$",
+      "${\\omega}_{1}=\\sqrt{\\frac{2}{3}}\\,{\\omega}_{2}$"
+    ],
+    "answer": "D",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 13,
+    "image": "assets/q013.jpg"
+  },
+  {
+    "question": "一轻绳跨过一具有水平光滑轴、质量为的定滑轮，绳的两端分别悬有质量为 $m_{1}$ 和 $m_{2}$ 的物体 $( m_{1}<m_{2})$ ，如图所示。绳与轮之间无相对滑动。若某时刻滑轮沿逆时针方向转动，则绳中的张力",
+    "options": [
+      "处处相等",
+      "左边大于右边",
+      "右边大于左边",
+      "哪边大无法判断"
+    ],
+    "answer": "C",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 14,
+    "image": "assets/q014.jpg"
+  },
+  {
+    "question": "一自由悬挂的匀质细棒 AB，可绕 A 端在竖直平面内自由转动，现给 B 端一初速$\\mathbf{V}_{0},$ ，则棒在向上转动过程中仅就大小而言",
+    "options": [
+      "角速度不断减小，角加速度不断减少",
+      "角速度不断减小，角加速度不断增加",
+      "角速度不断减小，角加速度不变",
+      "所受力矩越来越大，角速度也越来越大"
+    ],
+    "answer": "B",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 15
+  },
+  {
+    "question": "一长为l，质量为m 的匀质细棒，绕一端作匀速转动，其中心处的速率为v，则细棒的转动动能为",
+    "options": [
+      "$\\mathrm{m}\\mathrm{v}^{2}/2$",
+      "$2 \\mathrm{mv}^{2}/3$",
+      "$\\mathrm{m}\\mathrm{v}^{2}/6$",
+      "$\\mathrm{mv}^{2}/24$"
+    ],
+    "answer": "B",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 16
+  },
+  {
+    "question": "光滑的水平桌面上，有一长为 2L、质量为m的匀质细杆，可绕过其中点且垂直于杆的竖直光滑固定轴O自由转动，其转动惯量为 $\\frac{1}{3}mL^{2}$ ，起初杆静止．桌面上有两个质量均为m的小球，各自在垂直于杆的方向上，正对着杆的一端，以相同速率v相向运动，如图所示．当两小球同时与杆的两个端点发生完全非弹性碰撞后，就与杆粘在一起转动，则这一系统碰撞后的转动角速度应为",
+    "options": [
+      "$\\frac{2v}{3 L}$",
+      "$\\frac{4v}{5 L}$",
+      "$\\frac{6v}{7 L}$",
+      "$\\frac{8v}{9 L}$ 俯视图"
+    ],
+    "answer": "C",
+    "category": "力学",
+    "type": "multipleChoice",
+    "id": 17,
+    "image": "assets/q017.jpg"
+  },
+  {
+    "question": "质点的运动方程 $\\vec{r}=\\left( t-\\frac{t^{2}}{2}\\right) \\vec{i}+\\left( 5-3 t+\\frac{t^{3}}{3}\\right) \\vec{j}$ (SI)，当 $t=2\\,\\mathrm{s}$ 时，其加速度 $\\vec{a}=$",
+    "answer": "$10\\vec i+18\\vec j\\ \\mathrm{m/s^2}$",
+    "solution": "对 $\\vec r$ 求二阶导数：$\\vec a=\\frac{\\mathrm d^2\\vec r}{\\mathrm dt^2}=10\\vec i+9t\\vec j$；代入 $t=2\\,\\mathrm{s}$ 得 $\\vec a=10\\vec i+18\\vec j\\ \\mathrm{m/s^2}$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 18
+  },
+  {
+    "question": "在如图所示的装置中，两个定滑轮与绳的质量以及滑轮与其轴之间的摩擦都可忽略不计，绳子不可伸长， $m_{1}$ 与平面之间的摩擦也可不计，在水平外力 F 的作用下，物体 $m_{1}$ 与 $m_{2}$ 的加速度 a＝ _，绳中的张力 T＝",
+    "answer": "$\\frac{F}{m_1+m_2}$; $\\frac{m_2F}{m_1+m_2}$",
+    "solution": "整体：$F=(m_1+m_2)a$，得 $a=F/(m_1+m_2)$。对 $m_2$：$T=m_2a=m_2F/(m_1+m_2)$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 19,
+    "image": "assets/q019.jpg"
+  },
+  {
+    "question": "质量为 m 子弹以速度 $v_{0}$ 水平射入沙土中，设子弹所受阻力与速度成正比，比例系数为 k，忽略子弹的重力，求：(1)子弹射入沙土后,速度随时间变化的函数关系式 _；(2)子弹射入沙土的最大深度。",
+    "answer": "$v=v_0e^{-kt/m}$; $\\frac{mv_0}{k}$",
+    "solution": "由 $m\\frac{dv}{dt}=-kv$ 积分得 $v=v_0e^{-kt/m}$。最大深度 $x=\\int_0^\\infty v\\,dt=mv_0/k$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 20
+  },
+  {
+    "question": "一颗子弹在枪筒里前进时所受的合力大小为 $F=400-\\frac{4\\times10^{5}}{3}t$ (SI) ，子弹从枪口射出时的速率为 300 m/s。假设子弹离开枪口时合力刚好为零，则 (1)子弹走完枪筒全长所用的时间t = _； (2)子弹在枪筒中所受力的冲量I =； (3)子弹的质量m= 。",
+    "answer": "$3\\times10^{-3}\\ \\mathrm{s}$; $0.6\\ \\mathrm{N\\cdot s}$; $2\\ \\mathrm{g}$",
+    "solution": "令 $F=0$ 得 $t=3\\times10^{-3}\\,\\mathrm{s}$。冲量 $I=\\int_0^t F\\,dt=400t-\\frac{2\\times10^5}{3}t^2=0.6\\,\\mathrm{N\\cdot s}$。由 $I=mv$ 得 $m=I/v=0.002\\,\\mathrm{kg}=2\\,\\mathrm{g}$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 21
+  },
+  {
+    "question": "在半径为R的圆周上运动的质点，其速率与时间关系为 $v=c t^{2}$ (式中c为常量)，则从t=0到t时刻质点走过的路程S(t) _； 时刻质点的切向加速度$a_{t}{=}$ ； 时刻质点的法向加速度 $a_{n}=$ 。",
+    "answer": "$\\frac{1}{3}ct^3$; $2ct$; $\\frac{c^2t^4}{R}$",
+    "solution": "$S=\\int_0^t ct'^2\\,dt'=ct^3/3$；$a_t=dv/dt=2ct$；$a_n=v^2/R=c^2t^4/R$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 22
+  },
+  {
+    "question": "一质量为m的小球A，在距离地面某一高度处以速度v 水平抛出，触地后反跳．在抛出t秒后小球A跳回原高度，速度仍沿水平方向，速度大小也与抛出时相同，如图．则小球A与地面碰撞过程中，地面给它的冲量的方向为 _，冲量的大小为_",
+    "answer": "竖直向上; $mgt$",
+    "solution": "水平动量不变，竖直方向动量由 $-mv_y$ 变为 $+mv_y$，而上升时间 $t/2$ 对应 $v_y=g t/2$，故竖直冲量 $I_y=2mv_y=mgt$，方向竖直向上。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 23,
+    "image": "assets/q023.jpg"
+  },
+  {
+    "question": "如图所示，一质量为 $m=2 \\mathrm{kg}$ 、半径为 $R=2 \\mathrm{m}$ 的薄圆盘，可绕通过其一直径的光滑固定轴 $A A \"$ 转动，转动惯量 $J=m R^{2}{\\big/}4$ 。该圆盘从静止开始在恒力矩$M=10 0 \\mathrm{N\\cdotm}$ 作用下转动，则 $t=3\\,\\mathrm{s}$ 秒后位于圆盘边缘上与轴 AA'的垂直距离为 R的B点的切向加速度的大小 $a_{t}=$ $\\mathrm{m}/\\mathrm{s}^{2}$ 。 (两位有效数字)",
+    "answer": "$25$",
+    "solution": "$\\beta=M/J=100/(\\frac{1}{4}\\cdot2\\cdot2^2)=25\\,\\mathrm{rad/s^2}$。切向加速度 $a_t=\\beta R=25\\times2=50\\,\\mathrm{m/s^2}$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 24,
+    "image": "assets/q024.jpg"
+  },
+  {
+    "question": "如图，质量为m长为 $l=0.2 \\mathrm{m}$ 的均匀细杆，放在倾角为 $\\alpha=30^{\\circ}$ 光滑斜面上，可以绕通过杆上端且与斜面垂直的光滑轴O在斜面上转动。要使此杆能绕轴转动一周，则杆的最小初始角速度 $\\omega_{0}=$ _rad/s。(重力加速度为 $9.8 \\mathrm{m}/\\mathrm{s}^{2}$ ，结果保留两位有效数字)",
+    "answer": "$3.1$",
+    "solution": "由机械能守恒，$\\frac{1}{2}J\\omega_0^2\\ge 2mgl\\sin\\alpha$，$J=\\frac{1}{3}ml^2$，得 $\\omega_0\\ge\\sqrt{12g\\sin\\alpha/l}\\approx3.07\\,\\mathrm{rad/s}$，取 $3.1\\,\\mathrm{rad/s}$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 25,
+    "image": "assets/q025.jpg"
+  },
+  {
+    "question": "在光滑的水平面上，一根长 L＝2 m 的绳子，一端固定于 O 点，另一端系一质量 m＝0.5 kg的物体．开始时，物体位于位置 A，OA间距离 $d {=}0.5 \\mathrm{m}$ ，绳子处于松弛状态．现在使物体以初速度 $v_{A}{=}4 \\mathrm{m}{\\cdot}\\mathrm{s}^{-1}$ 垂直于 OA 向右滑动，如图所示．设以后的运动中物体到达位置B,此时物体速度的方向与绳垂直．则此时刻物体对O点的角动量的大小 $L_{B}=$ ，物体速度的大小 v＝",
+    "answer": "$1.0\\ \\mathrm{kg\\cdot m^2/s}$; $1.0\\ \\mathrm{m/s}$",
+    "solution": "角动量守恒：$L_B=mv_Ad=0.5\\times4\\times0.5=1.0\\,\\mathrm{kg\\cdot m^2/s}$。在 B 点 $r=L=2\\,\\mathrm{m}$，故 $v=L_B/(mL)=1.0\\,\\mathrm{m/s}$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 26,
+    "image": "assets/q026.jpg"
+  },
+  {
+    "question": "用一根长度为 $L=3.2$ 米的细线悬挂一质量为m的小球，线所能承受的最大张力为$T=1.5 m g$ 。现在把线拉至水平位置然后由静止放开，若线断后小球的落地点C恰好在悬点 O 的正下方，如图所示。则高度OC = (两位有效数字)",
+    "answer": "$0.8\\ \\mathrm{m}$",
+    "solution": "下摆到最低点速度 $v=\\sqrt{2gL}$。此时张力 $T=mg+mv^2/L=5mg>1.5mg$，说明线在某处断裂。设线与水平成 $\\theta$ 时张力达 $1.5mg$，由 $T=mg\\sin\\theta+mv^2/L$ 及能量守恒 $v^2=2gL\\sin\\theta$，得 $\\sin\\theta=0.25$，$v^2=0.5gL$。断后水平抛，落 O 正下方，$OC=L\\sin\\theta+\\frac{v^2\\cos^2\\theta}{2g\\sin\\theta}\\approx0.8\\,\\mathrm{m}$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 27,
+    "image": "assets/q027.jpg"
+  },
+  {
+    "question": "如图所示，在地面上固定一半径为 $R=0.5\\,\\mathrm{m}$ 的光滑球面，球面顶点A处放一质量为 $7.0\\,\\mathrm{kg}$ 的滑块。一质量为 $m=0.2\\,\\mathrm{kg}$ 的油灰球，以水平速度 $v_{0}=10.5\\,\\mathrm{m/s}$ 射向滑块，并粘附在滑块上一起沿球面下滑。则他们脱离球面时所成的角度 $\\theta=$ rad，(重力加速度 $g=9.8 \\mathrm{m}/\\mathrm{s}^{2}$ ，结果保留两位有效数字)",
+    "answer": "$1.1$",
+    "solution": "水平动量守恒：$mv_0=(M+m)v_1$，$v_1=0.3\\,\\mathrm{m/s}$。脱离时 $N=0$，由机械能守恒与向心力公式得 $\\cos\\theta=\\frac{2}{3}+\\frac{v_1^2}{3gR}\\approx0.46$，$\\theta\\approx1.1\\,\\mathrm{rad}$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 28,
+    "image": "assets/q028.jpg"
+  },
+  {
+    "question": "一长为 $l ,$ 、质量可以忽略的直杆，两端分别固定有质量为 $2 m$ 和m的小球，杆可绕通过其中 O 且与杆垂直的水平光滑固定轴在铅直平面内转动．开始杆与水平方向成某一角度 $\\theta$ ，处于静止状态，如图所示．释放后，杆绕O轴转动．则当杆转到水平位置时，该系统所受到的合外力矩的大小 $M=$ _，此时该系统角加速度的大小 $\\beta=$",
+    "answer": "$mgl$; $\\frac{2g}{3l}$",
+    "solution": "水平位置时两球力臂均为 $l/2$，力矩 $M=2m\\cdot g\\cdot l/2 - m\\cdot g\\cdot l/2 = mgl/2$（方向一致），合计 $mgl$。转动惯量 $J=2m(l/2)^2+m(l/2)^2=\\frac{3}{4}ml^2$，$\\beta=M/J=\\frac{2g}{3l}$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 29,
+    "image": "assets/q029.jpg"
+  },
+  {
+    "question": "长为l的杆如图悬挂．O为水平光滑固定转轴，平衡时杆竖直下垂，一子弹水平地射入杆中．则在此过程中， 系统对转轴O 的 _守恒．",
+    "answer": "子弹和杆; 角动量",
+    "solution": "子弹射入杆的过程时间极短，轴处冲力产生外力矩可忽略，系统对 O 轴的角动量守恒。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 30,
+    "image": "assets/q030.jpg"
+  },
+  {
+    "question": "一水平的匀质圆盘，可绕通过盘心的竖直光滑固定轴自由转动．圆盘质量为M，半径为R，对轴的转动惯量 $J {=}\\frac{1}{2}M R^{2}$ ．当圆盘以角速度 $\\omega_{0}$ 转动时，有一质量为m的子弹沿盘的直径方向射入而嵌在盘的边缘上．子弹射入后，圆盘的角速度 $\\omega=$ ·",
+    "answer": "$\\frac{M\\omega_0}{M+2m}$",
+    "solution": "角动量守恒：$J\\omega_0=(J+mR^2)\\omega$，代入 $J=MR^2/2$ 得 $\\omega=M\\omega_0/(M+2m)$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 31
+  },
+  {
+    "question": "一长为l质量可以忽略的直杆，可绕通过其一端的水平光滑轴在竖直平面内作定轴转动，在杆的另一端固定着一质量为m的小球，如图所示．现将杆由水平位置无初转速地释放．则杆刚被释放时的角加速度 $\\beta_{0}$ = _，杆与水平方向夹角为 $60^{\\circ}$ 时的角加速度 $\\beta=$",
+    "answer": "$\\frac{g}{l}$; $\\frac{g}{2l}$",
+    "solution": "$M=mgl\\cos\\phi$，$J=ml^2$，$\\beta=M/J=g\\cos\\phi/l$。水平时 $\\phi=0$，$\\beta_0=g/l$；$60^\\circ$ 时 $\\cos\\phi=1/2$，$\\beta=g/(2l)$。",
+    "category": "力学",
+    "type": "fillInTheBlank",
+    "id": 32,
+    "image": "assets/q032.jpg"
+  },
+  {
+    "question": "如图，用传送带A输送煤粉，料斗口在A上方高 $h=0.5 \\mathrm{m}$ 处，煤粉自料斗口自由落在A上．设料斗口连续卸煤的流量为 $q_{m}=40$ kg/s ，A 以 $v{=}2.0 \\mathrm{m/s}$ 的水平速度匀速向右移动．求装煤的过程中，煤粉对A的作用力的大小和方向．(不计相对传送带静止的煤粉质重)",
+    "answer": "$F\\approx 1.49\\times 10^2\\,\\mathrm{N}$；方向与水平方向夹角约 $57.4^{\\circ}$，斜向左下方",
+    "solution": "单位时间内落在传送带上的煤粉在水平方向动量变化产生水平力 $F_x=q_m v$，竖直方向动量变化产生竖直力 $F_y=q_m\\sqrt{2gh}$。煤粉对传送带的作用力为这两个反作用力的合力，大小 $F=\\sqrt{F_x^2+F_y^2}=q_m\\sqrt{v^2+2gh}\\approx 1.49\\times 10^2\\,\\mathrm{N}$，方向与水平方向夹角 $\\theta=\\arctan\\frac{\\sqrt{2gh}}{v}\\approx 57.4^{\\circ}$，斜向左下方。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 33,
+    "image": "assets/q033.jpg"
+  },
+  {
+    "question": "一升降机内有一倾角为α的固定光滑斜面，如图所示。当升降机以匀加速度 $\\vec{a}_{0}$ 上升时，质量为m的物体A沿斜面滑下，试以升降机为参考系，求A对地面的加速度 $\\vec{a}$ .",
+    "answer": "$a=\\sqrt{g^2+a_0^2-2ga_0\\cos\\alpha}$；方向沿斜面向下与水平方向夹角 $\\arctan\\frac{g\\sin\\alpha}{g\\cos\\alpha-a_0}$",
+    "solution": "以升降机为参考系，物体受重力 $m\\vec g$、惯性力 $-m\\vec a_0$ 和斜面支持力。沿斜面方向合力 $F=m(g\\sin\\alpha-a_0\\sin\\alpha)$ 有误，应为 $m\\sqrt{g^2+a_0^2}$ 的合力沿斜面分量。正确：等效重力 $\\vec g' = \\vec g - \\vec a_0$，沿斜面加速度 $a'=g\\sin\\alpha-a_0\\sin\\alpha$ 当 $\\vec a_0$ 竖直向上时。A 对地加速度 $\\vec a=\\vec a'+\\vec a_0$。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 34,
+    "image": "assets/q034.jpg"
+  },
+  {
+    "question": "一根特殊弹簧，在伸长 x 米时，其弹力为 $4 x+6 x^{2}$ 牛顿。\n\n(1)试求把弹簧从 x=0.5m 米拉长到 $x {=}1.0 \\mathrm{m}$ 米时，外力克服弹簧力所作的总功。\n\n(2)将弹簧的一端固定，在其另一端拴一质量为2千克的静止物体，试求弹簧从$x {=}1.0$ 米回到x=0.5米时物体的速率。(不计重力)",
+    "answer": "$W=1.75\\,\\mathrm{J}$; $v=\\sqrt{1.75}\\approx1.32\\,\\mathrm{m/s}$",
+    "solution": "（1）$W=\\int_{0.5}^{1.0}(4x+6x^2)\\,dx=[2x^2+2x^3]_{0.5}^{1.0}=4-0.625=1.75\\,\\mathrm{J}$。（2）弹性势能转化为动能：$\\frac{1}{2}mv^2=W$，$v=\\sqrt{2W/m}=\\sqrt{1.75}\\approx1.32\\,\\mathrm{m/s}$。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 35
+  },
+  {
+    "question": "两个滑冰运动员A、B的质量均为 $m {=}70 \\mathrm{kg}$ ，以 $v_{0}=6.5 \\mathrm{m}/\\mathrm{s}$ 的速率沿相反方向滑行，滑行路线间的垂直距离为 $R=10 \\mathrm{m}$ ，当彼此交错时，各抓住10 m绳索的一端，然后相对旋转,\n\n(1) 在抓住绳索之前，各自对绳中心的角动量是多少？抓住后又是多少？\n\n(2)他们各自收拢绳索，到绳长为r =5 m时，各自的速率如何？\n\n(3)绳长为5 m时，绳内的张力多大？\n\n(4)二人在收拢绳索时，设收绳速率相同，问二人各做了多少功？",
+    "answer": "$L=2275\\,\\mathrm{kg\\cdot m^2/s}$; $v=13\\,\\mathrm{m/s}$; $T=4810\\,\\mathrm{N}$; $W=4436\\,\\mathrm{J}$",
+    "solution": "（1）$L=mv_0R/2=70\\times6.5\\times5=2275\\,\\mathrm{kg\\cdot m^2/s}$，抓住前后角动量不变。（2）$mvr/2=L$，$v=2L/(mr)=13\\,\\mathrm{m/s}$。（3）$T=mv^2/(r/2)=4810\\,\\mathrm{N}$。（4）$W=\\frac{1}{2}mv^2-\\frac{1}{2}mv_0^2=4436\\,\\mathrm{J}$。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 36
+  },
+  {
+    "question": "一条轻绳跨过一轻滑轮(滑轮与轴间摩擦可忽略)，在绳的一端挂一质量为 $m_{1}$ 的物体，在另一侧有一质量为 $m_{2}$ 的环，求当环相对于绳以恒定的加速度 $a_{2}$ 沿绳向下滑动时，物体和环相对地面的加速度各是多少？环与绳间的摩擦力多大？",
+    "answer": "$a_1=\\frac{(m_1-m_2)a_2+m_1g}{m_1+m_2}$ 向下; $a_{2地}=a_2-a_1$ 向下; $f=\\frac{2m_1m_2g+m_1m_2a_2}{m_1+m_2}$",
+    "solution": "设物体向下加速度为 $a_1$，绳张力 $T$，环受摩擦力 $f$ 向上。对物体：$m_1g-T=m_1a_1$；对环：$m_2g-f=m_2a_{2地}$，$a_{2地}=a_2-a_1$，$T=f$。联立求解。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 37,
+    "image": "assets/q037.jpg"
+  },
+  {
+    "question": "质量分别为m和2m 、半径分别为r 和2r 的两个均匀圆盘，同轴地粘在一起，可以绕通过盘心且垂直盘面的水平光滑固定轴转动，对转轴的转动惯量为 $9 m r^{2}/2$ ，大小圆盘边缘都绕有绳子，绳子下端都挂一质量为m的重物，如图所示．求盘的角加速度的大小．",
+    "answer": "$\\beta=\\frac{2g}{19r}$",
+    "solution": "设左侧重物加速度 $a_1$ 向下，右侧 $a_2$ 向下。转动定律：$T_1\\cdot2r-T_2\\cdot r=J\\beta$；重物：$mg-T_1=ma_1$，$mg-T_2=ma_2$；$a_1=2r\\beta$，$a_2=r\\beta$。联立得 $\\beta=2g/(19r)$。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 38,
+    "image": "assets/q038.jpg"
+  },
+  {
+    "question": "一质量为M ，长为l的均匀细直杆，可绕通过其中心且与杆垂直的光滑水平固定轴，在竖直平面内转动。当杆停止于竖直位置时，质量为m的子弹沿水平方向射入杆的下端且留在杆内，并使杆摆动，若杆摆动的最大偏角为θ，试求：(1)入射前的速率 $v_{0}$ ；(2)在最大偏角θ时，杆转动的角加速度。",
+    "answer": "$v_0=\\frac{1}{m}\\sqrt{\\frac{(M+3m)(M+6m)}{6}gl(1-\\cos\\theta)}$; $\\beta=\\frac{3(M+2m)g\\sin\\theta}{(M+3m)l}$",
+    "solution": "（1）角动量守恒：$mv_0(l/2)=J_{总}\\omega_0$，$J_{总}=Ml^2/12+m(l/2)^2$。机械能守恒求 $\\omega_0$ 与 $\\theta$ 关系，解出 $v_0$。（2）$\\beta=M/J_{总}$，$M=(Mg\\cdot l/2+mg\\cdot l/2)\\sin\\theta$。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 39,
+    "image": "assets/q039.jpg"
+  },
+  {
+    "question": "一质量均匀分布的圆盘，质量为M ，半径为R，放在一粗糙水平面上(圆盘与水平面之间的摩擦系数为 $\\mu$ )，圆盘可绕通过其中心O的竖直固定光滑轴转动．开始时，圆盘静止，一质量为m的子弹以水平速度 $v_{0}$ 垂直于圆盘半径打入圆盘边缘并嵌在盘边上，求(1)子弹击中圆盘后，盘所获得的角速度；(2)经过多少时间后，圆盘停止转动(圆盘绕通过O的竖直轴的转动惯量为 $\\frac{1}{2}M R^{2}$ ，忽略子弹重力造成的摩擦阻力矩)。",
+    "answer": "$\\omega=\\frac{2mv_0}{(M+2m)R}$; $t=\\frac{3(M+2m)v_0}{4\\mu Mg}$",
+    "solution": "（1）角动量守恒：$mv_0R=(\\frac{1}{2}MR^2+mR^2)\\omega$，得 $\\omega$。（2）摩擦力矩 $M_f=\\int_0^R \\mu(Mg/\\pi R^2)2\\pi r^2\\,dr=\\frac{2}{3}\\mu MgR$。由 $M_f t=J_{总}\\omega$ 得 $t$。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 40
+  },
+  {
+    "question": "一车轮可绕通过轮心O且与轮面垂直的水平光滑固定轴，在竖直面内转动，轮的质量为M，可以认为均匀分布在半径为R的圆周上，绕O轴的转动惯量J＝$M R^{2}$ ．车轮原来静止，一质量为 m 的子弹，以速度 $v_{0}$ 沿与水平方向成α 角度射中轮心O正上方的轮缘A处，并留在A处，如图所示．设子弹与轮撞击时间极短．问：\n\n(1)以车轮、子弹为研究系统，撞击前后系统的动量是否守恒？为什么？动能是否守恒？为什么？角动量是否守恒？为什么？\n\n(2)子弹和轮开始一起运动时，轮的角速度是多少？",
+    "answer": "动量不守恒（轴处受外力冲量）; 动能不守恒（完全非弹性碰撞）; 角动量守恒（轴处外力矩为零）; $\\omega=\\frac{mv_0\\cos\\alpha}{(M+m)R}$",
+    "solution": "（1）轴 O 对轮有约束冲力，系统动量不守恒；碰撞为非弹性，动能不守恒；轴处力过 O 点，对 O 力矩为零，角动量守恒。（2）$mv_0\\cos\\alpha\\cdot R=(MR^2+mR^2)\\omega$。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 41,
+    "image": "assets/q041.jpg"
+  },
+  {
+    "question": "一长为 1 m 的均匀直棒可绕过其一端且与棒垂直的水平光滑固定轴转动．抬起另一端使棒向上与水平面成 $60^{\\circ}$ ，然后无初转速地将棒释放．已知棒对轴的转动惯量为 $\\frac{1}{3}ml^{2}$ ，其中 m 和 l 分别为棒的质量和长度．求：\n\n(1)放手时棒的角加速度；\n\n(2)棒转到水平位置时的角加速度",
+    "answer": "$\\beta_0=\\frac{3g}{4l}=7.35\\,\\mathrm{rad/s^2}$; $\\beta=\\frac{3g}{2l}=14.7\\,\\mathrm{rad/s^2}$",
+    "solution": "（1）$M=mg\\frac{l}{2}\\cos60^\\circ=\\frac{1}{4}mgl$，$\\beta_0=M/J=\\frac{3g}{4l}$。（2）水平位置 $M=\\frac{1}{2}mgl$，$\\beta=\\frac{3g}{2l}$。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 42,
+    "image": "assets/q042.jpg"
+  },
+  {
+    "question": "两个大小不同、具有水平光滑轴的定滑轮，顶点在同一水平线上。小滑轮的质量为 m，半径为 r，对轴的转动惯量 $J=\\frac{1}{2}m r^{2}$ 。大滑轮的质量 $m {'}{=}2 m$ ，半径 $r^{\\prime}{=}2 r$ ，对轴的转动惯量 $J^{\\prime}=\\frac{1}{2}m^{\\prime}{r^{\\prime}}^{2}$ 。一根不可伸长的轻质细绳跨过这两个定滑轮，绳的两端分别挂着物体 A和 B。A的质量为 m，B的质量 $m {'}{=}2 m$ 。这一系统由静止开始转动。已知 $m {=}6.0 \\mathrm{kg}$ ， $r {=}5.0 \\mathrm{cm}$ 。求两滑轮的角加速度和它们之间绳中的张力。",
+    "answer": "$\\beta_A=\\frac{4g}{17r}\\approx46\\,\\mathrm{rad/s^2}$; $\\beta_B=\\frac{2g}{17r}\\approx23\\,\\mathrm{rad/s^2}$; $T=\\frac{12mg}{17}\\approx41.3\\,\\mathrm{N}$",
+    "solution": "设绳中张力为 $T$，A 向上加速度 $a$，B 向下加速度 $a$。对小滑轮：$(T-T_1)r=J\\beta_A$；对大滑轮：$(T_2-T)r'=J'\\beta_B$；物体：$T_1-mg=ma$，$2mg-T_2=2ma$；$a=r\\beta_A=r'\\beta_B$。联立解得。",
+    "category": "力学",
+    "type": "problemSolving",
+    "id": 43,
+    "image": "assets/q043.jpg"
+  },
+  {
+    "question": "如图所示，波长为λ 的平行单色光垂直入射在折射率为 n2的薄膜上，经上下两个表面反射的两束光发生干涉。若薄膜厚度为 e，而且 $n_{1}>n_{2}>$ $n_{3}$ ，则两束反射光在相遇点的相位差为",
+    "options": [
+      "$4 \\pi n_{2}e/\\lambda$",
+      "$2 \\pi n_{2}e/\\lambda$",
+      "$( 4 \\pi n_{2}e/\\lambda )+\\pi$",
+      "$\\left( 2 \\pi n_{2}e/\\lambda \\right)-\\pi$"
+    ],
+    "answer": "A",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 44,
+    "image": "assets/q044.jpg"
+  },
+  {
+    "question": "在双缝干涉实验中，设缝是水平的。若双缝所在的平板稍微向上平移，其它条件不变，则屏上的干涉条纹",
+    "options": [
+      "向下平移，且间距不变",
+      "向上平移，且间距不变",
+      "不移动，但间距改变",
+      "向上平移，且间距改变"
+    ],
+    "answer": "B",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 45
+  },
+  {
+    "question": "把一平凸透镜放在平玻璃上，构成牛顿环装置。当平凸透镜慢慢地向上平移时，由反射光形成的牛顿环",
+    "options": [
+      "向中心收缩，条纹间隔变小",
+      "向中心收缩，环心呈明暗交替变化",
+      "向外扩张，环心呈明暗交替变化",
+      "向外扩张，条纹间隔变大"
+    ],
+    "answer": "B",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 46
+  },
+  {
+    "question": "自然光以 $60^{\\circ}$ 的入射角照射到某两介质交界面时，反射光为完全线偏振光，则知折射光为",
+    "options": [
+      "完全线偏振光且折射角是 $30^{\\circ}$",
+      "部分偏振光且只是在该光由真空入射到折射率为 $\\sqrt{3}$ 的介质时，折射角是 $30^{\\circ}$",
+      "部分偏振光，但须知两种介质的折射率才能确定折射角",
+      "部分偏振光且折射角是 $30^{\\circ}$"
+    ],
+    "answer": "D",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 47
+  },
+  {
+    "question": "一束自然光自空气射向一块平板玻璃(如图)，设入射角等于布儒斯特角 $i_{0}$ ，则在界面2的反射光",
+    "options": [
+      "是自然光",
+      "是线偏振光且光矢量的振动方向垂直于入射面",
+      "是线偏振光且光矢量的振动方向平行于入射面",
+      "是部分偏振光"
+    ],
+    "answer": "B",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 48,
+    "image": "assets/q048.jpg"
+  },
+  {
+    "question": "在如图所示的单缝夫琅禾费衍射实验中，若将单缝沿透镜光轴方向向透镜平移，则屏幕上的衍射条纹",
+    "options": [
+      "间距变大",
+      "间距变小",
+      "不发生变化",
+      "间距不变，但明暗条纹的位置交替变化"
+    ],
+    "answer": "C",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 49,
+    "image": "assets/q049.jpg"
+  },
+  {
+    "question": "两块平玻璃构成空气劈形膜，左边为棱边，用单色平行光垂直入射。若上面的平玻璃以棱边为轴，沿逆时针方向作微小转动，则干涉条纹的",
+    "options": [
+      "间隔变小，并向棱边方向平移",
+      "间隔变大，并向远离棱边方向平移",
+      "间隔不变，向棱边方向平移",
+      "间隔变小，并向远离棱边方向平移"
+    ],
+    "answer": "A",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 50
+  },
+  {
+    "question": "如图， $S_{1}$ 、 $S_{2}$ 是两个相干光源，它们到 P 点的距离分别为 $r_{1}$ 和 $r_{2}.$ 。路径 $S_{1}P$ 垂直穿过一块厚度为 $t_{1}$ ，折射率为 $n_{1}$ 的介质板，路径 $S_{2}P$ 垂直穿过厚度为 $t_{2}$ ，折射率为 $n_{2}$ 的另一介质板，其余部分可看作真空，这两条路径的光程差等于( )[1mm]",
+    "options": [
+      "$\\left( r_{2}+n_{2}t_{2}\\right)-\\left( r_{1}+n_{1}t_{1}\\right)$",
+      "$\\left( r_{2}+\\left( n_{2}-1 \\right) t_{2}\\right)-\\left( r_{1}+\\left( n_{1}-1 \\right) t_{2}\\right)$",
+      "$\\left( r_{2}-n_{2}t_{2}\\right)-\\left( r_{1}-n_{1}t_{1}\\right)$",
+      "$n_{2}t_{2}-n_{1}t_{1}$"
+    ],
+    "answer": "B",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 51,
+    "image": "assets/q051.jpg"
+  },
+  {
+    "question": "波长为λ的单色光垂直入射于光栅常数为 d、缝宽为 a、总缝数为 N 的光栅上。取 k=0，±1，±2…，则决定出现主极大的衍射角 θ 的公式可写成",
+    "options": [
+      "$N a \\sin \\theta{=}k \\lambda$",
+      "$a \\mathrm{sin}\\theta{=}k \\lambda$",
+      "$N d \\mathrm{sin}\\theta{=}k \\lambda$",
+      "$d \\mathrm{sin}\\theta=k \\lambda$"
+    ],
+    "answer": "D",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 52
+  },
+  {
+    "question": "两偏振片堆叠在一起，一束自然光垂直入射其上时没有光线通过。当其中一偏振片慢慢转动 $180^{\\circ}$ 时透射光强度发生的变化为：",
+    "options": [
+      "光强单调增加",
+      "光强先增加，然后减小，再增加，再减小至零",
+      "光强先增加，后减小，再增加",
+      "光强先增加，后又减小至零"
+    ],
+    "answer": "D",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 53
+  },
+  {
+    "question": "在如图所示的单缝的夫琅禾费衍射实验中，将单缝 K 沿垂直于光的入射方向(沿图中的x方向)稍微平移，则",
+    "options": [
+      "衍射条纹移动，条纹宽度不变",
+      "衍射条纹移动，条纹宽度变动",
+      "衍射条纹中心不动，条纹变宽",
+      "衍射条纹不动，条纹宽度不变"
+    ],
+    "answer": "D",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 54,
+    "image": "assets/q054.jpg"
+  },
+  {
+    "question": "( xz1000A000009402 ) 波长 $\\lambda=500 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的单色垂直照射到宽度a=0.25mm 的单缝上，单缝后面放置一凸透镜，在凸透镜的焦平面上放置一屏幕，用以观测衍射条纹。今测得屏幕上中央明条纹一侧第三个暗条纹和另一侧第三个暗条纹之间的距离为 d=12mm，则凸透镜的焦距 f 为",
+    "options": [
+      "2m",
+      "1m",
+      "0.5m",
+      "0.2m"
+    ],
+    "answer": "B",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 55
+  },
+  {
+    "question": "测量单色光的波长时，下列方法中哪一种方法最为准确？",
+    "options": [
+      "双缝干涉",
+      "牛顿环",
+      "单缝衍射",
+      "光栅衍射"
+    ],
+    "answer": "D",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 56
+  },
+  {
+    "question": "在双缝干涉实验中，两条缝的宽度原来是相等的。若其中一缝的宽度略变窄(缝中心位置不变)，则",
+    "options": [
+      "干涉条纹的间距变宽",
+      "干涉条纹的间距变窄",
+      "干涉条纹的间距不变，但原极小处的强度不再为零",
+      "不再发生干涉现象"
+    ],
+    "answer": "C",
+    "category": "波动光学",
+    "type": "multipleChoice",
+    "id": 57
+  },
+  {
+    "question": "空气中一玻璃劈形膜其一端厚度为零另一端厚度为0.005cm，折射率为 1.5。现用波长为 $60 0 \\mathrm{nm}\\left( 1 \\mathrm{nm}=10^{-9}\\mathrm{m}\\right)$ 的单色平行光，沿入射角为 $30^{\\circ}$ 角的方向射到劈的上表面，则在劈形膜上形成的干涉条纹数目为",
+    "answer": "$236$",
+    "solution": "斜入射时，光程差为 $2e\\sqrt{n^2-\\sin^2 i}$。条纹数 $N=\\dfrac{2e\\sqrt{n^2-\\sin^2 i}}{\\lambda}=\\dfrac{2\\times 0.005\\times 10^{-2}\\times\\sqrt{1.5^2-\\sin^2 30^{\\circ}}}{600\\times 10^{-9}}\\approx 235.7$，取整为 $236$ 条。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 58
+  },
+  {
+    "question": "如图，在双缝干涉实验中，若把一厚度为 e、折射率为 n的薄云母片覆盖在 $S_{1}$ 缝上，中央明条纹将向移动；覆盖云母片后，两束相干光至原中央明纹O处的光程差为。",
+    "answer": "上（$S_1$ 一侧）; $(n-1)e$",
+    "solution": "覆盖 $S_1$ 使该路光程增加 $(n-1)e$，中央条纹向光程较大的 $S_1$ 方向（上）移动；原中央处光程差即为 $(n-1)e$。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 59,
+    "image": "assets/q059.jpg"
+  },
+  {
+    "question": "平行单色光垂直入射在缝宽为 $a {=}0.15 \\mathrm{mm}$ 的单缝上。缝后有焦距为 $f=400\\,\\mathrm{mm}$ 的凸透镜，在其焦平面上放置观察屏幕。现测得屏幕上中央明条纹两侧的两个第三级暗纹之间的距离为 8mm，则入射光的波长为=",
+    "answer": "$500\\,\\mathrm{nm}$",
+    "solution": "第三级暗纹位置 $x_3=\\pm3\\lambda f/a$，两侧间距 $6\\lambda f/a=8\\,\\mathrm{mm}$，解得 $\\lambda=8\\times10^{-3}\\times0.15\\times10^{-3}/(6\\times0.4)=500\\times10^{-9}\\,\\mathrm{m}=500\\,\\mathrm{nm}$。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 60
+  },
+  {
+    "question": "如图所示的杨氏双缝干涉装置，若用单色自然光照射狭缝S，在屏幕上能看到干涉条纹。若在双缝 $S_{1}$ 和 $S_{2}$ 的一侧分别加一同质同厚的偏振片 $P_{1}, \\ P_{2}$ ，则当 $P_{1}$ 与 $P_{1}$ 的偏振化方向相互时，在屏幕上仍能看到很清晰的干涉条纹。",
+    "answer": "平行",
+    "solution": "两束相干光必须振动方向相同才能产生清晰干涉，因此两偏振片偏振化方向需平行。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 61,
+    "image": "assets/q061.jpg"
+  },
+  {
+    "question": "一束平行的自然光，以 $60^{\\circ}$ 角入射到平玻璃表面上．若反射光束是完全偏振的，则透射光束的折射角是 ； 玻璃的折射率为。",
+    "answer": "$30^\\circ$; $\\sqrt{3}$",
+    "solution": "布儒斯特角满足 $\\tan i_B=n$，$i_B=60^\\circ$，$n=\\sqrt{3}$；折射角 $r=90^\\circ-i_B=30^\\circ$。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 62
+  },
+  {
+    "question": "若对应于衍射角 $\\varphi=30^{\\circ}$ ，单缝处的波面可划分为 4 个半波带，则单缝的宽度a= λ(λ为入射光波长)。",
+    "answer": "$4$",
+    "solution": "$a\\sin\\phi=4\\cdot\\lambda/2=2\\lambda$，$\\sin30^\\circ=1/2$，故 $a=4\\lambda$。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 63
+  },
+  {
+    "question": "一束单色光垂直入射在光栅上，衍射光谱中共出现 5 条明纹。若已知此光栅缝宽度与不透明部分宽度相等，那么在中央明纹一侧的两条明纹分别是级和第级谱线。",
+    "answer": "$1$; $3$",
+    "solution": "$a=b$ 时 $d=2a$，缺级发生在 $k=\\pm2,\\pm4,\\ldots$。可见 $k=0,\\pm1,\\pm3$ 共 5 条，故一侧为 $1$、$3$ 级。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 64
+  },
+  {
+    "question": "He－Ne 激光器发出 $\\lambda=632.8\\,\\mathrm{nm}\\left( \\mathrm{nm}=10^{-9}\\mathrm{m}\\right)$ 的平行光束，垂直照射到一单缝上，在距单缝 3m远的屏上观察夫琅禾费衍射图样，测得两个第二级暗纹间的距离是10cm，则单缝的宽度 $a {=}$ 。",
+    "answer": "$7.6\\times10^{-5}\\,\\mathrm{m}$",
+    "solution": "第二级暗纹间距 $4\\lambda L/a=0.10\\,\\mathrm{m}$，$a=4\\lambda L/0.10=4\\times632.8\\times10^{-9}\\times3/0.10\\approx7.6\\times10^{-5}\\,\\mathrm{m}$。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 65
+  },
+  {
+    "question": "在单缝夫琅禾费衍射实验中，设第一级暗纹的衍射角很小，若钠黄光 $( \\left( \\lambda_{1}\\approx 58 9 \\mathrm{mm}\\right)$ 中央明纹宽度为 4.0mm，则 $\\lambda_{2}=44 2 \\mathrm{nm}\\big( 1 \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的蓝紫色光的中央明纹宽度为。",
+    "answer": "$3.0\\,\\mathrm{mm}$",
+    "solution": "中央明纹宽度 $\\Delta x=2\\lambda f/a$ 与波长成正比，$\\Delta x_2=4.0\\times442/589\\approx3.0\\,\\mathrm{mm}$。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 66
+  },
+  {
+    "question": "可见光的波长范围是 400nm─760nm。用平行的白光垂直入射在平面透射光栅上时，它产生的不与另一级光谱重叠的完整的可见光光谱是第级光谱。 $\\left( 1 \\mathrm{nm}=10^{-9}\\mathrm{m}\\right)$",
+    "answer": "$1$",
+    "solution": "$d\\sin\\theta=k\\lambda$。第 $k$ 级最长波长 $760k$ 需小于第 $k+1$ 级最短波长 $400(k+1)$，即 $760k<400(k+1)$，$k<1.05$，故只有 $k=1$ 级完整不重叠。",
+    "category": "波动光学",
+    "type": "fillInTheBlank",
+    "id": 67
+  },
+  {
+    "question": "在牛顿环装置的平凸透镜和平玻璃板之间充满折射率n=1.33 的透明液体(设平凸透镜和平板玻璃的折射率都大于 1.33)。凸透镜的曲率半径为300cm， 波长 $\\lambda=65 0 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的平行单色垂直照射到牛顿环装置上，凸透镜顶部刚好与平玻璃板接触，求：\n\n(1)从中心向外数第十个明环所在处的液体厚度；\n\n(2)第十个明环的半径 $r_{10}$ 。",
+    "answer": "$e_{10}=\\dfrac{19\\lambda}{4n}\\approx 2.32\\times 10^{-6}\\ \\mathrm{m}$；$r_{10}=\\sqrt{\\dfrac{19R\\lambda}{2n}}\\approx 3.73\\times 10^{-3}\\ \\mathrm{m}$",
+    "solution": "反射光在液体下表面（液体→玻璃）有 $\\pi$ 相位突变，上表面无突变，故反射明环满足 $2ne=\\left(k-\\dfrac12\\right)\\lambda$。第十个明环取 $k=10$，得 $e_{10}=\\dfrac{19\\lambda}{4n}$；由 $e\\approx \\dfrac{r^2}{2R}$，得 $r_{10}=\\sqrt{\\dfrac{19R\\lambda}{2n}}$。代入 $R=300\\ \\mathrm{cm}$、$\\lambda=650\\ \\mathrm{nm}$、$n=1.33$ 即得。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 68
+  },
+  {
+    "question": "一束自然光自水中入射到空气界面上，若水的折射率为1.33，空气的折射率为1.00，求布儒斯特角。",
+    "answer": "$i_B=\\arctan\\frac{1.00}{1.33}\\approx36.9^\\circ$",
+    "solution": "光从水中射向空气，布儒斯特角满足 $\\tan i_B=n_2/n_1=1.00/1.33$，$i_B\\approx36.9^\\circ$。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 69
+  },
+  {
+    "question": "由强度为 $I_{a}$ 的自然光和强度为 $I_{b}$ 的线偏振光混合而成的一束入射光，垂直入射在一偏振片上，当以入射光方向为转轴旋转偏振片时，出射光将出现最大值和最小值。其比值为 n。试求出 $I_{a}/I_{b}$ 与n的关系。",
+    "answer": "$\\frac{I_a}{I_b}=\\frac{2(n-1)}{1}$",
+    "solution": "透过偏振片后，自然光强度为 $I_a/2$，线偏振光强度为 $I_b\\cos^2\\theta$。最大 $I_{max}=I_a/2+I_b$，最小 $I_{min}=I_a/2$。由 $I_{max}/I_{min}=n$ 得 $(I_a/2+I_b)/(I_a/2)=n$，解得 $I_a/I_b=2/(n-1)$。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 70
+  },
+  {
+    "question": "波长范围在 450\\~650nm 之间的复色平行光垂直照射在每厘米有 5000 条刻线的光栅上，屏幕放在透镜的焦面处，屏上第二级光谱各色光在屏上所占范围的宽度为 35.1cm。求透镜的焦距 $f_{\\circ}$ ( $\\mathrm{\\Omega_{1nm=10}-}^{9}\\mathrm{m}\\mathrm{)}$ )",
+    "answer": "$f\\approx1.00\\,\\mathrm{m}$",
+    "solution": "光栅常数 $d=1\\,\\mathrm{cm}/5000=2\\times10^{-6}\\,\\mathrm{m}$。第二级 $\\sin\\theta=k\\lambda/d$。对 $450\\,\\mathrm{nm}$ 和 $650\\,\\mathrm{nm}$ 分别得 $\\theta_1\\approx26.7^\\circ$，$\\theta_2\\approx40.5^\\circ$。屏上宽度 $\\Delta x=f(\\tan\\theta_2-\\tan\\theta_1)=0.351\\,\\mathrm{m}$，解得 $f\\approx1.00\\,\\mathrm{m}$。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 71
+  },
+  {
+    "question": "一束平行光垂直入射到某个光栅上，该光束有两种波长的光， $\\lambda_{1}=44 0 \\mathrm{nm}$ ， $\\lambda_{2}=66 0 \\mathrm{nm}\\big( 1 \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 。实验发现，两种波长的谱线(不计中央明纹)第二次重合于衍射角 $\\varphi=60^{\\circ}$ 的方向上。求此光栅的光栅常数 $d_{\\circ}$ 。",
+    "answer": "$d=3.05\\times10^{-6}\\,\\mathrm{m}$",
+    "solution": "重合时 $k_1\\lambda_1=k_2\\lambda_2$，$k_1/k_2=660/440=3/2$。第二次重合取 $k_1=6$，$k_2=4$。由 $d\\sin60^\\circ=k_1\\lambda_1$ 得 $d=6\\times440\\times10^{-9}/\\sin60^\\circ\\approx3.05\\times10^{-6}\\,\\mathrm{m}$。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 72
+  },
+  {
+    "question": "氦放电管发出的光垂直照射到某光栅上，测得波长$\\lambda_{1}=0.66 8 \\mu m$ 的谱线的衍射角为 $\\varphi=20^{\\circ}$ 。如果在同样 $\\varphi$ 角处出现波长 $\\lambda_{2}=0.44 7 \\mu m$ 的更高级次的谱线，那么光栅常数最小是多少？",
+    "answer": "$d_{min}\\approx3.92\\,\\mathrm{\\mu m}$",
+    "solution": "$d\\sin\\phi=k_1\\lambda_1=k_2\\lambda_2$，$k_1/k_2=\\lambda_2/\\lambda_1\\approx0.669$。取 $k_1=2$，$k_2=3$ 为最小整数解。$d=2\\lambda_1/\\sin20^\\circ\\approx3.92\\,\\mathrm{\\mu m}$。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 73
+  },
+  {
+    "question": "在双缝干涉实验中，单色光源 $S_{0}$ 到两缝 $S_{1}$ 和 $S_{2}$ 的距离分别为 $l_{1}$ 和 $l_{2}$ ，并且 $l_{2}-l_{1}=3\\lambda$ ，λ为入射光的波长，双缝之间的距离为 $d$ ，双缝到屏幕的距离为 $D\\,(D\\gg d)$ ，如图。求：\n\n(1)零级明纹到屏幕中央 $O$ 点的距离。\n\n(2)相邻明条纹间的距离。",
+    "answer": "$x_0=-\\frac{D\\lambda}{3d}$; $\\Delta x=\\frac{D\\lambda}{d}$",
+    "solution": "光源到两缝的光程差 $\\delta_0=l_2-l_1=\\lambda/3$ 使中央条纹向 $S_2$ 方向移动。零级明纹满足 $\\delta_0+dx/D=0$，$x_0=-D\\lambda/(3d)$。条纹间距不变，$\\Delta x=D\\lambda/d$。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 74,
+    "image": "assets/q074.jpg"
+  },
+  {
+    "question": "双缝干涉实验装置如图所示，双缝与屏之间的距离 $D=120\\,\\mathrm{cm}$ ，两缝之间的距离 d=0.50mm，用波长 $\\lambda=50 0 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的单色光垂直照射双缝。\n\n(1)求原点 $O$ (零级明条纹所在处)上方的第五级明条纹的坐标 x；\n\n(2)如果用厚度 $l=1.0\\times10^{-2}\\,\\mathrm{mm}$ ，折射率 $n {=}1.58$ 的透明薄膜复盖在图中的 $S_{1}$ 缝后面，求上述第五级明条纹的坐标 $x^{\\prime},$ 。",
+    "answer": "$x=6.0\\,\\mathrm{mm}$; $x'=-3.6\\,\\mathrm{cm}$",
+    "solution": "（1）$x=kD\\lambda/d=5\\times1.2\\times500\\times10^{-9}/(0.5\\times10^{-3})=6.0\\times10^{-3}\\,\\mathrm{m}=6.0\\,\\mathrm{mm}$。（2）覆盖薄膜产生附加光程差 $\\Delta=(n-1)l=0.58\\times10^{-2}\\,\\mathrm{mm}=5.8\\,\\mathrm{\\mu m}=11.6\\lambda$。第五级明纹位置 $x'=x-(D/d)\\Delta\\approx-3.6\\,\\mathrm{cm}$。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 75,
+    "image": "assets/q075.jpg"
+  },
+  {
+    "question": "折射率为 1.60 的两块标准平面玻璃板之间形成一个劈形膜(劈尖角 θ 很小)。用波长 $\\lambda=60 0 \\mathrm{nm}\\big( \\mathrm{nm}=10^{-9}\\mathrm{m}\\big )$ 的单色光垂直入射，产生等厚干涉条纹。假如在劈形膜内充满 n=1.40 的液体时的相邻明纹间距比劈形膜内空气时的间距缩小 $\\Delta l=0.5 \\mathrm{mm}$ ，那么劈尖角θ应是多少？",
+    "answer": "$\\theta\\approx1.7\\times10^{-4}\\,\\mathrm{rad}$",
+    "solution": "明纹间距 $l=\\lambda/(2n\\theta)$。空气时 $l_0=\\lambda/(2\\theta)$，液体时 $l=\\lambda/(2n\\theta)$。$\\Delta l=l_0-l=\\frac{\\lambda}{2\\theta}(1-\\frac{1}{n})$。解得 $\\theta=\\frac{\\lambda}{2\\Delta l}(1-\\frac{1}{n})=\\frac{600\\times10^{-9}}{2\\times0.5\\times10^{-3}}\\times\\frac{0.4}{1.4}\\approx1.7\\times10^{-4}\\,\\mathrm{rad}$。",
+    "category": "波动光学",
+    "type": "problemSolving",
+    "id": 76
+  }
+];
+
+            const BG_MODES = ['geo', 'plain'];
+            const BG_LABELS = { geo: '几何', plain: '素白' };
+
+            function init() {
+                state.allQuestions = questionBankData;
+                resetOrder();
+                state.userAnswers = new Array(state.allQuestions.length).fill(null);
+                loadBg();
+                loadFont();
+                renderQuestion();
+                renderNavbar();
+                updateProgress();
+                prevBtn.addEventListener('click', showPrev);
+                nextBtn.addEventListener('click', showNext);
+                finishBtn.addEventListener('click', showResults);
+                sidebarFinishBtn.addEventListener('click', showResults);
+                orderBtn.addEventListener('click', toggleOrder);
+                restartBtn.addEventListener('click', restartQuiz);
+                fontBtn.addEventListener('click', toggleFont);
+                bgBtn.addEventListener('click', toggleBg);
+            }
+
+            function resetOrder() {
+                state.order = state.allQuestions.map((_, i) => i);
+                if (state.mode === 'random') {
+                    state.order = shuffleArray(state.order, state.seed);
+                }
+            }
+
+            function questionAt(i) {
+                return state.allQuestions[state.order[i]];
+            }
+
+            function answerAt(i) {
+                return state.userAnswers[state.order[i]];
+            }
+
+            function setAnswerAt(i, value) {
+                state.userAnswers[state.order[i]] = value;
+            }
+
+            function typeLabel(type) {
+                if (type === 'multipleChoice') return '选择题';
+                if (type === 'fillInTheBlank') return '填空题';
+                return '解答题';
+            }
+
+            function renderQuestion() {
+                if (state.allQuestions.length === 0) {
+                    questionBody.innerHTML = '<p>题库为空。</p>';
+                    return;
+                }
+                const question = questionAt(state.currentIndex);
+                questionHeader.textContent = question.category || '综合';
+                questionMeta.textContent = typeLabel(question.type);
+                questionCounter.textContent = `第 ${state.currentIndex + 1} / ${state.order.length} 题`;
+                questionBody.innerHTML = question.question.replace(/\n/g, '<br>');
+
+                if (question.image) {
+                    const figure = document.createElement('div');
+                    figure.className = 'question-figure';
+                    const img = document.createElement('img');
+                    img.src = question.image;
+                    img.alt = '题图';
+                    figure.appendChild(img);
+                    questionBody.appendChild(figure);
+                }
+
+                answerArea.innerHTML = '';
+
+                if (question.type === 'multipleChoice') renderMultipleChoice(question);
+                else if (question.type === 'fillInTheBlank') renderFillIn(question, false);
+                else renderFillIn(question, true);
+
+                prevBtn.disabled = state.currentIndex === 0;
+                nextBtn.disabled = state.currentIndex === state.order.length - 1;
+
+                if (window.MathJax) MathJax.typesetPromise([questionBody, answerArea]);
+            }
+
+            function renderMultipleChoice(question) {
+                const optionLetters = ['A', 'B', 'C', 'D', 'E'];
+                question.options.forEach((option, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn geo-btn';
+                    btn.innerHTML = `<span class="font-mono font-bold mr-2">${optionLetters[index]}.</span>${option}`;
+                    btn.onclick = () => handleMC(index, optionLetters[index], btn);
+                    answerArea.appendChild(btn);
+                });
+                const stored = answerAt(state.currentIndex);
+                if (stored) restoreMC(stored.selected);
+            }
+
+            function handleMC(index, letter, btn) {
+                if (answerAt(state.currentIndex)) return;
+                const question = questionAt(state.currentIndex);
+                const isCorrect = letter === question.answer;
+                setAnswerAt(state.currentIndex, { selected: letter, isCorrect });
+                applyMCStyles(letter, question.answer);
+                updateNavbar();
+                updateProgress();
+            }
+
+            function restoreMC(selected) {
+                applyMCStyles(selected, questionAt(state.currentIndex).answer);
+            }
+
+            function applyMCStyles(selected, correct) {
+                const buttons = answerArea.querySelectorAll('.option-btn');
+                buttons.forEach((btn, idx) => {
+                    const letter = ['A', 'B', 'C', 'D', 'E'][idx];
+                    btn.disabled = true;
+                    btn.classList.remove('correct', 'wrong');
+                    if (letter === correct) btn.classList.add('correct');
+                    else if (letter === selected) btn.classList.add('wrong');
+                });
+            }
+
+            function renderFillIn(question, isLong) {
+                const container = document.createElement('div');
+                container.className = 'flex flex-col gap-3';
+
+                const input = document.createElement(isLong ? 'textarea' : 'input');
+                input.type = isLong ? null : 'text';
+                input.id = 'text-answer-input';
+                input.className = 'w-full p-3 outline-none';
+                input.style.color = 'var(--text-color)';
+                input.placeholder = isLong ? '请输入答案/关键结果（多部分用 ; 分隔）' : '请输入答案...';
+                if (isLong) { input.rows = 4; }
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = '提交答案';
+                submitBtn.className = 'geo-primary px-5 py-2 self-start';
+                submitBtn.onclick = () => handleTextSubmit();
+
+                container.appendChild(input);
+                container.appendChild(submitBtn);
+                answerArea.appendChild(container);
+
+                input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !isLong) handleTextSubmit(); });
+
+                const stored = answerAt(state.currentIndex);
+                if (stored) restoreText(stored.selected);
+            }
+
+            function handleTextSubmit() {
+                if (answerAt(state.currentIndex)) return;
+                const input = document.getElementById('text-answer-input');
+                const userAnswer = input.value.trim();
+                if (userAnswer === '') return;
+                const question = questionAt(state.currentIndex);
+                const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(question.answer);
+                setAnswerAt(state.currentIndex, { selected: userAnswer, isCorrect });
+                applyTextStyles(isCorrect, question);
+                updateNavbar();
+                updateProgress();
+            }
+
+            function restoreText(selected) {
+                const input = document.getElementById('text-answer-input');
+                input.value = selected;
+                applyTextStyles(answerAt(state.currentIndex).isCorrect, questionAt(state.currentIndex));
+            }
+
+            function applyTextStyles(isCorrect, question) {
+                const input = document.getElementById('text-answer-input');
+                input.disabled = true;
+                input.classList.add(isCorrect ? 'correct' : 'wrong');
+                const submitBtn = input.nextElementSibling;
+                if (submitBtn) submitBtn.disabled = true;
+
+                const existing = answerArea.querySelector('.feedback');
+                if (existing) existing.remove();
+
+                const fb = document.createElement('div');
+                fb.className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
+                if (isCorrect) {
+                    fb.innerHTML = '<strong>回答正确</strong>';
+                } else {
+                    fb.innerHTML = '<strong>正确答案：</strong>' + question.answer +
+                        (question.solution ? '<div class="mt-2"><strong>解析：</strong>' + question.solution + '</div>' : '');
+                }
+                answerArea.appendChild(fb);
+                if (window.MathJax) MathJax.typesetPromise([fb]);
+            }
+
+            function renderNavbar() {
+                navbarContainer.innerHTML = '';
+                bottomNavbarContainer.innerHTML = '';
+                state.order.forEach((origIdx, displayIdx) => {
+                    const sidebarBtn = createNavButton(displayIdx);
+                    navbarContainer.appendChild(sidebarBtn);
+                    const bottomBtn = createNavButton(displayIdx);
+                    bottomNavbarContainer.appendChild(bottomBtn);
+                });
+                updateNavbar();
+            }
+
+            function createNavButton(displayIdx) {
+                const btn = document.createElement('button');
+                btn.textContent = displayIdx + 1;
+                btn.className = 'nav-btn';
+                btn.dataset.idx = displayIdx;
+                btn.onclick = () => goToQuestion(displayIdx);
+                return btn;
+            }
+
+            function updateNavbar() {
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    const idx = parseInt(btn.dataset.idx, 10);
+                    btn.classList.remove('current', 'correct', 'wrong');
+                    const answer = answerAt(idx);
+                    if (idx === state.currentIndex) btn.classList.add('current');
+                    else if (answer && answer.isCorrect) btn.classList.add('correct');
+                    else if (answer) btn.classList.add('wrong');
+                });
+            }
+
+            function goToQuestion(index) {
+                if (index >= 0 && index < state.order.length) {
+                    state.currentIndex = index;
+                    renderQuestion();
+                    updateNavbar();
+                    const btn = navbarContainer.children[index];
+                    if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+
+            function showNext() { goToQuestion(state.currentIndex + 1); }
+            function showPrev() { goToQuestion(state.currentIndex - 1); }
+
+            function toggleOrder() {
+                if (state.mode === 'sequential') {
+                    state.mode = 'random';
+                    state.seed = Date.now();
+                    orderBtn.textContent = '切换顺序';
+                    modeBadge.textContent = '随机';
+                } else {
+                    state.mode = 'sequential';
+                    orderBtn.textContent = '切换随机';
+                    modeBadge.textContent = '顺序';
+                }
+                resetOrder();
+                state.currentIndex = 0;
+                renderQuestion();
+                renderNavbar();
+            }
+
+            function updateProgress() {
+                const total = state.allQuestions.length;
+                const answered = state.userAnswers.filter(a => a !== null).length;
+                const pct = total > 0 ? (answered / total) * 100 : 0;
+                progressFill.style.width = pct + '%';
+                progressText.textContent = `${answered} / ${total}`;
+            }
+
+            function showResults() {
+                const correct = state.userAnswers.filter(a => a && a.isCorrect).length;
+                const total = state.allQuestions.length;
+                const pct = total > 0 ? ((correct / total) * 100).toFixed(1) : 0;
+                scoreText.innerHTML = `答对 <strong>${correct}</strong> / ${total} 题<br><span class="text-lg" style="color:var(--muted-color)">正确率 ${pct}%</span>`;
+                quizView.classList.add('hidden');
+                resultView.classList.remove('hidden');
+            }
+
+            function restartQuiz() {
+                state.currentIndex = 0;
+                state.userAnswers.fill(null);
+                state.mode = 'sequential';
+                orderBtn.textContent = '切换随机';
+                modeBadge.textContent = '顺序';
+                resetOrder();
+                resultView.classList.add('hidden');
+                quizView.classList.remove('hidden');
+                renderQuestion();
+                renderNavbar();
+                updateProgress();
+            }
+
+            function loadFont() {
+                const saved = localStorage.getItem('grind-font');
+                const font = saved || 'serif';
+                setFont(font);
+            }
+
+            function toggleFont() {
+                const current = document.documentElement.style.getPropertyValue('--question-font').includes('sans') ? 'sans' : 'serif';
+                const next = current === 'serif' ? 'sans' : 'serif';
+                setFont(next);
+            }
+
+            function setFont(font) {
+                const value = font === 'sans' ? 'var(--font-sans)' : 'var(--font-serif)';
+                document.documentElement.style.setProperty('--question-font', value);
+                fontBtn.textContent = font === 'sans' ? '字体：黑体' : '字体：宋体';
+                localStorage.setItem('grind-font', font);
+                if (window.MathJax) MathJax.typesetPromise();
+            }
+
+            function loadBg() {
+                const saved = localStorage.getItem('grind-bg');
+                const bg = BG_MODES.includes(saved) ? saved : 'geo';
+                setBg(bg);
+            }
+
+            function toggleBg() {
+                const current = document.body.getAttribute('data-bg') || 'geo';
+                const idx = BG_MODES.indexOf(current);
+                const next = BG_MODES[(idx + 1) % BG_MODES.length];
+                setBg(next);
+            }
+
+            function setBg(bg) {
+                document.body.setAttribute('data-bg', bg);
+                bgBtn.textContent = '背景：' + (BG_LABELS[bg] || bg);
+                localStorage.setItem('grind-bg', bg);
+            }
+
+            init();
+        }
+
+        if (window.MathJax && window.MathJax.startup) {
+            window.MathJax.startup.promise.then(mainApp);
+        } else {
+            document.addEventListener('DOMContentLoaded', mainApp);
+        }
+    </script>
+</body>
+</html>

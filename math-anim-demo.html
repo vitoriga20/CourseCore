@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高数可视化 Demo · 导数 = 切线斜率</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#1a1d24; --line:#2a2f3a;
+    --txt:#e6e8ee; --muted:#9aa3b2; --accent:#5b9dff; --curve:#5b9dff;
+    --deriv:#ff7a59; --tangent:#4be39b; --grid:#262b36;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;}
+  .wrap{max-width:980px;margin:0 auto;padding:24px 18px 48px;}
+  h1{font-size:20px;margin:0 0 4px;font-weight:600}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  select,button{background:#222732;color:var(--txt);border:1px solid var(--line);
+    border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  button.on{background:var(--accent);color:#06101f;border-color:var(--accent);font-weight:600}
+  label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  canvas{width:100%;height:auto;display:block;background:#0b0d12;border-radius:10px;margin-top:12px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;margin-top:10px;color:var(--muted)}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .readout{font-size:13px;color:var(--txt);margin-top:10px;font-variant-numeric:tabular-nums}
+  .readout b{color:var(--tangent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>导数 = 切线斜率（可交互 Demo）</h1>
+  <div class="sub">拖动曲线上的点，或用滑块移动；绿线为切线，其斜率就是该点的导数值。</div>
+
+  <div class="card">
+    <div class="controls">
+      <label>函数
+        <select id="fn">
+          <option value="x2">f(x) = x²</option>
+          <option value="sin">f(x) = sin(x)</option>
+          <option value="exp">f(x) = e^x</option>
+          <option value="inv">f(x) = 1/x</option>
+          <option value="cube">f(x) = x³</option>
+        </select>
+      </label>
+      <button id="play">▶ 播放动画</button>
+      <button id="togD" class="on">显示导数曲线 f'(x)</button>
+      <label>x = <span id="xval">1.00</span>
+        <input id="xs" type="range" min="-4" max="4" step="0.01" value="1" style="width:220px">
+      </label>
+    </div>
+
+    <canvas id="cv" width="920" height="460"></canvas>
+
+    <div class="legend">
+      <span><i style="background:#5b9dff"></i>原函数 f(x)</span>
+      <span><i style="background:#ff7a59"></i>导数 f'(x)</span>
+      <span><i style="background:#4be39b"></i>切线（瞬时变化率）</span>
+    </div>
+    <div class="readout" id="out">f(1.00) = 1.00 ，切线斜率 f'(1.00) = 2.00</div>
+  </div>
+
+  <div class="card" style="color:var(--muted);font-size:13px;line-height:1.7">
+    <b style="color:var(--txt)">这个 demo 说明什么</b><br>
+    导数是"函数在某点的瞬时变化率"，几何意义就是切线斜率。当你拖动 x，绿线始终是该点切线，
+    下方数值实时给出 f(x) 与 f'(x)。橙色曲线是整条导函数——它把"每个 x 对应的斜率"画成了一整条线。<br>
+    想要更高数化的版本（极限 ε–δ 逼近、不定积分面积、泰勒展开叠加、级数收敛、旋转体体积等），
+    我都能照这个思路做成独立可保存的网页，配合你的高数/线代/大物资料复习用。
+  </div>
+</div>
+
+<script>
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const W=cv.width,H=cv.height, pad=40;
+const X0=-5, X1=5, Y0=-8, Y1=8; // math domain/range
+function sx(x){return pad+(x-X0)/(X1-X0)*(W-2*pad);}
+function sy(y){return H-pad-(y-Y0)/(Y1-Y0)*(H-2*pad);}
+
+const fns={
+  x2:x=>x*x,            d_x2:x=>2*x,
+  sin:x=>Math.sin(x),   d_sin:x=>Math.cos(x),
+  exp:x=>Math.exp(x),   d_exp:x=>Math.exp(x),
+  inv:x=>1/x,           d_inv:x=>-1/(x*x),
+  cube:x=>x*x*x,        d_cube:x=>3*x*x
+};
+let cur='x2', showD=true, playing=false, x=1, t0=null;
+
+function f(x){return fns[cur](x);}
+function df(x){return fns['d_'+cur](x);}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='#262b36'; ctx.lineWidth=1;
+  for(let gx=-5;gx<=5;gx++){ctx.beginPath();ctx.moveTo(sx(gx),sy(Y0));ctx.lineTo(sx(gx),sy(Y1));ctx.stroke();}
+  for(let gy=-8;gy<=8;gy++){ctx.beginPath();ctx.moveTo(sx(X0),sy(gy));ctx.lineTo(sx(X1),sy(gy));ctx.stroke();}
+  // axes
+  ctx.strokeStyle='#3a4150'; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(sx(X0),sy(0));ctx.lineTo(sx(X1),sy(0));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(sx(0),sy(Y0));ctx.lineTo(sx(0),sy(Y1));ctx.stroke();
+
+  // derivative curve
+  if(showD){
+    ctx.strokeStyle='#ff7a59'; ctx.lineWidth=2; ctx.beginPath();
+    let first=true;
+    for(let px=pad;px<=W-pad;px++){
+      const mx=X0+(px-pad)/(W-2*pad)*(X1-X0);
+      let my=df(mx); if(Math.abs(my)>Y1) my=Math.sign(my)*Y1;
+      const py=sy(my);
+      if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+  }
+
+  // function curve
+  ctx.strokeStyle='#5b9dff'; ctx.lineWidth=2.5; ctx.beginPath();
+  let first=true;
+  for(let px=pad;px<=W-pad;px++){
+    const mx=X0+(px-pad)/(W-2*pad)*(X1-X0);
+    let my=f(mx); if(my>Y1)my=Y1; if(my<Y0)my=Y0;
+    const py=sy(my);
+    if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // tangent at x
+  const y=f(x), slope=df(x);
+  const tx0=x-1.2, tx1=x+1.2;
+  let ty0=y+slope*(tx0-x), ty1=y+slope*(tx1-x);
+  ctx.strokeStyle='#4be39b'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(sx(tx0),sy(ty0));ctx.lineTo(sx(tx1),sy(ty1));ctx.stroke();
+  ctx.setLineDash([]);
+
+  // point
+  ctx.fillStyle='#4be39b'; ctx.beginPath();ctx.arc(sx(x),sy(y),5,0,7);ctx.fill();
+
+  document.getElementById('out').innerHTML=
+    `f(${x.toFixed(2)}) = ${y.toFixed(2)} ，切线斜率 f'(${x.toFixed(2)}) = ${slope.toFixed(2)}`;
+  document.getElementById('xval').textContent=x.toFixed(2);
+}
+
+const slider=document.getElementById('xs');
+slider.addEventListener('input',e=>{x=parseFloat(e.target.value);draw();});
+cv.addEventListener('mousedown',e=>{
+  const r=cv.getBoundingClientRect();
+  const mx=X0+( (e.clientX-r.left)/r.width*(W) - pad)/(W-2*pad)*(X1-X0);
+  x=Math.max(X0,Math.min(X1,mx)); slider.value=x; draw();
+});
+document.getElementById('fn').addEventListener('change',e=>{cur=e.target.value;draw();});
+document.getElementById('togD').addEventListener('click',e=>{
+  showD=!showD; e.target.classList.toggle('on',showD); draw();
+});
+document.getElementById('play').addEventListener('click',e=>{
+  playing=!playing; e.target.textContent=playing?'⏸ 暂停':'▶ 播放动画';
+  if(playing){t0=null;requestAnimationFrame(loop);}
+});
+function loop(ts){
+  if(!playing)return;
+  if(!t0)t0=ts;
+  const k=(ts-t0)/1000;
+  x=-4+ (k%6)/6*8; slider.value=x; draw();
+  requestAnimationFrame(loop);
+}
+draw();
+</script>
+</body>
+</html>

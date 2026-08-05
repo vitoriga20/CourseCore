@@ -1,0 +1,842 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "长沙理工大学考试试卷"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                327,
+                142,
+                633,
+                167
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "课程名称（含档次）____ 高等数学 A（二）期末 ____ 课程编号 ____ 0701000215"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                205,
+                882,
+                221
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "专业电气、物电等层次（本、专）本科考试方式（开、闭卷）闭卷"
+                    }
+                ]
+            },
+            "bbox": [
+                80,
+                235,
+                882,
+                252
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "一、单项选择题：1～5 小题，每小题 4 分，共 20 分. 下列每小题给出的四个选项中，只有一项是符合题目要求的，请将所选项前的字母写在答题纸上."
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                78,
+                274,
+                877,
+                318
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "1. 设  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "L_{1}:\\frac{x-3}{-2}=\\frac{y+4}{-5}=\\frac{z}{3},\\quad L_{2}:\\left\\{\\begin{aligned}&x=3t,\\\\ &y=-1+3t,\\\\ &z=2+7t,\\end{aligned}\\right."
+                    },
+                    {
+                        "type": "text",
+                        "content": " 。  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "L_{3}:\\left\\{\\begin{aligned}&x+3y-4z=-1,\\\\ &2x+y-z=0,\\end{aligned}\\right."
+                    },
+                    {
+                        "type": "text",
+                        "content": " 则（）.\n(A)   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "L_{1} // L_{3}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  (B)   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "L_{1} // L_{2}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  (C)   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "L_{2} \\perp L_{3}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  (D)   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "L_{1} \\perp L_{2}"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                329,
+                746,
+                397
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2. 已知  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "z = f(x, y)"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 由方程  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "z^2 - \\frac{y}{x} = 0"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 确定，则（）.\n(A)  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "x\\frac{\\partial z}{\\partial x}-y\\frac{\\partial z}{\\partial y}=0"
+                    },
+                    {
+                        "type": "text",
+                        "content": " (B)  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "x\\frac{\\partial z}{\\partial x}+y\\frac{\\partial z}{\\partial y}=0"
+                    },
+                    {
+                        "type": "text",
+                        "content": " (C)  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "y\\frac{\\partial z}{\\partial x}-x\\frac{\\partial z}{\\partial y}=0"
+                    },
+                    {
+                        "type": "text",
+                        "content": " (D)  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(\\frac{\\partial z}{\\partial x})^{2}+(\\frac{\\partial z}{\\partial y})^{2}=0"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                401,
+                665,
+                508
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "3. 设   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\lim_{(x,y)\\to(0,0)}\\frac{f(x,y)-f(0,0)+2x-y}{\\sqrt{x^{2}+y^{2}}}=0"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，则   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "f(x,y)"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  在点   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(0,0)"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  处（）.\n(A) 不连续\n(B) 连续但两个偏导数不存在\n(C) 可微\n(D) 两个偏导数存在但不可微"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                514,
+                700,
+                596
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "4. 设   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "D = \\{(x, y) | x^{2} + y^{2} \\leq 1, y \\geq 0\\}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ,   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "D_{1} = \\{(x, y) | x^{2} + y^{2} \\leq 1, x \\geq 0, y \\geq 0\\}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，则（）.\n(A)   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iint_{D}|x|dxdy=2\\iint_{D_{1}}xdxdy"
+                    },
+                    {
+                        "type": "text",
+                        "content": " \n\n(B)   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iint_{D}xy\\,dxdy=2\\iint_{D_{1}}xy\\,dxdy"
+                    },
+                    {
+                        "type": "text",
+                        "content": " \n\n(C)   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iint_{D}x\\,dxdy=2\\iint_{D_{1}}x\\,dxdy"
+                    },
+                    {
+                        "type": "text",
+                        "content": " \n\n(D)   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iint_{D}(x+y)dxdy=2\\iint_{D_{1}}(x+y)dxdy"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                611,
+                786,
+                736
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "5. 若级数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty} a_n"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 收敛，则级数（）收敛.\n(A)  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty} |a_n|"
+                    },
+                    {
+                        "type": "text",
+                        "content": "\n(B)  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty} (-1)^n a_n"
+                    },
+                    {
+                        "type": "text",
+                        "content": "\n(C)  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty} a_n a_{n+1}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "\n(D)  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty} \\frac{a_n + a_{n+1}}{2}"
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                747,
+                783,
+                852
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "第 1 页 (共 2 页)"
+                    }
+                ]
+            },
+            "bbox": [
+                400,
+                873,
+                554,
+                890
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "二、填空题:6~10 小题, 每小题 4 分, 共 20 分. 请将答案写在答题纸上."
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                78,
+                99,
+                715,
+                118
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "6. 设函数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "f(x,y)=\\int_{0}^{xy}\\frac{\\sin t}{1+t^{2}}dt"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，则  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "f_{xx}(0,2)="
+                    },
+                    {
+                        "type": "text",
+                        "content": " ____."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                131,
+                568,
+                165
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "7. 空间曲线  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\left\\{ \\begin{array}{l} x^{2} + y^{2} + z^{2} = 6, \\\\ x + y + z = 0, \\end{array} \\right."
+                    },
+                    {
+                        "type": "text",
+                        "content": " 在点  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(1, -2, 1)"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 处的法平面方程为 ____."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                177,
+                675,
+                208
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "8. 设  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\Omega: x^2 + y^2 + z^2 \\leq 1"
+                    },
+                    {
+                        "type": "text",
+                        "content": "，则  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iiint_{\\Omega} \\frac{z^3 \\ln (x^2 + y^2 + z^2 + 1)}{(x^2 + y^2 + z^2 + 1)^6} dv ="
+                    },
+                    {
+                        "type": "text",
+                        "content": " ____."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                225,
+                665,
+                268
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "9. 设  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "L"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 是圆周  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "x^{2} + y^{2} = R^{2}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "，则  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\oint_{L} (x^{2} + y) ds ="
+                    },
+                    {
+                        "type": "text",
+                        "content": " ____."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                280,
+                552,
+                319
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "10. 设  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "f(x) = \\begin{cases} x^2 + 1, & 0 < x \\leq \\pi, \\\\ x^2 - 1, & -\\pi < x \\leq 0, \\end{cases}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 则  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "f(x)"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 以  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "2\\pi"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 为周期的傅里叶级数在点  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "x = \\pi"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 处收敛于 ____."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                326,
+                887,
+                362
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "三、解答题:11～16 小题，每小题 10 分，共 60 分.请将解答写在答题纸上.解答应写出文字说明、证明过程或演算步骤."
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                78,
+                376,
+                917,
+                419
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "11. 设  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "D = \\left\\{(x, y) \\mid 0 \\leq x \\leq \\frac{\\pi}{2}, 0 \\leq y \\leq \\frac{\\pi}{2} \\right\\}"
+                    },
+                    {
+                        "type": "text",
+                        "content": ", 求  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iint_{D} |cos(x + y)| dx dy"
+                    },
+                    {
+                        "type": "text",
+                        "content": "."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                441,
+                625,
+                479
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "12. 求  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iiint_{\\Omega} z \\, dv"
+                    },
+                    {
+                        "type": "text",
+                        "content": "，其中  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\Omega"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 是由  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "z = x^2 + y^2"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 及  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "z = \\sqrt{2 - x^2 - y^2}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 围成的闭区域."
+                    }
+                ]
+            },
+            "bbox": [
+                97,
+                486,
+                663,
+                524
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "13. 设  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "C"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 为  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "|x| + |y| = 1"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 的正向，计算曲线积分  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\oint_{C} \\frac{xdy - ydx}{|x| + |y|}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "."
+                    }
+                ]
+            },
+            "bbox": [
+                97,
+                538,
+                561,
+                577
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "14. 设曲面  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\Sigma"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 为  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "z = 2 - x^{2} - y^{2}(1 \\leq z \\leq 2)"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 的上侧，计算曲面积分."
+                    }
+                ]
+            },
+            "bbox": [
+                97,
+                594,
+                606,
+                609
+            ]
+        },
+        {
+            "type": "equation_interline",
+            "content": {
+                "math_content": "I = \\iint_ {\\Sigma} (y - x) d y d z + (z - y) d z d x + (x - z) d x d y",
+                "math_type": "latex",
+                "image_source": {
+                    "path": "images/915719fa0cd98d2da9ebbff6e1ffb42cb7175343c16735ee8b1fcf3bafc68256.jpg"
+                }
+            },
+            "bbox": [
+                304,
+                629,
+                690,
+                667
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "15. 求幂级数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=0}^{\\infty}(n+1)x^{2n}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 的和函数，并求级数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty}\\frac{n}{2^n}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 的值."
+                    }
+                ]
+            },
+            "bbox": [
+                97,
+                680,
+                561,
+                725
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "16. 求经过点  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(2,1,\\frac{1}{3})"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 的所有平面中，哪一个平面与三个坐标面所围成的四面体体积最小，并求其最小值."
+                    }
+                ]
+            },
+            "bbox": [
+                95,
+                777,
+                905,
+                809
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "第 2 页（共 2 页）"
+                    }
+                ]
+            },
+            "bbox": [
+                416,
+                871,
+                571,
+                887
+            ]
+        }
+    ]
+]

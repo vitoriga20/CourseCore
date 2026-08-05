@@ -3,6 +3,21 @@ export const ROUTES = {
   kb: { path: '/kb', view: 'knowledge' },
   bank: { path: '/bank', view: 'bank' },
   exams: { path: '/exams', view: 'exam' },
+  // 刷题板块
+  practice: { path: '/practice', view: 'practice-overview' },
+  practiceExams: { path: '/practice/exams', view: 'practice-exams' },
+  practiceTypes: { path: '/practice/types', view: 'practice-types' },
+  practiceQuiz: { path: '/practice/quiz', view: 'practice-session' },
+  practiceAddPaper: { path: '/practice/add', view: 'add-my-paper' },
+  // 知识库细分（/kb 为统一 hub，/kb/review 为错题复盘会话）
+  reviewSession: { path: '/kb/review', view: 'review-session' },
+  // 社区
+  community: { path: '/community', view: 'community' },
+  // 注意：静态路径必须排在动态 :postId 之前，否则 /community/post 会被误匹配成文章详情
+  communityNew: { path: '/community/post', view: 'post-new' },
+  communityPost: { path: '/community/:postId', view: 'community-detail', params: ['postId'] },
+  // 我的刷题记录
+  userRecords: { path: '/user/records', view: 'user-records' },
   privacy: { path: '/privacy', view: 'privacy' },
   terms: { path: '/terms', view: 'terms' },
   user: { path: '/user', view: 'user' },
@@ -55,6 +70,15 @@ export function getStaticPaths(courses, questions, examPapers) {
     '/kb',
     '/bank',
     '/exams',
+    '/practice',
+    '/practice/exams',
+    '/practice/types',
+    '/practice/quiz',
+    '/practice/add',
+    '/kb/review',
+    '/community',
+    '/community/post',
+    '/user/records',
     '/privacy',
     '/terms',
     '/user',

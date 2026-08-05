@@ -4,8 +4,9 @@ import { renderQuestion } from './question/index.js';
 import { href } from '../config/routes.js';
 import { isItemFree } from '../config/access.js';
 import { COURSES } from '../data/courses.js';
+import { loadQuestionKps } from '../services/content.js';
+import { renderQuestionHeader, renderQuestionKps } from './question/chrome.js';
 import {
-  renderQuestionHeader,
   renderQuestionActions,
   renderFeedback,
   renderSolution,
@@ -62,4 +63,17 @@ export function renderPracticeDetail(questionId) {
       ${renderQuestionNav(question)}
     </div>
   `;
+}
+
+// 异步填充考点 chip (在 router 渲染 main.innerHTML 后调用)
+export async function hydrateQuestionKps(questionId) {
+  const host = document.querySelector(`[data-question-kps][data-qid="${CSS.escape(questionId)}"]`);
+  if (!host) return;
+  const source = host.getAttribute('data-source') || 'platform';
+  try {
+    const kps = await loadQuestionKps(source, questionId);
+    host.outerHTML = renderQuestionKps(kps);
+  } catch (e) {
+    host.remove();
+  }
 }

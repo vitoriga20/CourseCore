@@ -1,0 +1,60 @@
+<h2>训练 / 测试编辑器：三栏 vs 双栏</h2>
+<p class="subtitle">确认一下「左编辑，右预览」的具体结构</p>
+
+<div class="section">
+  <h3>两种结构</h3>
+  <div class="options">
+    <div class="option" data-choice="three-col" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>三栏：题目列表 | 编辑 | 预览</h3>
+        <div class="mockup" style="background:#050505; color:#f5f5f7; padding:0.75rem; border:1px solid #1f1f1f; display:flex; gap:0.5rem; height:160px;">
+          <div style="width:80px; background:#0a0a0a; border:1px solid #1f1f1f; border-radius:8px; padding:0.4rem;">
+            <div style="padding:0.3rem; background:#0d1f1b; border-left:3px solid #1a3c34; border-radius:4px; margin-bottom:0.3rem; font-size:0.75rem;">Q1</div>
+            <div style="padding:0.3rem; border-radius:4px; margin-bottom:0.3rem; font-size:0.75rem;">Q2</div>
+            <div style="padding:0.3rem; border-radius:4px; font-size:0.75rem;">+</div>
+          </div>
+          <div style="flex:1; background:#0a0a0a; border:1px solid #1f1f1f; border-radius:8px; padding:0.5rem;">
+            <div style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;">编辑</div>
+            <div style="height:18px; background:#1a1a1a; border-radius:4px; margin-bottom:0.5rem;"></div>
+            <div style="height:18px; background:#1a1a1a; border-radius:4px;"></div>
+          </div>
+          <div style="flex:1; background:#0a0a0a; border:1px solid #1a3c34; border-radius:8px; padding:0.5rem;">
+            <div style="font-size:0.75rem; color:#4ade80; margin-bottom:0.5rem;">预览</div>
+            <div style="height:18px; background:#1a1a1a; border-radius:4px; margin-bottom:0.5rem;"></div>
+            <div style="height:18px; background:#1a1a1a; border-radius:4px;"></div>
+          </div>
+        </div>
+        <p>题目列表、编辑、预览同时可见，空间稍挤但不用上下滚动。适合大屏。</p>
+      </div>
+    </div>
+
+    <div class="option" data-choice="two-col" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>双栏：题目列表 | 编辑+预览</h3>
+        <div class="mockup" style="background:#050505; color:#f5f5f7; padding:0.75rem; border:1px solid #1f1f1f; display:flex; gap:0.5rem; height:160px;">
+          <div style="width:80px; background:#0a0a0a; border:1px solid #1f1f1f; border-radius:8px; padding:0.4rem;">
+            <div style="padding:0.3rem; background:#0d1f1b; border-left:3px solid #1a3c34; border-radius:4px; margin-bottom:0.3rem; font-size:0.75rem;">Q1</div>
+            <div style="padding:0.3rem; border-radius:4px; margin-bottom:0.3rem; font-size:0.75rem;">Q2</div>
+            <div style="padding:0.3rem; border-radius:4px; font-size:0.75rem;">+</div>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:0.5rem;">
+            <div style="flex:1; background:#0a0a0a; border:1px solid #1f1f1f; border-radius:8px; padding:0.5rem;">
+              <div style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;">编辑</div>
+            </div>
+            <div style="flex:1; background:#0a0a0a; border:1px solid #1a3c34; border-radius:8px; padding:0.5rem;">
+              <div style="font-size:0.75rem; color:#4ade80; margin-bottom:0.5rem;">预览</div>
+            </div>
+          </div>
+        </div>
+        <p>左侧选题，右侧上下分栏编辑和预览。空间更宽松，符合理论编辑器的上下结构。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>我的建议</h3>
+  <p>选 <strong>A 三栏</strong>。既然你强调「左编辑，右预览」，那就把题目列表独立出来放在最左，编辑和预览水平并排，一眼看全三道信息流。</p>
+</div>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <defs>
+    <linearGradient id="hero" x1="0" x2="1"><stop stop-color="#123c2d"/><stop offset="1" stop-color="#10251f"/></linearGradient>
+    <linearGradient id="green" x1="0" x2="1"><stop stop-color="#1bd47e"/><stop offset="1" stop-color="#0fb86c"/></linearGradient>
+  </defs>
+  <rect width="1440" height="900" fill="#0d0d14"/>
+  <rect x="0" y="0" width="1440" height="68" fill="#11111b"/>
+  <text x="48" y="42" fill="#f7f7fb" font-family="Microsoft YaHei, sans-serif" font-size="24" font-weight="700">CourseCore</text>
+  <rect x="600" y="16" width="330" height="36" rx="18" fill="#1c1c2b"/>
+  <text x="626" y="40" fill="#8e8ea3" font-family="Microsoft YaHei, sans-serif" font-size="14">⌕  搜索课程、题目或知识点</text>
+  <text x="1000" y="41" fill="#9d9dae" font-family="Microsoft YaHei, sans-serif" font-size="15">学习计划</text>
+  <text x="1090" y="41" fill="#ffffff" font-family="Microsoft YaHei, sans-serif" font-size="15" font-weight="700">刷题</text>
+  <text x="1150" y="41" fill="#9d9dae" font-family="Microsoft YaHei, sans-serif" font-size="15">知识库</text>
+  <circle cx="1378" cy="34" r="18" fill="#3c3b58"/><text x="1372" y="40" fill="#fff" font-size="14">V</text>
+
+  <text x="48" y="121" fill="#ffffff" font-family="Microsoft YaHei, sans-serif" font-size="38" font-weight="700">今日学习</text>
+  <text x="48" y="151" fill="#9595a9" font-family="Microsoft YaHei, sans-serif" font-size="16">按照你的目标安排下一步，先完成最值得练习的内容。</text>
+  <rect x="1135" y="105" width="256" height="44" rx="12" fill="#153b2a"/><text x="1160" y="133" fill="#2de28d" font-family="Microsoft YaHei, sans-serif" font-size="15" font-weight="700">今日目标  8 / 12 题</text>
+
+  <rect x="48" y="190" width="830" height="206" rx="20" fill="url(#hero)" stroke="#24d783" stroke-width="1.5"/>
+  <text x="78" y="231" fill="#2de28d" font-family="Microsoft YaHei, sans-serif" font-size="14" font-weight="700">继续上次练习</text>
+  <text x="78" y="273" fill="#ffffff" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="700">线性代数 · 2020 年期末</text>
+  <text x="78" y="304" fill="#b6c8be" font-family="Microsoft YaHei, sans-serif" font-size="15">已完成 12 / 18 题 · 预计还需 18 分钟</text>
+  <rect x="78" y="336" width="540" height="8" rx="4" fill="#28513e"/><rect x="78" y="336" width="360" height="8" rx="4" fill="#24d783"/>
+  <rect x="730" y="257" width="112" height="46" rx="12" fill="url(#green)"/><text x="752" y="286" fill="#06150e" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="700">继续刷题</text>
+  <text x="78" y="374" fill="#8fb09f" font-family="Microsoft YaHei, sans-serif" font-size="13">上次练习：昨天 20:35</text>
+
+  <rect x="902" y="190" width="489" height="206" rx="20" fill="#15151f" stroke="#2b2b3b"/>
+  <text x="932" y="231" fill="#ffffff" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="700">今日待复习</text>
+  <text x="1270" y="231" fill="#2de28d" font-family="Microsoft YaHei, sans-serif" font-size="14">查看全部 →</text>
+  <text x="932" y="274" fill="#f1f1f6" font-family="Microsoft YaHei, sans-serif" font-size="16">错题复习</text><text x="1307" y="274" fill="#2de28d" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="700">6 题</text>
+  <rect x="932" y="288" width="418" height="1" fill="#2b2b3b"/>
+  <text x="932" y="324" fill="#f1f1f6" font-family="Microsoft YaHei, sans-serif" font-size="16">即将遗忘的知识点</text><text x="1296" y="324" fill="#e9bd34" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="700">3 个</text>
+  <rect x="932" y="338" width="418" height="1" fill="#2b2b3b"/>
+  <text x="932" y="374" fill="#f1f1f6" font-family="Microsoft YaHei, sans-serif" font-size="16">今日计划剩余</text><text x="1295" y="374" fill="#b9b9ca" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="700">4 题</text>
+
+  <rect x="48" y="426" width="522" height="340" rx="20" fill="#15151f" stroke="#2b2b3b"/>
+  <text x="78" y="468" fill="#ffffff" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="700">薄弱知识点</text><text x="432" y="468" fill="#9292a6" font-family="Microsoft YaHei, sans-serif" font-size="14">按掌握度排序</text>
+  <text x="78" y="520" fill="#e9e9f0" font-family="Microsoft YaHei, sans-serif" font-size="15">极限与连续</text><text x="485" y="520" fill="#f06c74" font-family="Microsoft YaHei, sans-serif" font-size="15">42%</text>
+  <rect x="78" y="533" width="430" height="8" rx="4" fill="#292937"/><rect x="78" y="533" width="181" height="8" rx="4" fill="#ef6670"/>
+  <text x="78" y="581" fill="#e9e9f0" font-family="Microsoft YaHei, sans-serif" font-size="15">导数应用</text><text x="485" y="581" fill="#e9bd34" font-family="Microsoft YaHei, sans-serif" font-size="15">68%</text>
+  <rect x="78" y="594" width="430" height="8" rx="4" fill="#292937"/><rect x="78" y="594" width="292" height="8" rx="4" fill="#e9bd34"/>
+  <text x="78" y="642" fill="#e9e9f0" font-family="Microsoft YaHei, sans-serif" font-size="15">积分</text><text x="485" y="642" fill="#2de28d" font-family="Microsoft YaHei, sans-serif" font-size="15">86%</text>
+  <rect x="78" y="655" width="430" height="8" rx="4" fill="#292937"/><rect x="78" y="655" width="370" height="8" rx="4" fill="#24d783"/>
+  <text x="78" y="714" fill="#2de28d" font-family="Microsoft YaHei, sans-serif" font-size="14" font-weight="700">查看知识点分析 →</text>
+
+  <rect x="594" y="426" width="797" height="340" rx="20" fill="#15151f" stroke="#2b2b3b"/>
+  <text x="624" y="468" fill="#ffffff" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="700">最近练习趋势</text><text x="1250" y="468" fill="#9292a6" font-family="Microsoft YaHei, sans-serif" font-size="14">最近 7 次</text>
+  <line x1="650" y1="685" x2="1340" y2="685" stroke="#303044"/><line x1="650" y1="555" x2="1340" y2="555" stroke="#242438"/><line x1="650" y1="620" x2="1340" y2="620" stroke="#242438"/>
+  <polyline points="670,655 790,620 910,635 1030,570 1150,590 1270,520 1330,540" fill="none" stroke="#26d984" stroke-width="4"/>
+  <circle cx="670" cy="655" r="6" fill="#26d984"/><circle cx="790" cy="620" r="6" fill="#26d984"/><circle cx="910" cy="635" r="6" fill="#26d984"/><circle cx="1030" cy="570" r="6" fill="#26d984"/><circle cx="1150" cy="590" r="6" fill="#26d984"/><circle cx="1270" cy="520" r="6" fill="#26d984"/><circle cx="1330" cy="540" r="6" fill="#26d984"/>
+  <text x="650" y="720" fill="#8f8fa4" font-family="Microsoft YaHei, sans-serif" font-size="13">上周一</text><text x="955" y="720" fill="#8f8fa4" font-family="Microsoft YaHei, sans-serif" font-size="13">上周四</text><text x="1295" y="720" fill="#8f8fa4" font-family="Microsoft YaHei, sans-serif" font-size="13">今天</text>
+  <rect x="1184" y="505" width="170" height="42" rx="10" fill="#153b2a"/><text x="1204" y="532" fill="#2de28d" font-family="Microsoft YaHei, sans-serif" font-size="14">平均正确率 82%</text>
+</svg>

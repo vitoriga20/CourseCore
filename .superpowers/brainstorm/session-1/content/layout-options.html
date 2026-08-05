@@ -1,0 +1,46 @@
+<h2>后台 UI 方向：三选一</h2>
+<p class="subtitle">基于开源后台的设计语言，选一个最符合 CourseCore 气质的方向</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>侧边导航工作台（参考 Arco Design Pro / Naive UI Admin）</h3>
+      <div class="mockup" style="margin-top:0.75rem; display:flex; min-height:120px;">
+        <div class="mock-sidebar" style="width:90px; text-align:center;">Logo<br>课程<br>题目<br>用户</div>
+        <div class="mock-content" style="flex:1;">面包屑 + 内容区（表格 / 卡片）</div>
+      </div>
+      <p>左侧固定导航，右侧大内容区。适合模块多、需要稳定入口的后台；扩展性好，但会压缩编辑区宽度。</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>顶部 Tab 数据面板（参考 React-Admin-Vite / Next Shadcn Dashboard）</h3>
+      <div class="mockup" style="margin-top:0.75rem; min-height:120px;">
+        <div class="mock-nav" style="margin-bottom:0.5rem;">Users | Courses | Modules | Questions | Exams</div>
+        <div class="mock-content">筛选栏 + 数据表格 + 操作按钮</div>
+      </div>
+      <p>沿用现有 adminPage 的 Tab 模式，信息密度高，适合以表格为主的 CRUD；但编辑长内容时会显得拥挤。</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>编辑器优先双栏（参考 freeCodeCamp Studio / Notion）</h3>
+      <div class="mockup" style="margin-top:0.75rem; display:flex; min-height:120px;">
+        <div class="mock-content" style="flex:1;">Markdown 编辑</div>
+        <div class="mock-content" style="flex:1; border-left:1px dashed #ccc;">实时预览</div>
+      </div>
+      <p>以内容编辑为核心，左侧写、右侧看。适合理论和题目编写，但纯表格管理页需要另外设计。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>我的建议</h3>
+  <p>CourseCore 后台只有两类高频页面：表格管理页（课程/用户/题目列表）和编辑器页（理论/训练/测试）。
+  推荐 <strong>方案 A 或 B 作为主框架</strong>，编辑器页单独走方案 C 的双栏布局。这样既保留统一导航，又保证编辑体验。</p>
+</div>

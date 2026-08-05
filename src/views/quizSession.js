@@ -4,7 +4,7 @@ import { escapeHtml } from '../utils.js';
 import { renderQuestion } from './question/index.js';
 import { validate } from '../validators/index.js';
 import { collectUserAnswer, isEmptyAnswer } from '../utils/answer-collector.js';
-import { markQuestion, syncItemProgress } from '../state.js';
+import { markQuestion, syncItemProgress, setLastSession } from '../state.js';
 import { submitTypes } from '../config/question-types.js';
 import { initQuizBackground, destroyQuizBackground } from '../quiz-background.js';
 import { renderSpinner, renderButtonLoader, initImageLoaders } from '../components/loading.js';
@@ -57,6 +57,13 @@ function seedFromString(str) {
   return Math.abs(h);
 }
 
+// 题目文本中 Markdown 转义的下划线（\_）还原为普通下划线，
+// 避免填空题占位符在未走 Markdown 渲染时显示成 \_\_\_\_
+function normalizeText(text) {
+  if (!text) return text;
+  return text.replace(/\\_/g, '_');
+}
+
 function getItemTitle(itemId) {
   for (const c of COURSES) {
     for (const m of c.modules) {
@@ -68,12 +75,17 @@ function getItemTitle(itemId) {
   return '';
 }
 
-function createState(itemId) {
-  const allQuestions = getItemQuestions(itemId).sort((a, b) => {
-    const idxA = Number(a.id.split('-').pop());
-    const idxB = Number(b.id.split('-').pop());
-    return idxA - idxB;
-  });
+function createState(itemId, externalQuestions = null) {
+  const sourceQuestions = externalQuestions || getItemQuestions(itemId);
+  // 外部注入题目（刷题中心入口）按原始试卷顺序，不再重排；
+  // 兜底 getItemQuestions 路径保留按尾部编号排序的行为
+  const allQuestions = externalQuestions
+    ? sourceQuestions.slice()
+    : sourceQuestions.slice().sort((a, b) => {
+        const idxA = Number(a.id.split('-').pop());
+        const idxB = Number(b.id.split('-').pop());
+        return idxA - idxB;
+      });
 
   return {
     itemId,
@@ -91,9 +103,9 @@ function createState(itemId) {
   };
 }
 
-function getState(itemId) {
+function getState(itemId, externalQuestions = null) {
   if (!quizStates.has(itemId)) {
-    quizStates.set(itemId, createState(itemId));
+    quizStates.set(itemId, createState(itemId, externalQuestions));
   }
   return quizStates.get(itemId);
 }
@@ -143,7 +155,7 @@ function renderControlBar(state) {
         </div>
         <div class="flex items-center gap-2">
           <button class="quiz-chip" data-action="quiz-toggle-order" data-item-id="${state.itemId}">
-            ${state.mode === 'random' ? '切换顺序' : '切换随机'}
+            ${state.mode === 'random' ? '随机刷题' : '顺序刷题'}
           </button>
           <button class="quiz-chip" data-action="quiz-toggle-font" data-item-id="${state.itemId}">
             ${FONT_LABELS[state.font]}
@@ -225,8 +237,8 @@ function renderCurrentQuestion(state) {
       <div class="flex items-center gap-2 mb-4">
         <span class="text-xs font-semibold px-2 py-1 rounded" style="background: var(--accent); color: var(--bg);">第 ${state.currentIndex + 1} / ${state.allQuestions.length} 题</span>
       </div>
-      <h3 class="quiz-question-title">${escapeHtml(q.title || '题目')}</h3>
-      <div class="quiz-question-content">${q.content}</div>
+      <h3 class="quiz-question-title">${escapeHtml(normalizeText(q.title || '题目'))}</h3>
+      <div class="quiz-question-content">${normalizeText(q.content)}</div>
       ${content}
       ${!isInstant && !result && !showAnswer
         ? `<button class="quiz-btn quiz-btn-primary mt-4" data-action="quiz-submit-answer" data-item-id="${state.itemId}" data-qid="${qid}">提交答案</button>`
@@ -281,23 +293,56 @@ function renderBottomActions(state) {
 
 function renderResults(state) {
   const total = state.allQuestions.length;
-  const passed = state.allQuestions.filter(q => {
-    const r = resultFor(state, q.id);
-    return r && (r.passed || r.manual);
-  }).length;
   const correct = state.allQuestions.filter(q => {
     const r = resultFor(state, q.id);
     return r && r.passed;
   }).length;
+  const manual = state.allQuestions.filter(q => {
+    const r = resultFor(state, q.id);
+    return r && r.manual;
+  }).length;
+  const wrong = state.allQuestions.filter(q => {
+    const r = resultFor(state, q.id);
+    return r && !r.passed && !r.manual;
+  });
   const rate = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const itemId = state.itemId;
+
+  // 状态标签：全部通过时给"掌握"，否则提示"未掌握"
+  const statusTag = wrong.length === 0
+    ? `<span class="summary-status-tag ok">全部掌握</span>`
+    : `<span class="summary-status-tag warn">${wrong.length} 题未掌握</span>`;
+
+  // 错题列表（诊断 + 行动）
+  const wrongList = wrong.length > 0
+    ? wrong.map((q, i) => `
+        <div class="wrong-item">
+          <span class="wrong-num">${String(i + 1).padStart(2, '0')}</span>
+          <span class="wrong-title">${escapeHtml(normalizeText(q.title || '题目'))}</span>
+        </div>`).join('')
+    : `<div class="empty-state">全部答对，干得漂亮！</div>`;
 
   return `
     <div class="quiz-results">
-      <h2 class="text-2xl font-bold mb-4" style="color: var(--fg);">练习完成</h2>
-      <div class="quiz-results-score">${correct} / ${total}</div>
-      <div class="quiz-results-rate">正确率 ${rate}%</div>
-      <div class="mt-6 flex gap-3">
-        <button class="quiz-btn quiz-btn-primary" data-action="quiz-restart" data-item-id="${state.itemId}">重新开始</button>
+      <h2 class="text-2xl font-bold mb-6" style="color: var(--fg);">练习完成</h2>
+      <div class="summary-grid">
+        <div class="summary-left">
+          <div class="summary-hero">
+            <div class="summary-score">${correct} <span class="summary-total">/ ${total}</span></div>
+            <div class="summary-rate">正确率 ${rate}%</div>
+            ${statusTag}
+            ${manual > 0 ? `<div class="summary-manual">含 ${manual} 题需自行对照参考答案</div>` : ''}
+          </div>
+          <div class="summary-actions">
+            <button class="quiz-btn quiz-btn-primary" data-action="quiz-restart" data-item-id="${itemId}">重新开始</button>
+            <a href="/item/${itemId}" class="quiz-btn">复习本节</a>
+          </div>
+        </div>
+        <div class="summary-right">
+          <h3 class="summary-right-title">错题回顾</h3>
+          <div class="wrong-list">${wrongList}</div>
+          <div class="summary-tip">未掌握题目将自动进入错题库，按复习曲线安排复盘。</div>
+        </div>
       </div>
     </div>
   `;
@@ -335,10 +380,10 @@ export function renderQuizSession(itemId) {
   `;
 }
 
-export function initQuizSession(itemId) {
-  const state = getState(itemId);
+export function initQuizSession(itemId, externalQuestions = null) {
+  const state = getState(itemId, externalQuestions);
   const container = getContainer(itemId);
-  if (!container) return;
+  if (!container) return state;
 
   container.setAttribute('data-font', state.font);
   container.setAttribute('data-bg', state.bg);
@@ -348,6 +393,7 @@ export function initQuizSession(itemId) {
   container.innerHTML = renderControlBar(state) + renderQuizContent(state);
   typeset(container);
   initImageLoaders(container);
+  return state;
 }
 
 function typeset(element) {
@@ -455,7 +501,25 @@ export function handleQuizFinish(itemId) {
   }
 
   state.finished = true;
+  // 记录"继续上次"会话
+  try {
+    const correct = state.allQuestions.filter(q => {
+      const r = resultFor(state, q.id);
+      return r && r.passed;
+    }).length;
+    setLastSession({
+      itemId: state.itemId,
+      title: getItemTitle(state.itemId),
+      lastIndex: state.allQuestions.length - 1,
+      total: state.allQuestions.length,
+      correct
+    });
+  } catch (e) { console.warn('[quizSession] lastSession:', e); }
   rerender(itemId);
+  // 适配层回调: 提交后处理（更新错题本 + 保存记录）
+  if (typeof state.onFinish === 'function') {
+    try { state.onFinish(state); } catch (e) { console.warn('[quizSession] onFinish:', e); }
+  }
 }
 
 export function handleQuizRestart(itemId) {

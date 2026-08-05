@@ -8,7 +8,6 @@ import { escapeHtml } from './utils.js';
 import { collectUserAnswer } from './utils/answer-collector.js';
 import { findQuestion } from './utils/question.js';
 import { questionTypes } from './config/question-types.js';
-import { renderKnowledgeBaseList } from './views/knowledgeBase.js';
 import {
   navigateTo,
   restoreLocation,
@@ -18,6 +17,7 @@ import {
   showExamPapers,
   handleToggleItem,
   handleToggleModule,
+  handleSelectCourseItem,
   handleToggleItemExpand,
   handleMarkItemDone,
   handleStartPractice,
@@ -174,15 +174,6 @@ function refreshLandingContent() {
   if (contentEl) {
     contentEl.innerHTML = renderLandingContent();
     typeset(contentEl);
-  }
-}
-
-function updateKBSearch(value) {
-  state.search = value;
-  const list = document.getElementById('kb-list');
-  if (list) {
-    list.innerHTML = renderKnowledgeBaseList();
-    typeset(list);
   }
 }
 
@@ -466,6 +457,7 @@ function initEventDelegation() {
       case 'toggle-course-submenu': toggleCourseSubmenu(el); break;
       case 'toggle-item': handleToggleItem(itemId); break;
       case 'toggle-module': handleToggleModule(moduleId); break;
+      case 'course-select-item': handleSelectCourseItem(itemId); break;
       case 'toggle-item-expand': handleToggleItemExpand(itemId); break;
       case 'mark-item-done': handleMarkItemDone(itemId); break;
       case 'start-practice': handleStartPractice(itemId); break;
@@ -606,8 +598,6 @@ function initEventDelegation() {
     const target = e.target;
     if (target.id === 'global-search') {
       updateSearch(target.value);
-    } else if (target.id === 'kb-search') {
-      updateKBSearch(target.value);
     } else if (target.id === 'bank-search') {
       state.search = target.value;
       showPracticeBank();

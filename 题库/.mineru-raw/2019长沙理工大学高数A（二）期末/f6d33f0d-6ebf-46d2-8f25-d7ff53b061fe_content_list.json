@@ -1,0 +1,303 @@
+[
+    {
+        "type": "text",
+        "text": "长沙理工大学考试试卷",
+        "text_level": 1,
+        "bbox": [
+            327,
+            142,
+            633,
+            167
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "课程名称（含档次）\\_\\_\\_\\_ 高等数学 A（二）期末 \\_\\_\\_\\_ 课程编号 \\_\\_\\_\\_ 0701000215",
+        "bbox": [
+            78,
+            205,
+            882,
+            221
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "专业电气、物电等层次（本、专）本科考试方式（开、闭卷）闭卷",
+        "bbox": [
+            80,
+            235,
+            882,
+            269
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "一、单项选择题：1～5 小题，每小题 4 分，共 20 分. 下列每小题给出的四个选项中，只有一项是符合题目要求的，请将所选项前的字母写在答题纸上.",
+        "text_level": 2,
+        "bbox": [
+            78,
+            274,
+            875,
+            318
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "1. 设 a, b, c 均为非零向量，则下列向量中与 a 不垂直的是（）.\nA. $(a \\cdot c)b - (b \\cdot a)c$ B. $b - \\frac{a \\cdot b}{a \\cdot a}a$ C. $a \\times b$ D. $a + (a \\times b) \\times a$",
+        "bbox": [
+            78,
+            326,
+            623,
+            414
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "2. 已知二元函数 $f(x, y)$ 可微，向量 $l = (l_1, l_2) \\neq 0$ ，则下列各式中不正确的是（）.\nA. $\\frac{\\partial f}{\\partial l}=\\frac{\\partial f}{\\partial x}\\cos\\theta+\\frac{\\partial f}{\\partial y}\\sin\\theta$ （ $\\theta$ 为 l 与 x 轴正向的夹角）\nB. $\\frac{\\partial f}{\\partial l}=\\frac{\\partial f}{\\partial x}\\cos\\alpha+\\frac{\\partial f}{\\partial y}\\cos\\beta$ （ $\\cos\\alpha,\\cos\\beta$ 为 l 方向余弦）\nC. $\\frac{\\partial f}{\\partial l}=\\frac{1}{\\sqrt{l_{1}^{2}+l_{2}^{2}}}\\left(\\frac{\\partial f}{\\partial x},\\frac{\\partial f}{\\partial y}\\right)\\cdot(l_{1},l_{2})$ D. $\\frac{\\partial f}{\\partial l} = \\operatorname{grad} f \\cdot \\frac{l}{|l|}$",
+        "bbox": [
+            77,
+            422,
+            722,
+            634
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "3. 设 $\\Omega = (x, y, z)$ : $x^{2} + y^{2} + z^{2} \\leq 1$ ，则 $\\iiint_{\\Omega} (x + y + z) dv = (\\quad)$ .\nA. $2\\pi$ B. $\\frac{4\\pi}{3}$ C. $\\frac{2\\pi}{3}$ D. $\\pi$",
+        "bbox": [
+            78,
+            640,
+            588,
+            750
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "4.由曲面 $z = x^{2} + 2y^{2}$ 及 $z = 6 - 2x^{2} - y^{2}$ 所围成的立体的体积为（）.A. $3\\pi$ B. $4\\pi$ C. $5\\pi$ D. $6\\pi$",
+        "bbox": [
+            78,
+            760,
+            628,
+            829
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "5.下列级数中，收敛的是（）.",
+        "bbox": [
+            78,
+            838,
+            882,
+            872
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "page_number",
+        "text": "第 1 页 (共 2 页)",
+        "bbox": [
+            400,
+            878,
+            554,
+            894
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "A. $\\sum_{n=1}^{\\infty} \\frac{3 + (-1)^n}{2^{n+1}}$ B. $\\sum_{n=0}^{\\infty} \\frac{e^{n\\pi}}{\\pi^{ne}}$ C. $\\sum_{n=1}^{\\infty} (-1)^n \\left( \\sqrt{n + \\sqrt{n}} - \\sqrt{n} \\right)$ D. $\\sum_{n=1}^{\\infty} 3^n \\left( 1 - \\frac{1}{n} \\right)^{n^2}$",
+        "bbox": [
+            110,
+            111,
+            618,
+            222
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "二、填空题:6\\~10 小题, 每小题 4 分, 共 20 分. 请将答案写在答题纸上.",
+        "text_level": 2,
+        "bbox": [
+            78,
+            250,
+            719,
+            269
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "6.若直线 $\\left\\{\\begin{aligned}&3x-2y+3z-6=0\\\\ &x-y+z+D=0\\end{aligned}\\right.$ 与y轴相交，则常数D=\\_\\_\\_\\_.",
+        "bbox": [
+            78,
+            279,
+            576,
+            309
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "7. 设 $z = \\arctan \\frac{x - y}{1 - xy}$ ，则 $\\mathrm{d}z|_{(0,0)} =$ \\_\\_\\_\\_.",
+        "bbox": [
+            78,
+            322,
+            431,
+            354
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "8. 设 L 是从 $A(0, \\sqrt{2})$ 沿 $x^{2} + y^{2} = 2$ 经 $B(\\sqrt{2}, 0)$ 到 $C(1, -1)$ 的弧段，则 $\\int_{L} |y| ds =$ \\_\\_\\_\\_ .",
+        "bbox": [
+            78,
+            369,
+            747,
+            395
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "9. 设 $\\Sigma$ 是球面 $x^{2} + y^{2} + z^{2} = 4$ ，则 $\\iint_{\\Sigma} (x^{2} + y^{2} + z^{2}) \\mathrm{d}S =$ \\_\\_\\_\\_.",
+        "bbox": [
+            78,
+            407,
+            589,
+            447
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "10. 设函数 $f(x) = \\begin{cases} -1, & -\\pi < x \\leq 0 \\\\ 1 + x^2, & 0 < x \\leq \\pi \\end{cases}$ ，则其以 $2\\pi$ 为周期的傅里叶级数在点 $x = \\pi$ 处收敛于 \\_\\_\\_\\_.",
+        "bbox": [
+            78,
+            456,
+            831,
+            487
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "三、解答题:11～17 小题，共 60 分. 请将解答写在答题纸上. 解答应写出文字说明证明过程或演算步骤.",
+        "text_level": 2,
+        "bbox": [
+            78,
+            504,
+            794,
+            556
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "11. 已知常数 $a, b$ 满足 $a \\leq b$ ，求使 $\\int_{a}^{b} (6 - x - x^2) dx$ 取到最大值的 $a$ 和 $b$ .（本题满分8分）",
+        "bbox": [
+            80,
+            565,
+            761,
+            602
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "12. 设 $D = (x, y)$ : -1 ≤ x ≤ 1, 0 ≤ y ≤ 1，计算 $\\iint_{D} |y - x^{2}| dx dy$ .（本题满分8分）",
+        "bbox": [
+            80,
+            607,
+            714,
+            645
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "13. 计算 $\\iiint_{\\Omega} (x^2 + y^2) dx dy dz$ ，其中 $\\Omega$ 是由曲面 $x^2 + y^2 = 2z$ 与平面 $z = 2$ 所围成的空间区域。（本题满分8分）",
+        "bbox": [
+            80,
+            651,
+            917,
+            690
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "14. 计算 $\\iint_{\\Sigma} 2x^{3}dydz + 2y^{3}dzdx - dxdy$ ，其中 $\\Sigma$ 为曲面 $z = 1 - x^{2} - y^{2} (z \\geq 0)$ 的上侧。（本题满分10分）",
+        "bbox": [
+            78,
+            697,
+            880,
+            734
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "15. 设函数 $f(u)$ 具有二阶导数，且 $f'(0) = 1$ ，函数 $y = y(x)$ 由方程 $y - xe^{y - 1} = 1$ 确定。已知 $z = f(\\ln y - \\sin x)$ ，求 $\\left.\\frac{dz}{dx}\\right|_{x=0}, \\left.\\frac{d^2z}{dx^2}\\right|_{x=0}$ 。（本题满分10分）",
+        "bbox": [
+            78,
+            740,
+            914,
+            796
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "16. 求幂级数 $\\sum_{n=0}^{\\infty}(2n+1)x^{n}$ 的收敛域及和函数. (本题满分 10 分)",
+        "bbox": [
+            80,
+            801,
+            584,
+            847
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "page_number",
+        "text": "第 2 页（共 2 页）",
+        "bbox": [
+            416,
+            873,
+            571,
+            890
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "17. 设 $f(u)$ 为连续函数， $C$ 为任一简单闭曲线，证明： $\\oint_{C} f(x^2 + y^2)(x \\, \\mathrm{d}x + y \\, \\mathrm{d}y) = 0$ 。（本题满分6分）",
+        "bbox": [
+            78,
+            105,
+            850,
+            146
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "page_number",
+        "text": "第 3 页（共 3 页）",
+        "bbox": [
+            416,
+            869,
+            571,
+            885
+        ],
+        "page_idx": 2
+    }
+]

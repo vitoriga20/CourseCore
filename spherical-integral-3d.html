@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>球坐标三重积分 + 雅可比 · 3D 可视化</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#1a1d24; --line:#2a2f3a;
+    --txt:#e6e8ee; --muted:#9aa3b2; --accent:#5b9dff; --good:#4be39b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 18px 48px;}
+  h1{font-size:20px;margin:0 0 4px;font-weight:600}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:16px;line-height:1.6}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  select,button{background:#222732;color:var(--txt);border:1px solid var(--line);
+    border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  button.on{background:var(--accent);color:#06101f;border-color:var(--accent);font-weight:600}
+  label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  input[type=range]{width:150px}
+  canvas{width:100%;height:auto;display:block;background:#0b0d12;border-radius:10px;margin-top:12px;cursor:grab}
+  canvas:active{cursor:grabbing}
+  .row{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;margin-top:10px}
+  .stat b{color:var(--accent);font-variant-numeric:tabular-nums}
+  .note{color:var(--muted);font-size:13px;line-height:1.8}
+  .note b{color:var(--txt)}
+  code{background:#222732;padding:1px 6px;border-radius:5px;color:#ffd28a}
+  .formula{color:var(--good);font-size:14px;margin-top:8px;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>球坐标三重积分 ∭<sub>B</sub> f dV — 雅可比 r²sinφ</h1>
+  <div class="sub">
+    区域 B = 半径 1 的球。球坐标 <code>(r,θ,φ)</code> 把"参数盒子"映射成球面上<b>弯曲的楔形小格</b>，
+    每格体积 = <code>r²·sinφ·ΔrΔθΔφ</code>（雅可比行列式）。拖动鼠标旋转。
+  </div>
+
+  <div class="card">
+    <div class="controls">
+      <label>被积函数 f
+        <select id="fn">
+          <option value="one">f = 1  （积分 = 球体积）</option>
+          <option value="r2">f = x²+y²+z² = r²</option>
+          <option value="z">f = z  （奇函数 → 0）</option>
+          <option value="x">f = x  （奇函数 → 0）</option>
+        </select>
+      </label>
+      <label>网格密度
+        <input id="dens" type="range" min="1" max="3" step="1" value="2">
+      </label>
+      <button id="play">▶ 逐壳积分动画</button>
+      <button id="spin" class="on">自动旋转</button>
+      <button id="wedge" class="on">高亮一个楔形格</button>
+    </div>
+
+    <canvas id="cv" width="1000" height="560"></canvas>
+
+    <div class="formula" id="fv">dV = r²·sinφ · dr dθ dφ ＝ 当前楔形格体积 ≈ …</div>
+    <div class="row">
+      <div class="stat">精确值 ∫∫∫f dV = <b id="exact">—</b></div>
+      <div class="stat">黎曼和（球坐标格）= <b id="approx">—</b></div>
+      <div class="stat">误差 = <b id="err">—</b></div>
+    </div>
+  </div>
+
+  <div class="card note">
+    <b>这个比上一个难在哪</b><br>
+    1. 区域不是方块，是<b>球面边界</b>——球坐标用三条曲线坐标 (r,θ,φ) 自然贴合它。<br>
+    2. 体积元不是 <code>dx dy dz</code>，而是 <code>r² sinφ dr dθ dφ</code>。那个 <code>r² sinφ</code> 就是
+       <b>雅可比行列式</b>，它衡量"坐标变换在这一点把体积放大/缩小了多少"。靠外（r 大）或近赤道（sinφ 大）的格子体积更大。<br>
+    3. 「逐壳积分」动画让 r 从球心扫到表面，逐层点亮——对应累次积分最外层对 r 积分，
+       内层 angular 积分给出 <code>4π</code> 因子，于是 <code>f=1</code> 时得到 <code>4π/3</code>。<br>
+    4. 选 <code>f=z</code> 或 <code>f=x</code> 会看到精确积分 = 0：正负贡献相互抵消，这是对称性最直观的证明。<br>
+    想再进一步可做：<b>柱坐标</b>、<b>一般变量代换的雅可比行列式动画</b>、或 <b>散度定理</b>（通量=体积分）。
+  </div>
+</div>
+
+<script>
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const W=cv.width, H=cv.height, cx=W/2, cy=H/2;
+let yaw=0.8, pitch=0.45, S=200;
+let cur='one', dens=2, playing=false, sweep=0, spin=true, showWedge=true, t0=null;
+
+// 球坐标 → 直角坐标（φ：与+z夹角，θ：方位角）
+function sph(r,th,ph){ return {x:r*Math.sin(ph)*Math.cos(th), y:r*Math.sin(ph)*Math.sin(th), z:r*Math.cos(ph)}; }
+
+const F={
+  one:{f:(p)=>1,                 exact:4*Math.PI/3, lo:0, hi:1,   signed:false},
+  r2: {f:(p)=>p.x*p.x+p.y*p.y+p.z*p.z, exact:4*Math.PI/5, lo:0, hi:1, signed:false},
+  z:  {f:(p)=>p.z,               exact:0, lo:-1, hi:1,  signed:true},
+  x:  {f:(p)=>p.x,               exact:0, lo:-1, hi:1,  signed:true}
+};
+
+function rot(p){
+  const ay=yaw, ax=pitch;
+  const cy_=Math.cos(ay), sy_=Math.sin(ay);
+  let x1=p.x*cy_ + p.z*sy_;
+  let z1=-p.x*sy_ + p.z*cy_;
+  const cx_=Math.cos(ax), sx_=Math.sin(ax);
+  let y2=p.y*cx_ - z1*sx_;
+  let z2=p.y*sx_ + z1*cx_;
+  return {x:x1, y:y2, z:z2};
+}
+function P(p){ const r=rot(p); const k=4.2/(4.2-r.z); return {x:cx+r.x*k*S, y:cy-r.y*k*S, z:r.z}; }
+
+function heat(t){ t=Math.max(0,Math.min(1,t)); const h=(1-t)*240; return `hsl(${h},72%,55%)`; }
+function heatDark(t,f){ t=Math.max(0,Math.min(1,t)); const h=(1-t)*240; return `hsl(${h},72%,${55*f}%)`; }
+
+// 球面经纬网格
+function drawSphereWire(R,alpha){
+  ctx.strokeStyle=`rgba(120,150,200,${alpha})`; ctx.lineWidth=1;
+  const Nth=24, Nph=12;
+  // 经线（固定 θ）
+  for(let i=0;i<Nth;i++){
+    const th=2*Math.PI*i/Nth; ctx.beginPath();
+    for(let j=0;j<=Nph;j++){const ph=Math.PI*j/Nph; const q=P(sph(R,th,ph)); if(j===0)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);}
+    ctx.stroke();
+  }
+  // 纬线（固定 φ）
+  for(let j=1;j<Nph;j++){
+    const ph=Math.PI*j/Nph; ctx.beginPath();
+    for(let i=0;i<=Nth;i++){const th=2*Math.PI*i/Nth; const q=P(sph(R,th,ph)); if(i===0)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);}
+    ctx.stroke();
+  }
+}
+
+// 一个楔形格（参数盒）的 8 角点
+function wedgeCorners(r0,r1,th0,th1,ph0,ph1){
+  const cs=[];
+  for(const r of [r0,r1]) for(const th of [th0,th1]) for(const ph of [ph0,ph1]) cs.push(sph(r,th,ph));
+  return cs.map(P);
+}
+function drawWedge(cs,fill){
+  // 12 条边
+  const E=[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
+  ctx.strokeStyle='rgba(255,255,255,0.35)';ctx.lineWidth=1;
+  E.forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(cs[a].x,cs[a].y);ctx.lineTo(cs[b].x,cs[b].y);ctx.stroke();});
+  // 6 面（半透明）
+  const F6=[[0,1,3,2],[4,5,7,6],[0,1,5,4],[2,3,7,6],[0,2,6,4],[1,3,7,5]];
+  ctx.fillStyle=fill;
+  F6.forEach(f=>{ctx.beginPath();f.forEach((idx,i)=>{const q=cs[idx];if(i===0)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);});ctx.closePath();ctx.fill();});
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const cfg=F[cur];
+  const R=1;
+  // 网格细分（累加用）
+  const Nr=3*dens, Nth=10*dens, Nph=6*dens;
+  const dr=R/Nr, dth=2*Math.PI/Nth, dph=Math.PI/Nph;
+
+  // 嵌套球壳（淡淡的），体现对 r 积分
+  for(let i=1;i<=3;i++) drawSphereWire(R*i/3, 0.12);
+  drawSphereWire(R, 0.5);
+
+  // 采样格心 → 体素点云（按 f 着色），并累加黎曼和
+  let approx=0;
+  const dots=[];
+  for(let i=0;i<Nr;i++)for(let j=0;j<Nth;j++)for(let k=0;k<Nph;k++){
+    const rc=(i+0.5)*dr, thc=(j+0.5)*dth, phc=(k+0.5)*dph;
+    const p=sph(rc,thc,phc);
+    const val=cfg.f(p);
+    const vol=rc*rc*Math.sin(phc)*dr*dth*dph;   // 雅可比体积元
+    approx+=val*vol;
+    let lit = !playing || rc <= sweep+1e-9;
+    dots.push({p,val,rc,lit});
+  }
+  dots.sort((a,b)=>rot(a.p).z-rot(b.p).z); // 远→近
+  const rng=cfg.hi-cfg.lo;
+  for(const d of dots){
+    const t=(d.val-cfg.lo)/rng;
+    const q=P(d.p);
+    const rad = d.lit ? 3.2 : 1.6;
+    ctx.globalAlpha = d.lit ? 0.95 : 0.25;
+    ctx.fillStyle = cfg.signed ? (d.val>=0?'#ff7a59':'#5b9dff') : heat(t);
+    ctx.beginPath();ctx.arc(q.x,q.y,rad,0,7);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  // 高亮一个楔形格（中间那格）
+  if(showWedge){
+    const i=Math.floor(Nr/2), j=Math.floor(Nth/2), k=Math.floor(Nph/2);
+    const r0=i*dr, r1=(i+1)*dr, th0=j*dth, th1=(j+1)*dth, ph0=k*dph, ph1=(k+1)*dph;
+    const rc=(i+0.5)*dr, phc=(k+0.5)*dph;
+    const cs=wedgeCorners(r0,r1,th0,th1,ph0,ph1);
+    ctx.globalAlpha=0.22; drawWedge(cs,'#4be39b'); ctx.globalAlpha=1;
+    const dv=rc*rc*Math.sin(phc)*dr*dth*dph;
+    document.getElementById('fv').textContent =
+      `dV = r²·sinφ · dr dθ dφ ＝ 高亮楔形格体积 ≈ ${dv.toFixed(5)}  (r=${rc.toFixed(2)}, φ=${phc.toFixed(2)})`;
+  } else {
+    document.getElementById('fv').textContent = `dV = r²·sinφ · dr dθ dφ  （雅可比体积元）`;
+  }
+
+  document.getElementById('exact').textContent=cfg.exact.toFixed(4);
+  document.getElementById('approx').textContent=approx.toFixed(4);
+  document.getElementById('err').textContent=Math.abs(approx-cfg.exact).toFixed(4);
+}
+
+cv.addEventListener('mousedown',e=>{cv.drag=true;cv.lx=e.clientX;cv.ly=e.clientY;});
+window.addEventListener('mouseup',()=>cv.drag=false);
+window.addEventListener('mousemove',e=>{
+  if(!cv.drag)return; yaw+=(e.clientX-cv.lx)*0.01; pitch+=(e.clientY-cv.ly)*0.01;
+  cv.lx=e.clientX;cv.ly=e.clientY; draw();
+});
+document.getElementById('fn').addEventListener('change',e=>{cur=e.target.value;draw();});
+document.getElementById('dens').addEventListener('input',e=>{dens=+e.target.value;draw();});
+document.getElementById('spin').addEventListener('click',e=>{spin=!spin;e.target.classList.toggle('on',spin);});
+document.getElementById('wedge').addEventListener('click',e=>{showWedge=!showWedge;e.target.classList.toggle('on',showWedge);draw();});
+document.getElementById('play').addEventListener('click',e=>{
+  playing=!playing; e.target.textContent=playing?'⏸ 暂停':'▶ 逐壳积分动画';
+  if(playing){sweep=0;t0=null;requestAnimationFrame(loop);}
+});
+function loop(ts){
+  if(!playing){draw();return;}
+  if(!t0)t0=ts;
+  const k=(ts-t0)/1000;
+  sweep=(k%4)/4;                  // 4 秒由内到外扫一遍
+  if(spin) yaw+=0.004;
+  draw(); requestAnimationFrame(loop);
+}
+function idle(){ if(spin && !playing){yaw+=0.004;draw();} requestAnimationFrame(idle); }
+requestAnimationFrame(idle);
+draw();
+</script>
+</body>
+</html>

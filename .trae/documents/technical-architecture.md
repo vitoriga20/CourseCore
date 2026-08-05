@@ -15,6 +15,7 @@
 | 路由 | HTML5 History API + 集中路由表（`src/config/routes.js`）+ 构建时预渲染 |
 | 交互 | `data-action` 事件委托模式 + `<a>` 内部链接客户端拦截 |
 | 后端服务 | Supabase Auth + Supabase Postgres（RLS + RPC） |
+| 考点系统 | Supabase Postgres `knowledge_points` 字典表 + `question_kp` 关联表（主/次考点，权重 1.0/0.5） |
 | 管理后台 | `src/views/admin/adminPage.js` + `src/services/admin.js` + `src/services/content.js` |
 | Markdown 编辑器 | EasyMDE |
 | 分栏拖拽 | Split.js（编辑器分栏）+ SortableJS（题目排序） |
@@ -98,8 +99,8 @@ c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
     │   ├── supabase.js                 # Supabase 客户端初始化
     │   ├── auth.js                     # 游客初始化、登录/注册/登出、数据合并
     │   ├── sync.js                     # 云端 answers / progress 读写与合并
-    │   ├── admin.js                    # 管理后台 CRUD 服务（users / courses / modules / items / questions / exam_* / theory_contents）
-    │   └── content.js                  # 非管理员运行时内容读取（theory_contents / questions）
+    │   ├── admin.js                    # 管理后台 CRUD 服务（users / courses / modules / items / questions / exam_* / theory_contents / knowledge_points / question_kp）
+    │   └── content.js                  # 非管理员运行时内容读取（theory_contents / questions / question_kp）
     ├── validators\                     # 独立答案验证器
     │   ├── index.js                    # validate(question, userAnswer) 入口
     │   ├── exact.js                    # 精确匹配
@@ -279,6 +280,38 @@ state 更新 → saveProgress() → localStorage 持久化
 }
 ```
 
+### 4.4 考点（knowledge points）
+
+颗粒度：知识点级。`knowledge_points` 字典在 item 下挂（platform kp 必填 `item_id`）或跨题库（exam kp `item_id=NULL`，按学科 `course_id` 归类）。`question_kp` 关联表为题-考点多对多，每题 1 主考点（`role='primary'`, `weight=1.0`） + N 次考点（`role='secondary'`, `weight=0.5`）。
+
+```js
+// knowledge_points 行
+{
+  id: 'uuid',                   // DB 自动生成
+  code: 'CAL-M1-I1-K01',        // 唯一代码: platform {COURSE}-{MODULE}-{ITEM}-K{nn}; exam EXAM-{SUBJECT}-K{nn}
+  name: '夹逼准则',
+  course_id: 'calculus-1',      // 学科归属
+  item_id: 'i1',                // 平台题挂小节; 试卷题为 null
+  source: 'platform',           // 'platform' | 'exam'
+  parent_id: null,              // 预留层级扩展
+  sort_order: 0
+}
+
+// question_kp 行 (source + question_id 联合区分两套题库)
+{
+  source: 'platform',           // 'platform' → question_id 关联 questions.id; 'exam' → 关联 exam_questions.id
+  question_id: 'q-calculus-1-c1-m1-001',
+  kp_id: 'uuid',
+  role: 'primary',              // 'primary' | 'secondary'
+  weight: 1.0                   // primary=1.0, secondary=0.5
+}
+```
+
+约束：
+- DB 层：`kp_platform_requires_item` CHECK（source='platform' 必填 item_id）；部分唯一索引 `uq_qk_primary_once` 保证每题 primary 至多 1 个。
+- 应用层：`admin.js` 强制 primary weight=1.0 / secondary weight=0.5；`deleteQuestion` / `deleteExamQuestion` 手动清理 `question_kp` 关联（因 `questions.id` / `exam_questions.id` 非 `question_kp` 外键，不级联）。
+- 现有 `questions.tags` / `exam_questions.tags` 保留为"自由标签"，与 `question_kp` 互补不冲突。
+
 ## 5. 前端运行时
 
 ### 5.1 初始化流程
@@ -408,6 +441,20 @@ state 更新 → saveProgress() → localStorage 持久化
   - 小节独立页（`src/views/practiceList.js`）直接渲染登录提示卡片，提供登录按钮与返回课程目录链接。
   - 单题作答页（`src/views/practiceDetail.js`）若题目所属 item 不免费，同样渲染登录提示卡片。
 - 已登录用户不受限制，可访问全部课程内容。
+
+### 5.11 考点系统（knowledge points）
+
+考点（kp）用于按"考查点"对题目分类与检索，与现有自由标签 `tags` 互补：
+
+- **DB 层**：`knowledge_points`（字典）+ `question_kp`（多对多关联，含主/次角色与权重）。见 [scripts/supabase-schema.sql](scripts/supabase-schema.sql) 第 14 节。RLS：公开可读 + admin 可写。
+- **服务层**：
+  - `src/services/admin.js` 提供 kp 字典 CRUD（`listKnowledgePoints` / `createKnowledgePoint` / `updateKnowledgePoint` / `deleteKnowledgePoint`）与题-考点关联 CRUD（`listQuestionKps` / `replaceQuestionKps` / `addQuestionKp` / `removeQuestionKp`）；`deleteQuestion` / `deleteExamQuestion` 内置关联清理。
+  - `src/services/content.js` 提供 `loadQuestionKps(source, questionId)` 运行时只读 API，返回带 kp 详情的关联列表。
+- **学生侧渲染**：
+  - `src/views/question/chrome.js` 的 `renderQuestionHeader` 在标题下渲染考点 chip 行（主考点主题色高亮、次考点淡灰），样式见 `src/style.css` 的 `.kp-chip*`。
+  - chip 通过占位元素 `<div data-question-kps data-source data-qid>` 异步填充：`src/router.js` 在 `case "practice"` 渲染 `main.innerHTML` 后立即调用 `src/views/practiceDetail.js` 的 `hydrateQuestionKps(questionId)`，后者 fetch `loadQuestionKps` 并用 `renderQuestionKps` 替换占位。
+  - 平台题与试卷题统一走 `renderPracticeDetail`（试卷题作答时 `state.examContext` 非空，chip 占位 `data-source="exam"`）。
+- **管理后台**：`src/views/admin/adminPage.js` 侧边栏「内容管理 → 考点」section 提供字典 CRUD（字段：code / name / source / course_id / item_id / parent_id / sort_order）；question / exam_question 表格行新增「考点」按钮，打开独立 modal（`adminState.kpEditor`）编辑题-考点关联：主考点下拉（至多 1 个）+ 次考点列表（可增删），保存调 `replaceQuestionKps`。
 
 ## 6. 依赖
 

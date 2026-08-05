@@ -4,10 +4,36 @@ import { courseTitle, moduleTitle, state } from '../../state.js';
 import { escapeHtml } from '../../utils.js';
 import { href } from '../../config/routes.js';
 
+// 渲染考点 chip 行: 主考点高亮, 次考点淡色
+// kps: [{ role, weight, kp: { code, name } }] | null/undefined (占位待异步填充)
+export function renderQuestionKps(kps) {
+  if (!kps || kps.length === 0) return '';
+  const primary = kps.filter(k => k.role === 'primary');
+  const secondary = kps.filter(k => k.role === 'secondary');
+  const chip = (k, isPrimary) => {
+    const name = k.kp?.name || '未知考点';
+    const code = k.kp?.code || '';
+    const cls = isPrimary ? 'kp-chip kp-chip-primary' : 'kp-chip kp-chip-secondary';
+    const prefix = isPrimary ? '主考点' : '次考点';
+    return `<span class="${cls}" title="${escapeHtml(code)}">${escapeHtml(prefix)}：${escapeHtml(name)}</span>`;
+  };
+  return `
+    <div class="question-kps flex flex-wrap items-center gap-2 mt-2">
+      ${primary.map(k => chip(k, true)).join('')}
+      ${secondary.map(k => chip(k, false)).join('')}
+    </div>
+  `;
+}
+
 export function renderQuestionHeader(question) {
   const sourceText = question.examName
     ? escapeHtml(question.examName)
     : `${escapeHtml(courseTitle(question.courseId))} · ${escapeHtml(moduleTitle(question.courseId, question.moduleId))}`;
+
+  // 考点 chip: 已挂载到 question.kps 时直接渲染; 否则留占位由 practiceDetail 异步填充
+  const kpsHtml = Array.isArray(question.kps) && question.kps.length > 0
+    ? renderQuestionKps(question.kps)
+    : `<div class="question-kps-host" data-question-kps data-source="${state.examContext ? 'exam' : 'platform'}" data-qid="${escapeHtml(question.id)}"></div>`;
 
   return `
     <header class="question-header mb-4">
@@ -16,6 +42,7 @@ export function renderQuestionHeader(question) {
         <span class="text-xs" style="color: var(--muted);">${sourceText}</span>
       </div>
       <h1 class="text-xl font-bold" style="color: var(--fg);">${escapeHtml(question.title || '题目')}</h1>
+      ${kpsHtml}
     </header>
     <section class="question-content text-base mb-6" style="color: var(--fg);">${question.content}</section>
   `;

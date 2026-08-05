@@ -1,0 +1,70 @@
+<h2>A + C 组合：导航分组 + 风格方向</h2>
+<p class="subtitle">先定导航结构，再定视觉风格</p>
+
+<div class="section">
+  <h3>1. 侧边导航分组示意</h3>
+  <div class="mockup" style="display:flex; min-height:180px;">
+    <div class="mock-sidebar" style="width:130px; padding:1rem 0.75rem;">
+      <div style="font-weight:bold; margin-bottom:0.75rem;">CourseCore</div>
+      <div style="font-size:0.75rem; color:#888; margin-bottom:0.25rem;">内容管理</div>
+      <div>课程</div>
+      <div>模块/小节</div>
+      <div>平台题库</div>
+      <div>理论编辑器</div>
+      <div>训练编辑器</div>
+      <div>测试编辑器</div>
+      <div>期末试卷</div>
+      <div style="font-size:0.75rem; color:#888; margin-top:0.75rem; margin-bottom:0.25rem;">系统管理</div>
+      <div>用户</div>
+      <div>设置</div>
+    </div>
+    <div class="mock-content" style="flex:1; padding:1rem;">
+      <div class="mock-nav" style="margin-bottom:0.75rem;">课程 / 高等数学（上）</div>
+      <div class="placeholder">表格 / 编辑器内容区</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>2. 视觉风格：三选一</h3>
+  <div class="options">
+    <div class="option" data-choice="light" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>浅色调黑白极简</h3>
+        <div class="mockup" style="min-height:60px; background:#fff; color:#111; border:1px solid #e5e5e5;">
+          白底 + 黑字 + 黑按钮
+        </div>
+        <p>与现有 CourseCore 前端风格一致，干净、高级、不抢内容焦点。</p>
+      </div>
+    </div>
+
+    <div class="option" data-choice="mixed" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>深色侧边 + 浅色内容</h3>
+        <div class="mockup" style="display:flex; min-height:60px;">
+          <div style="width:80px; background:#111; color:#f5f5f7;">侧边</div>
+          <div style="flex:1; background:#fff; color:#111;">内容</div>
+        </div>
+        <p>Arco / Naive UI Admin 常见做法，导航更稳，内容区更亮。需要单独维护一套侧边栏暗色变量。</p>
+      </div>
+    </div>
+
+    <div class="option" data-choice="dark" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>全局深色模式</h3>
+        <div class="mockup" style="min-height:60px; background:#000; color:#f5f5f7; border:1px solid #333;">
+          黑底 + 白字 + 白强调色
+        </div>
+        <p>沉浸式、适合长时间编辑；但白天使用可能疲劳，需确保对比度足够。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>我的建议</h3>
+  <p>选 <strong>A 浅色调黑白极简</strong>。理由：与你现在要求的高端黑白品牌基因一致，且和现有 CourseCore 变量体系完全兼容，实现成本最低。侧边栏可以用浅灰卡片区分，不需要深色。</p>
+</div>

@@ -1,0 +1,3964 @@
+{
+    "pdf_info": [
+        {
+            "preproc_blocks": [
+                {
+                    "bbox": [
+                        195,
+                        120,
+                        377,
+                        141
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                195,
+                                120,
+                                377,
+                                141
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        195,
+                                        120,
+                                        377,
+                                        141
+                                    ],
+                                    "type": "text",
+                                    "content": "长沙理工大学考试试卷"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 0,
+                    "level": 1
+                },
+                {
+                    "bbox": [
+                        47,
+                        173,
+                        525,
+                        186
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                173,
+                                525,
+                                186
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        525,
+                                        186
+                                    ],
+                                    "type": "text",
+                                    "content": "课程名称（含档次）高等数学A（二）（本部期末） 课程编号0701000219"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        198,
+                        525,
+                        226
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                198,
+                                525,
+                                226
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        198,
+                                        525,
+                                        226
+                                    ],
+                                    "type": "text",
+                                    "content": "专业电气、交通、电子信息等层次（本、专）本考试方式（开、闭卷）闭卷"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 2,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        238,
+                        272,
+                        253
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                238,
+                                272,
+                                253
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        238,
+                                        272,
+                                        253
+                                    ],
+                                    "type": "text",
+                                    "content": "一、单选题(共5题，每题4分，共20分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        266,
+                        462,
+                        306
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                266,
+                                462,
+                                306
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "1. 设平面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Pi"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": " 通过点(1,1,1)和点(0,1,-1)且垂直于平面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x + y + z = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "，则平面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Pi"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": " 的方程为（）.\n(A) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "2x - y - z = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "\n(B) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "2x + y - z = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "\n(C) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "2x + y + z = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "\n(D) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "3x - 2y - z = 0"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        319,
+                        453,
+                        413
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                319,
+                                453,
+                                413
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": "2. 设 D 是第二象限的一个有界闭域，且 0 < y < 1，令  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{1} = \\iint_{D} yx^{3} d\\sigma, \\quad T_{2} = \\iint_{D} y^{2} x^{3} d\\sigma,"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{3} = \\iint_{D} \\sqrt{y} x^{3} d\\sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则（）.\n\n(A)  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{1} \\leq T_{2} \\leq T_{3}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": " \n\n(B)  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{2} \\leq T_{1} \\leq T_{3}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": " \n\n(C)  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{3} \\leq T_{2} \\leq T_{1}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": " \n\n(D)  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{3} \\leq T_{1} \\leq T_{2}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 5,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        426,
+                        402,
+                        537
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                426,
+                                402,
+                                537
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "3. 下列说法正确的是（）.\n(A)函数  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处偏导数存在，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处连续.\n(B)函数  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处连续，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处偏导数存在.\n(C)函数  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处可微，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处两个偏导数都连续.\n(D)函数  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处两个偏导数都连续，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处可微."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 6,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        546,
+                        460,
+                        609
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                546,
+                                460,
+                                609
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "4. 设  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "D=\\{(x,y)|a^{2}\\leq x^{2}+y^{2}\\leq b^{2}\\}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{D}\\sqrt{x^{2}+y^{2}}d\\sigma=(\\quad)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": " .\n(A) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "-\\frac{\\pi}{3}(b^{3}-a^{3})"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "  (B) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{\\pi}{3}(b^{3}-a^{3})"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "  (C) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "-\\frac{2\\pi}{3}(b^{3}-a^{3})"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "  (D) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{2\\pi}{3}(b^{3}-a^{3})"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        622,
+                        461,
+                        680
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                622,
+                                461,
+                                680
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "text",
+                                    "content": "5. 下列级数条件收敛的是（）。(A) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} (-1)^n \\frac{1}{\\ln (1+n)}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "text",
+                                    "content": " (B) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} (-1)^n \\frac{1}{n^2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "text",
+                                    "content": " (C) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} (-1)^n n^2"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "text",
+                                    "content": " (D) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} (-1)^n \\frac{\\pi^{n-2}}{3^n}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 8,
+                    "merge_prev": false
+                }
+            ],
+            "discarded_blocks": [
+                {
+                    "bbox": [
+                        238,
+                        729,
+                        330,
+                        742
+                    ],
+                    "type": "page_number",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                238,
+                                729,
+                                330,
+                                742
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        238,
+                                        729,
+                                        330,
+                                        742
+                                    ],
+                                    "type": "text",
+                                    "content": "第 1 页 (共 2 页)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 9
+                }
+            ],
+            "page_size": [
+                595,
+                841
+            ],
+            "page_idx": 0,
+            "para_blocks": [
+                {
+                    "bbox": [
+                        195,
+                        120,
+                        377,
+                        141
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                195,
+                                120,
+                                377,
+                                141
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        195,
+                                        120,
+                                        377,
+                                        141
+                                    ],
+                                    "type": "text",
+                                    "content": "长沙理工大学考试试卷"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 0,
+                    "level": 1
+                },
+                {
+                    "bbox": [
+                        47,
+                        173,
+                        525,
+                        186
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                173,
+                                525,
+                                186
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        525,
+                                        186
+                                    ],
+                                    "type": "text",
+                                    "content": "课程名称（含档次）高等数学A（二）（本部期末） 课程编号0701000219"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        198,
+                        525,
+                        226
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                198,
+                                525,
+                                226
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        198,
+                                        525,
+                                        226
+                                    ],
+                                    "type": "text",
+                                    "content": "专业电气、交通、电子信息等层次（本、专）本考试方式（开、闭卷）闭卷"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 2,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        238,
+                        272,
+                        253
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                238,
+                                272,
+                                253
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        238,
+                                        272,
+                                        253
+                                    ],
+                                    "type": "text",
+                                    "content": "一、单选题(共5题，每题4分，共20分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        266,
+                        462,
+                        306
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                266,
+                                462,
+                                306
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "1. 设平面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Pi"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": " 通过点(1,1,1)和点(0,1,-1)且垂直于平面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x + y + z = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "，则平面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Pi"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": " 的方程为（）.\n(A) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "2x - y - z = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "\n(B) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "2x + y - z = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "\n(C) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "2x + y + z = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "\n(D) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        266,
+                                        462,
+                                        306
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "3x - 2y - z = 0"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        319,
+                        453,
+                        413
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                319,
+                                453,
+                                413
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": "2. 设 D 是第二象限的一个有界闭域，且 0 < y < 1，令  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{1} = \\iint_{D} yx^{3} d\\sigma, \\quad T_{2} = \\iint_{D} y^{2} x^{3} d\\sigma,"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{3} = \\iint_{D} \\sqrt{y} x^{3} d\\sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则（）.\n\n(A)  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{1} \\leq T_{2} \\leq T_{3}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": " \n\n(B)  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{2} \\leq T_{1} \\leq T_{3}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": " \n\n(C)  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{3} \\leq T_{2} \\leq T_{1}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "text",
+                                    "content": " \n\n(D)  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        319,
+                                        453,
+                                        413
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "T_{3} \\leq T_{1} \\leq T_{2}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 5,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        426,
+                        402,
+                        537
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                426,
+                                402,
+                                537
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "3. 下列说法正确的是（）.\n(A)函数  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处偏导数存在，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处连续.\n(B)函数  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处连续，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处偏导数存在.\n(C)函数  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处可微，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处两个偏导数都连续.\n(D)函数  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处两个偏导数都连续，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x, y)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        426,
+                                        402,
+                                        537
+                                    ],
+                                    "type": "text",
+                                    "content": "  处可微."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 6,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        546,
+                        460,
+                        609
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                546,
+                                460,
+                                609
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "4. 设  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "D=\\{(x,y)|a^{2}\\leq x^{2}+y^{2}\\leq b^{2}\\}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{D}\\sqrt{x^{2}+y^{2}}d\\sigma=(\\quad)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": " .\n(A) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "-\\frac{\\pi}{3}(b^{3}-a^{3})"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "  (B) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{\\pi}{3}(b^{3}-a^{3})"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "  (C) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "-\\frac{2\\pi}{3}(b^{3}-a^{3})"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "  (D) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        546,
+                                        460,
+                                        609
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{2\\pi}{3}(b^{3}-a^{3})"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        622,
+                        461,
+                        680
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                622,
+                                461,
+                                680
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "text",
+                                    "content": "5. 下列级数条件收敛的是（）。(A) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} (-1)^n \\frac{1}{\\ln (1+n)}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "text",
+                                    "content": " (B) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} (-1)^n \\frac{1}{n^2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "text",
+                                    "content": " (C) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} (-1)^n n^2"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "text",
+                                    "content": " (D) "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        622,
+                                        461,
+                                        680
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} (-1)^n \\frac{\\pi^{n-2}}{3^n}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 8,
+                    "merge_prev": false
+                }
+            ]
+        },
+        {
+            "preproc_blocks": [
+                {
+                    "bbox": [
+                        47,
+                        83,
+                        273,
+                        98
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                83,
+                                273,
+                                98
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        83,
+                                        273,
+                                        98
+                                    ],
+                                    "type": "text",
+                                    "content": "二、填空题(共5题，每题4分，共20分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 0,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        111,
+                        402,
+                        124
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                111,
+                                402,
+                                124
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        111,
+                                        402,
+                                        124
+                                    ],
+                                    "type": "text",
+                                    "content": "1. 双曲线  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        111,
+                                        402,
+                                        124
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x^{2}-4y^{2}=9"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        111,
+                                        402,
+                                        124
+                                    ],
+                                    "type": "text",
+                                    "content": "  绕 x 轴旋转一周所生成的旋转曲面的方程是 ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        139,
+                        229,
+                        166
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                139,
+                                229,
+                                166
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "text",
+                                    "content": "2. 已知 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "z = \\frac{x - y}{x + y}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "text",
+                                    "content": "，则 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{\\partial z}{\\partial x} ="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "text",
+                                    "content": " ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 2,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        173,
+                        342,
+                        205
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                173,
+                                342,
+                                205
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        342,
+                                        205
+                                    ],
+                                    "type": "text",
+                                    "content": "3. 改变二次积分的积分次序: "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        342,
+                                        205
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{0}^{1} dx \\int_{0}^{2x} f(x, y) dy ="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        342,
+                                        205
+                                    ],
+                                    "type": "text",
+                                    "content": " ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        211,
+                        386,
+                        245
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                211,
+                                386,
+                                245
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "text",
+                                    "content": "4. 设曲面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "text",
+                                    "content": " 为球面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x^{2} + y^{2} + z^{2} = R^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "text",
+                                    "content": "，则 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{\\Sigma}(x^{2} + y^{2} + z^{2})^{2} dS ="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "text",
+                                    "content": " ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        251,
+                        422,
+                        284
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                251,
+                                422,
+                                284
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "5. L 是抛物线  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "y = x^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "  从点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(0,0)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "  到点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(2,4)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "  的一段弧，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{L} (x^{2} - y^{2}) dx ="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "  ____"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 5,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        293,
+                        279,
+                        308
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                293,
+                                279,
+                                308
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        293,
+                                        279,
+                                        308
+                                    ],
+                                    "type": "text",
+                                    "content": "三、计算题(共5题，每题10分，共50分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 6,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        323,
+                        359,
+                        350
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                323,
+                                359,
+                                350
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        323,
+                                        359,
+                                        350
+                                    ],
+                                    "type": "text",
+                                    "content": "1. 求过点(2,1,3)且与直线 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        323,
+                                        359,
+                                        350
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{x + 1}{3} = \\frac{y - 1}{2} = \\frac{z}{-1}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        323,
+                                        359,
+                                        350
+                                    ],
+                                    "type": "text",
+                                    "content": " 垂直相交的直线的方程."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        46,
+                        369,
+                        295,
+                        398
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                46,
+                                369,
+                                295,
+                                398
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        46,
+                                        369,
+                                        295,
+                                        398
+                                    ],
+                                    "type": "text",
+                                    "content": "2. 求曲线 "
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        369,
+                                        295,
+                                        398
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\left\\{ \\begin{array}{l} x^{2} + y^{2} - z = 0 \\\\ x^{2} + 2y^{2} + 3z^{2} - 15 = 0 \\end{array} \\right."
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        369,
+                                        295,
+                                        398
+                                    ],
+                                    "type": "text",
+                                    "content": " 在点(1,1,2)处的切线方程."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 8,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        428,
+                        274,
+                        442
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                428,
+                                274,
+                                442
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        428,
+                                        274,
+                                        442
+                                    ],
+                                    "type": "text",
+                                    "content": "3. 求二元函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        428,
+                                        274,
+                                        442
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y) = x^{2}(2 + y^{2}) + y \\ln y"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        428,
+                                        274,
+                                        442
+                                    ],
+                                    "type": "text",
+                                    "content": " 的极值."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 9,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        479,
+                        545,
+                        515
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                479,
+                                545,
+                                515
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": "4. 计算 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{\\Sigma} (y^2 - x) dy dz + (z^2 - y) dz dx + (x^2 - z) dx dy"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": "，其中 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": " 为抛物面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "z = 2 - x^2 - y^2"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": "，"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(1 \\leq z \\leq 2)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": " 的上侧."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 10,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        558,
+                        157,
+                        597
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                558,
+                                157,
+                                597
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        558,
+                                        157,
+                                        597
+                                    ],
+                                    "type": "text",
+                                    "content": "5. 求 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        558,
+                                        157,
+                                        597
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} \\frac{x^{n-1}}{n}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        558,
+                                        157,
+                                        597
+                                    ],
+                                    "type": "text",
+                                    "content": " 的和函数."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 11,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        636,
+                        278,
+                        651
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                636,
+                                278,
+                                651
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        636,
+                                        278,
+                                        651
+                                    ],
+                                    "type": "text",
+                                    "content": "四、应用题(共1题，每题10分，共10分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 12,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        658,
+                        543,
+                        727
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                658,
+                                543,
+                                727
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "text",
+                                    "content": "1. 将函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x) = \\frac{1}{x^2 + 4x + 3}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "text",
+                                    "content": " 展开成 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x - 1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "text",
+                                    "content": " 的幂级数."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 13,
+                    "merge_prev": false
+                }
+            ],
+            "discarded_blocks": [
+                {
+                    "bbox": [
+                        248,
+                        733,
+                        340,
+                        746
+                    ],
+                    "type": "page_number",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                248,
+                                733,
+                                340,
+                                746
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        248,
+                                        733,
+                                        340,
+                                        746
+                                    ],
+                                    "type": "text",
+                                    "content": "第 2 页（共 2 页）"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 14
+                }
+            ],
+            "page_size": [
+                595,
+                841
+            ],
+            "page_idx": 1,
+            "para_blocks": [
+                {
+                    "bbox": [
+                        47,
+                        83,
+                        273,
+                        98
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                83,
+                                273,
+                                98
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        83,
+                                        273,
+                                        98
+                                    ],
+                                    "type": "text",
+                                    "content": "二、填空题(共5题，每题4分，共20分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 0,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        111,
+                        402,
+                        124
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                111,
+                                402,
+                                124
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        111,
+                                        402,
+                                        124
+                                    ],
+                                    "type": "text",
+                                    "content": "1. 双曲线  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        111,
+                                        402,
+                                        124
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x^{2}-4y^{2}=9"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        111,
+                                        402,
+                                        124
+                                    ],
+                                    "type": "text",
+                                    "content": "  绕 x 轴旋转一周所生成的旋转曲面的方程是 ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        139,
+                        229,
+                        166
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                139,
+                                229,
+                                166
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "text",
+                                    "content": "2. 已知 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "z = \\frac{x - y}{x + y}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "text",
+                                    "content": "，则 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{\\partial z}{\\partial x} ="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        139,
+                                        229,
+                                        166
+                                    ],
+                                    "type": "text",
+                                    "content": " ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 2,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        173,
+                        342,
+                        205
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                173,
+                                342,
+                                205
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        342,
+                                        205
+                                    ],
+                                    "type": "text",
+                                    "content": "3. 改变二次积分的积分次序: "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        342,
+                                        205
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{0}^{1} dx \\int_{0}^{2x} f(x, y) dy ="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        342,
+                                        205
+                                    ],
+                                    "type": "text",
+                                    "content": " ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        211,
+                        386,
+                        245
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                211,
+                                386,
+                                245
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "text",
+                                    "content": "4. 设曲面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "text",
+                                    "content": " 为球面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x^{2} + y^{2} + z^{2} = R^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "text",
+                                    "content": "，则 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{\\Sigma}(x^{2} + y^{2} + z^{2})^{2} dS ="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        211,
+                                        386,
+                                        245
+                                    ],
+                                    "type": "text",
+                                    "content": " ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        251,
+                        422,
+                        284
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                251,
+                                422,
+                                284
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "5. L 是抛物线  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "y = x^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "  从点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(0,0)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "  到点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(2,4)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "  的一段弧，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{L} (x^{2} - y^{2}) dx ="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        251,
+                                        422,
+                                        284
+                                    ],
+                                    "type": "text",
+                                    "content": "  ____"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 5,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        293,
+                        279,
+                        308
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                293,
+                                279,
+                                308
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        293,
+                                        279,
+                                        308
+                                    ],
+                                    "type": "text",
+                                    "content": "三、计算题(共5题，每题10分，共50分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 6,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        323,
+                        359,
+                        350
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                323,
+                                359,
+                                350
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        323,
+                                        359,
+                                        350
+                                    ],
+                                    "type": "text",
+                                    "content": "1. 求过点(2,1,3)且与直线 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        323,
+                                        359,
+                                        350
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{x + 1}{3} = \\frac{y - 1}{2} = \\frac{z}{-1}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        323,
+                                        359,
+                                        350
+                                    ],
+                                    "type": "text",
+                                    "content": " 垂直相交的直线的方程."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        46,
+                        369,
+                        295,
+                        398
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                46,
+                                369,
+                                295,
+                                398
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        46,
+                                        369,
+                                        295,
+                                        398
+                                    ],
+                                    "type": "text",
+                                    "content": "2. 求曲线 "
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        369,
+                                        295,
+                                        398
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\left\\{ \\begin{array}{l} x^{2} + y^{2} - z = 0 \\\\ x^{2} + 2y^{2} + 3z^{2} - 15 = 0 \\end{array} \\right."
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        369,
+                                        295,
+                                        398
+                                    ],
+                                    "type": "text",
+                                    "content": " 在点(1,1,2)处的切线方程."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 8,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        428,
+                        274,
+                        442
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                428,
+                                274,
+                                442
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        428,
+                                        274,
+                                        442
+                                    ],
+                                    "type": "text",
+                                    "content": "3. 求二元函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        428,
+                                        274,
+                                        442
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x, y) = x^{2}(2 + y^{2}) + y \\ln y"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        428,
+                                        274,
+                                        442
+                                    ],
+                                    "type": "text",
+                                    "content": " 的极值."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 9,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        479,
+                        545,
+                        515
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                479,
+                                545,
+                                515
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": "4. 计算 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{\\Sigma} (y^2 - x) dy dz + (z^2 - y) dz dx + (x^2 - z) dx dy"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": "，其中 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": " 为抛物面 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "z = 2 - x^2 - y^2"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": "，"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(1 \\leq z \\leq 2)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        479,
+                                        545,
+                                        515
+                                    ],
+                                    "type": "text",
+                                    "content": " 的上侧."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 10,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        558,
+                        157,
+                        597
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                558,
+                                157,
+                                597
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        558,
+                                        157,
+                                        597
+                                    ],
+                                    "type": "text",
+                                    "content": "5. 求 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        558,
+                                        157,
+                                        597
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty} \\frac{x^{n-1}}{n}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        558,
+                                        157,
+                                        597
+                                    ],
+                                    "type": "text",
+                                    "content": " 的和函数."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 11,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        636,
+                        278,
+                        651
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                636,
+                                278,
+                                651
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        636,
+                                        278,
+                                        651
+                                    ],
+                                    "type": "text",
+                                    "content": "四、应用题(共1题，每题10分，共10分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 12,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        658,
+                        543,
+                        727
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                658,
+                                543,
+                                727
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "text",
+                                    "content": "1. 将函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x) = \\frac{1}{x^2 + 4x + 3}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "text",
+                                    "content": " 展开成 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(x - 1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        658,
+                                        543,
+                                        727
+                                    ],
+                                    "type": "text",
+                                    "content": " 的幂级数."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 13,
+                    "merge_prev": false
+                }
+            ]
+        }
+    ],
+    "_backend": "hybrid",
+    "_effort": "medium",
+    "_ocr_enable": true,
+    "_version_name": "3.4.4"
+}

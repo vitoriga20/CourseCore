@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案A · 任务驱动纵向叙事 · 刷题</title>
+<style>
+  :root{
+    --primary:#16A34A; --primary-2:#2DD288; --primary-dim:rgba(47,158,110,.14);
+    --bg:#0E0E16; --surface:#14141F; --surface-2:#1E1E2E;
+    --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.05);
+    --fg:#f5f5f7; --muted:#a1a1a6; --muted-2:#5C6A65;
+    --danger:#EF5350; --warn:#FFB800; --accent:#9B7BFF; --success:#4caf50;
+    --danger-dim:rgba(239,83,80,.14); --warn-dim:rgba(255,184,0,.14); --accent-dim:rgba(155,123,255,.14);
+    --radius:16px; --radius-sm:10px; --radius-pill:999px;
+    --font-serif:Georgia,"Times New Roman","Songti SC","Noto Serif SC",serif;
+    --font-sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--font-sans);background:var(--bg);color:var(--fg);font-size:14px;line-height:1.6;overflow-x:hidden}
+  .geo-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;background-image:
+    linear-gradient(var(--line-2) 1px,transparent 1px),linear-gradient(90deg,var(--line-2) 1px,transparent 1px),
+    radial-gradient(circle at 50% 50%,transparent 0,var(--bg) 78%);background-size:56px 56px,56px 56px,100% 100%}
+  .geo-bg::before,.geo-bg::after{content:"";position:absolute;background-image:radial-gradient(var(--line-2) 1.2px,transparent 1.2px);background-size:18px 18px;width:320px;height:320px}
+  .geo-bg::before{top:-60px;right:-40px;transform:rotate(15deg)}
+  .geo-bg::after{bottom:-60px;left:-40px;transform:rotate(-12deg)}
+  .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 24px 80px}
+
+  /* 顶部导航 */
+  .topbar{position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);background:rgba(14,14,22,.72);border-bottom:1px solid var(--line)}
+  .topbar-in{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+  .brand .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--primary-2));display:grid;place-items:center;color:#fff;font-size:15px}
+  .nav{display:flex;gap:4px;margin-left:auto}
+  .nav a{padding:8px 14px;border-radius:var(--radius-pill);font-size:13.5px;font-weight:600;color:var(--muted);text-decoration:none;transition:.2s}
+  .nav a:hover{color:var(--fg);background:var(--surface-2)}
+  .nav a.on{color:#fff;background:var(--primary-dim);color:var(--primary-2)}
+
+  /* 页头 */
+  .page-head{padding:40px 0 8px}
+  .page-head .kicker{font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--primary-2);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .page-head h1{font-family:var(--font-serif);font-size:30px;font-weight:800;letter-spacing:-.01em}
+  .page-head p{color:var(--muted);font-size:14px;margin-top:8px;max-width:640px}
+
+  /* hero 主卡 */
+  .hero{position:relative;overflow:hidden;border-radius:var(--radius);border:1px solid var(--primary);background:linear-gradient(150deg,var(--surface) 0%,#14201B 100%);padding:28px;margin:24px 0}
+  .hero::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(45,106,79,.5),transparent 70%)}
+  .hero .lbl{font-size:11.5px;font-weight:600;letter-spacing:.05em;color:var(--primary-2);text-transform:uppercase}
+  .hero .big{font-family:var(--font-serif);font-size:34px;font-weight:800;margin-top:6px}
+  .hero .sub{color:var(--muted);font-size:13.5px;margin-top:6px}
+  .hero .act{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+  .hero .prog{flex:1;min-width:180px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:var(--radius-pill);font-weight:600;font-size:14px;text-decoration:none;border:none;cursor:pointer;transition:transform .15s ease,background .2s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:scale(.98)}
+  .btn-pri{background:var(--primary);color:#fff}
+  .btn-pri:hover{background:var(--primary-2)}
+  .btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--primary);color:var(--primary-2)}
+  .progress{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+  .progress>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--primary-2))}
+  .progress.yellow>i{background:linear-gradient(90deg,var(--warn),#FFD166)}
+  .progress.red>i{background:linear-gradient(90deg,var(--danger),#FF8A80)}
+
+  /* 区块标题 */
+  .sec{margin:34px 0 14px}
+  .sec h2{font-size:19px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .sec .more{font-size:12.5px;color:var(--muted);font-weight:600;margin-left:auto;text-decoration:none}
+  .sec .more:hover{color:var(--primary-2)}
+
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .card.soft{background:var(--surface-2)}
+  .card h3{font-size:15px;font-weight:700;margin-bottom:4px}
+  .card .cap{font-size:11.5px;font-weight:600;letter-spacing:.03em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .card .num{font-family:var(--font-serif);font-size:34px;font-weight:800;line-height:1}
+  .card .num small{font-size:15px;color:var(--muted);font-weight:600}
+  .card .lbl{font-size:12px;color:var(--muted);margin-top:6px}
+  .card .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .card .row+.row{margin-top:10px}
+  .card a.main{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--primary-2);text-decoration:none;margin-top:12px}
+  .card a.main:hover{text-decoration:underline}
+
+  /* 诊断卡 */
+  .diag .tag{display:flex;align-items:center;justify-content:space-between;font-size:13px;margin-top:10px}
+  .diag .tag:first-of-type{margin-top:0}
+  .diag .tag b{font-weight:600;color:var(--fg)}
+  .diag .tag span{color:var(--danger);font-size:12px;font-weight:600}
+  .bar{height:5px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:5px}
+  .bar>i{display:block;height:100%;background:var(--danger);border-radius:99px}
+  .bar.green>i{background:var(--primary)}
+
+  /* 折线 */
+  .line{width:100%;height:120px;margin-top:8px}
+  .line text{font-family:var(--font-sans);font-size:10px;fill:var(--muted-2)}
+  .line .gridx{stroke:var(--line-2);stroke-width:1}
+  .line .linec{stroke:var(--primary-2);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .line .dot{fill:var(--primary);stroke:var(--surface);stroke-width:2}
+
+  /* 入口大卡 */
+  .entry{display:block;text-decoration:none;padding:26px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);transition:.2s;position:relative;overflow:hidden}
+  .entry:hover{transform:translateY(-2px);border-color:var(--primary)}
+  .entry .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px;background:var(--primary-dim);color:var(--primary-2)}
+  .entry h4{font-size:18px;font-weight:800;margin-bottom:6px}
+  .entry p{font-size:13px;color:var(--muted)}
+  .entry .go{position:absolute;right:22px;top:26px;color:var(--muted);font-size:16px;transition:.2s}
+  .entry:hover .go{color:var(--primary-2);transform:translateX(3px)}
+
+  /* 排行榜 */
+  .lb-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface-2);margin-top:8px}
+  .lb-row.me{border:1px solid var(--primary);background:var(--primary-dim)}
+  .lb-row .rank{width:24px;text-align:center;font-weight:800;color:var(--muted);font-family:var(--font-serif)}
+  .lb-row.me .rank{color:var(--primary-2)}
+  .lb-row .name{flex:1;font-weight:600;font-size:13.5px}
+  .lb-row.me .name{color:var(--primary-2)}
+  .lb-row .val{font-weight:700;color:var(--primary-2);font-size:13px}
+  .chip{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+  .chip.green{background:var(--primary-dim);color:var(--primary-2);border-color:transparent}
+  .chip.warn{background:var(--warn-dim);color:var(--warn);border-color:transparent}
+  .chip.danger{background:var(--danger-dim);color:var(--danger);border-color:transparent}
+  .chip.accent{background:var(--accent-dim);color:var(--accent);border-color:transparent}
+
+  /* 视图切换 */
+  .view{display:none;animation:fadeIn .4s ease}
+  .view.on{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* 两栏：试卷树 + 预览 */
+  .split{display:grid;grid-template-columns:280px 1fr;gap:16px}
+  @media(max-width:820px){.split{grid-template-columns:1fr}}
+  .tree{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+  .tree .subj{padding:8px 10px;border-radius:8px;font-weight:700;font-size:13px;display:flex;justify-content:space-between}
+  .tree .subj span:last-child{color:var(--primary-2);font-size:12px}
+  .tree .item{padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;margin:2px 0 2px 8px;display:flex;align-items:center;gap:8px;transition:.15s}
+  .tree .item:hover{background:var(--surface-2)}
+  .tree .item.on{background:var(--primary);color:#fff}
+  .tree .item .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);margin-left:auto}
+  .tree .item.on .dot{background:#fff}
+  .preview{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .preview .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .preview h2{font-family:var(--font-serif);font-size:22px;font-weight:800;margin-bottom:8px}
+  .preview .info{display:flex;gap:10px;color:var(--muted);font-size:13px;margin-bottom:14px;flex-wrap:wrap}
+  .preview .info b{color:var(--fg)}
+  .leg-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin:10px 0 18px}
+  .seg-row{display:flex;height:8px;border-radius:99px;overflow:hidden;margin:6px 0 4px}
+  .seg-row>i{height:100%}
+
+  .seg-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px}
+  .empty{text-align:center;color:var(--muted);padding:60px 0;font-size:13.5px}
+  .muted{color:var(--muted)}
+  .serif{font-family:var(--font-serif)}
+  .mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-18{margin-top:18px}.mt-24{margin-top:24px}
+  .dash{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:99px;border:1px dashed var(--primary);color:var(--primary-2);font-weight:600}
+  .dash:hover{background:var(--primary-dim)}
+  .foot{text-align:center;margin-top:40px;color:var(--muted-2);font-size:12px}
+</style>
+</head>
+<body>
+<div class="geo-bg"></div>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="mark">C</span>CourseCore</div>
+    <nav class="nav">
+      <a href="#/practice-tab" data-way="practice">刷题</a>
+      <a href="#/kbsummary" data-way="kb">知识库</a>
+      <a href="#/community" data-way="com">社区</a>
+      <a href="#/me" data-way="me">我的</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- ============ 视图1：首页"刷题"tab ============ -->
+  <section class="view on" id="v-practice-tab">
+    <div class="page-head">
+      <div class="kicker">状态 · 诊断 · 行动</div>
+      <h1>刷题</h1>
+      <p>先看你在哪，再告诉你该补什么，最后给你下一步动作。个人任务永远排在最前面。</p>
+    </div>
+
+    <!-- 第一行：个人核心任务（纵向叙事的主心骨） -->
+    <div class="hero">
+      <div class="lbl">继续上次 · 微分方程求解</div>
+      <div class="big">高等数学 A（二）2019 期末卷</div>
+      <div class="sub">上次中断于第 8 题 · 已答 7/17 题 · 正确 5 题</div>
+      <div class="act">
+        <div class="prog"><div class="progress"><i style="width:41%"></i></div></div>
+        <a href="#/exams" class="btn btn-pri">继续练习 →</a>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="cap">今日待复习</div>
+        <div class="row">
+          <div><div class="num">6<small> 道错题</small></div><div class="lbl">到达遗忘临界点，建议现在过一遍</div></div>
+          <a href="#/kbsummary" class="btn btn-pri">去复习 →</a>
+        </div>
+      </div>
+      <div class="card soft">
+        <div class="cap">今日学习目标</div>
+        <div class="row">
+          <div><div class="num">3<small> / 8 题</small></div><div class="lbl">今日已刷 3 题，距离目标还差 5 题</div></div>
+          <div style="width:36px"><div class="progress"><i style="width:37%"></i></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第二行：学习诊断 -->
+    <div class="sec"><h2>学习诊断</h2><a class="more" href="#/me">查看完整分析 →</a></div>
+    <div class="grid g3">
+      <div class="card diag">
+        <div class="cap">最薄弱考点</div>
+        <div class="tag"><b>二重积分计算</b><span>6 错题</span></div>
+        <div class="bar"><i style="width:60%"></i></div>
+        <div class="tag"><b>级数收敛</b><span>4 错题</span></div>
+        <div class="bar"><i style="width:40%"></i></div>
+        <div class="tag"><b>曲线积分</b><span>3 错题</span></div>
+        <div class="bar"><i style="width:30%"></i></div>
+        <a class="main" href="#/kbsummary">针对薄弱考点复习 →</a>
+      </div>
+      <div class="card">
+        <div class="cap">刷题统计</div>
+        <div class="row"><span class="muted">已刷题目</span><b class="serif">128</b></div>
+        <div class="row"><span class="muted">平均正确率</span><b class="serif" style="color:var(--primary-2)">72%</b></div>
+        <div class="row"><span class="muted">已完成试卷</span><b class="serif">9</b></div>
+        <div class="row"><span class="muted">累计耗时</span><b class="serif">6.5h</b></div>
+      </div>
+      <div class="card">
+        <div class="cap">近期正确率趋势</div>
+        <svg class="line" viewBox="0 0 300 120" preserveAspectRatio="none">
+          <line class="gridx" x1="0" y1="30" x2="300" y2="30"/><line class="gridx" x1="0" y1="60" x2="300" y2="60"/><line class="gridx" x1="0" y1="90" x2="300" y2="90"/>
+          <polyline class="linec" points="0,88 50,70 100,78 150,48 200,40 250,22 300,30"/>
+          <circle class="dot" cx="0" cy="88" r="3.5"/><circle class="dot" cx="50" cy="70" r="3.5"/><circle class="dot" cx="100" cy="78" r="3.5"/><circle class="dot" cx="150" cy="48" r="3.5"/><circle class="dot" cx="200" cy="40" r="3.5"/><circle class="dot" cx="250" cy="22" r="3.5"/><circle class="dot" cx="300" cy="30" r="3.5"/>
+        </svg>
+        <div class="row mt-8">
+          <span class="chip">最近 7 次</span>
+          <span class="muted" style="font-size:12px">0.40 → 0.72</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第三行：功能入口 -->
+    <div class="sec"><h2>开始刷题</h2></div>
+    <div class="grid g2">
+      <a class="entry" href="#/exams">
+        <span class="ico">▤</span><span class="go">→</span>
+        <h4>按试卷</h4><p>整卷模拟，体验真实考试节奏与时间分配。</p>
+      </a>
+      <a class="entry" href="#/types">
+        <span class="ico">◈</span><span class="go">→</span>
+        <h4>按题型</h4><p>单选 / 填空 / 解答，专项突破，直击薄弱题型。</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ 视图2：刷题板块概览 ============ -->
+  <section class="view" id="v-practice">
+    <div class="page-head">
+      <div class="kicker">刷题板块</div>
+      <h1>刷题中心</h1>
+      <p>按学科抓重点、按题型筛难点，个人任务、统计、排行榜一屏看全。</p>
+    </div>
+
+    <div class="hero">
+      <div class="lbl">继续上次 · 微分方程求解</div>
+      <div class="big">高等数学 A（二）2019 期末卷</div>
+      <div class="sub">已答 7/17 题 · 正确 5 题</div>
+      <div class="act">
+        <div class="prog"><div class="progress"><i style="width:41%"></i></div></div>
+        <a href="#/exams" class="btn btn-pri">继续练习 →</a>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="cap">今日待复习</div>
+        <div class="row">
+          <div><div class="num">6<small> 道错题</small></div><div class="lbl">距遗忘临界点</div></div>
+          <a href="#/kbsummary" class="btn btn-ghost">去复习 →</a>
+        </div>
+      </div>
+      <div class="card soft">
+        <div class="cap">今日学习目标</div>
+        <div class="row">
+          <div><div class="num">3<small> / 8 题</small></div><div class="lbl">完成度 37%</div></div>
+          <div style="width:44px"><div class="progress"><i style="width:37%"></i></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec"><h2>我的数据</h2></div>
+    <div class="grid g4">
+      <div class="card"><div class="num">12</div><div class="lbl">累计试卷套数</div></div>
+      <div class="card"><div class="num">241</div><div class="lbl">累计题目数量</div></div>
+      <div class="card"><div class="num" style="color:var(--primary-2)">72%</div><div class="lbl">刷题正确率</div></div>
+      <div class="card"><div class="num">6.5<small>h</small></div><div class="lbl">刷题总耗时</div></div>
+    </div>
+
+    <div class="sec"><h2>开始刷题</h2></div>
+    <div class="grid g2">
+      <a class="entry" href="#/exams"><span class="ico">▤</span><span class="go">→</span><h4>按试卷</h4><p>整卷模拟，体验真实考试节奏。</p></a>
+      <a class="entry" href="#/types"><span class="ico">◈</span><span class="go">→</span><h4>按题型</h4><p>单选 / 填空 / 解答，专项突破。</p></a>
+    </div>
+
+    <div class="sec"><h2>竞争与沉淀</h2></div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="cap">排行榜</div>
+        <div class="row" style="justify-content:flex-start;gap:8px">
+          <span class="chip green">试卷数</span><span class="chip">题量</span><span class="chip">正确率</span><span class="chip">耗时</span>
+        </div>
+        <div class="lb-row me"><span class="rank">我</span><span class="name">林小满</span><span class="val">9 套</span></div>
+        <div class="lb-row"><span class="rank">1</span><span class="name">陈一鸣</span><span class="val">23 套</span></div>
+        <div class="lb-row"><span class="rank">2</span><span class="name">周子航</span><span class="val">18 套</span></div>
+        <div class="lb-row"><span class="rank">3</span><span class="name">吴思远</span><span class="val">15 套</span></div>
+      </div>
+      <div class="card">
+        <div class="cap">最近练习</div>
+        <div class="lb-row"><div style="flex:1"><div style="font-weight:600;font-size:13px">高数 A（二）2019</div><div style="font-size:12px;color:var(--muted)">耗时 28分 · 12/17 题</div></div><div class="progress" style="width:70px"><i style="width:71%"></i></div></div>
+        <div class="lb-row"><div style="flex:1"><div style="font-weight:600;font-size:13px">线代 · 单选专项</div><div style="font-size:12px;color:var(--muted)">耗时 9分 · 15/20 题</div></div><div class="progress" style="width:70px"><i style="width:75%"></i></div></div>
+      </div>
+    </div>
+
+    <div class="mt-24" style="text-align:center"><a class="dash" href="#/add">+ 添加我的试卷</a></div>
+  </section>
+
+  <!-- ============ 视图3：按试卷 ============ -->
+  <section class="view" id="v-exams">
+    <div class="page-head">
+      <div class="kicker">刷题中心 / 按试卷</div>
+      <h1>选择试卷</h1>
+      <p>左侧选择学科与试卷，右侧查看题型构成与时长，一键进入。</p>
+    </div>
+    <div class="split">
+      <div class="tree" id="tree-exams"></div>
+      <div class="preview" id="preview-exams"></div>
+    </div>
+  </section>
+
+  <!-- ============ 视图4：按题型 ============ -->
+  <section class="view" id="v-types">
+    <div class="page-head">
+      <div class="kicker">刷题中心 / 按题型</div>
+      <h1>选择题型</h1>
+      <p>跨卷抽题，按学科 + 题型专项突破。</p>
+    </div>
+    <div class="split">
+      <div class="tree" id="tree-types"></div>
+      <div class="preview" id="preview-types"></div>
+    </div>
+  </section>
+
+  <!-- ============ 视图5：知识库摘要 ============ -->
+  <section class="view" id="v-kbsummary">
+    <div class="page-head">
+      <div class="kicker">知识库</div>
+      <h1>复习控制台</h1>
+      <p>错题统一管理，按节奏复盘巩固。</p>
+    </div>
+    <div class="grid g4">
+      <div class="card"><div class="num">128</div><div class="lbl">累计做题</div></div>
+      <div class="card"><div class="num" style="color:var(--warn)">6</div><div class="lbl">今日待复习</div></div>
+      <div class="card"><div class="num" style="color:var(--danger)">4</div><div class="lbl">即将遗忘</div></div>
+      <div class="card"><div class="num">二重积分</div><div class="lbl">最薄弱考点</div></div>
+    </div>
+    <div class="mt-24" style="text-align:center"><a class="btn btn-pri" href="#/practice">进入知识库</a></div>
+  </section>
+
+  <!-- ============ 视图6：社区 ============ -->
+  <section class="view" id="v-community">
+    <div class="page-head"><h1>社区 · 刷题技巧</h1><p>分享方法，交流经验。</p></div>
+    <div class="card"><div class="cap">待接入</div><p class="muted">社区列表与发帖功能在此展示。</p></div>
+  </section>
+
+  <!-- ============ 视图7：我的 ============ -->
+  <section class="view" id="v-me">
+    <div class="page-head"><h1>我的</h1><p>刷题记录 · 收藏 · 错题统计。</p></div>
+    <div class="grid g3">
+      <div class="card"><div class="num">9</div><div class="lbl">已刷试卷</div></div>
+      <div class="card"><div class="num">128</div><div class="lbl">累计做题</div></div>
+      <div class="card"><div class="num" style="color:var(--primary-2)">72%</div><div class="lbl">正确率</div></div>
+    </div>
+  </section>
+
+  <div class="foot">方案 A · 任务驱动纵向叙事 · 概念稿</div>
+</div>
+
+<script>
+  // 模拟数据
+  const PAPERS = [
+    {subject:'高等数学', term:'2019 期末', school:'长沙理工', total:17, dur:'120分钟', practiced:true, types:[{t:'单选',n:5,c:'#16A34A'},{t:'填空',n:5,c:'#2DD288'},{t:'解答',n:5,c:'#7C3AED'},{t:'证明',n:2,c:'#FBBF24'}]},
+    {subject:'高等数学', term:'2020 期末', school:'长沙理工', total:16, dur:'120分钟', practiced:false, types:[{t:'单选',n:6,c:'#16A34A'},{t:'填空',n:4,c:'#2DD288'},{t:'解答',n:6,c:'#7C3AED'}]},
+    {subject:'线性代数', term:'2019 期末', school:'长沙理工', total:15, dur:'100分钟', practiced:true, types:[{t:'单选',n:6,c:'#3B82F6'},{t:'填空',n:4,c:'#16A34A'},{t:'解答',n:5,c:'#FBBF24'}]},
+    {subject:'大学物理', term:'2020 期末', school:'长沙理工', total:20, dur:'120分钟', practiced:false, types:[{t:'单选',n:8,c:'#EF5350'},{t:'填空',n:6,c:'#16A34A'},{t:'解答',n:6,c:'#7C3AED'}]},
+  ];
+  const TYPE_NAMES={0:'单选',1:'多选',2:'填空',3:'解答',4:'证明',5:'判断'};
+  const TYPE_DUR={0:1,1:2,2:2,3:8,4:10,5:1};
+  const TYPE_STATS={
+    '高等数学':{0:18,2:12,3:14,4:4},
+    '线性代数':{0:12,1:8,2:10,3:6},
+    '大学物理':{0:20,2:10,3:8},
+  };
+
+  // 渲染试卷树
+  function renderExams(){
+    const tree=document.getElementById('tree-exams');
+    const groups={};
+    PAPERS.forEach(p=>{(groups[p.subject]=groups[p.subject]||[]).push(p);});
+    let html='',first=null;
+    Object.entries(groups).forEach(([subj,list],si)=>{
+      html+=`<div class="subj"><span>${subj}</span><span>${list.length} 套</span></div>`;
+      list.forEach((p,pi)=>{
+        const on=si===0&&pi===0; if(on)first=p;
+        html+=`<div class="item${on?' on':''}" data-idx="${PAPERS.indexOf(p)}">${p.term}${p.practiced?'<span class="dot"></span>':''}</div>`;
+      });
+    });
+    tree.innerHTML=html;
+    tree.querySelectorAll('.item').forEach(el=>el.onclick=()=>{
+      tree.querySelectorAll('.item').forEach(x=>x.classList.remove('on'));
+      el.classList.add('on');
+      renderExamPreview(PAPERS[+el.dataset.idx]);
+    });
+    if(first)renderExamPreview(first);
+  }
+  function renderExamPreview(p){
+    const el=document.getElementById('preview-exams');
+    const segs=p.types.map(t=>`<i style="background:${t.c};flex:${t.n}"></i>`).join('');
+    const legend=p.types.map(t=>`<span><i class="seg-dot" style="background:${t.c}"></i>${t.t} ${t.n}</span>`).join('');
+    el.innerHTML=`
+      <div class="meta">${p.school} · ${p.subject}</div>
+      <h2>${p.subject} · ${p.term}</h2>
+      <div class="info"><span><b>${p.total}</b> 题</span><span>·</span><span>${p.dur}</span><span>·</span><span>上次成绩 <b class="serif" style="color:var(--primary-2)">${p.practiced?'已刷':'—'}</b></span></div>
+      <div class="seg-row">${segs}</div>
+      <div class="leg-row">${legend}</div>
+      <a class="btn btn-pri" href="#/practice">进入试卷 →</a>`;
+  }
+
+  // 渲染题型树
+  function renderTypes(){
+    const tree=document.getElementById('tree-types');
+    let html='',first=null;
+    Object.entries(TYPE_STATS).forEach(([subj,types],si)=>{
+      html+=`<div class="subj"><span>${subj}</span></div>`;
+      Object.entries(types).sort((a,b)=>a[0]-b[0]).forEach(([t,n],tj)=>{
+        const on=si===0&&tj===0; if(on)first=[subj,+t];
+        html+=`<div class="item${on?' on':''}" data-subj="${subj}" data-t="${t}">${TYPE_NAMES[t]} <span class="muted" style="margin-left:auto">${n}</span></div>`;
+      });
+    });
+    tree.innerHTML=html;
+    tree.querySelectorAll('.item').forEach(el=>el.onclick=()=>{
+      tree.querySelectorAll('.item').forEach(x=>x.classList.remove('on'));
+      el.classList.add('on');
+      renderTypePreview(el.dataset.subj,+el.dataset.t);
+    });
+    if(first)renderTypePreview(...first);
+  }
+  function renderTypePreview(subj,t){
+    const el=document.getElementById('preview-types');
+    const n=TYPE_STATS[subj][t]||0;
+    const dur=n*(TYPE_DUR[t]||2);
+    el.innerHTML=`
+      <div class="meta">跨卷抽题</div>
+      <h2>${subj} · ${TYPE_NAMES[t]}题组</h2>
+      <div class="info"><span>来自多套试卷的跨卷抽题</span></div>
+      <div class="info"><span><b>${n}</b> 题</span><span>·</span><span>约 ${dur} 分钟</span><span>·</span><span>上次成绩 <b class="serif" style="color:var(--primary-2)">—</b></span></div>
+      <div class="seg-row"><i style="background:var(--primary);flex:1"></i></div>
+      <div class="leg-row"><span class="chip green">${TYPE_NAMES[t]}</span></div>
+      <a class="btn btn-pri" href="#/practice">进入练习 →</a>`;
+  }
+
+  // 简易路由
+  const VIEWS=['practice-tab','practice','exams','types','kbsummary','community','me'];
+  function route(){
+    const h=location.hash.replace('#/','')||'practice-tab';
+    const id=h.split('/')[0];
+    const target=VIEWS.includes(id)?id:'practice-tab';
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+    const el=document.getElementById('v-'+target);
+    if(el)el.classList.add('on');
+    document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.way===target));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  window.addEventListener('hashchange',route);
+  renderExams();renderTypes();route();
+</script>
+</body>
+</html>

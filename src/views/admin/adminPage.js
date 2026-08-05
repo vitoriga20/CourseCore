@@ -26,7 +26,8 @@ const adminState = {
     questions: [],
     examPapers: [],
     examSections: [],
-    examQuestions: []
+    examQuestions: [],
+    knowledgePoints: []
   },
   tree: {
     expanded: {},        // { 'course:<id>': true, 'module:<courseId>|<moduleId>': true }
@@ -36,6 +37,7 @@ const adminState = {
   editing: null, // { entity, row, isNew, context? } — modal 表单；context 用于树上下文预填
   theoryEditor: null, // { itemId, title, course_id, module_id, content, examples, collapsed }
   practiceEditor: null, // { itemId, itemType, title, questions, selectedIndex }
+  kpEditor: null, // { source, questionId, questionTitle, itemId, kps:[{kp_id,role,weight,kp}], availableKps:[{id,code,name}], loading, dirty }
   loading: false,
   feedback: null, // { type: 'success'|'error', message }
   previewListenerAttached: false,
@@ -49,7 +51,8 @@ const SIDEBAR_GROUPS = [
     label: '内容管理',
     items: [
       { id: 'content-tree', label: '内容树' },
-      { id: 'exams', label: '期末试卷' }
+      { id: 'exams', label: '期末试卷' },
+      { id: 'kp', label: '考点' }
     ]
   },
   {
@@ -65,12 +68,14 @@ const SIDEBAR_GROUPS = [
 const SECTION_TITLES = {
   'content-tree': '内容树',
   exams: '期末试卷',
+  kp: '考点管理',
   users: '用户管理',
   settings: '设置'
 };
 
 const SECTION_ENTITIES = {
   exams: ['exam_paper', 'exam_section', 'exam_question'],
+  kp: ['knowledge_point'],
   users: ['user']
 };
 
@@ -100,7 +105,8 @@ const ENTITY_LABELS = {
   question: '题目',
   exam_paper: '试卷',
   exam_section: '大题',
-  exam_question: '试卷题目'
+  exam_question: '试卷题目',
+  knowledge_point: '考点'
 };
 
 // ─── Entity field definitions ───
@@ -189,6 +195,16 @@ const ENTITY_FIELDS = {
     { name: 'tags', label: '标签 (JSON)', type: 'textarea', json: true },
     { name: 'source', label: '来源', type: 'text' },
     { name: 'order_index', label: '顺序', type: 'number' }
+  ],
+  knowledge_point: [
+    { name: 'id', label: 'ID (UUID)', type: 'text', readOnly: true },
+    { name: 'code', label: '代码 (唯一)', type: 'text', immutable: true },
+    { name: 'name', label: '名称', type: 'text' },
+    { name: 'source', label: '题库', type: 'select', options: ['platform', 'exam'] },
+    { name: 'course_id', label: '课程 ID', type: 'text' },
+    { name: 'item_id', label: '小节 ID (platform 必填, exam 留空)', type: 'text' },
+    { name: 'parent_id', label: '父考点 ID (可选)', type: 'text' },
+    { name: 'sort_order', label: '顺序', type: 'number' }
   ]
 };
 
@@ -200,7 +216,8 @@ const ENTITY_COLUMNS = {
   question: ['id', 'item_id', 'question_type', 'title', 'difficulty'],
   exam_paper: ['id', 'school', 'subject', 'term'],
   exam_section: ['id', 'exam_id', 'title', 'order_index'],
-  exam_question: ['id', 'section_id', 'question_type', 'title', 'order_index']
+  exam_question: ['id', 'section_id', 'question_type', 'title', 'order_index'],
+  knowledge_point: ['code', 'name', 'source', 'course_id', 'item_id', 'sort_order']
 };
 
 // ─── Helpers ───
@@ -209,6 +226,7 @@ function dataKeyFor(entity) {
   if (entity === 'exam_section') return 'examSections';
   if (entity === 'exam_question') return 'examQuestions';
   if (entity === 'theory_content') return 'theoryContents';
+  if (entity === 'knowledge_point') return 'knowledgePoints';
   return entity + 's';
 }
 
@@ -348,6 +366,14 @@ function renderTable(entity) {
                       data-action="admin-edit"
                       data-entity="${entity}"
                       data-id="${escapeHtml(encodeId(entity, row))}">编辑</button>
+                    ${(entity === 'question' || entity === 'exam_question') ? `
+                    <button type="button" class="admin-btn admin-btn-sm"
+                      data-action="admin-kp-edit"
+                      data-source="${entity === 'question' ? 'platform' : 'exam'}"
+                      data-id="${escapeHtml(row.id)}"
+                      data-title="${escapeHtml(row.title || row.id)}"
+                      ${entity === 'question' && row.item_id ? `data-item-id="${escapeHtml(row.item_id)}"` : ''}>考点</button>
+                    ` : ''}
                     <button type="button" class="admin-btn admin-btn-sm admin-btn-danger"
                       data-action="admin-delete"
                       data-entity="${entity}"
@@ -977,6 +1003,85 @@ function renderModal() {
   `;
 }
 
+// 考点关联编辑器 (modal 风格, 独立于 adminState.editing)
+function renderKpEditor() {
+  if (!adminState.kpEditor) return '';
+  const ed = adminState.kpEditor;
+
+  const primaryKp = ed.kps.find(k => k.role === 'primary');
+  const secondaryKps = ed.kps.filter(k => k.role === 'secondary');
+
+  // 主考点下拉: 全部可选 kp (含当前 primary)
+  const primaryOptions = ed.availableKps.map(kp => {
+    const sel = primaryKp && primaryKp.kp_id === kp.id ? 'selected' : '';
+    return `<option value="${escapeHtml(kp.id)}" ${sel}>${escapeHtml(kp.code)} · ${escapeHtml(kp.name)}</option>`;
+  });
+
+  // 次考点添加下拉: 排除已加入的 (primary + secondary)
+  const usedIds = new Set(ed.kps.map(k => k.kp_id));
+  const secondaryAddOptions = ed.availableKps
+    .filter(kp => !usedIds.has(kp.id))
+    .map(kp => `<option value="${escapeHtml(kp.id)}">${escapeHtml(kp.code)} · ${escapeHtml(kp.name)}</option>`);
+
+  const body = ed.loading
+    ? `<div class="admin-kp-loading">加载中...</div>`
+    : `
+      <div class="admin-kp-section">
+        <h4 class="admin-kp-section-title">主考点 <span class="admin-kp-hint">(至多 1 个, 权重 1.0)</span></h4>
+        <select id="admin-kp-primary" data-field="primary-kp" class="admin-kp-select">
+          <option value="">— 未设置 —</option>
+          ${primaryOptions.join('')}
+        </select>
+      </div>
+      <div class="admin-kp-section">
+        <h4 class="admin-kp-section-title">次考点 <span class="admin-kp-hint">(权重 0.5)</span></h4>
+        <div class="admin-kp-secondary-list">
+          ${secondaryKps.length === 0
+            ? `<div class="admin-kp-empty">暂无次考点</div>`
+            : secondaryKps.map(k => `
+              <div class="admin-kp-chip-row">
+                <span class="admin-kp-chip-name">${escapeHtml(k.kp?.code || '')} · ${escapeHtml(k.kp?.name || '未知')}</span>
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-danger"
+                  data-action="admin-kp-remove"
+                  data-kp-id="${escapeHtml(k.kp_id)}">移除</button>
+              </div>
+            `).join('')}
+        </div>
+        <div class="admin-kp-add-row">
+          <select id="admin-kp-secondary-add" class="admin-kp-select">
+            <option value="">— 选择考点添加 —</option>
+            ${secondaryAddOptions.join('')}
+          </select>
+          <button type="button" class="admin-btn admin-btn-sm admin-btn-primary"
+            data-action="admin-kp-add-secondary">+ 添加</button>
+        </div>
+      </div>
+      ${ed.availableKps.length === 0 ? `
+        <div class="admin-kp-warn">当前${ed.source === 'platform' ? '小节' : '学科'}下尚无考点, 请先到「考点管理」section 新建考点。</div>
+      ` : ''}
+    `;
+
+  return `
+    <div class="admin-modal-overlay" id="admin-kp-overlay" data-action="admin-kp-close">
+      <div class="admin-modal" data-action="admin-modal-noop">
+        <header class="admin-modal-header">
+          <h3>考点关联 · ${escapeHtml(ed.questionTitle || ed.questionId)}</h3>
+          <button type="button" class="admin-modal-close" data-action="admin-kp-close" aria-label="关闭">×</button>
+        </header>
+        <div class="admin-modal-body">
+          ${body}
+        </div>
+        <footer class="admin-modal-footer">
+          <button type="button" class="admin-btn" data-action="admin-kp-close">取消</button>
+          <button type="button" class="admin-btn admin-btn-primary"
+            data-action="admin-kp-save"
+            ${ed.loading ? 'disabled' : ''}>保存</button>
+        </footer>
+      </div>
+    </div>
+  `;
+}
+
 // ─── Styles (dark theme, scoped under .admin-page) ───
 const ADMIN_STYLES = `
 .admin-page {
@@ -1172,6 +1277,18 @@ const ADMIN_STYLES = `
 .admin-page .admin-modal-close:hover { color: var(--ad-fg); }
 .admin-page .admin-modal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; }
 .admin-page .admin-modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--ad-border); display: flex; justify-content: flex-end; gap: 0.5rem; position: sticky; bottom: 0; background: var(--ad-bg-card); }
+.admin-page .admin-kp-section { display: flex; flex-direction: column; gap: 0.5rem; }
+.admin-page .admin-kp-section-title { font-size: 0.85rem; font-weight: 600; color: var(--ad-fg); margin: 0; }
+.admin-page .admin-kp-hint { font-size: 0.7rem; font-weight: 400; color: var(--ad-muted); }
+.admin-page .admin-kp-select { width: 100%; padding: 0.4rem 0.5rem; background: var(--ad-bg); border: 1px solid var(--ad-border); border-radius: 6px; color: var(--ad-fg); font-size: 0.85rem; }
+.admin-page .admin-kp-secondary-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.admin-page .admin-kp-chip-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0.6rem; background: var(--ad-green-soft); border: 1px solid var(--ad-border); border-radius: 6px; }
+.admin-page .admin-kp-chip-name { font-size: 0.8rem; color: var(--ad-fg); }
+.admin-page .admin-kp-empty { font-size: 0.8rem; color: var(--ad-muted); padding: 0.35rem 0; }
+.admin-page .admin-kp-add-row { display: flex; gap: 0.5rem; margin-top: 0.4rem; }
+.admin-page .admin-kp-add-row .admin-kp-select { flex: 1; }
+.admin-page .admin-kp-warn { font-size: 0.75rem; color: var(--ad-danger); padding: 0.5rem; background: rgba(229,101,74,0.08); border: 1px solid rgba(229,101,74,0.3); border-radius: 6px; }
+.admin-page .admin-kp-loading { padding: 2rem; text-align: center; color: var(--ad-muted); }
 /* Theory editor */
 .admin-page .admin-editor { display: flex; gap: 1rem; min-height: 480px; }
 .admin-page .admin-editor-theory { flex-direction: row; }
@@ -1348,6 +1465,9 @@ export function renderAdminPage() {
                     data-action="admin-tree-clear-checks"
                     ${adminState.tree.checked.size === 0 ? 'disabled' : ''}>清空勾选</button>
                 ` : ''}
+                ${adminState.section === 'kp' ? `
+                  <button type="button" class="admin-btn admin-btn-primary" data-action="admin-add" data-entity="knowledge_point">+ 新增考点</button>
+                ` : ''}
                 <button type="button" class="admin-btn" data-action="admin-refresh">刷新</button>
               `}
             </div>
@@ -1357,6 +1477,7 @@ export function renderAdminPage() {
         </div>
       </div>
       ${renderModal()}
+      ${renderKpEditor()}
     </div>
   `;
 }
@@ -1559,6 +1680,77 @@ function closeModal() {
   rerender();
 }
 
+// ─── Kp editor helpers ───
+async function openKpEditor(source, questionId, questionTitle, itemId) {
+  adminState.kpEditor = {
+    source, questionId, questionTitle, itemId,
+    kps: [], availableKps: [], loading: true
+  };
+  rerender();
+  try {
+    const [rawKps, availableKps] = await Promise.all([
+      adminApi.listQuestionKps(source, questionId),
+      adminApi.listKnowledgePoints(
+        source === 'platform' ? { source: 'platform', itemId } : { source: 'exam' }
+      )
+    ]);
+    // 归一化: listQuestionKps 返回 { kp_id, role, weight, knowledge_points: {...} }
+    const kps = (rawKps || []).map(row => {
+      const kp = Array.isArray(row.knowledge_points) ? row.knowledge_points[0] : row.knowledge_points;
+      return { kp_id: row.kp_id, role: row.role, weight: row.weight, kp: kp || null };
+    });
+    adminState.kpEditor.kps = kps;
+    adminState.kpEditor.availableKps = availableKps || [];
+    adminState.kpEditor.loading = false;
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `加载考点失败: ${e.message || e}` };
+    adminState.kpEditor = null;
+  }
+  rerender();
+}
+
+function addKpSecondary() {
+  const ed = adminState.kpEditor;
+  if (!ed || ed.loading) return;
+  const sel = document.getElementById('admin-kp-secondary-add');
+  if (!sel || !sel.value) return;
+  const kp = ed.availableKps.find(k => k.id === sel.value);
+  if (!kp) return;
+  // 避免重复添加
+  if (ed.kps.some(k => k.kp_id === kp.id)) return;
+  ed.kps.push({ kp_id: kp.id, role: 'secondary', weight: 0.5, kp: { id: kp.id, code: kp.code, name: kp.name } });
+  rerender();
+}
+
+function removeKp(kpId) {
+  const ed = adminState.kpEditor;
+  if (!ed) return;
+  ed.kps = ed.kps.filter(k => k.kp_id !== kpId);
+  rerender();
+}
+
+async function saveKpEditor() {
+  const ed = adminState.kpEditor;
+  if (!ed || ed.loading) return;
+  // 读主考点下拉
+  const primarySel = document.getElementById('admin-kp-primary');
+  const primaryKpId = primarySel ? primarySel.value : '';
+  // 构造 kps 数组
+  const kps = [];
+  if (primaryKpId) kps.push({ kp_id: primaryKpId, role: 'primary' });
+  ed.kps.filter(k => k.role === 'secondary').forEach(k => {
+    kps.push({ kp_id: k.kp_id, role: 'secondary' });
+  });
+  try {
+    await adminApi.replaceQuestionKps(ed.source, ed.questionId, kps);
+    adminState.feedback = { type: 'success', message: '考点关联已保存' };
+    adminState.kpEditor = null;
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `保存失败: ${e.message || e}` };
+  }
+  rerender();
+}
+
 function collectFormValues(entity) {
   const form = document.getElementById('admin-modal-form');
   if (!form) return {};
@@ -1621,6 +1813,14 @@ async function loadSectionData(section) {
       adminState.data.examPapers = papers;
       adminState.data.examSections = sections;
       adminState.data.examQuestions = questions;
+    } else if (section === 'kp') {
+      // 考点管理: 加载 kp 字典 + courses (供 course_id 上下文显示)
+      const [kps, courses] = await Promise.all([
+        adminApi.listKnowledgePoints(),
+        adminApi.listCourses()
+      ]);
+      adminState.data.knowledgePoints = kps;
+      adminState.data.courses = courses;
     }
   } catch (e) {
     adminState.feedback = { type: 'error', message: `加载失败: ${e.message}` };
@@ -1731,6 +1931,16 @@ async function handleSave(entity, id) {
       } else {
         await adminApi.createExamQuestion(values);
       }
+    } else if (entity === 'knowledge_point') {
+      // source='platform' 必须挂 item_id; exam 留空 item_id
+      const payload = { ...values };
+      if (payload.source === 'exam') payload.item_id = null;
+      if (id) {
+        const { id: _omit, ...updates } = payload;
+        await adminApi.updateKnowledgePoint(id, updates);
+      } else {
+        await adminApi.createKnowledgePoint(payload);
+      }
     }
 
     adminState.editing = null;
@@ -1774,6 +1984,8 @@ async function handleDelete(entity, id) {
       await adminApi.deleteExamSection(id);
     } else if (entity === 'exam_question') {
       await adminApi.deleteExamQuestion(id);
+    } else if (entity === 'knowledge_point') {
+      await adminApi.deleteKnowledgePoint(id);
     }
 
     // 删除节点后清掉对应选中状态
@@ -2323,6 +2535,7 @@ export async function handleAdminAction(action, el) {
       adminState.section = section;
       adminState.theoryEditor = null;
       adminState.practiceEditor = null;
+      adminState.kpEditor = null;
       await loadSectionData(section);
       break;
     }
@@ -2379,6 +2592,34 @@ export async function handleAdminAction(action, el) {
       const id = el.dataset.id;
       if (!entity) return;
       await handleSave(entity, id);
+      break;
+    }
+    case 'admin-kp-edit': {
+      const source = el.dataset.source;
+      const questionId = el.dataset.id;
+      const questionTitle = el.dataset.title;
+      const itemId = el.dataset.itemId || null;
+      if (!source || !questionId) return;
+      await openKpEditor(source, questionId, questionTitle, itemId);
+      break;
+    }
+    case 'admin-kp-close': {
+      adminState.kpEditor = null;
+      rerender();
+      break;
+    }
+    case 'admin-kp-add-secondary': {
+      addKpSecondary();
+      break;
+    }
+    case 'admin-kp-remove': {
+      const kpId = el.dataset.kpId;
+      if (!kpId) return;
+      removeKp(kpId);
+      break;
+    }
+    case 'admin-kp-save': {
+      await saveKpEditor();
       break;
     }
     case 'admin-edit-theory': {

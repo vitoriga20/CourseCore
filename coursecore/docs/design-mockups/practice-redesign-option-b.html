@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案B · 横向工作台侧栏 · 刷题</title>
+<style>
+  :root{
+    --primary:#16A34A; --primary-2:#2DD288; --primary-dim:rgba(47,158,110,.14);
+    --bg:#0E0E16; --surface:#14141F; --surface-2:#1E1E2E;
+    --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.05);
+    --fg:#f5f5f7; --muted:#a1a1a6; --muted-2:#5C6A65;
+    --danger:#EF5350; --warn:#FFB800; --accent:#9B7BFF; --success:#4caf50;
+    --danger-dim:rgba(239,83,80,.14); --warn-dim:rgba(255,184,0,.14); --accent-dim:rgba(155,123,255,.14);
+    --radius:16px; --radius-sm:10px; --radius-pill:999px;
+    --font-serif:Georgia,"Times New Roman","Songti SC","Noto Serif SC",serif;
+    --font-sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --side-w:260px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--font-sans);background:var(--bg);color:var(--fg);font-size:14px;line-height:1.6;overflow:hidden}
+  .geo-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;background-image:
+    linear-gradient(var(--line-2) 1px,transparent 1px),linear-gradient(90deg,var(--line-2) 1px,transparent 1px),
+    radial-gradient(circle at 50% 50%,transparent 0,var(--bg) 78%);background-size:56px 56px,56px 56px,100% 100%}
+  .geo-bg::before,.geo-bg::after{content:"";position:absolute;background-image:radial-gradient(var(--line-2) 1.2px,transparent 1.2px);background-size:18px 18px;width:320px;height:320px}
+  .geo-bg::before{top:-60px;right:-40px;transform:rotate(15deg)}
+  .geo-bg::after{bottom:-60px;left:-40px;transform:rotate(-12deg)}
+
+  /* 整体布局：侧栏 + 主区 */
+  .container{display:flex;height:100vh}
+  .sidebar{position:relative;width:var(--side-w);border-right:1px solid var(--line);background:var(--surface);height:100%;overflow-y:auto;padding:20px 0}
+  .main{position:relative;flex:1;height:100%;overflow-y:auto;padding:0}
+  .main-inner{padding:20px 28px 80px}
+
+  /* 品牌顶 */
+  .brandbar{display:flex;align-items:center;gap:10px;padding:0 16px 18px;border-bottom:1px solid var(--line);margin-bottom:12px}
+  .brandmark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-2));display:grid;place-items:center;color:#fff;font-weight:800}
+  .brandname{font-weight:800;font-size:16px}
+  .brandsub{color:var(--muted-2);font-size:11px;margin-top:-2px}
+
+  /* 导航 */
+  .nav-item{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 12px;border-radius:10px;cursor:pointer;color:var(--muted);font-weight:600;font-size:13.5px;transition:.2s}
+  .nav-item:hover{background:var(--surface-2);color:var(--fg)}
+  .nav-item.on{background:var(--primary-dim);color:var(--primary-2)}
+  .nav-item .dot{width:8px;height:8px;border-radius:50%}
+  .nav-item.on .dot{background:var(--primary)}
+
+  /* 统计卡片（侧边） */
+  .side-stat{padding:16px 12px 12px;margin:16px 12px;border-radius:var(--radius);background:var(--surface-2)}
+  .side-stat h3{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+  .stat-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .stat-row span:first-child{color:var(--muted);font-size:12px}
+  .stat-row span:last-child{font-family:var(--font-serif);font-size:18px;font-weight:800;color:var(--primary-2)}
+  .stat-row.warn span:last-child{color:var(--warn)}
+  .stat-row.danger span:last-child{color:var(--danger)}
+  .side-stat .btn{display:block;text-align:center;padding:8px 0;border-radius:var(--radius-pill);background:var(--primary);color:#fff;text-decoration:none;font-weight:600;margin-top:12px;font-size:13px}
+
+  /* 排行榜侧边 */
+  .side-lb{padding:16px 12px 12px;margin:16px 12px;border-radius:var(--radius);background:var(--surface)}
+  .side-lb h3{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+  .lb-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;margin-top:4px}
+  .lb-item.me{background:var(--primary-dim)}
+  .lb-item .rank{width:20px;text-align:center;color:var(--muted-2);font-size:11px;font-weight:800}
+  .lb-item .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+  .lb-item .val{font-weight:700;color:var(--primary-2);font-size:12px}
+
+  /* 主体内容区 */
+  .page-head{margin-bottom:20px}
+  .page-head .kicker{font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--primary-2);text-transform:uppercase;margin-bottom:8px}
+  .page-head h1{font-family:var(--font-serif);font-size:26px;font-weight:800}
+  .page-head p{color:var(--muted);font-size:13.5px;margin-top:4px;max-width:560px}
+
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:1100px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .card h3{font-size:15px;font-weight:700;margin-bottom:10px}
+  .card .cap{font-size:11.5px;font-weight:600;letter-spacing:.03em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+  .card .num{font-family:var(--font-serif);font-size:28px;font-weight:800;line-height:1}
+  .card .num small{font-size:14px;color:var(--muted);font-weight:600}
+  .card .lbl{font-size:12px;color:var(--muted);margin-top:4px}
+  .card .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--radius-pill);font-weight:600;font-size:14px;text-decoration:none;border:none;cursor:pointer;transition:transform .15s ease,background .2s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:scale(.98)}
+  .btn-pri{background:var(--primary);color:#fff}
+  .btn-pri:hover{background:var(--primary-2)}
+  .btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--primary);color:var(--primary-2)}
+  .progress{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+  .progress>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--primary-2))}
+  .progress.yellow>i{background:linear-gradient(90deg,var(--warn),#FFD166)}
+  .progress.red>i{background:linear-gradient(90deg,var(--danger),#FF8A80)}
+
+  /* 继续练习大字卡 */
+  .hero-resume{position:relative;overflow:hidden;border-radius:var(--radius);background:linear-gradient(135deg,var(--surface) 0%,#14201B 100%);border:1px solid var(--primary);padding:24px;margin-bottom:20px}
+  .hero-resume::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(45,106,79,.5),transparent 70%)}
+  .hero-resume .lbl{font-size:11.5px;font-weight:600;letter-spacing:.05em;color:var(--primary-2);text-transform:uppercase}
+  .hero-resume .big{font-family:var(--font-serif);font-size:28px;font-weight:800;margin-top:4px}
+  .hero-resume .sub{color:var(--muted);font-size:13px;margin-top:4px}
+  .hero-resume .act{display:flex;align-items:center;gap:12px;margin-top:16px}
+  .hero-resume .prog{flex:1;min-width:140px}
+
+  /* 诊断卡片 */
+  .diag .tag{display:flex;align-items:center;justify-content:space-between;font-size:13px;margin-top:8px}
+  .diag .tag:first-child{margin-top:0}
+  .diag .tag b{font-weight:600;color:var(--fg)}
+  .diag .tag span{color:var(--danger);font-size:12px;font-weight:600}
+  .bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:4px}
+  .bar>i{display:block;height:100%;background:var(--danger);border-radius:99px}
+  .bar.green>i{background:var(--primary)}
+
+  /* 折线图 */
+  .line-chart{width:100%;height:130px;margin-top:6px}
+  .line-chart text{font-family:var(--font-sans);font-size:10px;fill:var(--muted-2)}
+  .line-chart .gridx{stroke:var(--line-2);stroke-width:1}
+  .line-chart .line-path{stroke:var(--primary-2);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .line-chart .dot{fill:var(--primary);stroke:var(--surface);stroke-width:2}
+
+  /* 入口大卡 */
+  .entry{display:block;text-decoration:none;padding:20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);transition:.2s;position:relative;overflow:hidden}
+  .entry:hover{transform:translateY(-2px);border-color:var(--primary)}
+  .entry .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;margin-bottom:12px;background:var(--primary-dim);color:var(--primary-2)}
+  .entry h4{font-size:17px;font-weight:800;margin-bottom:4px}
+  .entry p{font-size:12.5px;color:var(--muted)}
+  .entry .go{position:absolute;right:20px;top:20px;color:var(--muted);font-size:16px;transition:.2s}
+  .entry:hover .go{color:var(--primary-2);transform:translateX(3px)}
+
+  /* 最近练习列表 */
+  .recent-item{padding:12px;border-radius:var(--radius-sm);background:var(--surface-2);margin-top:8px}
+  .recent-item .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .recent-item .name{font-weight:600;font-size:13px}
+  .recent-item .acc{font-family:var(--font-serif);font-size:17px;font-weight:800;color:var(--primary-2)}
+  .recent-item .meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+  .recent-item .bar{margin-top:6px}
+
+  /* chip */
+  .chip{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .chip.green{background:var(--primary-dim);color:var(--primary-2);border-color:transparent}
+  .chip.warn{background:var(--warn-dim);color:var(--warn);border-color:transparent}
+  .chip.danger{background:var(--danger-dim);color:var(--danger);border-color:transparent}
+  .chip.accent{background:var(--accent-dim);color:var(--accent);border-color:transparent}
+
+  .chip-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+
+  .muted{color:var(--muted)}
+  .serif{font-family:var(--font-serif)}
+  .mt-12{margin-top:12px}.mt-16{margin-top:16px}.mt-20{margin-top:20px}
+  .dash{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:999px;border:1px dashed var(--primary);color:var(--primary-2);font-weight:600}
+  .dash:hover{background:var(--primary-dim)}
+  .foot{text-align:center;margin-top:40px;color:var(--muted-2);font-size:12px}
+
+  /* 视图切换 */
+  .view{display:none;height:100%}
+  .view.on{display:block}
+
+  @media(max-width:860px){
+    .container{flex-direction:column;height:auto;overflow:auto}
+    .sidebar{width:100%;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+    .main{height:auto}
+  }
+</style>
+</head>
+<body>
+<div class="geo-bg"></div>
+<div class="container">
+
+  <!-- ============ 左侧边栏 ============ -->
+  <aside class="sidebar">
+    <div class="brandbar">
+      <div class="brandmark">C</div>
+      <div><div class="brandname">CourseCore</div><div class="brandsub">刷题工作台</div></div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-item on" data-v="home"><div class="dot"></div>概览 · 首页刷题tab</div>
+      <div class="nav-item" data-v="center"><div class="dot"></div>刷题中心</div>
+      <div class="nav-item" data-v="exams"><div class="dot"></div>按试卷</div>
+      <div class="nav-item" data-v="types"><div class="dot"></div>按题型</div>
+      <div class="nav-item" data-v="kb"><div class="dot"></div>知识库</div>
+    </nav>
+
+    <div class="side-stat">
+      <h3>我的核心数据</h3>
+      <div class="stat-row"><span>已刷题目</span><span>128</span></div>
+      <div class="stat-row"><span>正确率</span><span style="color:var(--primary-2)">72%</span></div>
+      <div class="stat-row warn"><span>今日待复习</span><span>6</span></div>
+      <div class="stat-row danger"><span>即将遗忘</span><span>4</span></div>
+      <a href="#/kb" class="btn">去复习 →</a>
+    </div>
+
+    <div class="side-lb">
+      <h3>排行榜 · 试卷数</h3>
+      <div class="lb-item"><span class="rank">1</span><span class="name">陈一鸣</span><span class="val">23</span></div>
+      <div class="lb-item"><span class="rank">2</span><span class="name">周子航</span><span class="val">18</span></div>
+      <div class="lb-item me"><span class="rank">我</span><span class="name">林小满</span><span class="val">9</span></div>
+      <div class="lb-item"><span class="rank">4</span><span class="name">吴思远</span><span class="val">15</span></div>
+    </div>
+  </aside>
+
+  <!-- ============ 主内容区 ============ -->
+  <main class="main">
+    <div class="main-inner">
+
+      <!-- ============ 视图1：首页刷题 tab ============ -->
+      <section class="view on" id="v-home">
+        <div class="page-head">
+          <div class="kicker">首页 / 刷题</div>
+          <h1>学习诊断控制台</h1>
+          <p>侧边常驻个人状态与排行，主区展示详细诊断数据。你的状态先于功能入口。</p>
+        </div>
+
+        <div class="hero-resume">
+          <div class="lbl">继续上次 · 微分方程求解</div>
+          <div class="big">高等数学 A（二）2019 期末卷</div>
+          <div class="sub">上次中断于第 8 题 · 已答 7/17 题 · 正确 5 题</div>
+          <div class="act">
+            <div class="prog"><div class="progress"><i style="width:41%"></i></div></div>
+            <a href="#/exams" class="btn btn-pri" data-nav="exams">继续练习 →</a>
+          </div>
+        </div>
+
+        <div class="grid g3">
+          <div class="card diag">
+            <div class="cap">最薄弱考点</div>
+            <div class="tag"><b>二重积分计算</b><span>6 错题</span></div>
+            <div class="bar"><i style="width:60%"></i></div>
+            <div class="tag"><b>级数收敛</b><span>4 错题</span></div>
+            <div class="bar"><i style="width:40%"></i></div>
+            <div class="tag"><b>曲线积分</b><span>3 错题</span></div>
+            <div class="bar"><i style="width:30%"></i></div>
+            <a href="#/kb" class="btn btn-ghost mt-12" data-nav="kb">查看详细分析 →</a>
+          </div>
+
+          <div class="card">
+            <div class="cap">刷题统计</div>
+            <div class="row"><span class="muted">已刷题目</span><b class="serif">128</b></div>
+            <div class="row"><span class="muted">平均正确率</span><b class="serif" style="color:var(--primary-2)">72%</b></div>
+            <div class="row"><span class="muted">已完成试卷</span><b class="serif">9</b></div>
+            <div class="row"><span class="muted">累计耗时</span><b class="serif">6.5h</b></div>
+          </div>
+
+          <div class="card">
+            <div class="cap">近期正确率趋势</div>
+            <svg class="line-chart" viewBox="0 0 260 130" preserveAspectRatio="none">
+              <line class="gridx" x1="0" y1="32" x2="260" y2="32"/><line class="gridx" x1="0" y1="65" x2="260" y2="65"/><line class="gridx" x1="0" y1="98" x2="260" y2="98"/>
+              <polyline class="line-path" points="0,110 43,90 86,100 130,62 173,52 216,28 260,38"/>
+              <circle class="dot" cx="0" cy="110" r="4"/><circle class="dot" cx="43" cy="90" r="4"/><circle class="dot" cx="86" cy="100" r="4"/><circle class="dot" cx="130" cy="62" r="4"/><circle class="dot" cx="173" cy="52" r="4"/><circle class="dot" cx="216" cy="28" r="4"/><circle class="dot" cx="260" cy="38" r="4"/>
+            </svg>
+            <div class="row mt-12">
+              <span class="chip">最近 7 次</span>
+              <span class="muted" style="font-size:12px">趋势向上 +0.32</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-20"></div>
+        <div class="grid g2">
+          <a class="entry" href="#/exams" data-nav="exams"><span class="ico">▤</span><span class="go">→</span><h4>按试卷</h4><p>整卷模拟，体验真实考试节奏与时间分配。</p></a>
+          <a class="entry" href="#/types" data-nav="types"><span class="ico">◈</span><span class="go">→</span><h4>按题型</h4><p>单选 / 填空 / 解答，专项突破，直击薄弱题型。</p></a>
+        </div>
+      </section>
+
+      <!-- ============ 视图2：刷题中心概览 ============ -->
+      <section class="view" id="v-center">
+        <div class="page-head">
+          <div class="kicker">刷题板块 / 概览</div>
+          <h1>刷题中心 · 工作台</h1>
+          <p>个人任务放在最上面，诊断数据接着，然后功能入口，最后竞争信息。</p>
+        </div>
+
+        <div class="hero-resume">
+          <div class="lbl">继续上次 · 微分方程求解</div>
+          <div class="big">高等数学 A（二）2019 期末卷</div>
+          <div class="sub">已答 7/17 题 · 正确 5 题</div>
+          <div class="act">
+            <div class="prog"><div class="progress"><i style="width:41%"></i></div></div>
+            <a href="#/exams" class="btn btn-pri" data-nav="exams">继续练习 →</a>
+          </div>
+        </div>
+
+        <div class="grid g4">
+          <div class="card"><div class="num">12</div><div class="lbl">累计试卷套数</div></div>
+          <div class="card"><div class="num">241</div><div class="lbl">累计题目数量</div></div>
+          <div class="card"><div class="num" style="color:var(--primary-2)">72%</div><div class="lbl">刷题正确率</div></div>
+          <div class="card"><div class="num">6.5<small>h</small></div><div class="lbl">刷题总耗时</div></div>
+        </div>
+
+        <div class="mt-16"></div>
+        <div class="grid g2">
+          <a class="entry" href="#/exams" data-nav="exams"><span class="ico">▤</span><span class="go">→</span><h4>按试卷</h4><p>整卷模拟，体验真实考试节奏。</p></a>
+          <a class="entry" href="#/types" data-nav="types"><span class="ico">◈</span><span class="go">→</span><h4>按题型</h4><p>单选 / 填空 / 解答，专项突破。</p></a>
+        </div>
+
+        <div class="mt-16"></div>
+        <div class="grid g2">
+          <div class="card">
+            <div class="cap">最近练习</div>
+            <div class="recent-item">
+              <div class="top"><div class="name">高数 A（二）2019</div><div class="acc">71%</div></div>
+              <div class="meta"><span>耗时 28min</span><span>12/17</span></div>
+              <div class="bar"><i style="width:71%"></i></div>
+            </div>
+            <div class="recent-item">
+              <div class="top"><div class="name">线代 · 单选专项</div><div class="acc">75%</div></div>
+              <div class="meta"><span>耗时 9min</span><span>15/20</span></div>
+              <div class="bar"><i style="width:75%"></i></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="cap">今日目标</div>
+            <div class="row"><div><div class="num">3<small> / 8</small></div><div class="lbl">今日已刷 / 目标题数</div></div><div style="width:60px"><div class="progress"><i style="width:37%"></i></div></div></div>
+            <div class="mt-12" style="text-align:center"><a class="dash" href="#/add" data-nav="exams">+ 添加我的试卷</a></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 视图3：按试卷 ============ -->
+      <section class="view" id="v-exams">
+        <div class="page-head">
+          <div class="kicker">刷题中心 / 按试卷</div>
+          <h1>选择试卷</h1>
+          <p>左侧学科树，右侧试卷预览。一键进入。</p>
+        </div>
+        <div class="grid g2">
+          <div class="card" style="padding:12px" id="tree-exams-b"></div>
+          <div class="card" style="padding:22px" id="preview-exams-b"></div>
+        </div>
+      </section>
+
+      <!-- ============ 视图4：按题型 ============ -->
+      <section class="view" id="v-types">
+        <div class="page-head">
+          <div class="kicker">刷题中心 / 按题型</div>
+          <h1>选择题型</h1>
+          <p>跨卷抽题，按学科 + 题型专项突破。</p>
+        </div>
+        <div class="grid g2">
+          <div class="card" style="padding:12px" id="tree-types-b"></div>
+          <div class="card" style="padding:22px" id="preview-types-b"></div>
+        </div>
+      </section>
+
+      <!-- ============ 视图5：知识库 ============ -->
+      <section class="view" id="v-kb">
+        <div class="page-head">
+          <div class="kicker">知识库</div>
+          <h1>复习控制台</h1>
+          <p>错题按遗忘曲线复习，掌握度逐步提升。</p>
+        </div>
+        <div class="grid g4">
+          <div class="card"><div class="num">128</div><div class="lbl">累计做题</div></div>
+          <div class="card"><div class="num" style="color:var(--warn)">6</div><div class="lbl">今日待复习</div></div>
+          <div class="card"><div class="num" style="color:var(--danger)">4</div><div class="lbl">即将遗忘</div></div>
+          <div class="card"><div class="num">二重积分</div><div class="lbl">最薄弱考点</div></div>
+        </div>
+        <div class="mt-20" style="text-align:center"><a class="btn btn-pri" href="#">进入复习 →</a></div>
+      </section>
+
+      <div class="foot">方案 B · 横向工作台侧栏排版 · 概念稿</div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  // 模拟数据
+  const PAPERS = [
+    {subject:'高等数学', term:'2019 期末', school:'长沙理工', total:17, dur:'120分钟', practiced:true, types:[{t:'单选',n:5,c:'#16A34A'},{t:'填空',n:5,c:'#2DD288'},{t:'解答',n:5,c:'#7C3AED'},{t:'证明',n:2,c:'#FBBF24'}]},
+    {subject:'高等数学', term:'2020 期末', school:'长沙理工', total:16, dur:'120分钟', practiced:false, types:[{t:'单选',n:6,c:'#16A34A'},{t:'填空',n:4,c:'#2DD288'},{t:'解答',n:6,c:'#7C3AED'}]},
+    {subject:'线性代数', term:'2019 期末', school:'长沙理工', total:15, dur:'100分钟', practiced:true, types:[{t:'单选',n:6,c:'#3B82F6'},{t:'填空',n:4,c:'#16A34A'},{t:'解答',n:5,c:'#FBBF24'}]},
+    {subject:'大学物理', term:'2020 期末', school:'长沙理工', total:20, dur:'120分钟', practiced:false, types:[{t:'单选',n:8,c:'#EF5350'},{t:'填空',n:6,c:'#16A34A'},{t:'解答',n:6,c:'#7C3AED'}]},
+  ];
+  const TYPE_NAMES={0:'单选',1:'多选',2:'填空',3:'解答',4:'证明',5:'判断'};
+  const TYPE_DUR={0:1,1:2,2:2,3:8,4:10,5:1};
+  const TYPE_STATS={
+    '高等数学':{0:18,2:12,3:14,4:4},
+    '线性代数':{0:12,1:8,2:10,3:6},
+    '大学物理':{0:20,2:10,3:8},
+  };
+
+  // 渲染试卷树（B方案）
+  function renderExamsB(){
+    const tree=document.getElementById('tree-exams-b');
+    const groups={};
+    PAPERS.forEach(p=>{(groups[p.subject]=groups[p.subject]||[]).push(p);});
+    let html='',first=null;
+    Object.entries(groups).forEach(([subj,list],si)=>{
+      html+=`<div style="margin-bottom:10px"><div class="chip-row"><span class="chip green">${subj}</span><span class="chip">${list.length} 套</span></div><div style="margin-top:6px">`;
+      list.forEach((p,pi)=>{
+        const on=si===0&&pi===0; if(on)first=p;
+        html+=`<div class="tree-item-b${on?' on':''}" data-idx="${PAPERS.indexOf(p)}">${p.term}${p.practiced?' <span class="chip green" style="float:right">已刷</span>':''}</div>`;
+      });
+      html+='</div></div>';
+    });
+    tree.innerHTML=html+`<style>.tree-item-b{padding:8px 10px;border-radius:8px;font-size:13px;margin:3px 0;cursor:pointer;color:var(--muted);transition:.2s}.tree-item-b:hover{background:var(--surface-2);color:var(--fg)}.tree-item-b.on{background:var(--primary);color:#fff}</style>`;
+    tree.querySelectorAll('.tree-item-b').forEach(el=>el.onclick=()=>{
+      tree.querySelectorAll('.tree-item-b').forEach(x=>x.classList.remove('on'));
+      el.classList.add('on');
+      renderExamPreviewB(PAPERS[+el.dataset.idx]);
+    });
+    if(first)renderExamPreviewB(first);
+  }
+  function renderExamPreviewB(p){
+    const el=document.getElementById('preview-exams-b');
+    const segs=p.types.map(t=>`<i style="background:${t.c};flex:${t.n}"></i>`).join('');
+    const legend=p.types.map(t=>`<span><i class="seg-dot" style="background:${t.c}"></i>${t.t} ${t.n}</span>`).join('');
+    el.innerHTML=`
+      <div class="meta" style="font-size:12px;color:var(--muted);margin-bottom:6px">${p.school} · ${p.subject}</div>
+      <h2 style="font-family:var(--font-serif);font-size:22px;font-weight:800;margin-bottom:8px">${p.subject} · ${p.term}</h2>
+      <div class="info" style="display:flex;gap:10px;color:var(--muted);font-size:13px;margin-bottom:14px;flex-wrap:wrap"><span><b>${p.total}</b> 题</span><span>·</span><span>${p.dur}</span><span>·</span><span>上次成绩 <b style="color:var(--primary-2)" class="serif">${p.practiced?'已刷':'—'}</b></span></div>
+      <div class="seg-row" style="display:flex;height:8px;border-radius:99px;overflow:hidden;margin:6px 0 4px">${segs}</div>
+      <div class="leg-row" style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin:10px 0 18px">${legend}</div>
+      <a class="btn btn-pri" href="#">进入试卷 →</a>`;
+  }
+
+  // 渲染题型树（B方案）
+  function renderTypesB(){
+    const tree=document.getElementById('tree-types-b');
+    let html='',first=null;
+    Object.entries(TYPE_STATS).forEach(([subj,types],si)=>{
+      html+=`<div style="margin-bottom:10px"><div class="chip-row"><span class="chip green">${subj}</span></div><div style="margin-top:6px">`;
+      Object.entries(types).sort((a,b)=>a[0]-b[0]).forEach(([t,n],tj)=>{
+        const on=si===0&&tj===0; if(on)first=[subj,+t];
+        html+=`<div class="tree-item-b${on?' on':''}" data-subj="${subj}" data-t="${t}">${TYPE_NAMES[t]} <span class="chip" style="float:right">${n}</span></div>`;
+      });
+      html+='</div></div>';
+    });
+    tree.innerHTML=html;
+    tree.querySelectorAll('.tree-item-b').forEach(el=>el.onclick=()=>{
+      tree.querySelectorAll('.tree-item-b').forEach(x=>x.classList.remove('on'));
+      el.classList.add('on');
+      renderTypePreviewB(el.dataset.subj,+el.dataset.t);
+    });
+    if(first)renderTypePreviewB(...first);
+  }
+  function renderTypePreviewB(subj,t){
+    const el=document.getElementById('preview-types-b');
+    const n=TYPE_STATS[subj][t]||0;
+    const dur=n*(TYPE_DUR[t]||2);
+    el.innerHTML=`
+      <div class="meta" style="font-size:12px;color:var(--muted);margin-bottom:6px">跨卷抽题</div>
+      <h2 style="font-family:var(--font-serif);font-size:22px;font-weight:800;margin-bottom:8px">${subj} · ${TYPE_NAMES[t]}题组</h2>
+      <div class="info" style="display:flex;gap:10px;color:var(--muted);font-size:13px;margin-bottom:14px;flex-wrap:wrap">
+        <span>来自多套试卷的跨卷抽题</span>
+      </div>
+      <div class="info" style="display:flex;gap:10px;color:var(--muted);font-size:13px;margin-bottom:14px;flex-wrap:wrap">
+        <span><b>${n}</b> 题</span><span>·</span><span>约 ${dur} 分钟</span><span>·</span><span>上次成绩 <b style="color:var(--primary-2)" class="serif">—</b></span>
+      </div>
+      <div class="seg-row" style="display:flex;height:8px;border-radius:99px;overflow:hidden;margin:6px 0 4px"><i style="background:var(--primary);flex:1"></i></div>
+      <div class="leg-row" style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin:10px 0 18px"><span class="chip green">${TYPE_NAMES[t]}</span></div>
+      <a class="btn btn-pri" href="#">进入练习 →</a>`;
+  }
+
+  // 侧边导航切换
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('on'));
+      item.classList.add('on');
+      const v=item.dataset.v;
+      document.querySelectorAll('.view').forEach(vw=>vw.classList.remove('on'));
+      document.getElementById('v-'+v).classList.add('on');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+
+  // 入口跳转
+  function goto(v){
+    document.querySelectorAll('.nav-item').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
+    document.querySelectorAll('.view').forEach(vw=>vw.classList.remove('on'));
+    const el=document.getElementById('v-'+v);
+    if(el)el.classList.add('on');
+  }
+  document.querySelectorAll('[data-nav]').forEach(a=>{
+    a.addEventListener('click',e=>{
+      e.preventDefault();
+      const v=a.dataset.nav;
+      goto(v);
+      if(history.replaceState)history.replaceState(null,'','#/'+v);
+    });
+  });
+  // 支持锚点 href（如 href="#/kb"）与浏览器前进后退
+  const VIEW_IDS=['home','center','exams','types','kb'];
+  function route(){
+    const h=location.hash.replace('#/','')||'home';
+    if(VIEW_IDS.includes(h))goto(h);
+  }
+  window.addEventListener('hashchange',route);
+
+  renderExamsB();renderTypesB();route();
+</script>
+</body>
+</html>

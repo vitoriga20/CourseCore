@@ -59,6 +59,9 @@ export const state = {
   // 运行时从 Supabase 拉取的题目缓存（key: itemId，value: Question[]）
   runtimeQuestions: {},
 
+  // 最近一次练习会话（继续上次）：{ itemId, title, lastIndex, total, correct, updatedAt }
+  lastSession: null,
+
   version: CURRENT_STATE_VERSION
 };
 
@@ -88,8 +91,15 @@ export function saveProgress() {
     completedQuestions: state.completedQuestions,
     landingTab: state.landingTab,
     theme: state.theme,
+    lastSession: state.lastSession,
     version: state.version
   });
+}
+
+// 记录最近一次练习会话（供首页"继续上次"）
+export function setLastSession(session) {
+  state.lastSession = session ? { ...session, updatedAt: Date.now() } : null;
+  saveProgress();
 }
 
 export function setUserAnswer(qid, answer) {

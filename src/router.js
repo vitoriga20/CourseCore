@@ -9,21 +9,23 @@ import { findQuestion, getNextQuestionId, getPrevQuestionId, getItemQuestions } 
 import { matchRoute, buildPath, isInternalPath } from './config/routes.js';
 export { isInternalPath };
 
-import { renderLanding, renderLandingContent } from './views/landing.js';
-import { renderCourse } from './views/course.js';
+import { renderLanding, renderLandingContent, initLandingContent } from './views/landing.js';
+import { renderCourse, setSelectedCourseItem } from './views/course.js';
 import { renderKnowledgeBase } from './views/knowledgeBase.js';
 import { renderPracticeBank } from './views/practiceBank.js';
 import { renderPracticeList } from './views/practiceList.js';
 import { initQuizSession, cleanupQuizSession } from './views/quizSession.js';
-import { renderPracticeDetail } from './views/practiceDetail.js';
+import { renderPracticeDetail, hydrateQuestionKps } from './views/practiceDetail.js';
 import { renderExamPapers } from './views/examPapers.js';
 import { renderExamDetail } from './views/examDetail.js';
 import {
   renderPracticeOverview, renderPracticeExams, renderPracticeTypes,
-  renderWrongBook, renderFavorites,
   renderCommunity, renderCommunityDetail,
   renderUserRecords
 } from './views/practice/index.js';
+import { renderReviewSession } from './views/practice/review-session.js';
+import { renderPracticeSession, initPracticeSession } from './views/practice/practice-session.js';
+import { renderAddMyPaper } from './views/practice/add-my-paper.js';
 import { renderPrivacy, renderTerms } from './views/legal.js';
 import { renderUserPage } from './views/user/userPage.js';
 import { renderAdminPage, initAdminPage } from './views/admin/adminPage.js';
@@ -69,17 +71,23 @@ async function applyRoute(route) {
     case 'practiceTypes':
       showPracticeTypes();
       break;
-    case 'wrongBook':
-      showWrongBook();
+    case 'practiceQuiz':
+      showPracticeQuiz();
       break;
-    case 'favorites':
-      showFavorites();
+    case 'practiceAddPaper':
+      showAddMyPaper();
+      break;
+    case 'reviewSession':
+      showReviewSession();
       break;
     case 'community':
       showCommunity();
       break;
     case 'communityPost':
       showCommunityPost(route.params.postId);
+      break;
+    case 'communityNew':
+      showPostNew();
       break;
     case 'userRecords':
       showUserRecords();
@@ -237,17 +245,25 @@ export function showPracticeTypes() {
   window.scrollTo({ top: 0 });
 }
 
-// === 知识库细分 ===
-export function showWrongBook() {
-  state.view = "wrong-book";
+export function showPracticeQuiz() {
+  state.view = "practice-session";
   clearQuestionState();
   setActiveNav('landing');
   renderMain();
   window.scrollTo({ top: 0 });
 }
 
-export function showFavorites() {
-  state.view = "favorites";
+export function showAddMyPaper() {
+  state.view = "add-my-paper";
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+// === 知识库细分（/kb 为统一 hub，仅保留复盘会话） ===
+export function showReviewSession() {
+  state.view = "review-session";
   clearQuestionState();
   setActiveNav('landing');
   renderMain();
@@ -266,6 +282,14 @@ export function showCommunity() {
 export function showCommunityPost(postId) {
   state.view = "community-detail";
   state.currentPostId = postId;
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showPostNew() {
+  state.view = "post-new";
   clearQuestionState();
   setActiveNav('landing');
   renderMain();
@@ -399,6 +423,23 @@ export function handleToggleItem(itemId) {
 
 export function handleToggleModule(moduleId) {
   toggleModule(moduleId);
+  if (state.currentCourseId) renderMain();
+}
+
+export function handleSelectCourseItem(itemId) {
+  setSelectedCourseItem(itemId);
+  // 确保所选小节所在模块展开，便于定位
+  if (state.currentCourseId) {
+    const course = COURSES.find(c => c.id === state.currentCourseId);
+    if (course) {
+      for (const m of course.modules) {
+        if (m.items.some(i => i.id === itemId)) {
+          state.expanded[m.id] = true;
+          break;
+        }
+      }
+    }
+  }
   if (state.currentCourseId) renderMain();
 }
 
@@ -629,6 +670,7 @@ export function renderMain() {
   switch (state.view) {
     case "landing": {
       main.innerHTML = renderLanding();
+      initLandingContent();
       const pillContainer = main.querySelector('[data-pill-nav]');
       if (pillContainer) {
         initPillNav(pillContainer, {
@@ -641,6 +683,7 @@ export function renderMain() {
             const contentEl = document.getElementById('landing-content');
             if (contentEl) {
               contentEl.innerHTML = renderLandingContent();
+              initLandingContent();
               typeset(contentEl);
             }
           }
@@ -659,6 +702,7 @@ export function renderMain() {
       break;
     case "practice":
       main.innerHTML = renderPracticeDetail(state.currentQuestionId);
+      hydrateQuestionKps(state.currentQuestionId);
       break;
     case "practice-list":
       main.innerHTML = renderPracticeList(state.currentPracticeItem);
@@ -686,17 +730,24 @@ export function renderMain() {
     case "practice-types":
       main.innerHTML = renderPracticeTypes();
       break;
-    case "wrong-book":
-      main.innerHTML = renderWrongBook();
+    case "practice-session":
+      main.innerHTML = renderPracticeSession();
+      initPracticeSession();
       break;
-    case "favorites":
-      main.innerHTML = renderFavorites();
+    case "add-my-paper":
+      main.innerHTML = renderAddMyPaper();
+      break;
+    case "review-session":
+      main.innerHTML = renderReviewSession();
       break;
     case "community":
       main.innerHTML = renderCommunity();
       break;
     case "community-detail":
       main.innerHTML = renderCommunityDetail(state.currentPostId);
+      break;
+    case "post-new":
+      main.innerHTML = renderPostForm();
       break;
     case "user-records":
       main.innerHTML = renderUserRecords();
@@ -715,6 +766,7 @@ export function renderMain() {
       break;
     default:
       main.innerHTML = renderLanding();
+      initLandingContent();
   }
   typeset(main);
   initImageLoaders(main);

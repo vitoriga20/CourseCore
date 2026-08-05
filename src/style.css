@@ -14,6 +14,19 @@
   --error: #c62828;
   --warning: #8b5a00;
   --warn: #8b5a00;
+  /* 语义变量：主色（行动/刷题板块）/ 危险 */
+  --primary: #2d6a4f;
+  --primary-2: #40916c;
+  --danger: #c62828;
+  /* 刷题板块映射到语义变量（保持既有引用可用） */
+  --practice-accent: var(--primary);
+  --practice-accent-2: var(--primary-2);
+  --practice-bg: var(--bg);
+  --practice-card: var(--card);
+  --practice-card-hover: var(--hover);
+  --practice-text: var(--fg);
+  --practice-muted: var(--muted);
+  --practice-border: var(--line);
 }
 
 [data-theme="dark"] {
@@ -28,9 +41,13 @@
   --error: #ef5350;
   --warning: #ffb800;
   --warn: #ffb800;
-  /* 刷题板块绿色主题（多色共存，不影响其他板块） */
-  --practice-accent: #16A34A;
-  --practice-accent-2: #2DD288;
+  /* 语义变量：主色（行动/刷题板块）/ 危险 */
+  --primary: #16A34A;
+  --primary-2: #2DD288;
+  --danger: #ef5350;
+  /* 刷题板块绿色主题（映射到语义变量） */
+  --practice-accent: var(--primary);
+  --practice-accent-2: var(--primary-2);
   --practice-bg: #0E0E16;
   --practice-card: #14141F;
   --practice-card-hover: #1E1E2E;
@@ -183,6 +200,27 @@ body {
   color: var(--muted);
   background: var(--bg);
   flex-shrink: 0;
+}
+
+/* 考点 chip: 主考点高亮主题色, 次考点淡灰 */
+.kp-chip {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.kp-chip-primary {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.kp-chip-secondary {
+  color: var(--muted);
+  background: var(--hover);
+  border-color: var(--line);
 }
 
 .item-nav {
@@ -1113,9 +1151,9 @@ body[data-bg="geo"] #bg-canvas {
 }
 
 .quiz-results {
-  max-width: 32rem;
+  max-width: 56rem;
   margin: 3rem auto;
-  text-align: center;
+  text-align: left;
   padding: 2.5rem;
   background: color-mix(in srgb, var(--card) 76%, transparent);
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
@@ -1125,17 +1163,123 @@ body[data-bg="geo"] #bg-canvas {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.quiz-results-score {
-  font-size: 3rem;
-  font-weight: 800;
-  color: var(--fg);
-  margin-bottom: 0.5rem;
+/* ===== 总结页：成绩 → 诊断 → 错题 → 行动（横向 2 列） ===== */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 768px) {
+  .summary-grid { grid-template-columns: 1fr; }
 }
 
-.quiz-results-rate {
+.summary-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.summary-hero {
+  padding: 1.75rem;
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  border: 1px solid var(--line);
+  text-align: center;
+}
+
+.summary-score {
+  font-size: 3.25rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--fg);
+}
+.summary-total {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.summary-rate {
   font-size: 1.125rem;
   color: var(--muted);
-  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.summary-status-tag {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.summary-status-tag.ok { background: color-mix(in srgb, var(--success) 16%, transparent); color: var(--success); }
+.summary-status-tag.warn { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+
+.summary-manual {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.summary-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.summary-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.summary-right-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.wrong-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 18rem;
+  overflow-y: auto;
+}
+.wrong-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--bg) 45%, transparent);
+  border: 1px solid var(--line);
+}
+.wrong-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--warn);
+  font-variant-numeric: tabular-nums;
+}
+.wrong-title {
+  font-size: 0.875rem;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty-state {
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 0.75rem;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.summary-tip {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .quiz-loading {
@@ -1785,4 +1929,136 @@ body[data-bg="geo"] #bg-canvas {
 .admin-denied a:hover {
   background: var(--accent, #1c5a3e);
   color: var(--bg, #fff);
+}
+
+/* ============================================================
+   知识库页（/kb）：齿轮下拉 + 页内 tab + 复习曲线选项
+   ============================================================ */
+.kb-gear-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  background: var(--practice-card);
+  color: var(--practice-muted, #8B8B96);
+  border: 1px solid var(--practice-border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.kb-gear-btn:hover {
+  color: var(--practice-accent);
+  border-color: var(--practice-accent);
+}
+.kb-gear-btn.open {
+  background: var(--practice-accent);
+  color: #fff;
+  border-color: var(--practice-accent);
+}
+
+.kb-curve-panel {
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: var(--practice-card);
+  border: 1px solid var(--practice-border);
+}
+.kb-curve-panel[hidden] {
+  display: none;
+}
+.kb-curve-panel.hidden {
+  display: none;
+}
+.kb-curve-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.kb-curve-title {
+  font-weight: 700;
+  color: var(--practice-text, #F5F5F7);
+  font-size: 0.95rem;
+}
+.kb-curve-hint {
+  font-size: 0.75rem;
+  color: var(--practice-accent);
+  font-weight: 600;
+}
+.kb-curve-desc {
+  font-size: 0.75rem;
+  color: var(--practice-muted, #8B8B96);
+  margin-bottom: 0.75rem;
+}
+.kb-curve-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+@media (max-width: 640px) {
+  .kb-curve-options { grid-template-columns: 1fr; }
+}
+.kb-curve-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  background: var(--practice-card-hover, #1E1E2E);
+  border: 1px solid var(--practice-border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.kb-curve-option:hover {
+  border-color: var(--practice-accent);
+}
+.kb-curve-option.active {
+  border-color: var(--practice-accent);
+  background: rgba(22, 163, 74, 0.12);
+}
+.kb-curve-option input[type="radio"] {
+  accent-color: var(--practice-accent);
+  width: 14px;
+  height: 14px;
+}
+.kb-curve-meta { flex: 1; min-width: 0; }
+.kb-curve-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--practice-text, #F5F5F7);
+}
+.kb-curve-sub {
+  font-size: 0.7rem;
+  color: var(--practice-muted, #8B8B96);
+  margin-top: 2px;
+}
+
+/* 页内 tab（错题库 / 收藏） */
+.kb-tab-pill {
+  padding: 0.4rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--practice-muted, #8B8B96);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+}
+.kb-tab-pill:hover {
+  color: var(--practice-text, #F5F5F7);
+}
+.kb-tab-pill.active {
+  background: var(--practice-accent);
+  color: #fff;
+}
+
+/* ===== 课程页：目录 + 本节预览 ===== */
+.course-item-selected {
+  background-color: rgba(40, 120, 80, 0.12);
+  border-left: 3px solid var(--primary, #287850);
+}
+.course-item-selected:hover {
+  background-color: rgba(40, 120, 80, 0.18);
 }

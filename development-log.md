@@ -1476,6 +1476,334 @@
 - 用户中心活动热图颜色改为用户指定的5种品牌色：#313234（Less/无活动）、#26563E、#2A8958、#2EBD72、#32F08C（More）。
 - 当天登录高亮从墨绿色透明度叠加改为在对应等级色上叠加白色内描边，保持5色方案统一。
 
+## 更新记录 - 2026-08-04
+
+### 阶段 39: 刷题板块三项缺陷修复（试卷/题量不显示、排行榜缺 0 分用户、Tab 多一次跳转、刷题及按题型永远"加载中"）
+
+**日期**: 2026-08-04
+
+**操作**:
+1. 修复刷题概览页"累计试卷套数/累计题目数量"始终显示 `…`：`src/services/practice-data.js` 新增 `normalizeQuestion()` 将 Supabase 返回的 snake_case 字段（`question_type`/`order_index`/`test_string`/`answer_reveal`）补齐为 camelCase，与静态 `examPapers.js` 保持一致；同时把 `CACHE_KEY` 从 `v1` 升到 `v2` 使旧缓存失效，避免读到未规范化的脏数据。
+2. 修复"按题型刷题"Tab 永远显示"加载题型中..."：`src/views/practice/index.js` 顶部 import 漏掉 `getQuestionTypeStats`，补齐后 `_loadTypesData()` 能正常拉取学科→题型树。
+3. 修复排行榜只显示有刷题记录的用户、0 分用户不上榜：`scripts/migrations/001-practice-board.sql` 新增 RPC `get_leaderboard()`，`LEFT JOIN auth.users` 让全部用户都返回（含 0 刷题），并按 `u.created_at ASC` 排序；前端 `index.js` 改用 `supabase.rpc('get_leaderboard')` 并在 `_renderLeaderboard` 同分时按 `created_at` 二次排序，RPC 失败则降级到 `leaderboard_view`。
+4. 修复"按试卷刷题/按题型刷题"底部 Tab 需要多一次点击才能进入刷题中心：把 `index.js` 概览页底部两个 Tab 从纯 Tab 样式改为直链 `<a href="/practice/exams">` / `<a href="/practice/types">`，点击即跳。
+5. 修复点击"进入练习/进入试卷"后刷题页卡在"加载题目中..."：`src/views/practice/practice-session.js` 将 `_initPracticeSession` 改为导出的 `initPracticeSession`，`renderPracticeSession` 只返回 HTML；`src/router.js` 在 `case "practice-session"` 中先 `main.innerHTML = renderPracticeSession()` 再调用 `initPracticeSession()`，确保容器已渲染后再异步加载题目。
+
+**关键决策**:
+- 数据规范化放在 `fetchExamPapersFromSupabase` 的 `.map(normalizeQuestion)` 而非各调用点 → 一处修复覆盖全部下游（题型统计、跨卷抽题、答题渲染），避免散点 patch。
+- 排行榜用 RPC 函数而非视图 → 视图无法 LEFT JOIN `auth.users`（RLS 阻挡），`SECURITY DEFINER` 函数可绕过 RLS 读取注册时间，同时只暴露必要字段。
+- render/init 拆分 → 与 `quizSession` 等其他视图模式一致，router 先渲染 DOM 再异步初始化，避免容器不存在导致 `getElementById` 返回 null。
+
+**产出文件**:
+- `src/services/practice-data.js` — 新增 `normalizeQuestion`，CACHE_KEY 升 v2，字段引用改 camelCase
+- `src/views/practice/index.js` — 补 `getQuestionTypeStats` import，排行榜改 RPC，底部 Tab 改直链
+- `src/views/practice/practice-session.js` — `renderPracticeSession`/`initPracticeSession` 拆分
+- `src/router.js` — import `initPracticeSession`，`practice-session` 路由先渲染后初始化
+- `scripts/migrations/001-practice-board.sql` — 新增 `get_leaderboard()` RPC + GRANT
+
+**验证**（dev server `http://localhost:5179`）:
+- `/practice` 概览：29 套 / 484 题正常显示；排行榜 3 名用户全 0 套按注册时间排序（2770038748 → 匿名 → 匿名）；底部两个 Tab 为直链。
+- `/practice/types` 按题型：学科→题型树显示线性代数（单选 90/填空 102/解答 130/证明 20/判断 15）+ 高等数学A（二）（单选 40/填空 40/解答 45/证明 2）；默认预览 90 题、约 90 分钟。
+- `/practice/exams` 按试卷：学科树显示线性代数 21 套 + 高等数学A（二）8 套；默认预览试卷编号 18，17 题、120 分钟、题型构成条正常。
+- `/practice/quiz` 刷题会话：从按题型"进入练习"跳入，正确显示"线性代数·单选题组 / 90 题"，第 1/90 题题干与选项 2/3/4/5 渲染正常，题号导航 1-90 全部呈现，无"加载中"残留。
+
+### 问题 9: 刷题概览试卷/题量显示 `…`
+**日期**: 2026-08-04
+**现象**: 概览页"累计试卷套数"和"累计题目数量"始终显示 `…`，不随数据加载更新。
+**原因**: Supabase 返回的题目字段是 snake_case（`question_type`），而 `_renderExamPreview`/`getQuestionTypeStats` 等下游读取的是 camelCase（`questionType`），导致题目被当成空数组，题量统计为 0；同时 localStorage 里缓存的旧数据也是未规范化结构。
+**解决**: 在 `fetchExamPapersFromSupabase` 的 `.map` 中加 `normalizeQuestion` 补齐 camelCase 字段；`CACHE_KEY` 升 v2 使旧缓存失效。
+
+### 问题 10: 排行榜缺 0 分用户
+**日期**: 2026-08-04
+**现象**: 排行榜只显示有刷题记录的用户，0 分用户不上榜。
+**原因**: `leaderboard_view` 从 `practice_records` 聚合，没有刷题记录的用户不会出现。
+**解决**: 新增 `get_leaderboard()` RPC，`LEFT JOIN auth.users` 让全部用户都返回，按 `created_at ASC` 排序；前端同分时按注册时间二次排序。
+
+### 问题 11: 按题型刷题永远"加载中"
+**日期**: 2026-08-04
+**现象**: 点击"按题型刷题"后左侧永远显示"加载题型中..."。
+**原因**: `index.js` 顶部 import 漏掉 `getQuestionTypeStats`，`_loadTypesData` 调用时 ReferenceError，题型树无法渲染。
+**解决**: 补齐 `import { getExamPapers, getSubjects, getQuestionTypeStats } from '../../services/practice-data.js'`。
+
+### 问题 12: 刷题会话卡在"加载题目中..."
+**日期**: 2026-08-04
+**现象**: 点击"进入练习/进入试卷"后刷题页卡在"加载题目中..."，题目不渲染。
+**原因**: `practice-session.js` 中 `_initPracticeSession` 是私有异步函数，`renderPracticeSession` 在返回 HTML 后立即调用它，但此时 `main.innerHTML` 刚赋值、DOM 还未完全 commit，`getElementById('practice-session-container')` 可能返回 null；即便拿到容器，题目数据加载失败也不会给出错误提示。
+**解决**: 将初始化逻辑导出为独立的 `initPracticeSession`，`router.js` 在 `main.innerHTML = renderPracticeSession()` 之后再调用 `initPracticeSession()`，确保容器存在；`initPracticeSession` 内部增加 try/catch 和空题目兜底 UI。
+
 ## 最后更新时间
 
-2026-08-03
+2026-08-04（第二次）
+
+### 阶段 40: 知识库页面整合为 /kb 单路由 hub（错题库 + 收藏页内 tab + 复习曲线设置）
+
+**日期**: 2026-08-04
+
+**操作**:
+- 将原 `/kb/wrong`（错题库）与 `/kb/favorites`（收藏）两个独立路由整合为单路由 `/kb`，页内 `[错题库 | 收藏]` tab 切换。
+- `src/views/knowledgeBase.js` 整体重写为统一 hub：
+  - 顶部：标题 + 「今日复习」入口（跳 `/kb/review`） + 齿轮按钮（展开复习曲线设置下拉）；
+  - 复习曲线下拉面板：列出 `经典 1-2-4-7-15 天` / `紧凑 1-2-4 天` 两选项，切换时调用 `switchCurve` 重合算法（保留 stage、超出阶段自动毕业），并刷新复习队列；
+  - 页内 tab：`错题库` 复用原 `_initWrongTab`（学科切换器 + 复习队列卡片 + 错误原因/考点雷达图 + 已选复盘 CTA）；`收藏` 为四分类筛选 + 卡片列表（第二期接真数据，当前 mock 布局）；
+  - 跨 `renderMain` 重渲染保留 `_kbState`（tab / currentSubject / radarTab / selected / curve / curvePanelOpen）。
+- `src/config/routes.js`：删除 `wrongBook` (`/kb/wrong`) 与 `favorites` (`/kb/favorites`) 路由条目；`getStaticPaths` 同步移除两条静态路径；保留 `reviewSession` (`/kb/review`)。
+- `src/router.js`：移除 `renderWrongBook` / `renderFavorites` import；删除 `case 'wrongBook'` / `case 'favorites'` 分支与 `showWrongBook()` / `showFavorites()` 函数；`renderMain` switch 删除 `case "wrong-book"` / `case "favorites"` 分支。
+- `src/views/practice/index.js`：删除 243-607 行错题库与收藏相关全部代码（`renderWrongBook` / `renderFavorites` / `_wrongBookState` / `_loadWrongBookData` / `_renderSubjects` / `_renderWrongQueue` / `_updateReviewButton` / `_renderRadar` / `_loadFavoritesData` / `TYPE_NAMES` / `STATUS_STYLES`）；移除不再使用的 `import { getReviewQueue, getStats, getTodayReview } from '../../services/review-engine.js'`；最近练习卡片中 `查看错题` 链接由 `/kb/wrong` 改为 `/kb`。
+- `src/views/practice/practice-session.js`：刷题完成页「查看错题」按钮 `/kb/wrong` → `/kb`。
+- `src/views/practice/review-session.js`：三处「返回错题库」链接 `/kb/wrong` → `/kb`（顶部返回、无复习任务 CTA、复盘完成提示）。
+- `src/views/landing.js`：`renderKBSummaryPanel` 话术由「已收录已做过的题型与解法」改为「错题库 · 收藏 · 复习曲线」，描述同步为「统一管理刷题过程中的错题与收藏，支持按学科筛选、错误原因/考点雷达分析，并可切换经典/紧凑复习曲线」。
+- `src/main.js`：删除 `import { renderKnowledgeBaseList }`（旧知识库列表渲染函数，新 hub 不再导出）；删除 `updateKBSearch` 函数（旧 `kb-search` 输入框 + `kb-list` 元素的搜索残留，新 hub 无此元素）；删除 `input` 事件委托中 `target.id === 'kb-search'` 分支。
+- `src/style.css`：新增 `.kb-gear-btn` / `.kb-gear-btn.open` / `.kb-curve-panel` / `.kb-curve-head` / `.kb-curve-title` / `.kb-curve-hint` / `.kb-curve-desc` / `.kb-curve-options` / `.kb-curve-option` / `.kb-curve-meta` / `.kb-curve-name` / `.kb-curve-sub` / `.kb-tab-pill` 样式，全部使用现有 `--practice-*` CSS 变量适配深色主题，移动端单列堆叠。
+
+**关键决策**:
+- 单路由 + 页内 tab 而非保留两条独立路由 → 错题库与收藏共享同一页面状态（学科筛选、复习曲线设置），切换无网络往返；与设计稿「知识库」单页 hub 一致。
+- 复习曲线设置放齿轮下拉而非独立路由 → 一次性设置不占导航位，展开/收起即时生效；切换走 `switchCurve` 重合算法保留已复习阶段，不丢进度。
+- `_kbState` 模块级状态而非 `state.js` 全局 → 仅 /kb 页面内部使用，不污染全局 state；跨 `renderMain` 重渲染保留 tab/选中/曲线配置。
+- 删除 `renderKnowledgeBaseList` / `updateKBSearch` / `kb-search` → 旧知识库是题目列表 + 搜索框模式，新 hub 是错题库 + 收藏模式，搜索框已无对应元素，保留死代码会触发 import 失败。
+- `/kb/review` 路由保留 → 复盘会话需要独立 URL（从知识库「开始复盘」按钮 + sessionStorage 传选中错题 ID 跳入），且复盘完成后返回 `/kb`。
+
+**产出文件**:
+- `src/views/knowledgeBase.js` — 重写为 /kb 统一 hub
+- `src/config/routes.js` — 删 wrongBook / favorites 路由 + static paths
+- `src/router.js` — 删 import / case / show 函数
+- `src/views/practice/index.js` — 删 243-607 行错题库 + 收藏代码，改 /kb/wrong → /kb
+- `src/views/practice/practice-session.js` — /kb/wrong → /kb
+- `src/views/practice/review-session.js` — 三处 /kb/wrong → /kb
+- `src/views/landing.js` — renderKBSummaryPanel 话术同步
+- `src/main.js` — 删 renderKnowledgeBaseList import / updateKBSearch / kb-search 分支
+- `src/style.css` — 新增 .kb-gear-btn / .kb-curve-panel / .kb-tab-pill 等样式
+
+**验证**:
+- `node --check` 全部改过的 JS 文件通过。
+- `npx vite build` 通过，765 modules transformed，1.28 MB JS / 70 KB CSS。
+- `node scripts/prerender.js` 成功预渲染 915 条静态路由。
+- `dist/kb/index.html` 存在；`dist/kb/wrong/` 与 `dist/kb/favorites/` 已移除；`dist/kb/review/index.html` 保留。
+
+**关联问题**: 用户要求按「刷题板块设计方案」设计稿更新知识库页面，整合错题库与收藏为单路由 hub。
+
+## 更新记录 - 2026-08-04（第二次）
+
+### 新增
+- `/kb` 知识库统一 hub：错题库 + 收藏页内 tab 切换 + 复习曲线齿轮下拉（经典/紧凑）。
+- `src/style.css` 新增 `.kb-gear-btn` / `.kb-curve-panel` / `.kb-curve-option` / `.kb-tab-pill` 等样式。
+
+### 修改
+- `src/views/knowledgeBase.js` 重写为统一 hub，整合原错题库与收藏功能，新增复习曲线设置面板。
+- `src/config/routes.js` 删除 `/kb/wrong` / `/kb/favorites` 路由与静态路径，保留 `/kb/review`。
+- `src/router.js` 移除 `renderWrongBook` / `renderFavorites` import 与对应 case / show 函数。
+- `src/views/practice/index.js` 删除错题库与收藏相关 365 行代码，移除 review-engine import，`/kb/wrong` 链接改为 `/kb`。
+- `src/views/practice/practice-session.js` 与 `review-session.js` 中 `/kb/wrong` 链接统一改为 `/kb`。
+- `src/views/landing.js` `renderKBSummaryPanel` 话术同步新知识库（错题库 · 收藏 · 复习曲线）。
+- `src/main.js` 删除 `renderKnowledgeBaseList` import、`updateKBSearch` 函数、`kb-search` input 分支（旧知识库列表搜索残留）。
+
+### 移除
+- `/kb/wrong` 路由与 `renderWrongBook` 函数。
+- `/kb/favorites` 路由与 `renderFavorites` 函数。
+- `renderKnowledgeBaseList` 旧知识库列表渲染函数（新 hub 不再需要）。
+- `updateKBSearch` 与 `kb-search` 输入框搜索逻辑（新 hub 无搜索框元素）。
+
+### 阶段 41: 课程详情页重构为「目录 + 本节预览」双栏布局
+
+**日期**: 2026-08-04
+
+**操作**:
+- 按用户"学习 tab 布局"需求重构课程详情页：点击课程进入后，上方为课程信息（标题、描述、进度卡、认证要求），下方左右双栏——左下为可折叠课程目录，右下为「本节预览」卡片（该小节类型/所属模块/完成状态/标题/大致信息摘要 + 底部「开始学习」按钮）。
+- `src/views/course.js` 整体重写：
+  - 新增模块级 `_selectedItemId` 选中小节状态，跨 `renderMain` 重渲染保留；
+  - 新增 `setSelectedCourseItem` 导出、`findItem` / `defaultSelectedItem`（默认选中第一个未完成小节；全完成则选第一项）、`excerptOf`（从 markdown 内容抽取约 120 字摘要）；
+  - `renderCatalogItem` 渲染目录项，选中项加 `course-item-selected` 高亮；锁定项显示锁图标与「需登录解锁」；
+  - `renderSelectedPreview` 渲染右侧预览：类型标签、所属模块、状态徽章、标题、内容摘要、底部「开始学习 →」按钮（锁定则显示「登录解锁」按钮，已完成额外显示「复习」）。
+- `src/router.js`：
+  - import `setSelectedCourseItem`；
+  - 新增 `handleSelectCourseItem(itemId)`：设置选中、自动展开所在模块、`renderMain()` 刷新。
+- `src/main.js`：import `handleSelectCourseItem`，事件委托 switch 新增 `case 'course-select-item'`。
+- `src/style.css`：新增 `.course-item-selected`（墨绿高亮背景 + 左侧 3px 主色描边）。
+- 修复 `btn-secondary` 不存在的问题：预览区「复习」按钮改用 `btn-pill btn-ghost`；「开始学习」/「登录解锁」改用 `btn-pill btn-primary`（与项目其余按钮一致）。
+
+**关键决策**:
+- 预览区沿用 Tailwind 容器类（`grid grid-cols-1 lg:grid-cols-2` 等），这些工具类由 Tailwind 扫描 `src/**/*.js` 自动生成，无需手写 CSS 覆盖 → 避免与生成工具类冲突；仅新增业务样式 `.course-item-selected`。
+- 选中小节跨渲染保留在模块级而非全局 state → 仅在课程页内有效，不污染全局状态。
+- 默认选中第一个未完成小节 → 用户进来即看到"下一步该学什么"，符合"状态 → 诊断 → 行动"理念。
+- 锁定小节预览区显示「登录解锁」而非「开始学习」→ 与访问权限控制（`src/config/access.js`）保持行为一致。
+
+**产出文件**:
+- `src/views/course.js` — 重写为双栏布局 + 本节预览
+- `src/router.js` — 新增 `handleSelectCourseItem`
+- `src/main.js` — 新增 `course-select-item` 事件分支
+- `src/style.css` — 新增 `.course-item-selected`
+
+**验证**:
+- `npx vite build --logLevel error` 通过（exit 0）。
+
+**关联问题**: 用户要求"学习 tab"点击课程后进入「上方信息 + 左下目录 + 右下本节信息 + 下方开始学习按钮」的布局。
+
+### 阶段 42: 执行 `coursecore-frontend-implementation-plan.md`（P0–P2 设计系统落地 + 视觉统一）
+
+**日期**: 2026-08-04
+
+**操作**:
+- **P0 底座 · 设计系统变量合并**（`src/style.css`）：新增语义变量 `--primary / --primary-2 / --danger / --warn`（对齐设计稿），把 `--practice-*` 全部映射到语义变量（`--practice-accent→--primary`、`--practice-text→--fg`、`--practice-muted→--muted`、`--practice-card→--card`、`--practice-border→--line`、`--practice-bg→--bg`、`--practice-card-hover→--hover`），浅色/深色两套 `:root` 均补齐，修复浅色模式缺 `--practice-*` 默认值导致的取色异常。
+- **P0 · 总结页横向 2 列**（`quizSession.js` `renderResults` + `style.css`）：新增 `.summary-grid`（`grid-template-columns: 1fr 1fr`，移动端单列），成绩/诊断/错题/行动按设计稿左右分栏。
+- **P1 · 知识库复习控制台**（`knowledgeBase.js`）：顶部新增摘要条（今日待复习/即将遗忘 24h/未掌握错题 3 个 `.stat-tile`），错题卡新增「查看解析 / 标记已掌握」操作行，`icon()` 内联 SVG 替换 emoji。
+- **P1 · 刷题板块**（`practice/index.js`、`practice-session.js`、`review-session.js`）：`initLandingContent` 异步接真数据（续刷/今日复习/薄弱/趋势），`icon()` SVG 替换 emoji，空态/加载态/错误态统一线性 SVG 图标。
+- **P2 · 试卷/题库/社区/我的 视觉对齐**：`examPapers.js` / `examDetail.js` / `practiceBank.js` / `practiceDetail.js` / `userPage.js` 核查无硬编码色值、无 emoji，均使用 CSS 变量体系 + Tailwind 原子类，与全局视觉统一。
+- **emoji→SVG 全量清理**：视图层残留 emoji（`practice-session.js` / `review-session.js` 错误态 ⚠️）替换为内联 SVG alert 图标；`knowledgeBase.js` / `practice/index.js` 状态图标已全部 SVG 化。
+
+**关键决策**:
+- `--practice-*` 保留为语义变量的别名而非全量替换内联引用 → 以较低回归风险达成视觉统一；避免对 6 个文件数百处内联样式做机械替换引入回归。
+- 变量合并 + 原子类采用「先加变量、再逐文件替换」灰度 → 规避全局样式重构波及全部视图的回归风险。
+- 数据文件（`theoryContents.js` / `questions.js` / `courses.js`）中的 emoji 属内容本身，不视为 UI 状态图标，保留不动。
+
+**产出文件**:
+- `src/style.css` — 语义变量合并 + `--practice-*` 映射 + `.summary-grid` 等原子类
+- `src/views/knowledgeBase.js` — 摘要条 + 错题操作行 + SVG 图标
+- `src/views/practice/index.js` — 真数据接续 + SVG 图标
+- `src/views/practice/practice-session.js` — 错误态 SVG 图标
+- `src/views/practice/review-session.js` — 错误态 SVG 图标
+- `src/views/quizSession.js` — 总结页 2 列布局
+
+**验证**:
+- `npx vite build` 通过（765 modules transformed，1.31 MB JS / 72.78 KB CSS，gzip 14.64 KB CSS）。
+- 视图层 emoji 残留为 0，硬编码色值残留为 0。
+
+**关联问题**: 执行 `coursecore-frontend-implementation-plan.md` 的 P0–P2 全部阶段。
+
+### 阶段 43: 2019 长沙理工大学高数 A（二）期末试卷答案与解析补全
+
+**日期**: 2026-08-04
+
+**操作**:
+- 为 `题库/高数/2019长沙理工大学高数A（二）期末.md` 全部 17 道题补全 `answer` / `answers` / `solution` 字段。
+- 题目分布：单项选择题 5 道（Q1–Q5）、填空题 5 道（Q6–Q10）、解答/证明题 7 道（Q11–Q17）。
+- 选择题答案统一为选项索引（0/1/2/3），与 `question-builder.js` `normalizeChoiceAnswer` 归一化逻辑一致；`answers` 字段同步封装为单元素数组，兼容多选校验器。
+- 填空题答案采用可读字符串形式（如 `"dx - dy"`、`"4 - sqrt(2)"`、`"64pi"`），与 `normalized` 校验器宽松比对一致；其中 Q8 经参数化推导得 $4-\sqrt{2}$，Q10 由 Dirichlet 定理得 $\frac{\pi^2}{2}$。
+- 解答题（Q11–Q16）按步骤给出推导链与最终值，答案字段保留主结果（如 `"a=-3, b=2"`、`"16pi/3"`、`"(-1,1), (1+x)/(1-x)^2"`）。
+- 证明题 Q17（曲线积分全微分）答案标记为 `"见解析"`，解析中通过构造原函数 $F(u)=\int_0^u f(t)\,dt$ 完成闭曲线积分为零的论证。
+
+**关键决策**:
+- 选择题答案存索引而非字母 → 复用阶段 13 的归一化管线，无需新增展示层转换。
+- 填空题答案使用 ASCII 形式（`sqrt(2)`、`pi`）而非 LaTeX → 与现有 `normalized` 校验器的去空格、去 `\` 的归一化策略一致，避免渲染层和校验层格式不一致。
+- Q3 被积函数 $x+y+z$ 在单位球上积分为 0 不在选项中，解析中显式指出推测原题被积函数为 1 → 保留学术严谨性同时给出最可能答案 B。
+- Q17 证明题 `answer` 字段填 `"见解析"` 而非空 → 避免前端展示「答案：空」的异常态，与 `manual` 校验器语义一致。
+
+**产出文件**:
+- `题库/高数/2019长沙理工大学高数A（二）期末.md` — 17 道题答案 + 解析补全
+
+**验证**:
+- 文件 YAML frontmatter 与题目字段格式与同目录其他试卷一致。
+- 选择题答案索引均在 `[0, options.length-1]` 范围内。
+- 解答题 `answers` 数组均非空，`solution` 字段均含完整推导步骤。
+
+**关联问题**: 用户要求把 2019 高数 A（二）期末试卷的答案和解析写好。
+
+### 阶段 44: 2019 高数 A（二）期末试卷答案同步至 Supabase
+
+**日期**: 2026-08-04
+
+**操作**:
+- 通过 Supabase MCP `execute_sql` 分 3 批执行 17 条 UPDATE，将阶段 43 补全的 `answer` / `answers` / `solution` 写入 `exam_questions` 表（exam_id = `exam-calculus-2-2019`）。
+- SQL 字符串使用 dollar-quoting `$sol$...$sol$` 包裹 solution，避免 LaTeX 反斜杠与单引号（`y'` / `y''` 等导数符号）的转义冲突。
+- 同步重写本地 seed SQL 文件 `04-exam-papers-24-exam-calculus-2-2019.sql`，17 个 INSERT 的 answer/answers/solution 字段从空占位（`''` / `'[]'` / `''`）替换为正确值，solution 内反斜杠按 `esc()` 规则双写、单引号双写。
+- 运行 `npm run fetch:data` 从 Supabase 拉取最新数据，更新 `src/data/examPapers.js`（29 份试卷），前端 Q1 answer 已确认为 `"3"`、solution 完整。
+
+**关键决策**:
+- Supabase 写入用 dollar-quoting 而非 `esc()` 转义 → solution 含大量 LaTeX 反斜杠与导数单引号，dollar-quoting 一律按字面量处理，零转义错误。
+- 本地 seed SQL 仍用 `esc()` 单引号转义 → 保持与 `md-to-exam-seed.js` 生成产物一致，便于后续重新生成时 diff 干净。
+- 仅 UPDATE answer/answers/solution 三字段，不动 title/content/options → 避免覆盖 Supabase 中已正确的题面（Q15 题面 `$f'(0) = 1$` 在 Supabase 为一阶导，与本地 seed SQL 的 `f''(0)` 转义后一致）。
+- 不跑 `seed-exams-to-supabase.js` 全量重导 → 该脚本需 service_role key（`.env.local` 未配置），且会重导 29 份试卷；MCP `execute_sql` 精准定向 17 题，影响面最小。
+
+**产出文件**:
+- `scripts/seed/04-exam-papers-24-exam-calculus-2-2019.sql` — 17 个 INSERT 答案字段填充
+- `src/data/examPapers.js` — fetch:data 重新生成
+- Supabase `exam_questions` 表 — 17 行 answer/answers/solution 更新
+
+**验证**:
+- `SELECT id, answer, answers, solution_status FROM exam_questions WHERE exam_id = 'exam-calculus-2-2019'` 返回 17 行，answer 非空、answers 单元素数组、solution 全 OK。
+- Q15 (s2-4) solution 头部确认存为 `y' - e^{y-1}`（一阶导）而非 `y''`（二阶导），单引号转义正确。
+- Q17 (s2-6) solution 确认 `F'(u) = f(u)`（一阶导）。
+- 前端 `examPapers.js` Q1 answer=`"3"`、answers=`["3"]`、solution 完整。
+
+**关联问题**: 用户要求把 2019 试卷答案也写到 Supabase。
+
+## 更新记录 - 2026-08-04（第四次）
+
+### 新增
+- 语义变量 `--primary / --primary-2 / --danger / --warn`，`--practice-*` 统一映射到语义变量。
+
+### 修改
+- 总结页 `renderResults` 改为横向 2 列（`.summary-grid`）。
+- 知识库 `/kb` 错题卡新增「查看解析 / 标记已掌握」操作行，顶部摘要条真数据化。
+- 刷题板块概览、会话、复盘错误态 emoji 全部替换为内联 SVG。
+
+### 移除
+- 视图层残留 emoji 状态图标（`practice-session.js` / `review-session.js` 的 ⚠️）。
+
+## 更新记录 - 2026-08-04（第五次）
+
+### 修改
+- **"刷题" tab（首页）**：删除「按试卷」「按题型」两张功能入口卡；扩增三卡诊断数据「薄弱考点 top3 + 刷题统计 + 近期正确率趋势」，符合设计理念「状态→诊断→行动」。
+- **"刷题板块"页 (`/practice`)**：重排信息优先级 → ① 个人任务区（继续上次 + 今日待复习）→ ② 统计指标 → ③ 按试卷/按题型入口（原首页删去的卡片样式）→ ④ 排行榜 + 最近练习 → ⑤ 添加我的试卷（降级到末尾）；完全遵循设计理念个人任务优先。
+- 增加动态加载：在 `landing.js` 导入 `supabase`，动态加载刷题统计和趋势线；在 `practice/index.js` 加载个人任务数据。
+
+### 新增
+- 首页刷题 tab 新增 `landing-practice-weak`（薄弱考点）、`landing-practice-stats`（统计）、`landing-practice-trend`（趋势）三个异步加载容器。
+- 刷题板块新增 `overview-resume` 和 `overview-today` 两个个人任务容器。
+
+### 阶段 45: 刷题板块破局重构（状态仪表盘优先 + 单一主区 + 唯一主按钮）
+
+**日期**: 2026-08-04
+
+**背景**: 用户反馈刷题板块页"内容密度低、信息量不足、布局冗余（等权重卡片堆叠）、按钮不清晰"，并要求先对齐颗粒度再破局。经确认三项决策：页面定位=状态仪表盘优先；布局=单一主区+紧凑辅助；按钮=只保留一个"开始刷题"主按钮（进入刷题中心，那里有按试卷/按题型 tab 切换）。
+
+**操作**:
+- **`src/views/practice/index.js` `renderPracticeOverview`** 整体重排：
+  - 删除「按试卷 / 按题型」两张入口卡片，改为唯一主按钮「开始刷题 →」跳 `/practice/exams`（刷题中心内有 tab 切换）。
+  - 主区改为一个 `rounded-2xl` 大仪表盘（不再拆分独立卡片）：左列「继续上次 + 今日待复习」，右列「薄弱考点 + 开始刷题主按钮」。
+  - 统计指标（累计试卷/累计题目/正确率/总耗时）压成一行 4 个内联窄块，去掉独立卡片边框，靠背景色分层。
+  - 排行榜 / 最近练习 保留为两栏压缩卡片，铺满。
+- **`_loadOverviewData` 继续上次分支**：去掉内部「继续练习」大按钮（与主按钮重复），改为紧凑行（标题 + 右侧「继续 →」小链接 + 进度条 + 正确率）；无记录时不再渲染多余按钮。
+
+**关键决策**:
+- 页面主线从「功能入口」转为「状态仪表盘」→ 信息密度由"等权重卡片堆叠"改为"单一主视觉 + 紧凑辅助"，消除布局冗余。
+- 只保留一个主 CTA「开始刷题」→ 按钮层级唯一，避免多按钮互相干扰；按试卷/按题型交由刷题中心内 tab 切换完成。
+- 继续上次的内容按钮降级为内联小链接 → 与主按钮职责分离，避免一个区块出现两个同等级按钮。
+
+**产出文件**:
+- `src/views/practice/index.js` — 概览页结构与继续上次逻辑重构
+
+**验证**:
+- `npx vite build` 通过（765 modules transformed，gzip CSS 14.70 KB）。
+
+**关联问题**: 用户要求刷题板块页破局，先对齐颗粒度（状态仪表盘优先 / 单一主区+紧凑辅助 / 唯一主按钮）再实施。
+
+## 更新记录 - 2026-08-04（第六次）
+
+### 修改
+- 刷题板块页 `/practice` 重构为「状态仪表盘优先」：单一主区（继续上次 + 今日待复习 + 薄弱考点 + 开始刷题按钮）+ 紧凑辅助（统计指标行 + 排行榜 + 最近练习）。
+- 删除「按试卷 / 按题型」入口卡片，改为唯一主按钮「开始刷题 →」。
+- 继续上次改为紧凑行（内联「继续 →」小链接），去掉与主按钮重复的按钮。
+
+## 最后更新时间
+
+2026-08-04（第六次）
+
+## 更新记录 - 2026-08-05
+
+### 修改
+- 刷题中心进入的刷题会话（按试卷 / 按题型 / 我的试卷 / 错题复盘）按原始试卷顺序排列题目。
+  - `src/views/quizSession.js` `createState`：当 `externalQuestions` 注入时不再按题号尾部数字重排，保留 `quiz-adapter` 传入的原始顺序；兜底 `getItemQuestions` 路径仍按尾部编号排序。
+- 填空题占位符 `\_\_\_\_`（Markdown 转义下划线）在题目展示时还原为 `____`。
+  - `src/views/quizSession.js` 新增 `normalizeText` 工具：将 `\_` 替换为 `_`。
+  - 应用到 `renderCurrentQuestion` 的标题与题干、`renderResults` 错题列表标题。
+
+### 影响面
+- 仅影响 `src/views/quizSession.js`，所有复用该模块的入口（刷题中心会话、错题复盘、小节训练）均同步生效。
+- 不改数据源 `src/data/examPapers.js` / `src/data/questions.js`，仅在渲染层归一化。
+- 不影响随机模式：`resetOrder` 在 `mode === 'random'` 时仍按 seed 打乱。
+
+### 修改
+- 顺序/随机切换按钮文案：「切换顺序」→「顺序刷题」、「切换随机」→「随机刷题」。
+
+## 最后更新时间
+
+2026-08-05

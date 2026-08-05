@@ -1,0 +1,3168 @@
+{
+    "pdf_info": [
+        {
+            "preproc_blocks": [
+                {
+                    "bbox": [
+                        195,
+                        120,
+                        377,
+                        141
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                195,
+                                120,
+                                377,
+                                141
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        195,
+                                        120,
+                                        377,
+                                        141
+                                    ],
+                                    "type": "text",
+                                    "content": "长沙理工大学考试试卷"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 0,
+                    "level": 1
+                },
+                {
+                    "bbox": [
+                        47,
+                        173,
+                        525,
+                        186
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                173,
+                                525,
+                                186
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        525,
+                                        186
+                                    ],
+                                    "type": "text",
+                                    "content": "课程名称（含档次）高等数学A（二）（本部期末） 课程编号0701000219"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        48,
+                        198,
+                        525,
+                        212
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                48,
+                                198,
+                                525,
+                                212
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        48,
+                                        198,
+                                        525,
+                                        212
+                                    ],
+                                    "type": "text",
+                                    "content": "专业电气、交运、电子信息等层次（本、专）本考试方式（开、闭卷）闭卷"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 2,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        231,
+                        272,
+                        246
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                231,
+                                272,
+                                246
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        231,
+                                        272,
+                                        246
+                                    ],
+                                    "type": "text",
+                                    "content": "一、单选题(共5题，每题4分，共20分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        259,
+                        443,
+                        309
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                259,
+                                443,
+                                309
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": "1.设向量 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a},\\vec{b}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " 满足 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "|\\vec{a} -\\vec{b}| = |\\vec{a} +\\vec{b} |"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则必有（）.A. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a} -\\vec{b} = \\vec{0}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a} +\\vec{b} = \\vec{0}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " C. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a}\\cdot \\vec{b} = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " D. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a}\\times \\vec{b} = \\vec{0}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        324,
+                        420,
+                        360
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                324,
+                                420,
+                                360
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": "2.二元函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x,y)=2x-4y-x^{2}-2y^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": " 的驻点是（）.\nA. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(-1,-1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": "  B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(1,-1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": "  C. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(-1,1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": "  D.(1,1)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 5,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        371,
+                        433,
+                        408
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                371,
+                                433,
+                                408
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": "3.函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "z = 3^{xy}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则在点(1,1)处的全微分 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "dz = (\\quad)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " A. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "dx"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "dy"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " C. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "3(dx + dy)\\ln 3"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " D. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "dx + dy"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 6,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        419,
+                        427,
+                        511
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                419,
+                                427,
+                                511
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": "4.设C是按逆时针方向绕行的圆周曲线 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x^{2}+y^{2}=R^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\oint_{C}xy^{2}dy-x^{2}ydx=(\\quad)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": " .\nA. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}r^{3}dr"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": "  B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}r^{2}dr"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": " \nC. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "-\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}4r^{3}\\sin\\theta\\cos\\theta dr"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": "  D. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}R^{2}dr"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        518,
+                        437,
+                        580
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                518,
+                                437,
+                                580
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "text",
+                                    "content": "5.下列正项级数中，收敛的是（）.\nA. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty}\\frac{5^{n}-3^{n}}{4^{n}}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "text",
+                                    "content": "  B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=0}^{\\infty}\\frac{n}{2^{n}}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "text",
+                                    "content": "  C. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty}\\frac{1}{\\sqrt{n}}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "text",
+                                    "content": "  D. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty}\\frac{n+1}{n^{2}}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 8,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        593,
+                        272,
+                        609
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                593,
+                                272,
+                                609
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        593,
+                                        272,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "二、填空题(共5题，每题4分，共20分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 9,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        618,
+                        234,
+                        656
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                618,
+                                234,
+                                656
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        618,
+                                        234,
+                                        656
+                                    ],
+                                    "type": "text",
+                                    "content": "6.极限 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        618,
+                                        234,
+                                        656
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\lim_{\\substack{x\\to0\\\\ y\\to0}}\\frac{x^{2}y^{2}}{x^{2}+2y^{2}+1}="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        618,
+                                        234,
+                                        656
+                                    ],
+                                    "type": "text",
+                                    "content": " ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 10,
+                    "merge_prev": false
+                }
+            ],
+            "discarded_blocks": [
+                {
+                    "bbox": [
+                        238,
+                        707,
+                        330,
+                        720
+                    ],
+                    "type": "page_number",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                238,
+                                707,
+                                330,
+                                720
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        238,
+                                        707,
+                                        330,
+                                        720
+                                    ],
+                                    "type": "text",
+                                    "content": "第 1 页（共 2 页）"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 11
+                }
+            ],
+            "page_size": [
+                595,
+                841
+            ],
+            "page_idx": 0,
+            "para_blocks": [
+                {
+                    "bbox": [
+                        195,
+                        120,
+                        377,
+                        141
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                195,
+                                120,
+                                377,
+                                141
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        195,
+                                        120,
+                                        377,
+                                        141
+                                    ],
+                                    "type": "text",
+                                    "content": "长沙理工大学考试试卷"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 0,
+                    "level": 1
+                },
+                {
+                    "bbox": [
+                        47,
+                        173,
+                        525,
+                        186
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                173,
+                                525,
+                                186
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        173,
+                                        525,
+                                        186
+                                    ],
+                                    "type": "text",
+                                    "content": "课程名称（含档次）高等数学A（二）（本部期末） 课程编号0701000219"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        48,
+                        198,
+                        525,
+                        212
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                48,
+                                198,
+                                525,
+                                212
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        48,
+                                        198,
+                                        525,
+                                        212
+                                    ],
+                                    "type": "text",
+                                    "content": "专业电气、交运、电子信息等层次（本、专）本考试方式（开、闭卷）闭卷"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 2,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        231,
+                        272,
+                        246
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                231,
+                                272,
+                                246
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        231,
+                                        272,
+                                        246
+                                    ],
+                                    "type": "text",
+                                    "content": "一、单选题(共5题，每题4分，共20分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        259,
+                        443,
+                        309
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                259,
+                                443,
+                                309
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": "1.设向量 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a},\\vec{b}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " 满足 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "|\\vec{a} -\\vec{b}| = |\\vec{a} +\\vec{b} |"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则必有（）.A. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a} -\\vec{b} = \\vec{0}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a} +\\vec{b} = \\vec{0}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " C. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a}\\cdot \\vec{b} = 0"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "text",
+                                    "content": " D. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        259,
+                                        443,
+                                        309
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\vec{a}\\times \\vec{b} = \\vec{0}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        324,
+                        420,
+                        360
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                324,
+                                420,
+                                360
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": "2.二元函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "f(x,y)=2x-4y-x^{2}-2y^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": " 的驻点是（）.\nA. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(-1,-1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": "  B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(1,-1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": "  C. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(-1,1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        324,
+                                        420,
+                                        360
+                                    ],
+                                    "type": "text",
+                                    "content": "  D.(1,1)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 5,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        371,
+                        433,
+                        408
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                371,
+                                433,
+                                408
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": "3.函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "z = 3^{xy}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则在点(1,1)处的全微分 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "dz = (\\quad)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " A. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "dx"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "dy"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " C. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "3(dx + dy)\\ln 3"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "text",
+                                    "content": " D. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        371,
+                                        433,
+                                        408
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "dx + dy"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 6,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        419,
+                        427,
+                        511
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                419,
+                                427,
+                                511
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": "4.设C是按逆时针方向绕行的圆周曲线 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x^{2}+y^{2}=R^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": " ，则 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\oint_{C}xy^{2}dy-x^{2}ydx=(\\quad)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": " .\nA. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}r^{3}dr"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": "  B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}r^{2}dr"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": " \nC. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "-\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}4r^{3}\\sin\\theta\\cos\\theta dr"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "text",
+                                    "content": "  D. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        419,
+                                        427,
+                                        511
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}R^{2}dr"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        518,
+                        437,
+                        580
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                518,
+                                437,
+                                580
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "text",
+                                    "content": "5.下列正项级数中，收敛的是（）.\nA. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty}\\frac{5^{n}-3^{n}}{4^{n}}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "text",
+                                    "content": "  B. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=0}^{\\infty}\\frac{n}{2^{n}}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "text",
+                                    "content": "  C. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty}\\frac{1}{\\sqrt{n}}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "text",
+                                    "content": "  D. "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        518,
+                                        437,
+                                        580
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n=1}^{\\infty}\\frac{n+1}{n^{2}}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 8,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        593,
+                        272,
+                        609
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                593,
+                                272,
+                                609
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        593,
+                                        272,
+                                        609
+                                    ],
+                                    "type": "text",
+                                    "content": "二、填空题(共5题，每题4分，共20分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 9,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        618,
+                        234,
+                        656
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                618,
+                                234,
+                                656
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        618,
+                                        234,
+                                        656
+                                    ],
+                                    "type": "text",
+                                    "content": "6.极限 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        618,
+                                        234,
+                                        656
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\lim_{\\substack{x\\to0\\\\ y\\to0}}\\frac{x^{2}y^{2}}{x^{2}+2y^{2}+1}="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        618,
+                                        234,
+                                        656
+                                    ],
+                                    "type": "text",
+                                    "content": " ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 10,
+                    "merge_prev": false
+                }
+            ]
+        },
+        {
+            "preproc_blocks": [
+                {
+                    "bbox": [
+                        47,
+                        91,
+                        365,
+                        125
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                91,
+                                365,
+                                125
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        91,
+                                        365,
+                                        125
+                                    ],
+                                    "type": "text",
+                                    "content": "7. 改变二次积分的积分次序， "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        91,
+                                        365,
+                                        125
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{-1}^{1} dx \\int_{0}^{\\sqrt{1-x^{2}}} f(x,y)dy="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        91,
+                                        365,
+                                        125
+                                    ],
+                                    "type": "text",
+                                    "content": "  ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 0,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        140,
+                        389,
+                        154
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                140,
+                                389,
+                                154
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "text",
+                                    "content": "8.椭球面  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "2x^{2} + 3y^{2} + z^{2} = 9"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(1, -1, 2)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "text",
+                                    "content": "  处的切平面方程为 ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        46,
+                        169,
+                        389,
+                        204
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                46,
+                                169,
+                                389,
+                                204
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "text",
+                                    "content": "9. 设 L 为椭圆  "
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{x^{2}}{4} + \\frac{y^{2}}{3} = 1"
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "text",
+                                    "content": " ，其周长记为 a，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\oint_{L} (3x^{2} + 4y^{2}) ds ="
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "text",
+                                    "content": " ____ ."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 2,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        221,
+                        255,
+                        234
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                221,
+                                255,
+                                234
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        221,
+                                        255,
+                                        234
+                                    ],
+                                    "type": "text",
+                                    "content": "10.函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        221,
+                                        255,
+                                        234
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "e^{x}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        221,
+                                        255,
+                                        234
+                                    ],
+                                    "type": "text",
+                                    "content": " 展开成麦克劳林级数为____。"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        248,
+                        278,
+                        264
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                248,
+                                278,
+                                264
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        248,
+                                        278,
+                                        264
+                                    ],
+                                    "type": "text",
+                                    "content": "三、计算题(共5题，每题10分，共50分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        272,
+                        337,
+                        297
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                272,
+                                337,
+                                297
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "text",
+                                    "content": "11. 求通过点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(1,2,-1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "text",
+                                    "content": "  且与直线  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\left\\{\\begin{aligned} x-2y+z=2 \\\\ 3x+y-z=1 \\end{aligned}\\right."
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "text",
+                                    "content": "  平行的直线方程."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 5,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        48,
+                        357,
+                        192,
+                        386
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                48,
+                                357,
+                                192,
+                                386
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        48,
+                                        357,
+                                        192,
+                                        386
+                                    ],
+                                    "type": "text",
+                                    "content": "12.已知 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        357,
+                                        192,
+                                        386
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "z = e^{xy} + yx^2"
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        357,
+                                        192,
+                                        386
+                                    ],
+                                    "type": "text",
+                                    "content": " ，求 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        357,
+                                        192,
+                                        386
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{\\partial^2z}{\\partial x\\partial y}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 6,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        441,
+                        479,
+                        475
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                441,
+                                479,
+                                475
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "text",
+                                    "content": "13. 计算二重积分  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{D}\\sqrt{x^{2}+y^{2}}d\\sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "text",
+                                    "content": " ，其中 D 是圆环形闭区域  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\{(x,y)|a^{2}\\leq x^{2}+y^{2}\\leq b^{2}\\}(0<a<b)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "text",
+                                    "content": " ."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        48,
+                        528,
+                        408,
+                        560
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                48,
+                                528,
+                                408,
+                                560
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "text",
+                                    "content": "14. 计算 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{\\Sigma} x^{3} dy dz + y^{3} dz dx + z^{3} dx dy"
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "text",
+                                    "content": "，其中 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "text",
+                                    "content": " 为球面 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x^{2} + y^{2} + z^{2} = a^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "text",
+                                    "content": " 的外侧."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 8,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        621,
+                        257,
+                        659
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                621,
+                                257,
+                                659
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        621,
+                                        257,
+                                        659
+                                    ],
+                                    "type": "text",
+                                    "content": "15.求幂级数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        621,
+                                        257,
+                                        659
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n = 1}^{\\infty}\\frac{x^{2n - 1}}{2n - 1}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        621,
+                                        257,
+                                        659
+                                    ],
+                                    "type": "text",
+                                    "content": " 的收敛域及和函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        621,
+                                        257,
+                                        659
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "s(x)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 9,
+                    "merge_prev": false
+                }
+            ],
+            "discarded_blocks": [
+                {
+                    "bbox": [
+                        248,
+                        739,
+                        340,
+                        753
+                    ],
+                    "type": "page_number",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                248,
+                                739,
+                                340,
+                                753
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        248,
+                                        739,
+                                        340,
+                                        753
+                                    ],
+                                    "type": "text",
+                                    "content": "第2页（共2页）"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 10
+                }
+            ],
+            "page_size": [
+                595,
+                841
+            ],
+            "page_idx": 1,
+            "para_blocks": [
+                {
+                    "bbox": [
+                        47,
+                        91,
+                        365,
+                        125
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                91,
+                                365,
+                                125
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        91,
+                                        365,
+                                        125
+                                    ],
+                                    "type": "text",
+                                    "content": "7. 改变二次积分的积分次序， "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        91,
+                                        365,
+                                        125
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\int_{-1}^{1} dx \\int_{0}^{\\sqrt{1-x^{2}}} f(x,y)dy="
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        91,
+                                        365,
+                                        125
+                                    ],
+                                    "type": "text",
+                                    "content": "  ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 0,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        140,
+                        389,
+                        154
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                140,
+                                389,
+                                154
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "text",
+                                    "content": "8.椭球面  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "2x^{2} + 3y^{2} + z^{2} = 9"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "text",
+                                    "content": "  在点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(1, -1, 2)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        140,
+                                        389,
+                                        154
+                                    ],
+                                    "type": "text",
+                                    "content": "  处的切平面方程为 ____."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        46,
+                        169,
+                        389,
+                        204
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                46,
+                                169,
+                                389,
+                                204
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "text",
+                                    "content": "9. 设 L 为椭圆  "
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{x^{2}}{4} + \\frac{y^{2}}{3} = 1"
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "text",
+                                    "content": " ，其周长记为 a，则  "
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\oint_{L} (3x^{2} + 4y^{2}) ds ="
+                                },
+                                {
+                                    "bbox": [
+                                        46,
+                                        169,
+                                        389,
+                                        204
+                                    ],
+                                    "type": "text",
+                                    "content": " ____ ."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 2,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        221,
+                        255,
+                        234
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                221,
+                                255,
+                                234
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        221,
+                                        255,
+                                        234
+                                    ],
+                                    "type": "text",
+                                    "content": "10.函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        221,
+                                        255,
+                                        234
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "e^{x}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        221,
+                                        255,
+                                        234
+                                    ],
+                                    "type": "text",
+                                    "content": " 展开成麦克劳林级数为____。"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        248,
+                        278,
+                        264
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                248,
+                                278,
+                                264
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        248,
+                                        278,
+                                        264
+                                    ],
+                                    "type": "text",
+                                    "content": "三、计算题(共5题，每题10分，共50分)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 4,
+                    "level": 2
+                },
+                {
+                    "bbox": [
+                        47,
+                        272,
+                        337,
+                        297
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                272,
+                                337,
+                                297
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "text",
+                                    "content": "11. 求通过点  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "(1,2,-1)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "text",
+                                    "content": "  且与直线  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\left\\{\\begin{aligned} x-2y+z=2 \\\\ 3x+y-z=1 \\end{aligned}\\right."
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        272,
+                                        337,
+                                        297
+                                    ],
+                                    "type": "text",
+                                    "content": "  平行的直线方程."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 5,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        48,
+                        357,
+                        192,
+                        386
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                48,
+                                357,
+                                192,
+                                386
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        48,
+                                        357,
+                                        192,
+                                        386
+                                    ],
+                                    "type": "text",
+                                    "content": "12.已知 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        357,
+                                        192,
+                                        386
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "z = e^{xy} + yx^2"
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        357,
+                                        192,
+                                        386
+                                    ],
+                                    "type": "text",
+                                    "content": " ，求 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        357,
+                                        192,
+                                        386
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\frac{\\partial^2z}{\\partial x\\partial y}"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 6,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        441,
+                        479,
+                        475
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                441,
+                                479,
+                                475
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "text",
+                                    "content": "13. 计算二重积分  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{D}\\sqrt{x^{2}+y^{2}}d\\sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "text",
+                                    "content": " ，其中 D 是圆环形闭区域  "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\{(x,y)|a^{2}\\leq x^{2}+y^{2}\\leq b^{2}\\}(0<a<b)"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        441,
+                                        479,
+                                        475
+                                    ],
+                                    "type": "text",
+                                    "content": " ."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 7,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        48,
+                        528,
+                        408,
+                        560
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                48,
+                                528,
+                                408,
+                                560
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "text",
+                                    "content": "14. 计算 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\iint_{\\Sigma} x^{3} dy dz + y^{3} dz dx + z^{3} dx dy"
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "text",
+                                    "content": "，其中 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\Sigma"
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "text",
+                                    "content": " 为球面 "
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "x^{2} + y^{2} + z^{2} = a^{2}"
+                                },
+                                {
+                                    "bbox": [
+                                        48,
+                                        528,
+                                        408,
+                                        560
+                                    ],
+                                    "type": "text",
+                                    "content": " 的外侧."
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 8,
+                    "merge_prev": false
+                },
+                {
+                    "bbox": [
+                        47,
+                        621,
+                        257,
+                        659
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                47,
+                                621,
+                                257,
+                                659
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        47,
+                                        621,
+                                        257,
+                                        659
+                                    ],
+                                    "type": "text",
+                                    "content": "15.求幂级数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        621,
+                                        257,
+                                        659
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "\\sum_{n = 1}^{\\infty}\\frac{x^{2n - 1}}{2n - 1}"
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        621,
+                                        257,
+                                        659
+                                    ],
+                                    "type": "text",
+                                    "content": " 的收敛域及和函数 "
+                                },
+                                {
+                                    "bbox": [
+                                        47,
+                                        621,
+                                        257,
+                                        659
+                                    ],
+                                    "type": "inline_equation",
+                                    "content": "s(x)"
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 9,
+                    "merge_prev": false
+                }
+            ]
+        }
+    ],
+    "_backend": "hybrid",
+    "_effort": "medium",
+    "_ocr_enable": true,
+    "_version_name": "3.4.4"
+}

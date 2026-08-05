@@ -351,3 +351,97 @@ CREATE INDEX IF NOT EXISTS idx_exam_questions_exam
 -- 因此删除 course / module / item 时，DB 会自动级联清理子节点，
 -- 前端只需调用 deleteCourse / deleteModule / deleteItem 即可，
 -- 无需额外 RPC。
+
+-- ============================================================
+-- 14. 考点系统 (knowledge points)
+-- 颗粒度: 知识点级 (item 下挂 kp, 1 题挂 1 主考点 + 最多 N 次考点)
+-- 存储方式: 独立 kp 字典表 + question_kp 关联表 (主/次考点)
+-- 覆盖范围: 平台题 questions + 试卷题 exam_questions (排除 theory 讲义)
+-- kp 字典: item 下挂 (platform kp 必填 item_id) 或 source='exam' 跨题库 (item_id NULL)
+-- ============================================================
+
+-- 14.1 考点字典表
+CREATE TABLE IF NOT EXISTS public.knowledge_points (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code        TEXT NOT NULL UNIQUE,        -- 唯一代码: 平台题 {COURSE}-{MODULE}-{ITEM}-K{nn}; 试卷题 EXAM-{SUBJECT}-K{nn}
+  name        TEXT NOT NULL,               -- 考点中文名 (如 "夹逼准则")
+  course_id   TEXT REFERENCES public.courses(id) ON DELETE CASCADE,  -- 学科归属 (platform kp 来自 item.course_id; exam kp 由人工指定学科)
+  item_id     TEXT REFERENCES public.items(id) ON DELETE CASCADE,    -- 平台题: 挂小节; 试卷题: NULL
+  source      TEXT NOT NULL CHECK (source IN ('platform','exam')),
+  parent_id   UUID REFERENCES public.knowledge_points(id) ON DELETE CASCADE,  -- 预留层级扩展 (kp 子考点)
+  sort_order  INTEGER DEFAULT 0,
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 平台题 kp 必须挂小节
+ALTER TABLE public.knowledge_points DROP CONSTRAINT IF EXISTS kp_platform_requires_item;
+ALTER TABLE public.knowledge_points
+  ADD CONSTRAINT kp_platform_requires_item
+  CHECK (
+    source <> 'platform' OR item_id IS NOT NULL
+  );
+
+-- 14.2 题-考点关联表 (主考点 + 次考点)
+-- source='platform' 时 question_id 关联 questions.id
+-- source='exam'     时 question_id 关联 exam_questions.id
+-- 用 source 区分两套题库 (两表 id 都为 TEXT 但无全局唯一保证, 故必须带 source)
+CREATE TABLE IF NOT EXISTS public.question_kp (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  source       TEXT NOT NULL CHECK (source IN ('platform','exam')),
+  question_id  TEXT NOT NULL,
+  kp_id        UUID NOT NULL REFERENCES public.knowledge_points(id) ON DELETE CASCADE,
+  role         TEXT NOT NULL CHECK (role IN ('primary','secondary')),
+  weight       NUMERIC DEFAULT 1.0,        -- primary=1.0, secondary=0.5
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (source, question_id, kp_id)
+);
+
+-- 每题 primary 至多 1 个 (部分唯一索引)
+CREATE UNIQUE INDEX IF NOT EXISTS uq_qk_primary_once
+  ON public.question_kp (source, question_id)
+  WHERE role = 'primary';
+
+-- 14.3 启用 RLS
+ALTER TABLE public.knowledge_points ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.question_kp ENABLE ROW LEVEL SECURITY;
+
+-- 14.4 RLS 策略: 公开可读 + admin 可写
+DROP POLICY IF EXISTS "knowledge_points_readable_by_everyone" ON public.knowledge_points;
+CREATE POLICY "knowledge_points_readable_by_everyone"
+  ON public.knowledge_points FOR SELECT
+  USING (true);
+
+DROP POLICY IF EXISTS "question_kp_readable_by_everyone" ON public.question_kp;
+CREATE POLICY "question_kp_readable_by_everyone"
+  ON public.question_kp FOR SELECT
+  USING (true);
+
+DROP POLICY IF EXISTS "admin_can_manage_knowledge_points" ON public.knowledge_points;
+CREATE POLICY "admin_can_manage_knowledge_points"
+  ON public.knowledge_points FOR ALL
+  USING (public.is_admin());
+
+DROP POLICY IF EXISTS "admin_can_manage_question_kp" ON public.question_kp;
+CREATE POLICY "admin_can_manage_question_kp"
+  ON public.question_kp FOR ALL
+  USING (public.is_admin());
+
+-- 14.5 索引
+CREATE INDEX IF NOT EXISTS idx_kp_course
+  ON public.knowledge_points(course_id);
+CREATE INDEX IF NOT EXISTS idx_kp_item
+  ON public.knowledge_points(item_id);
+CREATE INDEX IF NOT EXISTS idx_kp_source
+  ON public.knowledge_points(source);
+CREATE INDEX IF NOT EXISTS idx_qk_question
+  ON public.question_kp(source, question_id);
+CREATE INDEX IF NOT EXISTS idx_qk_kp
+  ON public.question_kp(kp_id);
+
+-- 14.6 级联清理说明
+-- - 删除 item: 该 item 下 kp 级联删除, 关联表 question_kp 也级联 (因 kp_id 外键 CASCADE)
+-- - 删除 course: 该 course 下 kp 级联删除 (因 course_id 外键 CASCADE)
+-- - 删除 question (平台题): 不会自动清理 question_kp (questions.id 不是 question_kp 的外键)
+--   需在应用层 deleteQuestion 时手动 DELETE FROM question_kp WHERE source='platform' AND question_id=?
+-- - 删除 exam_question: 同上, 需应用层 deleteExamQuestion 时手动清理

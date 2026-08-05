@@ -1,0 +1,1543 @@
+[
+    [
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.328,
+                0.106,
+                0.636,
+                0.131
+            ],
+            "angle": 0,
+            "content": "长沙理工大学考试试卷"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.168,
+                0.554,
+                0.185
+            ],
+            "angle": 0,
+            "content": "课程名称（含档次）高等数学 A（二）（本部期末）",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.635,
+                0.168,
+                0.879,
+                0.185
+            ],
+            "angle": 0,
+            "content": "课程编号 0701000215",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.08,
+                0.198,
+                0.881,
+                0.217
+            ],
+            "angle": 0,
+            "content": "专业____本部电气、物电等____层次（本、专）____本____考试方式（开、闭卷）____闭卷",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.079,
+                0.24,
+                0.58,
+                0.257
+            ],
+            "angle": 0,
+            "content": "一、选择题(本大题总分20分，共计5小题，每题4分)"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.08,
+                0.266,
+                0.671,
+                0.335
+            ],
+            "angle": 0,
+            "content": "1. 以点 \\(A(1,1,1)\\) 、 \\(B(5,2,0)\\) 、 \\(C(2,5,0)\\) 、 \\(D(1,2,4)\\) 为顶点的四面体体积为（）.\nA. 12 B. 8\nC. 4 D. 3",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.344,
+                0.589,
+                0.464
+            ],
+            "angle": 0,
+            "content": "2.使 \\( x^{2}\\frac{\\partial z}{\\partial x}+y^{2}\\frac{\\partial z}{\\partial y}=2z \\) 成立的是（）.\nA.  \\( z=e^{\\frac{1}{x}+\\frac{1}{y}} \\) \nB.  \\( z=e^{-\\left(\\frac{1}{x}+\\frac{1}{y}\\right)} \\) \nC.  \\( z = e^{\\frac{1}{x}} \\) \nD.  \\( z = e^{\\frac{1}{y}} \\)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.477,
+                0.719,
+                0.563
+            ],
+            "angle": 0,
+            "content": "3.设D是由 \\( x=y^{2} \\) ， \\( x=-y^{2} \\) ，y=1所围成的闭区域，则 \\( \\iint_{D}x\\sqrt{x^{2}+y^{2}}d\\sigma=(\\quad) \\) .\nA. 0\nB. 4\nC. -1\nD. 1",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.572,
+                0.752,
+                0.686
+            ],
+            "angle": 0,
+            "content": "4. 设  \\( \\Sigma \\)  为平面 x = a, y = a,  \\( z = a (a > 0) \\)  及三个坐标面所围成的立体的表面的外侧，则\n \\( \\oint_{\\Sigma}(y^{2}z-x)\\mathrm{d}y\\mathrm{d}z+(z^{2}x-y)\\mathrm{d}z\\mathrm{d}x+(x^{2}y-z)\\mathrm{d}x\\mathrm{d}y() \\) \nA.  \\( a^{3} \\)  B.  \\( -a^{3} \\) \nC.  \\( 3a^{3} \\)  D.  \\( -3a^{3} \\)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.696,
+                0.635,
+                0.851
+            ],
+            "angle": 0,
+            "content": "5.若 \\(\\sum_{n = 1}^{\\infty}u_n\\) 收敛，则（）.A. \\(\\sum_{n = 1}^{\\infty}|u_n|\\) 收敛 B. \\(\\sum_{n = 1}^{\\infty}(-1)^{n}u_{n}\\) 收敛C. \\(\\sum_{n = 1}^{\\infty}u_nu_{n + 1}\\) 收敛 D. \\(\\sum_{n = 1}^{\\infty}\\frac{u_n + u_{n + 1}}{2}\\) 收敛",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.4,
+                0.877,
+                0.555,
+                0.893
+            ],
+            "angle": 0,
+            "content": "第 1 页（共 2 页）"
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.115,
+                0.345,
+                0.258,
+                0.376
+            ],
+            "latex": "",
+            "score": 0.943
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.141,
+                0.392,
+                0.211,
+                0.416
+            ],
+            "latex": "",
+            "score": 0.9278
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.493,
+                0.392,
+                0.582,
+                0.416
+            ],
+            "latex": "",
+            "score": 0.8892
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.14,
+                0.439,
+                0.193,
+                0.46
+            ],
+            "latex": "",
+            "score": 0.9049
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.161,
+                0.481,
+                0.212,
+                0.497
+            ],
+            "latex": "",
+            "score": 0.738
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.227,
+                0.481,
+                0.293,
+                0.497
+            ],
+            "latex": "",
+            "score": 0.7557
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.515,
+                0.475,
+                0.704,
+                0.513
+            ],
+            "latex": "",
+            "score": 0.9439
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.296,
+                0.574,
+                0.396,
+                0.588
+            ],
+            "latex": "",
+            "score": 0.5295
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.106,
+                0.599,
+                0.276,
+                0.631
+            ],
+            "latex": "",
+            "score": 0.5991
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.142,
+                0.641,
+                0.164,
+                0.656
+            ],
+            "latex": "",
+            "score": 0.8783
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.371,
+                0.603,
+                0.482,
+                0.618
+            ],
+            "latex": "",
+            "score": 0.5833
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.49,
+                0.641,
+                0.528,
+                0.656
+            ],
+            "latex": "",
+            "score": 0.8474
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.137,
+                0.667,
+                0.167,
+                0.681
+            ],
+            "latex": "",
+            "score": 0.8986
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.491,
+                0.667,
+                0.534,
+                0.682
+            ],
+            "latex": "",
+            "score": 0.8914
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.112,
+                0.696,
+                0.14,
+                0.737
+            ],
+            "latex": "",
+            "score": 0.8903
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.141,
+                0.75,
+                0.198,
+                0.793
+            ],
+            "latex": "",
+            "score": 0.9439
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.493,
+                0.75,
+                0.593,
+                0.793
+            ],
+            "latex": "",
+            "score": 0.9593
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.14,
+                0.805,
+                0.218,
+                0.849
+            ],
+            "latex": "",
+            "score": 0.9423
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.493,
+                0.805,
+                0.597,
+                0.848
+            ],
+            "latex": "",
+            "score": 0.9558
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.331,
+                0.109,
+                0.632,
+                0.131
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.085,
+                0.171,
+                0.479,
+                0.182
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.639,
+                0.171,
+                0.816,
+                0.183
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.082,
+                0.201,
+                0.105,
+                0.214
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.132,
+                0.2,
+                0.826,
+                0.215
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.082,
+                0.239,
+                0.576,
+                0.258
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.083,
+                0.268,
+                0.668,
+                0.281
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.294,
+                0.161,
+                0.309
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.468,
+                0.293,
+                0.505,
+                0.309
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.319,
+                0.154,
+                0.335
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.468,
+                0.319,
+                0.505,
+                0.335
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.079,
+                0.351,
+                0.115,
+                0.37
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.258,
+                0.353,
+                0.385,
+                0.368
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.114,
+                0.403,
+                0.139,
+                0.418
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.467,
+                0.402,
+                0.492,
+                0.417
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.114,
+                0.446,
+                0.139,
+                0.462
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.081,
+                0.482,
+                0.161,
+                0.496
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.293,
+                0.481,
+                0.515,
+                0.496
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.521,
+                0.153,
+                0.536
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.465,
+                0.522,
+                0.504,
+                0.535
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.547,
+                0.164,
+                0.562
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.468,
+                0.548,
+                0.505,
+                0.561
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.348,
+                0.517,
+                0.506,
+                0.552
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.082,
+                0.572,
+                0.289,
+                0.589
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.397,
+                0.572,
+                0.75,
+                0.587
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.083,
+                0.594,
+                0.105,
+                0.637
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.277,
+                0.603,
+                0.369,
+                0.619
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.485,
+                0.603,
+                0.541,
+                0.619
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.643,
+                0.138,
+                0.658
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.468,
+                0.643,
+                0.49,
+                0.658
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.669,
+                0.137,
+                0.683
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.468,
+                0.669,
+                0.49,
+                0.683
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.203,
+                0.696,
+                0.222,
+                0.708
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.08,
+                0.708,
+                0.112,
+                0.723
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.114,
+                0.765,
+                0.14,
+                0.78
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.199,
+                0.762,
+                0.242,
+                0.78
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.468,
+                0.765,
+                0.491,
+                0.779
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.593,
+                0.763,
+                0.632,
+                0.779
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.82,
+                0.137,
+                0.834
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.218,
+                0.818,
+                0.262,
+                0.835
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.468,
+                0.82,
+                0.491,
+                0.834
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.597,
+                0.818,
+                0.635,
+                0.835
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.079,
+                0.099,
+                0.58,
+                0.117
+            ],
+            "angle": 0,
+            "content": "二、填空题(本大题总分20分，共计5小题，每题4分)"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.127,
+                0.912,
+                0.173
+            ],
+            "angle": 0,
+            "content": "1. 设函数 \\( F(u, v) \\) 具有一阶连续偏导数，\\( F_u(0, 1) = 2 \\)，\\( F_v(0, 1) = -3 \\)，则曲面 \\( F(x - y + z, xy - yz + zx) = 0 \\) 在点 \\( (2, 1, -1) \\) 处的切平面方程为 ____.",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.19,
+                0.483,
+                0.229
+            ],
+            "angle": 0,
+            "content": "2. 设函数 \\( f(x, y, z) = \\left(\\frac{x}{y}\\right)^{\\frac{1}{z}} \\)，则 \\( df|_{(1,1,1)} = \\) ____.",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.245,
+                0.66,
+                0.283
+            ],
+            "angle": 0,
+            "content": "3. 将二次积分  \\( \\int_{0}^{1} dx \\int_{x}^{\\sqrt{x}} f(x, y) dy \\)  化为极坐标形式的二次积分为 ____.",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.291,
+                0.914,
+                0.346
+            ],
+            "angle": 0,
+            "content": "4. 设  \\( \\Omega \\)  是由 xy = z,  \\( x + y = 1 \\) , z = 0 所围成的闭区域, 则把三重积分  \\( \\iiint_{\\Omega} f(x, y, z) \\, dv \\)  化成积分次序为  \\( z \\to y \\to x \\)  的三次积分为 ____.",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.364,
+                0.531,
+                0.381
+            ],
+            "angle": 0,
+            "content": "5.将函数 \\( f(x)=\\ln(2+3x) \\) 展开成x的幂级数为____.",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.079,
+                0.395,
+                0.589,
+                0.412
+            ],
+            "angle": 0,
+            "content": "三、计算题(本大题总分50分，共计5小题，每题10分)"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.08,
+                0.425,
+                0.302,
+                0.456
+            ],
+            "angle": 0,
+            "content": "1. 设 \\(e^z - xyz = 0\\)，求 \\(\\frac{\\partial z}{\\partial x}, \\frac{\\partial z}{\\partial y}\\).",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.501,
+                0.426,
+                0.517
+            ],
+            "angle": 0,
+            "content": "2. 求函数 \\( f(x, y) = (6x - x^2)(4y - y^2) \\) 的极值.",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.558,
+                0.836,
+                0.596
+            ],
+            "angle": 0,
+            "content": "3. 计算  \\( \\int_{L}(x^{2}-y)dx-(x+\\sin^{2}y)dy \\) ，其中 L 是在圆周  \\( y=\\sqrt{2x-x^{2}} \\)  上由点  \\( (0,0) \\)  到点  \\( (1,1) \\)  的一段弧.",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.079,
+                0.642,
+                0.661,
+                0.681
+            ],
+            "angle": 0,
+            "content": "4. 计算 \\(\\iint_{\\Sigma} \\left(2x + \\frac{4}{3}y + z\\right) \\mathrm{d}S\\)，其中 \\(\\Sigma\\) 为平面 \\(\\frac{x}{2} + \\frac{y}{3} + \\frac{z}{4} = 1\\) 在第一卦限的部分.",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.08,
+                0.709,
+                0.323,
+                0.752
+            ],
+            "angle": 0,
+            "content": "5.求级数 \\(\\sum_{n = 2}^{\\infty}(-1)^{n}\\frac{n^{2} - n}{2^{n}}\\) 的和.",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.08,
+                0.762,
+                0.417,
+                0.779
+            ],
+            "angle": 0,
+            "content": "四、证明题(本题10分，共计1小题)"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.298,
+                0.793,
+                0.701,
+                0.837
+            ],
+            "angle": 0,
+            "content": "1. 证明级数 \\(\\sum_{n=1}^{\\infty} \\frac{nx}{4 + n^5x^2}\\) 在 \\(x \\in (-\\infty, +\\infty)\\) 内绝对收敛.",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.417,
+                0.872,
+                0.573,
+                0.888
+            ],
+            "angle": 0,
+            "content": "第 2 页（共 2 页）"
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.374,
+                0.127,
+                0.585,
+                0.142
+            ],
+            "latex": "",
+            "score": 0.7632
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.655,
+                0.128,
+                0.889,
+                0.142
+            ],
+            "latex": "",
+            "score": 0.7457
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.149,
+                0.192,
+                0.274,
+                0.228
+            ],
+            "latex": "",
+            "score": 0.9535
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.307,
+                0.205,
+                0.388,
+                0.223
+            ],
+            "latex": "",
+            "score": 0.8853
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.185,
+                0.246,
+                0.336,
+                0.282
+            ],
+            "latex": "",
+            "score": 0.9582
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.161,
+                0.297,
+                0.362,
+                0.311
+            ],
+            "latex": "",
+            "score": 0.5095
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.607,
+                0.289,
+                0.707,
+                0.327
+            ],
+            "latex": "",
+            "score": 0.8921
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.846,
+                0.298,
+                0.911,
+                0.311
+            ],
+            "latex": "",
+            "score": 0.6123
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.149,
+                0.365,
+                0.285,
+                0.379
+            ],
+            "latex": "",
+            "score": 0.5037
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.245,
+                0.426,
+                0.299,
+                0.456
+            ],
+            "latex": "",
+            "score": 0.9431
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.112,
+                0.434,
+                0.212,
+                0.448
+            ],
+            "latex": "",
+            "score": 0.7368
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.148,
+                0.501,
+                0.366,
+                0.516
+            ],
+            "latex": "",
+            "score": 0.8935
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.131,
+                0.558,
+                0.365,
+                0.596
+            ],
+            "latex": "",
+            "score": 0.9593
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.491,
+                0.564,
+                0.597,
+                0.58
+            ],
+            "latex": "",
+            "score": 0.9247
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.132,
+                0.643,
+                0.3,
+                0.681
+            ],
+            "latex": "",
+            "score": 0.9576
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.401,
+                0.646,
+                0.508,
+                0.674
+            ],
+            "latex": "",
+            "score": 0.9541
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.147,
+                0.71,
+                0.282,
+                0.751
+            ],
+            "latex": "",
+            "score": 0.9482
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.382,
+                0.794,
+                0.476,
+                0.836
+            ],
+            "latex": "",
+            "score": 0.9399
+        },
+        {
+            "type": "inline_formula",
+            "bbox": [
+                0.498,
+                0.807,
+                0.606,
+                0.823
+            ],
+            "latex": "",
+            "score": 0.6648
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.084,
+                0.1,
+                0.576,
+                0.116
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.085,
+                0.129,
+                0.365,
+                0.141
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.586,
+                0.127,
+                0.655,
+                0.144
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.89,
+                0.127,
+                0.912,
+                0.143
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.085,
+                0.159,
+                0.314,
+                0.171
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.08,
+                0.205,
+                0.148,
+                0.221
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.275,
+                0.204,
+                0.307,
+                0.222
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.083,
+                0.258,
+                0.184,
+                0.272
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.336,
+                0.259,
+                0.567,
+                0.271
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.081,
+                0.296,
+                0.16,
+                0.312
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.366,
+                0.298,
+                0.604,
+                0.31
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.708,
+                0.295,
+                0.846,
+                0.312
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.083,
+                0.33,
+                0.2,
+                0.343
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.687,
+                0.306,
+                0.804,
+                0.346
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.082,
+                0.366,
+                0.148,
+                0.381
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.285,
+                0.366,
+                0.436,
+                0.379
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.083,
+                0.395,
+                0.588,
+                0.413
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.082,
+                0.433,
+                0.112,
+                0.451
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.212,
+                0.434,
+                0.244,
+                0.451
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.082,
+                0.502,
+                0.147,
+                0.516
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.367,
+                0.502,
+                0.426,
+                0.517
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.08,
+                0.565,
+                0.131,
+                0.581
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.597,
+                0.566,
+                0.834,
+                0.58
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.08,
+                0.652,
+                0.131,
+                0.668
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.305,
+                0.653,
+                0.401,
+                0.667
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.513,
+                0.654,
+                0.658,
+                0.666
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.081,
+                0.722,
+                0.146,
+                0.736
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.283,
+                0.721,
+                0.323,
+                0.737
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.085,
+                0.764,
+                0.414,
+                0.78
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.3,
+                0.808,
+                0.381,
+                0.821
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.477,
+                0.806,
+                0.498,
+                0.823
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.607,
+                0.808,
+                0.7,
+                0.821
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ]
+]

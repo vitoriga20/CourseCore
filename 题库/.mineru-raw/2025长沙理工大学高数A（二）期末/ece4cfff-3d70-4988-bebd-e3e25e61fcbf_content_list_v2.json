@@ -1,0 +1,729 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "长沙理工大学考试试卷"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                327,
+                142,
+                633,
+                167
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "课程名称（含档次）高等数学A（二）（本部期末） 课程编号0701000219"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                205,
+                882,
+                221
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "专业电气、交运、电子信息等层次（本、专）本考试方式（开、闭卷）闭卷"
+                    }
+                ]
+            },
+            "bbox": [
+                80,
+                235,
+                882,
+                252
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "一、单选题(共5题，每题4分，共20分)"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                78,
+                274,
+                457,
+                292
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "1.设向量  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\vec{a},\\vec{b}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 满足  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "|\\vec{a} -\\vec{b}| = |\\vec{a} +\\vec{b} |"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，则必有（）.A.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\vec{a} -\\vec{b} = \\vec{0}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " B.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\vec{a} +\\vec{b} = \\vec{0}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " C.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\vec{a}\\cdot \\vec{b} = 0"
+                    },
+                    {
+                        "type": "text",
+                        "content": " D.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\vec{a}\\times \\vec{b} = \\vec{0}"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                307,
+                744,
+                367
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2.二元函数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "f(x,y)=2x-4y-x^{2}-2y^{2}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 的驻点是（）.\nA.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(-1,-1)"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  B.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(1,-1)"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  C.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(-1,1)"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  D.(1,1)"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                385,
+                705,
+                428
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "3.函数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "z = 3^{xy}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，则在点(1,1)处的全微分  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "dz = (\\quad)"
+                    },
+                    {
+                        "type": "text",
+                        "content": " A.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "dx"
+                    },
+                    {
+                        "type": "text",
+                        "content": " B.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "dy"
+                    },
+                    {
+                        "type": "text",
+                        "content": " C.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "3(dx + dy)\\ln 3"
+                    },
+                    {
+                        "type": "text",
+                        "content": " D.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "dx + dy"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                441,
+                727,
+                485
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "4.设C是按逆时针方向绕行的圆周曲线  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "x^{2}+y^{2}=R^{2}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，则  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\oint_{C}xy^{2}dy-x^{2}ydx=(\\quad)"
+                    },
+                    {
+                        "type": "text",
+                        "content": " .\nA.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}r^{3}dr"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  B.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}r^{2}dr"
+                    },
+                    {
+                        "type": "text",
+                        "content": " \nC.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "-\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}4r^{3}\\sin\\theta\\cos\\theta dr"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  D.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\int_{0}^{2\\pi}d\\theta\\int_{0}^{R}R^{2}dr"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                498,
+                717,
+                607
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "5.下列正项级数中，收敛的是（）.\nA.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty}\\frac{5^{n}-3^{n}}{4^{n}}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  B.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=0}^{\\infty}\\frac{n}{2^{n}}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  C.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty}\\frac{1}{\\sqrt{n}}"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  D.  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n=1}^{\\infty}\\frac{n+1}{n^{2}}"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                615,
+                734,
+                689
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "二、填空题(共5题，每题4分，共20分)"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                78,
+                705,
+                457,
+                724
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "6.极限  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\lim_{\\substack{x\\to0\\\\ y\\to0}}\\frac{x^{2}y^{2}}{x^{2}+2y^{2}+1}="
+                    },
+                    {
+                        "type": "text",
+                        "content": " ____."
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                734,
+                393,
+                780
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "第 1 页（共 2 页）"
+                    }
+                ]
+            },
+            "bbox": [
+                400,
+                840,
+                554,
+                856
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "7. 改变二次积分的积分次序，  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\int_{-1}^{1} dx \\int_{0}^{\\sqrt{1-x^{2}}} f(x,y)dy="
+                    },
+                    {
+                        "type": "text",
+                        "content": "  ____."
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                108,
+                613,
+                148
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "8.椭球面   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "2x^{2} + 3y^{2} + z^{2} = 9"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  在点   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(1, -1, 2)"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  处的切平面方程为 ____."
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                166,
+                653,
+                183
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "9. 设 L 为椭圆   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\frac{x^{2}}{4} + \\frac{y^{2}}{3} = 1"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，其周长记为 a，则   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\oint_{L} (3x^{2} + 4y^{2}) ds ="
+                    },
+                    {
+                        "type": "text",
+                        "content": " ____ ."
+                    }
+                ]
+            },
+            "bbox": [
+                77,
+                200,
+                653,
+                242
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "10.函数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "e^{x}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 展开成麦克劳林级数为____。"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                262,
+                428,
+                278
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "三、计算题(共5题，每题10分，共50分)"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                78,
+                294,
+                467,
+                313
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "11. 求通过点   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "(1,2,-1)"
+                    },
+                    {
+                        "type": "text",
+                        "content": "  且与直线   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\left\\{\\begin{aligned} x-2y+z=2 \\\\ 3x+y-z=1 \\end{aligned}\\right."
+                    },
+                    {
+                        "type": "text",
+                        "content": "  平行的直线方程."
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                323,
+                566,
+                353
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "12.已知  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "z = e^{xy} + yx^2"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，求  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\frac{\\partial^2z}{\\partial x\\partial y}"
+                    }
+                ]
+            },
+            "bbox": [
+                80,
+                424,
+                322,
+                458
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "13. 计算二重积分   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iint_{D}\\sqrt{x^{2}+y^{2}}d\\sigma"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ，其中 D 是圆环形闭区域   "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\{(x,y)|a^{2}\\leq x^{2}+y^{2}\\leq b^{2}\\}(0<a<b)"
+                    },
+                    {
+                        "type": "text",
+                        "content": " ."
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                524,
+                805,
+                564
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "14. 计算  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\iint_{\\Sigma} x^{3} dy dz + y^{3} dz dx + z^{3} dx dy"
+                    },
+                    {
+                        "type": "text",
+                        "content": "，其中  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\Sigma"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 为球面  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "x^{2} + y^{2} + z^{2} = a^{2}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 的外侧."
+                    }
+                ]
+            },
+            "bbox": [
+                80,
+                627,
+                685,
+                665
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "15.求幂级数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\sum_{n = 1}^{\\infty}\\frac{x^{2n - 1}}{2n - 1}"
+                    },
+                    {
+                        "type": "text",
+                        "content": " 的收敛域及和函数  "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "s(x)"
+                    }
+                ]
+            },
+            "bbox": [
+                78,
+                738,
+                431,
+                783
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "第2页（共2页）"
+                    }
+                ]
+            },
+            "bbox": [
+                416,
+                878,
+                571,
+                895
+            ]
+        }
+    ]
+]
