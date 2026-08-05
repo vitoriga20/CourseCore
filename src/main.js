@@ -41,9 +41,15 @@ import {
   handleQuizGoto,
   handleQuizFinish,
   handleQuizRestart,
-  handleQuizToggleOrder,
-  handleQuizToggleFont,
-  handleQuizToggleBg,
+  handleQuizToggleSettings,
+  handleQuizSetMode,
+  handleQuizSetOrder,
+  handleQuizSetFont,
+  handleQuizSetFontSize,
+  handleQuizSetBg,
+  handleQuizToggleAutoNext,
+  handleQuizToggleShortcuts,
+  handleQuizResetSession,
   handleQuizShowAnswer,
   handleQuizSubmitAnswer,
   handleQuizSelectOption
@@ -477,9 +483,15 @@ function initEventDelegation() {
       case 'quiz-goto': handleQuizGoto(itemId, el.dataset.index); break;
       case 'quiz-finish': handleQuizFinish(itemId); break;
       case 'quiz-restart': handleQuizRestart(itemId); break;
-      case 'quiz-toggle-order': handleQuizToggleOrder(itemId); break;
-      case 'quiz-toggle-font': handleQuizToggleFont(itemId); break;
-      case 'quiz-toggle-bg': handleQuizToggleBg(itemId); break;
+      case 'quiz-toggle-settings': handleQuizToggleSettings(itemId); break;
+      case 'quiz-set-mode': handleQuizSetMode(itemId, el.dataset.value); break;
+      case 'quiz-set-order': handleQuizSetOrder(itemId, el.dataset.value); break;
+      case 'quiz-set-font': handleQuizSetFont(itemId, el.dataset.value); break;
+      case 'quiz-set-font-size': handleQuizSetFontSize(itemId, el.dataset.value); break;
+      case 'quiz-set-bg': handleQuizSetBg(itemId, el.dataset.value); break;
+      case 'quiz-toggle-auto-next': handleQuizToggleAutoNext(itemId); break;
+      case 'quiz-toggle-shortcuts': handleQuizToggleShortcuts(itemId); break;
+      case 'quiz-reset-session': handleQuizResetSession(itemId); break;
       case 'quiz-show-answer': handleQuizShowAnswer(itemId, qid); break;
       case 'show-hint': handleShowHint(); break;
       case 'reset-answer': handleResetAnswer(); break;

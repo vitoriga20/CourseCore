@@ -1804,6 +1804,53 @@
 ### 修改
 - 顺序/随机切换按钮文案：「切换顺序」→「顺序刷题」、「切换随机」→「随机刷题」。
 
+## 更新记录 - 2026-08-05（刷题设置菜单 + 三模式）
+
+### 新增
+- **刷题设置下拉菜单**：控制条右侧齿轮按钮，点击展开，点击外部自动关闭。
+  - 替代原有 3 个 chip（顺序/字体/背景），所有偏好收进下拉，控制条更干净。
+  - 齿轮图标在打开时缓慢旋转（4s 线性循环）。
+- **三种刷题模式**（核心新功能）：
+  - **标准刷题**（默认，行为同原）：即时判分，答错可查看解析，答错入错题库。
+  - **考试刷题**：仅保存答案不判分，全部答完点「交卷」后统一判分；交卷后错题入错题库；不计入即时反馈。
+  - **背题模式**：题面 `<fieldset disabled>` 禁用作答，自动展示答案与解析；不计入错题库、不计入统计、无「完成」按钮。
+- **字号设置**：小 / 中 / 大 三档，通过 `data-font-size` 属性驱动 CSS 变体。
+- **自动跳下一题**开关：通用化原 instant 题型自动跳题逻辑；标准模式答对或考试模式保存答案后自动前进（可关）。
+- **键盘快捷键**开关：`←` / `→` 切换题号；输入框内不触发；菜单打开时不触发。
+- **重置当前会话**按钮：清空 state 重来（带 confirm）。
+- 模式 badge 颜色区分：标准=accent / 考试=warning / 背题=success。
+
+### 修改
+- `src/views/quizSession.js`：
+  - `createState` 新增字段：`practiceMode` / `fontSize` / `autoNext` / `shortcuts` / `examAnswers` / `settingsOpen`；`mode` 改为持久化（`quiz-order`）。
+  - `renderControlBar` 重写：移除 3 chip，改为齿轮按钮 + `renderSettingsMenu`。
+  - `renderCurrentQuestion` 模式感知：背题 `<fieldset disabled>` + 自动 solution；考试「保存答案」按钮 + 「已答」标记；标准保留原逻辑。
+  - `renderFeedback` / `renderSolution` 增加 `practiceMode` 参数，考试/背题模式抑制反馈。
+  - `renderBottomActions` 模式感知：考试「交卷」、背题无完成按钮、标准「完成练习」。
+  - `renderNavButton` 模式感知：背题无状态色，考试用 `answered` 标已答。
+  - `submitCurrentAnswer` 模式感知：背题 no-op，考试仅存答案，标准即时判分 + 通用化 autoNext。
+  - `handleQuizFinish` 模式感知：考试交卷统一判分 + markQuestion + syncItemProgress；背题 no-op；标准原逻辑。
+  - `handleQuizSelectOption`：背题 no-op，其他模式保留。
+  - 新增 handlers：`handleQuizToggleSettings` / `handleQuizSetMode` / `handleQuizSetOrder` / `handleQuizSetFont` / `handleQuizSetFontSize` / `handleQuizSetBg` / `handleQuizToggleAutoNext` / `handleQuizToggleShortcuts` / `handleQuizResetSession`。
+  - 切换模式 = 重置会话（保留偏好），避免模式间状态污染。
+  - 新增 `attachKeyboardListener` / `detachKeyboardListener` / `attachSettingsOutsideClickListener` / `detachSettingsOutsideClickListener`；`initQuizSession` 挂载，`cleanupQuizSession` 卸载。
+  - 移除旧 `handleQuizToggleOrder` / `handleQuizToggleFont` / `handleQuizToggleBg`。
+- `src/main.js`：import 与 switch case 同步替换为新的 set/toggle handlers。
+- `src/style.css`：新增 `.quiz-settings*` / `.quiz-set-*` / `.quiz-mode-badge.mode-*` / `[data-font-size]` 字号变体 / `fieldset[disabled]` 视觉弱化。
+
+### 影响面
+- 全部链路同步修改：state → 渲染 → 提交 → 完成 → 事件路由 → 样式，无遗漏。
+- 所有复用 `quizSession.js` 的入口（刷题中心会话、错题复盘、小节训练）均同步获得三模式能力。
+- 偏好持久化：`practice-mode` / `order` / `font` / `font-size` / `bg` / `auto-next` / `shortcuts` 存 localStorage，跨会话保留。
+- 不改数据源、不改 Supabase schema、不改错题库逻辑（markQuestion 调用时机按模式控制）。
+- 背题模式不调用 `markQuestion` / `syncItemProgress` / `setLastSession`，统计与错题库零污染。
+
+### 关键决策
+- 切换模式即重置会话 → 避免标准模式已判分的结果污染考试/背题模式渲染。
+- 背题模式用 `<fieldset disabled>` 包裹题面 → 无需改 4 个 renderer，最小侵入实现禁用作答。
+- 设置菜单用绝对定位 + 外部点击监听 → 不阻塞主线程，原生 DOM 交互。
+- 键盘监听挂 `document` 但在 `cleanupQuizSession` 卸载 → 避免离开刷题页后仍拦截按键。
+
 ## 最后更新时间
 
-2026-08-05
+2026-08-05（刷题设置菜单 + 三模式）

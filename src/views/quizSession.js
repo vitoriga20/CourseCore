@@ -15,6 +15,15 @@ const FONT_MODES = ['serif', 'sans'];
 const FONT_LABELS = { serif: '衬线', sans: '无衬线' };
 const BG_MODES = ['geo', 'plain'];
 const BG_LABELS = { geo: '几何', plain: '素白' };
+const ORDER_MODES = ['sequential', 'random'];
+const ORDER_LABELS = { sequential: '顺序', random: '随机' };
+const PRACTICE_MODES = ['standard', 'exam', 'memorize'];
+const PRACTICE_LABELS = { standard: '标准', exam: '考试', memorize: '背题' };
+const FONT_SIZE_MODES = ['sm', 'md', 'lg'];
+const FONT_SIZE_LABELS = { sm: '小', md: '中', lg: '大' };
+
+let keyboardListener = null;
+let settingsOutsideClickListener = null;
 
 function loadQuizPreference(key, defaultValue) {
   try {
@@ -94,11 +103,17 @@ function createState(itemId, externalQuestions = null) {
     userAnswers: {},
     results: {},
     showAnswers: {},
+    examAnswers: {},
     currentIndex: 0,
-    mode: 'sequential',
+    mode: loadQuizPreference('order', 'sequential'),
     seed: seedFromString(itemId),
+    practiceMode: loadQuizPreference('practice-mode', 'standard'),
     font: loadQuizPreference('font', 'serif'),
+    fontSize: loadQuizPreference('font-size', 'md'),
     bg: loadQuizPreference('bg', 'geo'),
+    autoNext: loadQuizPreference('auto-next', 'true') === 'true',
+    shortcuts: loadQuizPreference('shortcuts', 'true') === 'true',
+    settingsOpen: false,
     finished: false
   };
 }
@@ -141,6 +156,68 @@ function restoreBodyBg() {
   document.body.removeAttribute('data-bg');
 }
 
+function renderSettingsOption(label, active, action, value, itemId) {
+  return `<button class="quiz-set-opt ${active ? 'active' : ''}" data-action="${action}" data-item-id="${itemId}" data-value="${value}">${label}</button>`;
+}
+
+function renderSettingsToggle(label, on, action, itemId) {
+  return `<button class="quiz-set-toggle ${on ? 'on' : 'off'}" data-action="${action}" data-item-id="${itemId}" role="switch" aria-checked="${on}"><span class="quiz-set-toggle-dot"></span>${label}</button>`;
+}
+
+function renderSettingsMenu(state) {
+  const itemId = state.itemId;
+  const isMemorize = state.practiceMode === 'memorize';
+  return `
+    <div class="quiz-settings-menu" ${state.settingsOpen ? '' : 'hidden'} role="menu">
+      <div class="quiz-set-group">
+        <div class="quiz-set-label">刷题模式</div>
+        <div class="quiz-set-row">
+          ${PRACTICE_MODES.map(m => renderSettingsOption(PRACTICE_LABELS[m], state.practiceMode === m, 'quiz-set-mode', m, itemId)).join('')}
+        </div>
+        <div class="quiz-set-hint">${
+          state.practiceMode === 'standard' ? '即时判分，答错可查看解析'
+          : state.practiceMode === 'exam' ? '答完所有题交卷后统一判分'
+          : '答案自动展示，仅浏览，不计入错题库'
+        }</div>
+      </div>
+      ${isMemorize ? '' : `
+      <div class="quiz-set-group">
+        <div class="quiz-set-label">题目顺序</div>
+        <div class="quiz-set-row">
+          ${ORDER_MODES.map(m => renderSettingsOption(ORDER_LABELS[m], state.mode === m, 'quiz-set-order', m, itemId)).join('')}
+        </div>
+      </div>`}
+      <div class="quiz-set-group">
+        <div class="quiz-set-label">字体</div>
+        <div class="quiz-set-row">
+          ${FONT_MODES.map(m => renderSettingsOption(FONT_LABELS[m], state.font === m, 'quiz-set-font', m, itemId)).join('')}
+        </div>
+        <div class="quiz-set-label mt-3">字号</div>
+        <div class="quiz-set-row">
+          ${FONT_SIZE_MODES.map(m => renderSettingsOption(FONT_SIZE_LABELS[m], state.fontSize === m, 'quiz-set-font-size', m, itemId)).join('')}
+        </div>
+      </div>
+      <div class="quiz-set-group">
+        <div class="quiz-set-label">背景</div>
+        <div class="quiz-set-row">
+          ${BG_MODES.map(m => renderSettingsOption(BG_LABELS[m], state.bg === m, 'quiz-set-bg', m, itemId)).join('')}
+        </div>
+      </div>
+      ${isMemorize ? '' : `
+      <div class="quiz-set-group">
+        ${renderSettingsToggle('自动跳下一题', state.autoNext, 'quiz-toggle-auto-next', itemId)}
+      </div>`}
+      <div class="quiz-set-group">
+        ${renderSettingsToggle('键盘快捷键', state.shortcuts, 'quiz-toggle-shortcuts', itemId)}
+        <div class="quiz-set-hint">← / → 切换题号</div>
+      </div>
+      <div class="quiz-set-group">
+        <button class="quiz-set-action" data-action="quiz-reset-session" data-item-id="${itemId}">重置当前会话</button>
+      </div>
+    </div>
+  `;
+}
+
 function renderControlBar(state) {
   const progress = state.allQuestions.length > 0
     ? Math.round(((state.currentIndex + (state.finished ? 1 : 0)) / state.allQuestions.length) * 100)
@@ -150,19 +227,14 @@ function renderControlBar(state) {
     <div class="quiz-control-bar">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <span class="quiz-mode-badge">${state.mode === 'random' ? '随机' : '顺序'}</span>
+          <span class="quiz-mode-badge mode-${state.practiceMode}">${PRACTICE_LABELS[state.practiceMode]}</span>
           <span class="text-sm font-medium" style="color: var(--fg);">${escapeHtml(getItemTitle(state.itemId))}</span>
         </div>
-        <div class="flex items-center gap-2">
-          <button class="quiz-chip" data-action="quiz-toggle-order" data-item-id="${state.itemId}">
-            ${state.mode === 'random' ? '随机刷题' : '顺序刷题'}
+        <div class="quiz-settings" data-item-id="${state.itemId}">
+          <button class="quiz-settings-btn ${state.settingsOpen ? 'active' : ''}" data-action="quiz-toggle-settings" data-item-id="${state.itemId}" aria-expanded="${state.settingsOpen}" aria-label="刷题设置">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </button>
-          <button class="quiz-chip" data-action="quiz-toggle-font" data-item-id="${state.itemId}">
-            ${FONT_LABELS[state.font]}
-          </button>
-          <button class="quiz-chip" data-action="quiz-toggle-bg" data-item-id="${state.itemId}">
-            ${BG_LABELS[state.bg]}
-          </button>
+          ${renderSettingsMenu(state)}
         </div>
       </div>
       <div class="quiz-progress-track">
@@ -172,7 +244,8 @@ function renderControlBar(state) {
   `;
 }
 
-function renderFeedback(question, result, showAnswer) {
+function renderFeedback(question, result, showAnswer, practiceMode) {
+  if (practiceMode !== 'standard') return '';
   if (!result && !showAnswer) return '';
 
   if (result?.manual) {
@@ -205,7 +278,19 @@ function renderFeedback(question, result, showAnswer) {
   return '';
 }
 
-function renderSolution(question, result, showAnswer) {
+function renderSolution(question, result, showAnswer, practiceMode) {
+  if (practiceMode === 'memorize') {
+    return `
+      <div class="quiz-solution">
+        <h4 class="font-bold mb-2">解析</h4>
+        <div class="text-sm" style="color: var(--fg);">${question.solution || '暂无解析'}</div>
+        ${question.answer !== undefined && question.answer !== null && question.answer !== ''
+          ? `<div class="mt-3 text-sm font-semibold">答案：${escapeHtml(String(formatAnswerDisplay(question)))}</div>`
+          : ''}
+      </div>
+    `;
+  }
+  if (practiceMode === 'exam') return '';
   if (!showAnswer && !(result?.passed || result?.manual)) return '';
 
   return `
@@ -229,22 +314,40 @@ function renderCurrentQuestion(state) {
   const showAnswer = showAnswerFor(state, qid);
   const submitType = submitTypes[q.questionType];
   const isInstant = submitType === 'instant';
+  const mode = state.practiceMode;
+  const isMemorize = mode === 'memorize';
+  const isExam = mode === 'exam';
+  const examSaved = state.examAnswers[qid];
 
-  const content = renderQuestion(q, { inline: true, userAnswer, selectAction: 'quiz-select-option' });
+  // 背题模式：禁用作答，只展示题面 + 答案
+  const content = isMemorize
+    ? `<fieldset disabled>${renderQuestion(q, { inline: true, userAnswer: null, selectAction: null })}</fieldset>`
+    : renderQuestion(q, { inline: true, userAnswer, selectAction: 'quiz-select-option' });
+
+  // 提交/保存按钮逻辑
+  let actionBtn = '';
+  if (isMemorize) {
+    actionBtn = '';
+  } else if (isExam) {
+    actionBtn = examSaved
+      ? `<button class="quiz-btn mt-4" disabled>已保存</button>`
+      : `<button class="quiz-btn quiz-btn-primary mt-4" data-action="quiz-submit-answer" data-item-id="${state.itemId}" data-qid="${qid}">保存答案</button>`;
+  } else if (!isInstant && !result && !showAnswer) {
+    actionBtn = `<button class="quiz-btn quiz-btn-primary mt-4" data-action="quiz-submit-answer" data-item-id="${state.itemId}" data-qid="${qid}">提交答案</button>`;
+  }
 
   return `
     <article class="quiz-question-card" data-qid="${qid}" data-item-id="${state.itemId}">
       <div class="flex items-center gap-2 mb-4">
         <span class="text-xs font-semibold px-2 py-1 rounded" style="background: var(--accent); color: var(--bg);">第 ${state.currentIndex + 1} / ${state.allQuestions.length} 题</span>
+        ${isExam && examSaved ? `<span class="text-xs px-2 py-1 rounded" style="background: var(--success); color: var(--bg);">已答</span>` : ''}
       </div>
       <h3 class="quiz-question-title">${escapeHtml(normalizeText(q.title || '题目'))}</h3>
       <div class="quiz-question-content">${normalizeText(q.content)}</div>
       ${content}
-      ${!isInstant && !result && !showAnswer
-        ? `<button class="quiz-btn quiz-btn-primary mt-4" data-action="quiz-submit-answer" data-item-id="${state.itemId}" data-qid="${qid}">提交答案</button>`
-        : ''}
-      ${renderFeedback(q, result, showAnswer)}
-      ${renderSolution(q, result, showAnswer)}
+      ${actionBtn}
+      ${renderFeedback(q, result, showAnswer, mode)}
+      ${renderSolution(q, result, showAnswer, mode)}
     </article>
   `;
 }
@@ -254,7 +357,11 @@ function renderNavButton(state, displayIdx, q) {
   const result = resultFor(state, qid);
   const isCurrent = displayIdx === state.currentIndex;
   let statusClass = '';
-  if (result) {
+  if (state.practiceMode === 'memorize') {
+    statusClass = '';
+  } else if (state.practiceMode === 'exam') {
+    if (state.examAnswers[qid]) statusClass = 'answered';
+  } else if (result) {
     statusClass = result.passed ? 'correct' : (result.manual ? 'manual' : 'wrong');
   } else if (userAnswerFor(state, qid) !== null) {
     statusClass = 'answered';
@@ -280,13 +387,25 @@ function renderNav(state) {
 }
 
 function renderBottomActions(state) {
+  const isMemorize = state.practiceMode === 'memorize';
+  const isExam = state.practiceMode === 'exam';
+  const isLast = state.currentIndex === state.allQuestions.length - 1;
+
+  let primaryBtn = '';
+  if (isMemorize) {
+    primaryBtn = isLast
+      ? `<button class="quiz-btn" disabled>已到最后一题</button>`
+      : `<button class="quiz-btn quiz-btn-primary" data-action="quiz-next" data-item-id="${state.itemId}">下一题</button>`;
+  } else if (isLast && !state.finished) {
+    primaryBtn = `<button class="quiz-btn quiz-btn-primary" data-action="quiz-finish" data-item-id="${state.itemId}">${isExam ? '交卷' : '完成练习'}</button>`;
+  } else {
+    primaryBtn = `<button class="quiz-btn quiz-btn-primary" data-action="quiz-next" data-item-id="${state.itemId}">下一题</button>`;
+  }
+
   return `
     <div class="quiz-bottom-actions">
       <button class="quiz-btn" data-action="quiz-prev" data-item-id="${state.itemId}" ${state.currentIndex === 0 ? 'disabled' : ''}>上一题</button>
-      ${state.currentIndex === state.allQuestions.length - 1 && !state.finished
-        ? `<button class="quiz-btn quiz-btn-primary" data-action="quiz-finish" data-item-id="${state.itemId}">完成练习</button>`
-        : `<button class="quiz-btn quiz-btn-primary" data-action="quiz-next" data-item-id="${state.itemId}">下一题</button>`
-      }
+      ${primaryBtn}
     </div>
   `;
 }
@@ -385,15 +504,23 @@ export function initQuizSession(itemId, externalQuestions = null) {
   const container = getContainer(itemId);
   if (!container) return state;
 
-  container.setAttribute('data-font', state.font);
-  container.setAttribute('data-bg', state.bg);
+  applyContainerAttrs(container, state);
   updateBodyBg(state.bg);
   initQuizBackground();
 
   container.innerHTML = renderControlBar(state) + renderQuizContent(state);
   typeset(container);
   initImageLoaders(container);
+  attachKeyboardListener(itemId);
+  attachSettingsOutsideClickListener();
   return state;
+}
+
+function applyContainerAttrs(container, state) {
+  container.setAttribute('data-font', state.font);
+  container.setAttribute('data-font-size', state.fontSize);
+  container.setAttribute('data-bg', state.bg);
+  container.setAttribute('data-practice-mode', state.practiceMode);
 }
 
 function typeset(element) {
@@ -406,12 +533,68 @@ function rerender(itemId) {
   const container = getContainer(itemId);
   if (!container) return;
   const state = getState(itemId);
-  container.setAttribute('data-font', state.font);
-  container.setAttribute('data-bg', state.bg);
+  applyContainerAttrs(container, state);
   updateBodyBg(state.bg);
   container.innerHTML = renderControlBar(state) + renderQuizContent(state);
   typeset(container);
   initImageLoaders(container);
+}
+
+function attachKeyboardListener(itemId) {
+  detachKeyboardListener();
+  keyboardListener = (e) => {
+    const state = getState(itemId);
+    if (!state || !state.shortcuts || state.finished) return;
+    if (state.settingsOpen) return;
+    // 忽略输入框内的按键
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      handleQuizPrev(itemId);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      handleQuizNext(itemId);
+    }
+  };
+  document.addEventListener('keydown', keyboardListener);
+}
+
+function detachKeyboardListener() {
+  if (keyboardListener) {
+    document.removeEventListener('keydown', keyboardListener);
+    keyboardListener = null;
+  }
+}
+
+function attachSettingsOutsideClickListener() {
+  detachSettingsOutsideClickListener();
+  // 采用 Radix UI 的 pointerdown 模式：pointerdown 先于 click 触发，
+  // 点击齿轮时 menu 尚未打开 → listener 直接 return，不会与 toggle 冲突；
+  // menu 打开后，下一次外部 pointerdown 才关闭。
+  settingsOutsideClickListener = (e) => {
+    const openMenu = document.querySelector('.quiz-settings-menu:not([hidden])');
+    if (!openMenu) return;
+    const wrap = openMenu.closest('.quiz-settings');
+    if (wrap && !wrap.contains(e.target)) {
+      const itemId = wrap.dataset.itemId;
+      if (itemId) {
+        const state = getState(itemId);
+        if (state && state.settingsOpen) {
+          state.settingsOpen = false;
+          rerender(itemId);
+        }
+      }
+    }
+  };
+  document.addEventListener('pointerdown', settingsOutsideClickListener);
+}
+
+function detachSettingsOutsideClickListener() {
+  if (settingsOutsideClickListener) {
+    document.removeEventListener('pointerdown', settingsOutsideClickListener);
+    settingsOutsideClickListener = null;
+  }
 }
 
 function getQuestionRoot(itemId, qid) {
@@ -424,6 +607,10 @@ function submitCurrentAnswer(itemId, qid) {
   const state = getState(itemId);
   const question = state.allQuestions.find(q => q.id === qid);
   if (!question) return;
+  const mode = state.practiceMode;
+
+  // 背题模式：无作答
+  if (mode === 'memorize') return;
 
   const root = getQuestionRoot(itemId, qid);
   const userAnswer = collectUserAnswer(question, root);
@@ -433,6 +620,18 @@ function submitCurrentAnswer(itemId, qid) {
     return;
   }
 
+  // 考试模式：仅保存答案，不判分
+  if (mode === 'exam') {
+    state.userAnswers[qid] = userAnswer;
+    state.examAnswers[qid] = true;
+    rerender(itemId);
+    if (state.autoNext && state.currentIndex < state.allQuestions.length - 1) {
+      setTimeout(() => handleQuizNext(itemId), 200);
+    }
+    return;
+  }
+
+  // 标准模式：即时判分
   const submitBtn = document.querySelector(`[data-action="quiz-submit-answer"][data-item-id="${itemId}"][data-qid="${qid}"]`);
   if (submitBtn) {
     submitBtn.disabled = true;
@@ -457,9 +656,13 @@ function submitCurrentAnswer(itemId, qid) {
   syncItemProgress(itemId);
   rerender(itemId);
 
+  // 自动跳下一题：标准模式下 instant 题型答对，或开启了 autoNext 且答对
   const submitType = submitTypes[question.questionType];
-  if (submitType === 'instant' && result.passed && state.currentIndex < state.allQuestions.length - 1) {
-    setTimeout(() => handleQuizNext(itemId), 600);
+  const isInstant = submitType === 'instant';
+  if (result.passed && state.currentIndex < state.allQuestions.length - 1) {
+    if (isInstant || state.autoNext) {
+      setTimeout(() => handleQuizNext(itemId), isInstant ? 600 : 300);
+    }
   }
 }
 
@@ -490,6 +693,55 @@ export function handleQuizGoto(itemId, index) {
 
 export function handleQuizFinish(itemId) {
   const state = getState(itemId);
+  const mode = state.practiceMode;
+
+  if (mode === 'memorize') {
+    // 背题模式无完成概念
+    return;
+  }
+
+  if (mode === 'exam') {
+    // 考试模式：检查全部已答，然后统一判分
+    const unanswered = state.allQuestions.filter(q => !state.examAnswers[q.id] && state.userAnswers[q.id] === undefined);
+    if (unanswered.length > 0) {
+      alert(`还有 ${unanswered.length} 题未作答，请完成后再交卷`);
+      return;
+    }
+    // 统一判分
+    state.allQuestions.forEach(q => {
+      const ans = state.userAnswers[q.id];
+      let result;
+      try {
+        result = validate(q, ans);
+      } catch (e) {
+        result = { passed: false, userAnswer: ans, correctAnswer: q.answer, message: '验证出错', manual: false };
+      }
+      state.results[q.id] = result;
+      if (!result.manual) markQuestion(q.id, result);
+    });
+    syncItemProgress(itemId);
+    state.finished = true;
+    try {
+      const correct = state.allQuestions.filter(q => {
+        const r = resultFor(state, q.id);
+        return r && r.passed;
+      }).length;
+      setLastSession({
+        itemId: state.itemId,
+        title: getItemTitle(state.itemId),
+        lastIndex: state.allQuestions.length - 1,
+        total: state.allQuestions.length,
+        correct
+      });
+    } catch (e) { console.warn('[quizSession] lastSession:', e); }
+    rerender(itemId);
+    if (typeof state.onFinish === 'function') {
+      try { state.onFinish(state); } catch (e) { console.warn('[quizSession] onFinish:', e); }
+    }
+    return;
+  }
+
+  // 标准模式
   const answered = state.allQuestions.filter(q => {
     const r = resultFor(state, q.id);
     return r || state.userAnswers[q.id] !== undefined;
@@ -501,7 +753,6 @@ export function handleQuizFinish(itemId) {
   }
 
   state.finished = true;
-  // 记录"继续上次"会话
   try {
     const correct = state.allQuestions.filter(q => {
       const r = resultFor(state, q.id);
@@ -516,42 +767,101 @@ export function handleQuizFinish(itemId) {
     });
   } catch (e) { console.warn('[quizSession] lastSession:', e); }
   rerender(itemId);
-  // 适配层回调: 提交后处理（更新错题本 + 保存记录）
   if (typeof state.onFinish === 'function') {
     try { state.onFinish(state); } catch (e) { console.warn('[quizSession] onFinish:', e); }
   }
 }
 
 export function handleQuizRestart(itemId) {
-  quizStates.set(itemId, createState(itemId));
+  const state = getState(itemId);
+  resetSessionData(state);
   rerender(itemId);
 }
 
-export function handleQuizToggleOrder(itemId) {
+// ============ 设置菜单 handlers ============
+
+export function handleQuizToggleSettings(itemId) {
   const state = getState(itemId);
-  state.mode = state.mode === 'random' ? 'sequential' : 'random';
-  if (state.mode === 'random') {
-    state.seed = Date.now();
-  }
+  state.settingsOpen = !state.settingsOpen;
+  rerender(itemId);
+}
+
+function resetSessionData(state) {
+  // 清空作答与判分，保留 allQuestions / order / 偏好
+  state.userAnswers = {};
+  state.results = {};
+  state.showAnswers = {};
+  state.examAnswers = {};
+  state.currentIndex = 0;
+  state.finished = false;
+  state.settingsOpen = false;
+  resetOrder(state);
+}
+
+export function handleQuizSetMode(itemId, value) {
+  if (!PRACTICE_MODES.includes(value)) return;
+  const state = getState(itemId);
+  if (state.practiceMode === value) return;
+  saveQuizPreference('practice-mode', value);
+  state.practiceMode = value;
+  resetSessionData(state);
+  rerender(itemId);
+}
+
+export function handleQuizSetOrder(itemId, value) {
+  if (!ORDER_MODES.includes(value)) return;
+  const state = getState(itemId);
+  state.mode = value;
+  saveQuizPreference('order', value);
+  if (value === 'random') state.seed = Date.now();
   resetOrder(state);
   state.currentIndex = 0;
   rerender(itemId);
 }
 
-export function handleQuizToggleFont(itemId) {
+export function handleQuizSetFont(itemId, value) {
+  if (!FONT_MODES.includes(value)) return;
   const state = getState(itemId);
-  const idx = FONT_MODES.indexOf(state.font);
-  state.font = FONT_MODES[(idx + 1) % FONT_MODES.length];
-  saveQuizPreference('font', state.font);
+  state.font = value;
+  saveQuizPreference('font', value);
   rerender(itemId);
 }
 
-export function handleQuizToggleBg(itemId) {
+export function handleQuizSetFontSize(itemId, value) {
+  if (!FONT_SIZE_MODES.includes(value)) return;
   const state = getState(itemId);
-  const idx = BG_MODES.indexOf(state.bg);
-  state.bg = BG_MODES[(idx + 1) % BG_MODES.length];
-  saveQuizPreference('bg', state.bg);
+  state.fontSize = value;
+  saveQuizPreference('font-size', value);
+  rerender(itemId);
+}
+
+export function handleQuizSetBg(itemId, value) {
+  if (!BG_MODES.includes(value)) return;
+  const state = getState(itemId);
+  state.bg = value;
+  saveQuizPreference('bg', value);
   updateBodyBg(state.bg);
+  rerender(itemId);
+}
+
+export function handleQuizToggleAutoNext(itemId) {
+  const state = getState(itemId);
+  state.autoNext = !state.autoNext;
+  saveQuizPreference('auto-next', String(state.autoNext));
+  rerender(itemId);
+}
+
+export function handleQuizToggleShortcuts(itemId) {
+  const state = getState(itemId);
+  state.shortcuts = !state.shortcuts;
+  saveQuizPreference('shortcuts', String(state.shortcuts));
+  rerender(itemId);
+}
+
+export function handleQuizResetSession(itemId) {
+  if (!confirm('确定要重置当前会话吗？所有作答记录将被清空。')) return;
+  const state = getState(itemId);
+  resetSessionData(state);
   rerender(itemId);
 }
 
@@ -567,6 +877,7 @@ export function handleQuizSubmitAnswer(itemId, qid) {
 
 export function handleQuizSelectOption(itemId, qid, value) {
   const state = getState(itemId);
+  if (state.practiceMode === 'memorize') return;
   state.userAnswers[qid] = value;
   submitCurrentAnswer(itemId, qid);
 }
@@ -574,4 +885,6 @@ export function handleQuizSelectOption(itemId, qid, value) {
 export function cleanupQuizSession(itemId) {
   restoreBodyBg();
   destroyQuizBackground();
+  detachKeyboardListener();
+  detachSettingsOutsideClickListener();
 }
