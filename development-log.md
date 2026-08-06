@@ -1851,6 +1851,257 @@
 - 设置菜单用绝对定位 + 外部点击监听 → 不阻塞主线程，原生 DOM 交互。
 - 键盘监听挂 `document` 但在 `cleanupQuizSession` 卸载 → 避免离开刷题页后仍拦截按键。
 
+## 更新记录 - 2026-08-05（后端重构 Phase 1 C：前端读切 BFF）
+
+### 背景
+- 执行 `backend-architecture-redesign.md` / `backend-redesign-handoff.md` 的 Phase 1 前端切换（C）。
+- 目标：读操作从浏览器直连 Supabase 改为同域 BFF `/api/v1`，为后续 Phase 0 收权（D）铺路。
+
+### 新增
+- `src/services/apiClient.js`：BFF API 客户端，`apiGet(path, params)` 包装 `fetch('/api/v1'+path)`，失败抛错（调用方自行 fallback）。
+- `bff/src/routes/content.ts`：`includeAnswer=true` / `includeQuestions=true` 过渡参数。
+  - `QUESTION_FIELDS` 拆为 `QUESTION_BASE`（无答案）+ `QUESTION_ANSWERS`（answer/answers/blanks/tolerance/unit/solution/test_string），`questionFields(includeAnswer)` 按需拼接。
+  - `/papers` 支持 `includeQuestions` 内联 `exam_questions`；`/papers`、`/papers/:id`、`/papers/:id/questions`、`/questions/:id` 均支持 `includeAnswer`。
+  - `SECTION_FIELDS` 补 `exam_id`；`QUESTION_BASE` 补 `source`、`answer_reveal`（保证前端 normalize 不崩）。
+- `vite.config.js`：dev 代理 `/api/v1` → 本地 BFF（`BFF_DEV_URL` 或 `127.0.0.1:8788`）。
+
+### 修改
+- `src/services/practice-data.js`：`fetchExamPapersFromSupabase` → `fetchExamPapersFromBff`。
+  - 改调 `apiGet('/papers', { includeQuestions:'true', includeAnswer:'true', pageSize, page })` 逐页拉取后组装成原嵌套结构。
+  - 移除 `supabase` / `isSupabaseConfigured` 依赖；失败 catch → 回退 `EXAM_PAPERS` 静态 bundle。
+  - 过渡期仍带 `includeAnswer=true`（前端刷题需答案客户端判分）；Phase 2 判分服务端化后移除。
+
+### 关键决策
+- 过渡方案：BFF 默认仍不返回答案，仅 `includeAnswer=true` 显式请求时带——兼顾安全默认与刷题判分可用。
+- 不改 `src/data/*.js` bundle（文档铁律：BFF 接管内容读取前不动）；答案泄露面当前仍由 bundle 主导，Phase 0 收权收益待 bundle 移除后体现。
+- 收权（REVOKE）**未执行**：前端未完整切 BFF 前禁跑，避免破坏线上。
+
+### 影响面
+- 刷题板块、按题型/按试卷会话走 BFF 读；`admin.js`（内容 CRUD）、`content.js`（`questions` 表）、`sync.js` 等**写/用户表**路径不动（Phase 2）。
+- BFF/前端均不部署时 `/api/v1` 请求失败 → 回退静态 bundle，刷题不崩。
+- BFF `tsc --noEmit` 通过；前端 `vite build` 通过（728 modules）。
+
+### 待办（下次）
+- A/B：部署 BFF 到 Cloudflare Pages Functions + 验证 `/api/v1/papers` 无答案字段、`X-Cache` 生效。
+- C 收尾验证：线上页面经 BFF 读题正常。
+- D：确认 C 完成后执行 `backend-redesign-handoff.md` §5.2 修正版收权 SQL。
+
+## 更新记录 - 2026-08-05（BFF 部署至 Cloudflare Pages + 线上验证）
+
+### 操作
+- 配置 production secret：`wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY`（project `coursecore`），解决线上 401。
+- `npm run build`（728 modules）→ `wrangler pages deploy` 到 production 域名 `coursecorepage.pages.dev`。
+- 线上验证：`/api/v1/healthz` → `{"status":"ok"}`；`/api/v1/papers?includeQuestions=true&includeAnswer=true` 嵌套关系返回正常（sections:exam_sections + exam_questions 内联，答案字段齐全）。
+
+### 修复
+- `bff/src/routes/content.ts`：`/papers` 列表移除 `is_active` 过滤。
+  - 原因：schema 核查确认 `exam_papers` 表**无 `is_active` 列**，PostgREST 报 `42703 column exam_papers.is_active does not exist`。
+  - 影响：列表不再按激活态过滤，其余 subject/school/term 过滤不变。
+
+### 关键决策 / 注意
+- health 路由实际路径为 `/healthz`（非 `/health`）。
+- 首次部署后 healthz/papers 偶发 `500`，为边缘缓存了上一个部署的旧（错误）响应所致，二次请求即恢复——验证时注意绕过缓存。
+
+### 待办（下次）
+- C 收尾验证：浏览器线上页面经 BFF 读题、刷题判分正常。
+- preview 环境 secret（main 分支）如需另配；当前 production 已可用。
+- D：确认 C 完成后执行 `backend-redesign-handoff.md` §5.2 修正版收权 SQL。
+
 ## 最后更新时间
 
-2026-08-05（刷题设置菜单 + 三模式）
+2026-08-05 22:30（后端重构 Phase 1 C：BFF 部署 + 线上验证）
+
+## 更新记录 - 2026-08-05（管理后台设计 mockup）
+
+### 新增
+- `coursecore/docs/design-mockups/admin-backoffice.html`：单文件自包含的管理后台高保真 mockup（纯前端 mock 数据，不接真接口）。
+  - 三模块：题目库管理 / 试卷管理 / 用户管理，侧栏切换 + 顶栏面包屑。
+  - 视觉延续黑白墨绿高端基因 + 几何球形网格背景，反 AI slop。
+- 题目库：列表筛选（学科/题型/状态/关键词）+ 右侧抽屉编辑，覆盖 5 题型（单选/多选/填空/判断/解答）的题干→选项→答案→分析→标签→难度→启停，选项字母点选标记正确答案，即时答案预览。
+- 试卷管理：从题库勾选组卷（右侧已选面板 + 分值 + 总分联动）→ 保存草稿 → 预览 → 发布/撤回。
+- 用户管理：状态流转闭环（正常→封禁→解封→删除，危险操作确认弹窗，删除可撤销）+ 角色分配闭环（学生/教师/管理员下拉即时改）+ 新建账号（含生成强密码）。
+- 审计日志：所有操作（增删改/启停/封禁/角色/发布）全量留痕，与操作闭环联动。
+
+### 关键决策
+- 功能 = 需求输入（用户定边界），排版 = 创意输出（从白纸构思，不套 CourseCore 现有壳）。
+- 核心卖点「操作闭环」：每次操作 → 即时 Toast 反馈 → 危险操作确认 → 可撤销（删除用户）→ 全部进审计。
+
+### 验证
+- `node --check` 提取内嵌 script 语法通过。
+- 集成浏览器实测：题目编辑保存闭环、用户封禁→确认→审计留痕、试卷/用户数据渲染均跑通，console 无报错。
+
+### 影响面
+- 纯新增设计 mockup，不影响任何现有源码/文档/构建链路。
+
+## 更新记录 - 2026-08-05（管理后台整合版 v2）
+
+### 操作
+- 创建 `coursecore/docs/design-mockups/admin-backoffice-v2.html`：整合新后台（题目编辑、试卷管理）+ 原后台（双栏 Markdown 编辑、文档树），单文件高保真 mockup。
+- 角色设置统一为 **free / paid / admin**：侧栏滤选项、表格行内角色下拉、新建账号角色下拉、角色徽章样式（`role-free/role-paid/role-admin`）全部对齐，移除 student/teacher 残余。
+- 修复导航分发 map 的 key 错误：`qs`/`pn` 改为 `questions`/`papers`，否则切换「题库/试卷」视图后列表不渲染。
+
+### 关键决策
+- 双栏编辑器：左侧选文档树小节（理论正文 / 训练题分段），右栏实时预览（内置 markdown 渲染 + 公式高亮），保存即落库入审计。
+- 试卷构建器：题库勾选入卷 → 排序设分 → 总分联动 → 预览 → 发布/撤回，保留学校/学院/科目/学期元数据。
+- 用户管理双闭环：状态流转（正常→封禁→解封→删除，危险操作确认，删除可撤销）+ 角色分配（free/paid/admin 即时改）。
+
+### 验证
+- 集成浏览器实测全链路：5 视图切换渲染正常（内容树 5 小节 / 题库 6 题 / 试卷 2 张 / 用户 5 行 / 审计留痕）；新建题目 6→7 题；角色改 admin 生效；删除用户弹确认框（未确认故保留，闭环正确）；console 无报错。
+
+### 影响面
+- 纯新增设计 mockup，不影响任何现有源码/文档/构建链路。
+
+## 更新记录 - 2026-08-05（Phase 0 / D：收窄匿名权限）
+
+### 操作
+- 执行 `backend-redesign-handoff.md` §5.2 收权 SQL：
+  1. `REVOKE ALL ON TABLE exam_papers/exam_sections/exam_questions FROM anon, authenticated`
+  2. `REVOKE SELECT (answer, answers, solution, test_string, blanks) ON exam_questions FROM anon, authenticated`
+
+### 验证
+- RLS 策略保留（`pg_policies` 查询确认 12 条策略仍在，含 `*_read_all` / `*_readable_by_everyone`）
+- anon key 直连被拒：`curl -H "apikey: <anon>" exam_papers` → `42501 permission denied for table exam_papers`
+- BFF 正常：`GET /api/v1/papers?pageSize=1` → 200，数据完整
+- 敏感列级兜底生效：即使后续误授权表级 SELECT，`answer/answers/solution/test_string/blanks` 仍不可读
+
+### 关键决策
+- 收权分两步：先 REVOKE 表级 ALL，再 REVOKE 列级敏感字段 SELECT。
+- RLS 策略（`qual=true`）未删除——保留作为"即使 GRANT 误操作也不会泄露"的双保险。
+- 首次 BFF 请求偶发 500（边缘缓存旧响应），二次请求即恢复。
+
+### 完成度
+- Phase 0 安全止血：✅ 完成
+- Phase 1 BFF 部署 + 前端切换：✅ 完成
+- **下一步**：Phase 2 业务权威上移（判分/reveal gated、错题本/同步/排行上移、用户 JWT 校验中间件）
+
+## 最后更新时间
+
+2026-08-05 22:45（Phase 0 / D 收权完成）
+
+## 更新记录 - 2026-08-05（Phase 2：业务权威上移）
+
+### 新增文件
+- `bff/src/routes/judge.ts` — 判分接口 POST /api/v1/questions/:id/judge（含错题本联动）+ 答案揭示接口 POST /api/v1/questions/:id/reveal（按 answer_reveal 规则 gated）
+- `bff/src/routes/leaderboard.ts` — 排行榜接口 GET /api/v1/leaderboard（调用 RPC get_leaderboard）
+
+### 修改文件
+- `bff/src/app.ts` — 挂载 user / judge / leaderboard 路由到 /api/v1 下
+- `bff/src/middleware/cache.ts` — 边缘缓存跳过带 Authorization header 的请求（用户数据不缓存）
+- `bff/src/middleware/auth.ts` — 修复 userData 类型断言（as any）
+- `bff/src/routes/user.ts` — 修复 TypeScript 类型错误（id 空值检查、unknown→any 转换、curveType→curve_type、移除未使用变量）
+- `bff/src/routes/judge.ts` — 修复 switch 语法错误、类型断言
+- `src/services/apiClient.js` — 扩展为完整 HTTP 客户端（GET/POST/PATCH/DELETE），自动附带 Supabase JWT
+- `src/services/sync.js` — 错题本/进度同步切 BFF（/me/* 路径），保留 Supabase fallback
+- `src/services/review-engine.js` — 新增 judgeAnswer() 调 BFF 判分；错题本查询/统计切 BFF 优先、Supabase 回退
+
+### 核心改动
+1. **判分接口（服务端判分）**：`POST /api/v1/questions/:id/judge` 接收 user_answer → 服务端按题型（单选/多选/填空/解答/判断）判分 → 写答题记录 answers → 联动更新错题本 wrong_book（答对推阶段、答错重置）→ 按 answer_reveal 规则返回答案
+2. **答案揭示接口**：`POST /api/v1/questions/:id/reveal` 需已登录且已提交过答案，按 answer_reveal 字段决定是否返回答案
+3. **JWT 中间件**：所有 /me/* 和 /questions/:id/* 路由均需 Bearer token，BFF 通过 Supabase Auth /auth/v1/user 验证
+4. **排行榜 BFF**：`GET /api/v1/leaderboard` 代理 RPC 调用
+5. **前端 BFF 客户端**：所有 API 请求自动附带 Supabase session JWT，失败回退直连 Supabase
+6. **边缘缓存策略**：带 Authorization 的 GET 请求绕过缓存，避免用户数据泄露
+
+### 待完成
+- wrangler 登录过期，需重新认证后部署
+- 端到端验收：登录→刷题→判分→错题本→排行榜全链路
+- admin 写操作 BFF 上移
+
+## 最后更新时间
+
+2026-08-05 23:10（Phase 2 代码完成，待部署）
+
+## 更新记录 - 2026-08-05（admin-console 理论编辑器排版 + 训练拖拽）
+
+### 操作
+- 修改 `coursecore/docs/design-mockups/admin-console.html`：
+  1. **理论编辑器**改为采用 `admin-backoffice.html`「编辑题目」的竖向字段排版（非抽屉）：顶部「小节标题」→「理论正文(Markdown)」→「例题」折叠卡片区 → 底部带墨绿边框的「即时预览」框。
+  2. **例题选项**从「每选项一个 textarea + 下拉选答案」改为「点击字母标记正确答案」的交互（A/B/C/D 可点，选中即高亮），新增 `setExOpt()`。
+  3. **训练编辑器**保持三栏（题目列表 | 编辑 | 预览）不变，新增 SortableJS 拖拽排序（`initPracticeSortable()`，render 后重建实例），题目列表可拖拽调整顺序。
+  4. 理论编辑器新增「小节标题」字段，`syncTheory()` 同步标题并写入条目。
+
+### 关键决策
+- 用户确认：理论编辑器用 admin-backoffice「编辑题目」页面的排版（字段竖向 + 底部即时预览），不必做成抽屉；训练编辑器三栏结构不变，仅补拖拽。
+- 改动范围收敛到 `admin-console.html` 单文件，不触碰真实后台 `adminPage.js`。
+
+### 验证
+- 内联 `<script>` 经 `node --check` 语法通过。
+- 集成浏览器实测：页面无 console 报错；点内容树「理论」小节进入竖向表单编辑器，例题字母可点击切换高亮，正文输入实时预览；点「训练」小节为三栏布局，题目列表可拖拽排序。
+
+### 影响面
+- 纯 mockup 改动，不影响现有源码/文档/构建链路。新增依赖：SortableJS CDN（仅该 mockup 文件引用）。
+
+## 更新记录 - 2026-08-06（admin-console 整体配色对齐 admin-backoffice）
+
+### 操作
+- 修改 `coursecore/docs/design-mockups/admin-console.html`，将整体颜色样式统一到 `admin-backoffice.html` 的语义色板：
+  1. `:root` 新增 `--ad-green-2:#2bbf80` 与 `--ad-warn:#e8b04b` 变量，补齐 backoffice 色板。
+  2. 清理残留旧版硬编码色：
+     - `.feedback-err` / `.btn-danger:hover`：旧 danger 色 `rgba(229,101,74,.12)` → `rgba(239,106,106,.12)`（对齐 `--ad-danger:#ef6a6a`）。
+     - `.btn` 边框 `#333` → `var(--ad-border)`。
+     - `.btn-danger` 边框 `#4a2a22` → `rgba(239,106,106,.45)`。
+     - `.badge.off` `#fbbf24/#4a3a1a` → `var(--ad-warn)` + `rgba(232,176,75,.45)`。
+     - `.ans-preview` 边框 `rgba(74,222,128,.25)` → `rgba(61,220,151,.25)`（对齐 `--ad-green-hl`）。
+     - 滚动条 hover 色 `#2dd288` → `var(--ad-green-hl)`。
+  3. 保留 tree-icon / tree-type-badge 的三类内容分类强调色（theory 绿 / training 蓝 / quiz 黄），用于区分内容类型，不改动。
+
+### 关键决策
+- 用户要求整体配色与 `admin-backoffice.html` 一致；`--ad-*` 变量此前已对齐，本次聚合成清理残留的旧版硬编码色，使色板完全语义化。
+- 分类强调色（蓝/黄）为内容语义色，非"残留"，保留以维持可读性。
+
+### 影响面
+- 纯 mockup 单文件配色调整，不影响现有源码/文档/构建链路。
+
+## 更新记录 - 2026-08-06（期末试卷题编辑器：标题 → 考点）
+
+### 操作
+- 用户先前误说改「标签」，现纠正为改「标题」。期末试卷三栏编辑器 `paperForm` 中题目字段原为「标题 (可选)」（`pq-title` / `q.title`），本次统一改为「考点」（`pq-kp` / `q.kp`），与理论例题、训练题编辑器一致。
+
+### 全链路改动（`coursecore/docs/design-mockups/admin-console.html`）
+- `paperForm`：`pq-title` → `pq-kp`，加 `list="kp-list"` 下拉复用已有考点，`oninput="updatePaperPreview()"`。
+- `paperSync`：读 `#pq-kp` 写入 `q.kp`（替换 `q.title`）。
+- `paperAdd`：新题初始化 `title:''` → `kp:''`。
+- `addPoolToPaper`：从共享题库入卷时 `title:q.title||''` → `kp:q.kp||''`。
+- `updatePaperPreview`：预览顶部显示 `考点: xxx`（替换原 `q.title` 大标题）。
+
+### 关键决策
+- 期末试卷题目与理论/训练题独立，但考点字段口径统一：均可手动输入或从 `kps` 下拉选择已有考点。
+
+### 验证
+- `node` 提取 `<script>` 用 `new Function` 校验：script 1 OK，无语法错误。
+
+### 影响面
+- 纯 mockup 单文件字段重命名，不涉及真实后端 `adminPage.js` 与构建链路。
+
+## 更新记录 - 2026-08-06（BFF 生产 1101 崩溃修复 + 排行榜 RPC 适配）
+
+### 背景
+- 生产 `coursecorepage.pages.dev` 上 `/api/v1/papers` 返回 1101（Worker 崩溃），`/api/v1/leaderboard` 曾返回 502，需要修复并全链路验证。
+
+### 修复
+1. **1101 崩溃根因**：`bff/src/middleware/cache.ts` 缓存写入时用 `new Response(resp.body)` 复用同一 body 流，`caches.put` 克隆时触发 `ReadableStream is disturbed` 崩溃，且该异常发生在 `waitUntil` 内不被 `onError` 捕获 → Worker 崩溃（1101）。
+   - 改为 `resp.clone()` 克隆整个 Response（含独立 body 流）供缓存写入，`c.res` 保持原流不被消费。
+2. **排行榜 502 根因**：`bff/src/routes/leaderboard.ts` 调用 RPC `get_leaderboard` 时传了 `p_limit`/`p_subject_id` 参数，但数据库该函数为**无参函数**（返回整表 TABLE），PostgREST 报 `PGRST202 no matches`。
+   - 改为无参调用 `get_leaderboard`，服务端按 `limit` 截取（`data.slice(0, limit)`）。
+
+### 验证（生产 `coursecorepage.pages.dev`）
+- `GET /api/v1/papers?pageSize=1` → 200，JSON 数据完整；固定 URL 二次请求 `X-Cache: HIT` + `Cache-Control: max-age=300`（缓存链路正常）。
+- `GET /api/v1/healthz` → 200。
+- `GET /api/v1/leaderboard?limit=3` → 200，返回排行榜数据。
+- `POST /api/v1/questions/:id/judge`（无 token）→ 401（鉴权生效）。
+- `GET /api/v1/me/wrong-book`（无 token）→ 401（鉴权生效）。
+
+### 关键决策
+- 缓存写入用 `resp.clone()` 而非复用 body 流 → 避免流被消费后克隆崩溃，`c.res` 原流不受影响。
+- BFF 适配现有无参 RPC，而非改数据库函数签名 → 最小侵入，不破坏既有函数。
+
+### 产出文件
+- `bff/src/middleware/cache.ts` — 缓存流克隆修复
+- `bff/src/routes/leaderboard.ts` — RPC 无参调用 + limit 截取
+
+### 影响面
+- 106 via `bff/src/app.ts` 全局挂载的缓存/路由，只读接口与鉴权接口均验证通过；前端走 BFF 读题/判分/排行榜链路正常。
+
+## 最后更新时间
+
+2026-08-06（BFF 生产 1101 修复 + 排行榜 RPC 适配）

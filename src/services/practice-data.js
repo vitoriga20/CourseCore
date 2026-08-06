@@ -1,8 +1,8 @@
 // 刷题板块数据服务 + 缓存层
-// 从 Supabase 读取 exam_papers/sections/questions，内存 Map + localStorage 双层缓存
-// TTL 1 小时，Supabase 不可用时 fallback 到静态 examPapers.js
+// 从 BFF /api/v1 读取 exam_papers/sections/questions，内存 Map + localStorage 双层缓存
+// TTL 1 小时，BFF 不可用时 fallback 到静态 examPapers.js
 
-import { supabase, isSupabaseConfigured } from './supabase.js';
+import { apiGet } from './apiClient.js';
 import { EXAM_PAPERS } from '../data/examPapers.js';
 
 const CACHE_KEY = 'cc-practice-exam-papers-v2';
@@ -30,50 +30,53 @@ function normalizeQuestion(q) {
   };
 }
 
-async function fetchExamPapersFromSupabase() {
-  if (!isSupabaseConfigured()) return null;
+async function fetchExamPapersFromBff() {
+  try {
+    // 过渡期：刷题需客户端判分，带 includeAnswer=true 取答案列；
+    // Phase 2 判分服务端化后移除该参数。
+    const pageSize = 100;
+    const all = [];
+    let page = 1;
+    for (;;) {
+      const { data, meta } = await apiGet('/papers', {
+        includeQuestions: 'true',
+        includeAnswer: 'true',
+        pageSize,
+        page,
+      });
+      const rows = data ?? [];
+      all.push(...rows);
+      const total = meta?.total ?? (rows.length === 0 ? all.length : all.length + 1);
+      if (rows.length === 0 || all.length >= total || pageSize * page >= total) break;
+      page++;
+    }
 
-  const { data, error } = await supabase
-    .from('exam_papers')
-    .select(`
-      id, school, college, subject, term, duration,
-      exam_sections (
-        id, exam_id, title, order_index,
-        exam_questions (
-          id, exam_id, section_id, question_type, title, content, options, answer, answers,
-          blanks, tolerance, unit, solution, hint, test_string, image, difficulty, tags, source,
-          order_index, answer_reveal
-        )
-      )
-    `);
+    if (all.length === 0) return null;
 
-  if (error) {
-    console.warn('[practice-data] Supabase 查询失败，使用静态数据:', error.message);
+    // 组装成嵌套结构（与 examPapers.js 一致）
+    return all.map(paper => ({
+      id: paper.id,
+      school: paper.school,
+      college: paper.college,
+      subject: paper.subject,
+      term: paper.term,
+      duration: paper.duration,
+      sections: (paper.sections || [])
+        .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+        .map(sec => ({
+          id: sec.id,
+          examId: sec.exam_id,
+          title: sec.title,
+          orderIndex: sec.order_index,
+          questions: (sec.exam_questions || [])
+            .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+            .map(normalizeQuestion)
+        }))
+    }));
+  } catch (e) {
+    console.warn('[practice-data] BFF 拉取失败，使用静态数据:', e?.message || e);
     return null;
   }
-
-  if (!data || data.length === 0) return null;
-
-  // 组装成嵌套结构（与 examPapers.js 一致）
-  return data.map(paper => ({
-    id: paper.id,
-    school: paper.school,
-    college: paper.college,
-    subject: paper.subject,
-    term: paper.term,
-    duration: paper.duration,
-    sections: (paper.exam_sections || [])
-      .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
-      .map(sec => ({
-        id: sec.id,
-        examId: sec.exam_id,
-        title: sec.title,
-        orderIndex: sec.order_index,
-        questions: (sec.exam_questions || [])
-          .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
-          .map(normalizeQuestion)
-      }))
-  }));
 }
 
 // ============================================================
@@ -121,9 +124,9 @@ export async function getExamPapers() {
     return localData;
   }
 
-  // 3. Supabase（防止并发重复请求）
+  // 3. BFF（防止并发重复请求）
   if (!fetching) {
-    fetching = fetchExamPapersFromSupabase();
+    fetching = fetchExamPapersFromBff();
   }
   const remoteData = await fetching;
   fetching = null;

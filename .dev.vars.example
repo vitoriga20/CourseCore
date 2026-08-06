@@ -1,0 +1,12 @@
+# 本地开发用密钥（wrangler pages dev / wrangler dev 会自动读取 .dev.vars）
+# 复制本文件为 .dev.vars 并填入真实值，.dev.vars 切勿提交到 git
+#
+# Pages 部署：把 .dev.vars 放在项目根目录（与 wrangler.toml 同级）
+# Worker 部署：把 .dev.vars 放在 bff/ 目录
+
+SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+CONTENT_CACHE_TTL=300
+
+# 限流 KV 可选：本地若未建 KV 命名空间，函数会自动跳过限流（中间件已做降级）
+# RATE_LIMIT_KV=...
