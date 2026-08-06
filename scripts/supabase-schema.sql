@@ -141,6 +141,8 @@ CREATE TABLE IF NOT EXISTS public.theory_contents (
 
 CREATE TABLE IF NOT EXISTS public.exam_papers (
   id TEXT PRIMARY KEY,
+  name TEXT,                          -- 试卷名称（三栏编辑器展示/保存用）
+  state TEXT DEFAULT 'draft',         -- 发布状态: 'draft' | 'published'
   school TEXT,
   college TEXT,
   subject TEXT,
@@ -160,8 +162,9 @@ CREATE TABLE IF NOT EXISTS public.exam_sections (
 CREATE TABLE IF NOT EXISTS public.exam_questions (
   id TEXT PRIMARY KEY,
   exam_id TEXT NOT NULL REFERENCES public.exam_papers(id) ON DELETE CASCADE,
-  section_id TEXT NOT NULL REFERENCES public.exam_sections(id) ON DELETE CASCADE,
+  section_id TEXT REFERENCES public.exam_sections(id) ON DELETE CASCADE,  -- 可空：扁平编辑模式不强制大题
   question_type INTEGER NOT NULL DEFAULT 0,
+  score NUMERIC DEFAULT 5,           -- 分值（三栏编辑器设分用）
   title TEXT,
   content TEXT,
   options JSONB DEFAULT '[]'::jsonb,

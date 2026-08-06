@@ -37,11 +37,15 @@ const adminState = {
   editing: null, // { entity, row, isNew, context? } — modal 表单；context 用于树上下文预填
   theoryEditor: null, // { itemId, title, course_id, module_id, content, examples, collapsed }
   practiceEditor: null, // { itemId, itemType, title, questions, selectedIndex }
+  paperEditor: null, // { id, name, school, college, subject, term, state, questions:[{id,score,source,question}], selectedIndex }
+  poolOpen: false, // 期末试卷：从题库添加弹层
+  poolSel: [], // 弹层中勾选的共享题库 id
+  poolLoaded: false, // 平台题库题目是否已加载
   kpEditor: null, // { source, questionId, questionTitle, itemId, kps:[{kp_id,role,weight,kp}], availableKps:[{id,code,name}], loading, dirty }
   loading: false,
   feedback: null, // { type: 'success'|'error', message }
   previewListenerAttached: false,
-  editorInstances: { easyMDEs: [], easyMDEMap: {}, splits: [], sortable: null, treeSortables: [] }
+  editorInstances: { easyMDEs: [], easyMDEMap: {}, splits: [], sortable: null, treeSortables: [], paperSortable: null }
 };
 
 // ─── Sidebar config ───
@@ -167,6 +171,8 @@ const ENTITY_FIELDS = {
   ],
   exam_paper: [
     { name: 'id', label: 'ID', type: 'text', immutable: true },
+    { name: 'name', label: '试卷名称', type: 'text' },
+    { name: 'state', label: '状态', type: 'select', options: ['draft', 'published'] },
     { name: 'school', label: '学校', type: 'text' },
     { name: 'college', label: '学院', type: 'text' },
     { name: 'subject', label: '科目', type: 'text' },
@@ -184,6 +190,7 @@ const ENTITY_FIELDS = {
     { name: 'exam_id', label: '试卷 ID', type: 'text' },
     { name: 'section_id', label: '大题 ID', type: 'text' },
     { name: 'question_type', label: '题型', type: 'number' },
+    { name: 'score', label: '分值', type: 'number' },
     { name: 'title', label: '标题', type: 'text' },
     { name: 'content', label: '题干', type: 'textarea' },
     { name: 'options', label: '选项 (JSON)', type: 'textarea', json: true },
@@ -214,9 +221,9 @@ const ENTITY_COLUMNS = {
   module: ['course_id', 'module_id', 'title', 'order_index'],
   item: ['id', 'course_id', 'module_id', 'title', 'type', 'order_index'],
   question: ['id', 'item_id', 'question_type', 'title', 'difficulty'],
-  exam_paper: ['id', 'school', 'subject', 'term'],
+  exam_paper: ['id', 'name', 'state', 'school', 'subject', 'term'],
   exam_section: ['id', 'exam_id', 'title', 'order_index'],
-  exam_question: ['id', 'section_id', 'question_type', 'title', 'order_index'],
+  exam_question: ['id', 'section_id', 'question_type', 'score', 'title', 'order_index'],
   knowledge_point: ['code', 'name', 'source', 'course_id', 'item_id', 'sort_order']
 };
 
@@ -917,6 +924,7 @@ function renderContent() {
   }
   if (adminState.theoryEditor) return renderTheoryEditor();
   if (adminState.practiceEditor) return renderPracticeEditor();
+  if (adminState.paperEditor) return renderPaperEditor();
 
   const section = adminState.section;
   if (section === 'settings') {
@@ -924,6 +932,9 @@ function renderContent() {
   }
   if (section === 'content-tree') {
     return renderContentTree();
+  }
+  if (section === 'exams') {
+    return renderExams();
   }
   const entities = SECTION_ENTITIES[section];
   if (entities) return entities.map(renderTable).join('');
@@ -1449,10 +1460,17 @@ export function renderAdminPage() {
           <header class="admin-main-header">
             <h1 class="admin-main-title">${escapeHtml(SECTION_TITLES[adminState.section] || '管理后台')}</h1>
             <div class="admin-main-actions">
-              ${(adminState.theoryEditor || adminState.practiceEditor) ? `
+              ${(adminState.theoryEditor || adminState.practiceEditor || adminState.paperEditor) ? `
                 <button type="button" class="admin-btn" data-action="admin-back-list">返回列表</button>
                 ${adminState.theoryEditor ? `<button type="button" class="admin-btn admin-btn-primary" data-action="admin-save-theory">保存</button>` : ''}
                 ${adminState.practiceEditor ? `<button type="button" class="admin-btn admin-btn-primary" data-action="admin-save-practice">保存全部</button>` : ''}
+                ${adminState.paperEditor ? `
+                  <button type="button" class="admin-btn" data-action="admin-paper-preview-current">预览</button>
+                  ${adminState.paperEditor.state === 'published'
+                    ? `<button type="button" class="admin-btn admin-btn-danger" data-action="admin-paper-withdraw" data-id="${escapeHtml(adminState.paperEditor.id || '')}">撤回</button>`
+                    : `<button type="button" class="admin-btn admin-btn-primary" data-action="admin-paper-publish-current">发布</button>`}
+                  <button type="button" class="admin-btn admin-btn-primary" data-action="admin-save-paper">保存</button>
+                ` : ''}
               ` : `
                 ${adminState.section === 'content-tree' ? `
                   <button type="button" class="admin-btn admin-btn-primary" data-action="admin-add" data-entity="course">+ 新增课程</button>
@@ -1468,6 +1486,9 @@ export function renderAdminPage() {
                 ${adminState.section === 'kp' ? `
                   <button type="button" class="admin-btn admin-btn-primary" data-action="admin-add" data-entity="knowledge_point">+ 新增考点</button>
                 ` : ''}
+                ${adminState.section === 'exams' ? `
+                  <button type="button" class="admin-btn admin-btn-primary" data-action="admin-paper-new">+ 新建试卷</button>
+                ` : ''}
                 <button type="button" class="admin-btn" data-action="admin-refresh">刷新</button>
               `}
             </div>
@@ -1478,6 +1499,8 @@ export function renderAdminPage() {
       </div>
       ${renderModal()}
       ${renderKpEditor()}
+      ${renderPoolOverlay()}
+      ${renderPreviewOverlay()}
     </div>
   `;
 }
@@ -1625,17 +1648,20 @@ function mountAdmin() {
     main.addEventListener('input', () => {
       if (adminState.theoryEditor) updateTheoryPreview();
       else if (adminState.practiceEditor) updatePracticePreview();
+      else if (adminState.paperEditor) { paperSyncMeta(); updatePaperPreview(); }
     });
     adminState.previewListenerAttached = true;
   }
   // 首次挂载后渲染一次预览
   if (adminState.theoryEditor) updateTheoryPreview();
   else if (adminState.practiceEditor) updatePracticePreview();
+  else if (adminState.paperEditor) updatePaperPreview();
   // 挂载编辑器增强组件
   initEditors();
   initSplits();
   initSortable();
   initTreeSortables();
+  initPaperSortable();
 }
 
 function cleanupEditors() {
@@ -1652,6 +1678,10 @@ function cleanupEditors() {
   if (editorInstances.sortable) {
     try { editorInstances.sortable.destroy(); } catch (_) {}
     editorInstances.sortable = null;
+  }
+  if (editorInstances.paperSortable) {
+    try { editorInstances.paperSortable.destroy(); } catch (_) {}
+    editorInstances.paperSortable = null;
   }
   editorInstances.treeSortables.forEach(s => {
     try { s.destroy(); } catch (_) {}
@@ -1805,13 +1835,13 @@ async function loadSectionData(section) {
         };
       });
     } else if (section === 'exams') {
-      const [papers, sections, questions] = await Promise.all([
+      // 扁平编辑：不再依赖 exam_sections（规避 RLS/权限空白问题）
+      const [papers, questions] = await Promise.all([
         adminApi.listExamPapers(),
-        adminApi.listExamSections(),
         adminApi.listExamQuestions()
       ]);
       adminState.data.examPapers = papers;
-      adminState.data.examSections = sections;
+      adminState.data.examSections = [];
       adminState.data.examQuestions = questions;
     } else if (section === 'kp') {
       // 考点管理: 加载 kp 字典 + courses (供 course_id 上下文显示)
@@ -2519,6 +2549,565 @@ async function savePractice() {
   }
 }
 
+// ─── Exam (期末试卷) — 三栏编辑器 ───
+function paperTotal(ed) {
+  return (ed.questions || []).reduce((s, it) => s + (Number(it.score) || 0), 0);
+}
+
+function renderExams() {
+  const papers = adminState.data.examPapers || [];
+  return `
+    <div class="exam-top">
+      <div class="exam-hint">编辑题目（共享题库可入卷，打来源标记）→ 设分 → 预览 → 发布。</div>
+      <button type="button" class="admin-btn admin-btn-primary" data-action="admin-paper-new">+ 新建试卷</button>
+    </div>
+    <div class="exam-list">
+      ${papers.length === 0
+        ? `<div class="admin-empty">暂无试卷</div>`
+        : papers.map(p => {
+            const qs = (adminState.data.examQuestions || []).filter(q => q.exam_id === p.id);
+            const total = qs.reduce((s, q) => s + (Number(q.score) || 0), 0);
+            const pub = p.state === 'published';
+            return `
+              <div class="exam-card">
+                <div class="exam-card-body">
+                  <div class="exam-card-title">${escapeHtml(p.name || p.id)}</div>
+                  <div class="exam-card-sub">
+                    <span class="badge ${pub ? 'on' : 'off'}">${pub ? '已发布' : '草稿'}</span>
+                    <span>${qs.length} 题 · 总分 ${total}</span>
+                  </div>
+                  <div class="exam-card-sub">
+                    <span class="badge">${escapeHtml(p.school || '')}</span>
+                    <span class="badge">${escapeHtml(p.college || '')}</span>
+                    <span class="badge">${escapeHtml(p.subject || '')}</span>
+                    <span class="badge">${escapeHtml(p.term || '')}</span>
+                  </div>
+                </div>
+                <div class="admin-actions">
+                  <button type="button" class="admin-btn admin-btn-sm" data-action="admin-paper-preview" data-id="${escapeHtml(p.id)}">预览</button>
+                  <button type="button" class="admin-btn admin-btn-sm" data-action="admin-paper-open" data-id="${escapeHtml(p.id)}">编辑</button>
+                  ${pub
+                    ? `<button type="button" class="admin-btn admin-btn-sm admin-btn-danger" data-action="admin-paper-withdraw" data-id="${escapeHtml(p.id)}">撤回</button>`
+                    : `<button type="button" class="admin-btn admin-btn-sm admin-btn-primary" data-action="admin-paper-publish" data-id="${escapeHtml(p.id)}">发布</button>`}
+                  <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" data-action="admin-paper-delete" data-id="${escapeHtml(p.id)}">删除</button>
+                </div>
+              </div>`;
+          }).join('')}
+    </div>`;
+}
+
+async function openPaper(id) {
+  const p = id ? (adminState.data.examPapers || []).find(x => x.id === id) : null;
+  let questions = [];
+  if (p) {
+    // 扁平编辑：不再读取 exam_sections
+    questions = await adminApi.listExamQuestions(p.id);
+  }
+  adminState.paperEditor = {
+    id: p ? p.id : null,
+    name: p ? (p.name || '') : '',
+    school: p ? (p.school || '') : '长沙理工大学',
+    college: p ? (p.college || '') : '',
+    subject: p ? (p.subject || '') : '',
+    term: p ? (p.term || '') : '',
+    state: p ? (p.state || 'draft') : 'draft',
+    questions: questions.map(q => ({
+      id: q.id,
+      score: Number(q.score) || 5,
+      source: q.source || '本卷新增',
+      question: {
+        ...q,
+        options: padOptions(q.options),
+        answer: q.answer != null ? String(q.answer) : '0',
+        answers: Array.isArray(q.answers) ? q.answers.map(String) : [],
+        blanks: q.blanks || 1,
+        solution: q.solution || '',
+        difficulty: q.difficulty || 1
+      }
+    })),
+    selectedIndex: questions.length > 0 ? 0 : -1
+  };
+  rerender();
+}
+
+function paperMetaForm() {
+  const ed = adminState.paperEditor;
+  return `
+    <div class="paper-meta">
+      <div class="row2">
+        <div class="admin-form-row"><label class="admin-form-label">试卷名称 *</label><input id="pe-name" value="${escapeHtml(ed.name)}"></div>
+        <div class="admin-form-row"><label class="admin-form-label">科目</label><input id="pe-subject" value="${escapeHtml(ed.subject)}"></div>
+      </div>
+      <div class="row4">
+        <div class="admin-form-row"><label class="admin-form-label">学校</label><input id="pe-school" value="${escapeHtml(ed.school)}"></div>
+        <div class="admin-form-row"><label class="admin-form-label">学院</label><input id="pe-college" value="${escapeHtml(ed.college)}"></div>
+        <div class="admin-form-row"><label class="admin-form-label">学期</label><input id="pe-term" value="${escapeHtml(ed.term)}"></div>
+        <div class="admin-form-row"><label class="admin-form-label">状态</label><span class="badge ${ed.state === 'published' ? 'on' : 'off'}">${ed.state === 'published' ? '已发布' : '草稿'}</span></div>
+      </div>
+    </div>`;
+}
+
+function renderPaperEditor() {
+  const ed = adminState.paperEditor;
+  const sel = ed.selectedIndex;
+  const total = paperTotal(ed);
+  return `
+    <div class="admin-editor paper-editor">
+      <div class="practice-list paper-list">
+        ${paperMetaForm()}
+        <div class="practice-list-header"><span class="admin-form-label">题目 (${ed.questions.length}) · 总分 ${total}</span></div>
+        <div class="practice-list-items" id="paperListItems">
+          ${ed.questions.length === 0
+            ? `<div class="admin-empty">暂无题目</div>`
+            : ed.questions.map((it, i) => `
+              <div class="practice-list-item ${i === sel ? 'selected' : ''}" data-action="admin-paper-select" data-idx="${i}">
+                <span class="practice-list-num">${i + 1}</span>
+                <span class="practice-list-type">${escapeHtml(questionTypeLabel(it.question.question_type))}</span>
+                <button type="button" class="practice-list-del" data-action="admin-paper-remove" data-idx="${i}" title="删除">×</button>
+              </div>`).join('')}
+        </div>
+        <button type="button" class="admin-btn admin-btn-sm" data-action="admin-paper-open-pool">+ 从题库添加</button>
+        <button type="button" class="admin-btn admin-btn-sm admin-btn-primary" data-action="admin-paper-add">+ 添加题目</button>
+      </div>
+      <div class="practice-edit">${sel >= 0 && ed.questions[sel] ? paperForm(ed.questions[sel], sel) : `<div class="admin-empty">请选择或添加题目</div>`}</div>
+      <div class="practice-preview"><span class="admin-form-label">预览</span><div class="admin-preview" id="paper-preview"></div></div>
+    </div>`;
+}
+
+function paperForm(it, sel) {
+  const q = it.question;
+  const t = Number(q.question_type);
+  const isMulti = t === 1;
+  const hasKpBtn = !!it.id; // 未保存新题暂不能关联考点（需 question_id）
+  return `
+    <div class="paper-form">
+      <div class="paper-source"><span class="admin-form-label">来源</span><span class="badge" style="color:var(--ad-green-hl);border-color:var(--ad-green)">${escapeHtml(it.source)}</span></div>
+      <div class="admin-form-row"><label class="admin-form-label" for="pq-score">分值</label><input type="number" id="pq-score" min="1" value="${escapeHtml(String(it.score))}"></div>
+      <div class="admin-form-row"><label class="admin-form-label">题型</label><div class="practice-type-selector">${[{ v: 0, l: '单选' }, { v: 1, l: '多选' }, { v: 2, l: '填空' }, { v: 4, l: '解答' }].map(x => `<button type="button" class="practice-type-btn ${t === x.v ? 'active' : ''}" data-action="admin-paper-type" data-value="${x.v}">${x.l}</button>`).join('')}</div></div>
+      <div class="admin-form-row">
+        <label class="admin-form-label">考点 ${hasKpBtn ? '' : '<span class="admin-kp-hint">（保存后可设置）</span>'}</label>
+        ${hasKpBtn
+          ? `<button type="button" class="admin-btn admin-btn-sm" data-action="admin-kp-edit" data-source="exam" data-id="${escapeHtml(it.id)}" data-title="${escapeHtml(q.title || q.content || it.id)}">设置考点</button>`
+          : `<span class="admin-kp-hint">尚未保存，无法关联考点</span>`}
+      </div>
+      <div class="admin-form-row"><label class="admin-form-label" for="pq-content">题干 (Markdown)</label><textarea id="pq-content" class="admin-md-textarea" rows="4">${escapeHtml(q.content || '')}</textarea></div>
+      ${t === 0 || isMulti ? `
+        <div class="admin-form-row"><label class="admin-form-label">选项（点击字母标记正确答案${isMulti ? '，可多选' : ''}）</label>
+          <div class="theory-opt-list">${[0, 1, 2, 3].map(i => `
+            <div class="theory-opt-row">
+              <span class="theory-opt-key ${(isMulti ? (q.answers || []).includes(String(i)) : String(q.answer) === String(i)) ? 'checked' : ''}" data-action="admin-paper-mark" data-idx="${i}">${String.fromCharCode(65 + i)}</span>
+              <input type="text" id="pq-opt-${i}" value="${escapeHtml((q.options || [])[i] || '')}">
+            </div>`).join('')}
+          </div>
+        </div>` : ''}
+      ${t === 2 ? `
+        <div class="admin-form-row"><label class="admin-form-label" for="pq-answer">答案</label><input type="text" id="pq-answer" value="${escapeHtml(q.answer || '')}"></div>
+        <div class="admin-form-row"><label class="admin-form-label" for="pq-blanks">空数</label><input type="number" id="pq-blanks" value="${escapeHtml(String(q.blanks ?? 1))}"></div>` : ''}
+      ${t === 4 ? `
+        <div class="admin-form-row"><label class="admin-form-label" for="pq-answer">答案</label><input type="text" id="pq-answer" value="${escapeHtml(q.answer || '')}"></div>` : ''}
+      <div class="admin-form-row"><label class="admin-form-label" for="pq-solution">解析 (Markdown)</label><textarea id="pq-solution" class="admin-md-textarea" rows="3">${escapeHtml(q.solution || '')}</textarea></div>
+      <div class="admin-form-row"><label class="admin-form-label" for="pq-difficulty">难度</label><input type="number" id="pq-difficulty" value="${escapeHtml(String(q.difficulty ?? 1))}"></div>
+    </div>`;
+}
+
+function paperSyncMeta() {
+  const ed = adminState.paperEditor;
+  if (!ed) return;
+  const g = id => { const el = document.getElementById(id); return el ? el.value : null; };
+  if (g('pe-name') != null) ed.name = document.getElementById('pe-name').value;
+  if (g('pe-subject') != null) ed.subject = document.getElementById('pe-subject').value;
+  if (g('pe-school') != null) ed.school = document.getElementById('pe-school').value;
+  if (g('pe-college') != null) ed.college = document.getElementById('pe-college').value;
+  if (g('pe-term') != null) ed.term = document.getElementById('pe-term').value;
+}
+
+function paperCurrent() {
+  const ed = adminState.paperEditor;
+  if (!ed || ed.selectedIndex < 0) return null;
+  return ed.questions[ed.selectedIndex];
+}
+
+function paperSyncCurrent() {
+  const it = paperCurrent();
+  if (!it) return;
+  const q = it.question;
+  const g = id => { const el = document.getElementById(id); return el ? el.value : null; };
+  if (g('pq-score') != null) it.score = Number(document.getElementById('pq-score').value) || 5;
+  if (g('pq-content') != null) q.content = document.getElementById('pq-content').value;
+  if (g('pq-solution') != null) q.solution = document.getElementById('pq-solution').value;
+  if (g('pq-difficulty') != null) q.difficulty = Number(document.getElementById('pq-difficulty').value);
+  const t = Number(q.question_type);
+  if (t === 0 || t === 1) {
+    q.options = [0, 1, 2, 3].map(i => g(`pq-opt-${i}`) || '');
+  } else if (t === 2 || t === 4) {
+    q.answer = g('pq-answer') || '';
+    if (t === 2) q.blanks = Number(g('pq-blanks')) || 1;
+  }
+}
+
+function updatePaperPreview() {
+  const it = paperCurrent();
+  if (!it) return;
+  paperSyncCurrent();
+  const q = it.question;
+  const preview = document.getElementById('paper-preview');
+  if (!preview) return;
+  let html = '';
+  if (it.score) html += `<div class="preview-answer"><strong>分值:</strong> ${escapeHtml(String(it.score))} 分</div>`;
+  html += renderMd(q.content || '*无题干*');
+  const t = Number(q.question_type);
+  if (t === 0 || t === 1) {
+    html += '<ol type="A">';
+    const ans = new Set(t === 1 ? (q.answers || []) : [String(q.answer)]);
+    (q.options || []).forEach((o, i) => {
+      const isAns = ans.has(String(i));
+      html += `<li class="${isAns ? 'preview-correct' : ''}">${renderMd(o)}</li>`;
+    });
+    html += '</ol>';
+    if (t === 1) html += `<div class="preview-answer"><strong>正确答案:</strong> ${escapeHtml((q.answers || []).map(a => String.fromCharCode(65 + Number(a))).join(', '))}</div>`;
+  } else if (t === 2 || t === 4) {
+    html += `<div class="preview-answer"><strong>答案:</strong> ${escapeHtml(q.answer || '')}</div>`;
+  }
+  if (q.solution) html += `<div class="preview-solution"><strong>解析:</strong> ${renderMd(q.solution)}</div>`;
+  preview.innerHTML = html;
+  typeset(preview);
+}
+
+function paperSelect(i) {
+  paperSyncCurrent();
+  adminState.paperEditor.selectedIndex = i;
+  rerender();
+}
+
+function paperAdd() {
+  paperSyncCurrent();
+  const ed = adminState.paperEditor;
+  ed.questions.push({ id: null, score: 5, source: '本卷新增', question: { id: null, question_type: 0, title: '', content: '', options: ['', '', '', ''], answer: '0', answers: [], blanks: 1, solution: '', difficulty: 1 } });
+  ed.selectedIndex = ed.questions.length - 1;
+  rerender();
+}
+
+function paperRemove(i) {
+  adminState.paperEditor.questions.splice(i, 1);
+  if (adminState.paperEditor.selectedIndex >= adminState.paperEditor.questions.length) {
+    adminState.paperEditor.selectedIndex = adminState.paperEditor.questions.length - 1;
+  }
+  rerender();
+}
+
+function paperTypeChange(v) {
+  paperSyncCurrent();
+  const it = paperCurrent();
+  if (!it) return;
+  const q = it.question;
+  q.question_type = Number(v);
+  if (q.question_type === 0) { q.options = padOptions(q.options); q.answer = '0'; q.answers = []; }
+  else if (q.question_type === 1) { q.options = padOptions(q.options); q.answers = []; q.answer = undefined; }
+  else if (q.question_type === 2) { q.answer = ''; q.blanks = 1; q.options = ['', '', '', '']; }
+  else { q.answer = ''; q.options = ['', '', '', '']; }
+  rerender();
+}
+
+function paperMark(i) {
+  const it = paperCurrent();
+  if (!it) return;
+  paperSyncCurrent();
+  const q = it.question;
+  if (Number(q.question_type) === 1) {
+    const s = q.answers || [];
+    q.answers = s.includes(String(i)) ? s.filter(x => x !== String(i)) : [...s, String(i)];
+  } else {
+    q.answer = String(i);
+    q.answers = [];
+  }
+  rerender();
+}
+
+function paperReorder(oldIndex, newIndex) {
+  const ed = adminState.paperEditor;
+  if (!ed) return;
+  paperSyncCurrent();
+  const [moved] = ed.questions.splice(oldIndex, 1);
+  ed.questions.splice(newIndex, 0, moved);
+  ed.selectedIndex = newIndex;
+  rerender();
+}
+
+async function savePaper() {
+  try {
+    paperSyncCurrent();
+    const ed = adminState.paperEditor;
+    if (!ed) return;
+    if (!ed.name.trim()) { adminState.feedback = { type: 'error', message: '试卷名称不能为空' }; rerender(); return; }
+    if (!ed.questions.length) { adminState.feedback = { type: 'error', message: '至少添加 1 道题' }; rerender(); return; }
+
+    let paperId = ed.id;
+    const meta = { name: ed.name, school: ed.school, college: ed.college, subject: ed.subject, term: ed.term, state: ed.state };
+    if (paperId) {
+      await adminApi.updateExamPaper(paperId, meta);
+    } else {
+      paperId = `pe${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+      await adminApi.createExamPaper({ id: paperId, ...meta });
+      ed.id = paperId;
+    }
+
+    // 扁平编辑：不再依赖 exam_sections（规避 RLS/权限空白问题）
+    // 差量同步：已删除列表中不存在的题、保留 id 的更新、新增的创建（保留 question_kp 关联）
+    const existing = await adminApi.listExamQuestions(paperId);
+    for (const eq of existing) {
+      if (!ed.questions.some(it => it.id === eq.id)) {
+        try { await adminApi.deleteExamQuestion(eq.id); } catch (_) {}
+      }
+    }
+    for (let i = 0; i < ed.questions.length; i++) {
+      const it = ed.questions[i];
+      const q = { ...it.question };
+      const base = {
+        section_id: null,
+        question_type: Number(q.question_type) || 0,
+        score: it.score || 5,
+        title: q.title || '',
+        content: q.content || '',
+        options: (q.question_type === 0 || q.question_type === 1) ? (q.options || []).slice(0, 4) : [],
+        answer: (q.question_type === 0) ? String(q.answer ?? '0') : ((q.question_type === 2 || q.question_type === 4) ? (q.answer || '') : null),
+        answers: (q.question_type === 1) ? (Array.isArray(q.answers) ? q.answers.map(String) : []) : [],
+        blanks: q.question_type === 2 ? (q.blanks || 1) : null,
+        solution: q.solution || '',
+        difficulty: q.difficulty || 1,
+        source: it.source || '本卷新增',
+        order_index: i
+      };
+      if (it.id) {
+        await adminApi.updateExamQuestion(it.id, base);
+      } else {
+        const newId = `peq${paperId}-${i}-${Date.now().toString(36)}`;
+        it.id = newId;
+        await adminApi.createExamQuestion({ id: newId, exam_id: paperId, ...base });
+      }
+    }
+
+    adminState.feedback = { type: 'success', message: '试卷已保存' };
+    adminState.paperEditor = null;
+    await loadSectionData('exams');
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `保存失败: ${e.message}` };
+    rerender();
+  }
+}
+
+async function publishPaper(id) {
+  try {
+    await adminApi.updateExamPaper(id, { state: 'published' });
+    adminState.feedback = { type: 'success', message: '试卷已发布，前台立即可刷' };
+    await loadSectionData('exams');
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `发布失败: ${e.message}` };
+    rerender();
+  }
+}
+
+async function withdrawPaper(id) {
+  if (!confirm('前台将立即下架该试卷，已产生刷题记录保留。确定撤回？')) return;
+  try {
+    await adminApi.updateExamPaper(id, { state: 'draft' });
+    adminState.feedback = { type: 'success', message: '试卷已撤回为草稿' };
+    await loadSectionData('exams');
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `撤回失败: ${e.message}` };
+    rerender();
+  }
+}
+
+async function deletePaper(id) {
+  if (!confirm('删除后不可恢复，历史刷题记录解绑。确定删除？')) return;
+  try {
+    await adminApi.deleteExamPaper(id);
+    adminState.feedback = { type: 'success', message: '已删除试卷' };
+    await loadSectionData('exams');
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `删除失败: ${e.message}` };
+    rerender();
+  }
+}
+
+// ─── Exam: 从题库添加弹层 ───
+async function ensurePoolLoaded() {
+  if (adminState.poolLoaded) return;
+  adminState.data.questions = await adminApi.listQuestions();
+  adminState.poolLoaded = true;
+}
+
+function renderPool() {
+  const container = document.getElementById('bPool');
+  if (!container) return;
+  const questions = adminState.data.questions || [];
+  container.innerHTML = questions.map(q => {
+    const key = String(q.id);
+    const on = adminState.poolSel.includes(key);
+    return `
+      <div class="b-card ${on ? 'in-quiz' : ''}" data-action="admin-pool-toggle" data-id="${escapeHtml(q.id)}">
+        <span class="pick ${on ? 'on' : ''}">✓</span>
+        <div class="b-card-body">
+          <div class="b-card-title">${escapeHtml(q.content || q.title || '')}</div>
+          <div class="b-card-sub"><span class="badge">${escapeHtml(q.subject || '')}</span><span class="badge">${escapeHtml(questionTypeLabel(q.question_type))}</span></div>
+        </div>
+      </div>`;
+  }).join('') || '<div class="admin-empty">暂无可用题库题目</div>';
+  const cnt = document.getElementById('bCnt');
+  if (cnt) cnt.textContent = adminState.poolSel.length;
+}
+
+function poolToggle(id) {
+  const key = String(id);
+  const i = adminState.poolSel.indexOf(key);
+  if (i >= 0) adminState.poolSel.splice(i, 1);
+  else adminState.poolSel.push(key);
+  renderPool();
+}
+
+async function openPool() {
+  await ensurePoolLoaded();
+  adminState.poolSel = [];
+  adminState.poolOpen = true;
+  rerender();
+  renderPool();
+  const mask = document.getElementById('pMask');
+  const drawer = document.getElementById('pDrawer');
+  if (mask) mask.classList.add('open');
+  if (drawer) drawer.classList.add('open');
+}
+
+function closePool() {
+  adminState.poolOpen = false;
+  const mask = document.getElementById('pMask');
+  const drawer = document.getElementById('pDrawer');
+  if (mask) mask.classList.remove('open');
+  if (drawer) drawer.classList.remove('open');
+}
+
+async function addPoolToPaper() {
+  if (!adminState.poolSel.length) { adminState.feedback = { type: 'error', message: '请先勾选要添加的题目' }; rerender(); return; }
+  paperSyncCurrent();
+  const ed = adminState.paperEditor;
+  const questions = adminState.data.questions || [];
+  const added = adminState.poolSel.length;
+  adminState.poolSel.forEach(key => {
+    const q = questions.find(x => String(x.id) === key);
+    if (!q) return;
+    ed.questions.push({
+      id: null,
+      score: 5,
+      source: '题库',
+      question: {
+        id: null,
+        question_type: q.question_type || 0,
+        title: q.title || '',
+        content: q.content || '',
+        options: padOptions(q.options),
+        answer: q.answer != null ? String(q.answer) : '0',
+        answers: Array.isArray(q.answers) ? q.answers.map(String) : [],
+        blanks: q.blanks || 1,
+        solution: q.solution || '',
+        difficulty: q.difficulty || 1
+      }
+    });
+  });
+  ed.selectedIndex = ed.questions.length - 1;
+  closePool();
+  adminState.poolSel = [];
+  adminState.feedback = { type: 'success', message: `已添加 ${added} 题` };
+  rerender();
+}
+
+// ─── Exam: 预览弹层 ───
+function paperPreviewHtml(items) {
+  return items.map((it, i) => {
+    const q = it.question;
+    const stem = q ? (q.content || q.title || '') : '';
+    const type = q ? questionTypeLabel(q.question_type) : '';
+    const ans = q ? ((q.answer != null && q.answer !== '') ? String.fromCharCode(65 + Number(q.answer)) : (Array.isArray(q.answers) && q.answers.length ? q.answers.map(a => String.fromCharCode(65 + Number(a))).join(', ') : '')) : '';
+    return `<div class="p-q"><div class="qn">${i + 1}. [${escapeHtml(type)}] 来源 ${escapeHtml(it.source || '')} · ${escapeHtml(String(it.score || 0))}分</div><div class="qt">${escapeHtml(stem)}</div>${q && q.options && q.options.length ? `<div class="p-opts">${(q.options || []).map((o, k) => `${String.fromCharCode(65 + k)}. ${escapeHtml(o || '')}`).join('　')}</div>${ans ? `<span class="ans-s">答案：${escapeHtml(ans)}</span>` : ''}` : (ans ? `<span class="ans-s">答案：${escapeHtml(ans)}</span>` : '')}</div>`;
+  }).join('');
+}
+
+function openPreviewModal(title, metaHtml, bodyHtml) {
+  const titleEl = document.getElementById('pvTitle');
+  const metaEl = document.getElementById('pvMeta');
+  const bodyEl = document.getElementById('pvBody');
+  if (titleEl) titleEl.textContent = title;
+  if (metaEl) metaEl.innerHTML = metaHtml;
+  if (bodyEl) bodyEl.innerHTML = bodyHtml;
+  const mask = document.getElementById('pvMask');
+  const box = document.getElementById('pvBox');
+  if (mask) mask.classList.add('open');
+  if (box) box.classList.add('open');
+}
+
+function closePreview() {
+  const mask = document.getElementById('pvMask');
+  const box = document.getElementById('pvBox');
+  if (mask) mask.classList.remove('open');
+  if (box) box.classList.remove('open');
+}
+
+function previewUnsaved() {
+  paperSyncCurrent();
+  const ed = adminState.paperEditor;
+  if (!ed) return;
+  if (!ed.name.trim()) { adminState.feedback = { type: 'error', message: '试卷名称不能为空' }; rerender(); return; }
+  const items = ed.questions;
+  const total = paperTotal(ed);
+  const meta = `<span class="badge">${escapeHtml(ed.school)}</span><span class="badge">${escapeHtml(ed.college)}</span><span class="badge">${escapeHtml(ed.subject)}</span><span class="badge">${escapeHtml(ed.term)}</span><span class="badge">${items.length} 题 · ${total} 分</span>`;
+  openPreviewModal(ed.name + ' · 预览（未保存）', meta, paperPreviewHtml(items));
+}
+
+function previewPaperId(id) {
+  const p = (adminState.data.examPapers || []).find(x => x.id === id);
+  if (!p) return;
+  const qs = (adminState.data.examQuestions || []).filter(q => q.exam_id === id);
+  const total = qs.reduce((s, q) => s + (Number(q.score) || 0), 0);
+  const items = qs.map(q => ({ score: Number(q.score) || 0, source: q.source || '', question: q }));
+  const meta = `<span class="badge">${escapeHtml(p.school || '')}</span><span class="badge">${escapeHtml(p.college || '')}</span><span class="badge">${escapeHtml(p.subject || '')}</span><span class="badge">${escapeHtml(p.term || '')}</span><span class="badge">${qs.length} 题 · ${total} 分</span>`;
+  openPreviewModal((p.name || p.id) + ' · 预览', meta, paperPreviewHtml(items));
+}
+
+function initPaperSortable() {
+  const el = document.getElementById('paperListItems');
+  if (!el) return;
+  if (adminState.editorInstances.paperSortable) { try { adminState.editorInstances.paperSortable.destroy(); } catch (_) {} adminState.editorInstances.paperSortable = null; }
+  adminState.editorInstances.paperSortable = Sortable.create(el, {
+    animation: 150,
+    ghostClass: 'practice-ghost',
+    onEnd: evt => {
+      if (evt.oldIndex === evt.newIndex) return;
+      paperReorder(evt.oldIndex, evt.newIndex);
+    }
+  });
+}
+
+function renderPoolOverlay() {
+  return `
+    <div class="drawer-mask" id="pMask" data-action="admin-pool-close"></div>
+    <div class="drawer" id="pDrawer">
+      <div class="d-head"><h2>从题库添加</h2><span class="d-step">共享题库</span></div>
+      <div class="d-body">
+        <div class="d-tip">共享题库题目可勾选入卷；入卷后为独立副本，可编辑但打上来源标记。</div>
+        <div class="b-pool" id="bPool"></div>
+        <div class="d-foot"><span class="d-total">已选 <span id="bCnt">0</span> 题</span><button type="button" class="admin-btn" data-action="admin-pool-close">取消</button><button type="button" class="admin-btn admin-btn-primary" data-action="admin-pool-add">添加选中</button></div>
+      </div>
+    </div>`;
+}
+
+function renderPreviewOverlay() {
+  return `
+    <div class="preview-mask" id="pvMask" data-action="admin-preview-close"></div>
+    <div class="preview-modal" id="pvBox">
+      <div class="p-head"><h3 id="pvTitle">试卷预览</h3><button type="button" class="close" data-action="admin-preview-close" aria-label="关闭">×</button></div>
+      <div class="p-meta" id="pvMeta"></div>
+      <div id="pvBody"></div>
+    </div>`;
+}
+
 // ─── Init / Action dispatch ───
 export async function initAdminPage() {
   if (!isAdmin()) return;
@@ -2535,6 +3124,8 @@ export async function handleAdminAction(action, el) {
       adminState.section = section;
       adminState.theoryEditor = null;
       adminState.practiceEditor = null;
+      adminState.paperEditor = null;
+      adminState.poolOpen = false;
       adminState.kpEditor = null;
       await loadSectionData(section);
       break;
@@ -2638,6 +3229,7 @@ export async function handleAdminAction(action, el) {
     case 'admin-back-list': {
       adminState.theoryEditor = null;
       adminState.practiceEditor = null;
+      adminState.paperEditor = null;
       // 内容树模式下返回时清掉 item 选中，避免立即重新打开编辑器
       if (adminState.section === 'content-tree' && adminState.tree.selected?.type === 'item') {
         adminState.tree.selected = null;
@@ -2803,6 +3395,111 @@ export async function handleAdminAction(action, el) {
     }
     case 'admin-tree-batch-delete': {
       await handleBatchDelete();
+      break;
+    }
+    // ─── Exam / 期末试卷 actions ───
+    case 'admin-paper-new': {
+      await openPaper(null);
+      break;
+    }
+    case 'admin-paper-open': {
+      const id = el.dataset.id;
+      if (!id) break;
+      await openPaper(id);
+      break;
+    }
+    case 'admin-save-paper': {
+      await savePaper();
+      break;
+    }
+    case 'admin-paper-preview': {
+      const id = el.dataset.id;
+      if (!id) break;
+      previewPaperId(id);
+      break;
+    }
+    case 'admin-paper-preview-current': {
+      previewUnsaved();
+      break;
+    }
+    case 'admin-paper-publish': {
+      const id = el.dataset.id;
+      if (!id) break;
+      await publishPaper(id);
+      break;
+    }
+    case 'admin-paper-publish-current': {
+      const ed = adminState.paperEditor;
+      if (!ed) break;
+      if (!ed.id) {
+        // 先保存再发布（savePaper 成功后会 loadSectionData，这里在保存前捕获 name+term 定位）
+        adminState.feedback = { type: 'error', message: '请先保存试卷后再发布' };
+        rerender();
+        break;
+      }
+      await publishPaper(ed.id);
+      break;
+    }
+    case 'admin-paper-withdraw': {
+      const id = el.dataset.id;
+      if (!id) break;
+      await withdrawPaper(id);
+      break;
+    }
+    case 'admin-paper-delete': {
+      const id = el.dataset.id;
+      if (!id) break;
+      await deletePaper(id);
+      break;
+    }
+    case 'admin-paper-select': {
+      const idx = Number(el.dataset.idx);
+      if (Number.isNaN(idx)) break;
+      paperSelect(idx);
+      break;
+    }
+    case 'admin-paper-add': {
+      paperAdd();
+      break;
+    }
+    case 'admin-paper-remove': {
+      const idx = Number(el.dataset.idx);
+      if (Number.isNaN(idx)) break;
+      paperRemove(idx);
+      break;
+    }
+    case 'admin-paper-type': {
+      const value = el.dataset.value;
+      if (value === undefined || value === '') break;
+      paperTypeChange(value);
+      break;
+    }
+    case 'admin-paper-mark': {
+      const idx = Number(el.dataset.idx);
+      if (Number.isNaN(idx)) break;
+      paperMark(idx);
+      break;
+    }
+    case 'admin-paper-open-pool': {
+      await openPool();
+      break;
+    }
+    case 'admin-pool-toggle': {
+      const id = el.dataset.id;
+      if (!id) break;
+      poolToggle(id);
+      break;
+    }
+    case 'admin-pool-close': {
+      closePool();
+      break;
+    }
+    case 'admin-pool-add': {
+      await addPoolToPaper();
+      break;
+    }
+    case 'admin-preview-close': {
+      closePreview();
       break;
     }
     default: break;
