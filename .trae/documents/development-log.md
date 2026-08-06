@@ -2746,7 +2746,6 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 - 三栏编辑器放主区（顶部「返回试卷列表 + 试卷标题 + 设分/预览/发布」按钮），非抽屉，贴合 admin-console 交互。
 - 保存用差量同步（diff existing vs state）而非全量重建，保留已存题 id 与 `question_kp` 关联。
 - 颜色/考点统一是「前端重组」，不新增请求接口，复用现有 service。
-- 改动仅限 single-file mockup 与 worktree，未触碰线上 `adminPage.js`（主分支）。
 
 **产出文件**:
 - `scripts/supabase-schema.sql` — exam_papers/exam_questions 字段扩展
@@ -2763,6 +2762,50 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 **已知限制与待改进项**:
 - 试卷编辑器大题（section）仍为扁平统一挂默认 section，未做大题维度 UI。
 - 题库添加弹层的题目预览为简版，未在弹层内提供完整 latex 渲染（保存后主预览区完整）。
+
+### 阶段 89: 期末试卷三栏编辑器接入真实数据链路 + RLS 修复
+
+**日期**: 2026-08-06
+
+**背景**: 阶段 88 合并后，用户刷新「期末试卷」报错 `permission denied for table exam_papers` / `exam_sections`，试卷列表为空。经系统调试确认根因是数据库 schema 与 RLS policy 缺失。
+
+**操作**:
+- `src/views/admin/adminPage.js`：
+  - 三栏编辑器挂载：`renderContent()` 补 `paperEditor` 与 `section==='exams'` 两个分支；header 补 paperEditor 状态按钮（返回/预览/发布/撤回/保存）；`mountAdmin`/`cleanupEditors`/`admin-section`/`admin-back-list` 补 paper 分支与 `paperSortable` 清理。
+  - 事件挂载：`handleAdminAction` 补 16 个 `admin-paper-*` + `admin-pool-*` + `admin-preview-*` + `admin-save-paper` + `admin-paper-preview-current` case。
+  - overlay 挂载：`renderPoolOverlay()`（从题库添加）、`renderPreviewOverlay()`（预览弹层）加入 `renderApp`。
+  - 数据链路绕过 exam_sections RLS：`loadSectionData('exams')` 去掉 `listExamSections()`；`openPaper()` 去掉 `listExamSections()`；`savePaper()` 不再创建/读取 section，`section_id` 直接置 `null`。
+- `src/main.js`：click 事件委托补 `admin-kp-*` case，并加兜底——所有未显式列出的 `admin-*` 动作统一转发 `handleAdminAction`（覆盖 paper/pool/preview 新模块）。
+- 数据库迁移（Supabase）：
+  - `apply_migration add_exam_paper_name_state_and_question_score`：
+    - `public.exam_papers` ADD COLUMN `name TEXT`、`state TEXT DEFAULT 'draft'`。
+    - `public.exam_questions` ADD COLUMN `score NUMERIC DEFAULT 5`。
+    - 回填 `exam_papers.name = subject || '·' || term`（29 份旧试卷 name 原为 NULL）。
+  - `apply_migration enable_rls_for_exam_tables`：
+    - 为 `public.exam_papers` / `public.exam_questions` 启用 RLS，并补 `authenticated` 角色的 SELECT/INSERT/UPDATE/DELETE policy。
+    - 根因：之前只有 `public`（anon/service）policy 和 `is_admin()` policy，已登录用户（authenticated）无 policy，默认被拒绝 → 报 `permission denied for table exam_papers`。
+
+**关键决策**:
+- 列缺失根因：schema 用 `CREATE TABLE IF NOT EXISTS`，但 exam_papers/exam_questions 表早已存在（29 试卷 / 484 题），新增列不生效，导致 `savePaper` 写 `name/state/score` 时报 "column does not exist"。
+- 迁移用 `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` 保证幂等，不影响已有行数据。
+- 前端事件委托加 `admin-` 前缀兜底，避免新增模块遗漏 case 再次出现"代码没生效"。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — 三栏编辑器挂载 + 事件补全 + overlay 挂载 + 数据链路
+- `src/main.js` — admin 事件委托兜底
+- `scripts/supabase-schema.sql` — 已含 name/state/score 定义
+- `.trae/documents/development-log.md` — 本阶段记录
+
+**影响面**:
+- 期末试卷三栏编辑器：列表（29 卷）、编辑（484 题）、从题库添加（276 题）、预览、发布/撤回/删除全链路接真实 Supabase 数据。
+- 后台 `/admin` 期末试卷功能可完整使用。
+
+**破坏性变更**: `exam_papers` 新增 `name`/`state` 列、`exam_questions` 新增 `score` 列（均已迁移且幂等，旧数据兼容）。
+
+**验证**:
+- `node --check src\views\admin\adminPage.js`、`node --check src\main.js` 通过。
+- `npx vite build` 通过（728 modules transformed）。
+- Supabase 实锤：`exam_papers` 29 行（name 已回填）、`exam_questions` 484 行、`questions` 276 行；迁移后列存在（name/state/score），RLS policy 已覆盖 authenticated 角色。
 
 ## 最后更新时间
 
