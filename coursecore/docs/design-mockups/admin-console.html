@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CourseCore · 管理后台（原版 + 期末试卷新版）</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<style>
+/* ============ 原版 Admin 视觉（深色，侧栏分组 + 内容树 + 三栏编辑器 + 表格） ============ */
+:root{
+  --ad-bg:#0e1410;--ad-bg-card:#1b2620;--ad-bg-hover:#202e27;
+  --ad-border:rgba(255,255,255,.16);--ad-fg:#e8efe9;--ad-muted:#9db3a5;--ad-disabled:#4a554f;
+  --ad-green:#123128;--ad-green-hl:#3ddc97;--ad-green-2:#2bbf80;--ad-green-soft:rgba(61,220,151,.08);--ad-danger:#ef6a6a;--ad-warn:#e8b04b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--ad-bg);color:var(--ad-fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 18% 12%,rgba(61,220,151,.10),transparent 42%),radial-gradient(circle at 84% 80%,rgba(61,220,151,.07),transparent 40%),radial-gradient(circle at 70% 20%,rgba(61,220,151,.05),transparent 30%)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;background-image:radial-gradient(circle at center,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent)}
+#app{position:relative;z-index:1;display:flex;min-height:100vh}
+a{color:var(--ad-green-hl)}
+/* 侧栏 */
+.sidebar{width:220px;flex-shrink:0;background:var(--ad-bg-card);border-right:1px solid var(--ad-border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:1rem 1rem .75rem;border-bottom:1px solid var(--ad-border);display:flex;flex-direction:column;gap:.15rem}
+.sidebar-logo{font-size:1rem;font-weight:700;letter-spacing:.02em}
+.sidebar-sub{font-size:.75rem;color:var(--ad-muted)}
+.sidebar-nav{padding:.5rem 0;flex:1}
+.s-group{margin-bottom:.25rem}
+.s-group-header{display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;cursor:pointer;color:var(--ad-muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;user-select:none}
+.s-group-header:hover{color:var(--ad-fg)}
+.s-group-arrow{font-size:.85rem}
+.s-group-items{display:flex;flex-direction:column;padding-bottom:.25rem}
+.nav-item{display:block;width:100%;text-align:left;padding:.5rem 1rem .5rem 1.25rem;border:none;border-left:3px solid transparent;background:transparent;color:var(--ad-fg);cursor:pointer;font-size:.875rem;font-family:inherit}
+.nav-item:hover{background:var(--ad-bg-hover)}
+.nav-item.active{background:var(--ad-green-soft);border-left-color:var(--ad-green);color:var(--ad-green-hl)}
+.sidebar-foot{border-top:1px solid var(--ad-border);padding:.75rem 1rem;font-size:.7rem;color:var(--ad-muted)}
+/* 主区 */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.main-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--ad-border);background:var(--ad-bg-card)}
+.main-title{margin:0;font-size:1.15rem;font-weight:600}
+.main-actions{display:flex;gap:.5rem}
+.content{flex:1;padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;overflow-x:auto}
+.feedback{padding:.75rem 1rem;border-radius:6px;font-size:.875rem}
+.feedback-ok{background:var(--ad-green-soft);color:var(--ad-green-hl);border:1px solid var(--ad-green)}
+.feedback-err{background:rgba(239,106,106,.12);color:var(--ad-danger);border:1px solid var(--ad-danger)}
+.entity-section{background:var(--ad-bg-card);border:1px solid var(--ad-border);border-radius:8px;padding:1rem}
+.entity-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.entity-title{font-size:1rem;font-weight:600;margin:0}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th,td{padding:.5rem .75rem;text-align:left;border-bottom:1px solid var(--ad-border);color:var(--ad-fg);white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis}
+th{font-weight:600;color:var(--ad-muted)}
+td{vertical-align:top}
+tbody tr:hover{background:var(--ad-bg-hover)}
+.actions{display:flex;gap:.4rem;white-space:nowrap}
+.actions-col{width:1%}
+.empty{text-align:center;color:var(--ad-muted);padding:1.5rem}
+.placeholder{padding:3rem 1rem;text-align:center;color:var(--ad-muted)}
+.btn{padding:.4rem .85rem;border:1px solid var(--ad-border);background:transparent;color:var(--ad-fg);border-radius:6px;cursor:pointer;font-size:.85rem;font-family:inherit}
+.btn:hover{border-color:var(--ad-green-hl);color:var(--ad-green-hl)}
+.btn-primary{background:var(--ad-green);color:var(--ad-green-hl);border-color:var(--ad-green)}
+.btn-primary:hover{background:var(--ad-green-soft);color:var(--ad-green-hl);border-color:var(--ad-green-hl)}
+.btn-danger{color:var(--ad-danger);border-color:rgba(239,106,106,.45)}
+.btn-danger:hover{background:rgba(239,106,106,.12);color:var(--ad-danger);border-color:var(--ad-danger)}
+.btn-sm{padding:.25rem .55rem;font-size:.8rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.form-row{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.6rem}
+.form-label{font-size:.8rem;color:var(--ad-muted)}
+.form-control input,.form-control select,.form-control textarea,.md-textarea,.practice-form input,.practice-form select,.practice-form textarea,.theory-example-body select,.theory-example-body textarea,.theory-example-body input,#theory-content{width:100%;padding:.45rem .6rem;border:1px solid var(--ad-border);background:var(--ad-bg);color:var(--ad-fg);border-radius:6px;font-size:.875rem;font-family:inherit}
+.md-textarea{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;resize:vertical;line-height:1.5}
+.form-control input:focus,.form-control select:focus,.form-control textarea:focus,.practice-form input:focus,.practice-form select:focus,.practice-form textarea:focus,.theory-example-body input:focus,.theory-example-body select:focus,.theory-example-body textarea:focus,#theory-content:focus{outline:none;border-color:var(--ad-green-hl)}
+.field-hint{display:block;font-size:.7rem;color:var(--ad-muted);margin-top:.2rem;font-style:italic}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal{background:var(--ad-bg-card);border:1px solid var(--ad-border);border-radius:10px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--ad-border);position:sticky;top:0;background:var(--ad-bg-card)}
+.modal-header h3{margin:0;font-size:1rem}
+.modal-close{background:none;border:none;color:var(--ad-muted);font-size:1.5rem;cursor:pointer;line-height:1;padding:0}
+.modal-close:hover{color:var(--ad-fg)}
+.modal-body{padding:1.25rem;display:flex;flex-direction:column;gap:.85rem}
+.modal-footer{padding:1rem 1.25rem;border-top:1px solid var(--ad-border);display:flex;justify-content:flex-end;gap:.5rem;position:sticky;bottom:0;background:var(--ad-bg-card)}
+/* 内容树 */
+.tree-layout{display:flex;gap:1rem;min-height:70vh}
+.tree-pane{width:320px;flex-shrink:0;background:var(--ad-bg-card);border:1px solid var(--ad-border);border-radius:8px;display:flex;flex-direction:column;overflow:hidden}
+.tree-pane-header{padding:.6rem .75rem;border-bottom:1px solid var(--ad-border);display:flex;align-items:center;justify-content:space-between}
+.tree-pane-body{flex:1;overflow-y:auto;padding:.4rem}
+.tree-detail{flex:1;min-width:0;display:flex;flex-direction:column;gap:1rem}
+.tree-node{display:flex;flex-direction:column}
+.tree-node-row{display:flex;align-items:center;gap:.4rem;padding:.35rem .5rem;border-radius:6px;cursor:pointer;font-size:.85rem;color:var(--ad-fg);user-select:none;position:relative}
+.tree-node-row:hover{background:var(--ad-bg-hover)}
+.tree-node.selected>.tree-node-row{background:var(--ad-green-soft);color:var(--ad-green-hl);box-shadow:inset 2px 0 0 var(--ad-green-hl)}
+.tree-toggle{width:1rem;text-align:center;color:var(--ad-muted);cursor:pointer;font-size:.7rem;flex-shrink:0}
+.tree-leaf{cursor:default}
+.tree-checkbox{width:.95rem;height:.95rem;cursor:pointer;flex-shrink:0;accent-color:var(--ad-green-hl);margin:0}
+.tree-drag-handle{width:.9rem;text-align:center;color:var(--ad-muted);cursor:grab;font-size:.85rem;flex-shrink:0;opacity:0;transition:opacity .12s}
+.tree-node-row:hover .tree-drag-handle{opacity:1}
+.tree-icon{width:1.2rem;height:1.2rem;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--ad-muted);border:1px solid var(--ad-border);border-radius:4px;flex-shrink:0}
+.tree-icon-theory{color:#6ee7b7;border-color:#1a3c34;background:rgba(106,233,183,.06)}
+.tree-icon-training{color:#93c5fd;border-color:#1e3a5f;background:rgba(147,197,253,.06)}
+.tree-icon-quiz{color:#fbbf24;border-color:#4a3a1a;background:rgba(251,191,36,.06)}
+.tree-label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tree-meta{font-size:.7rem;color:var(--ad-muted);flex-shrink:0}
+.tree-node.selected .tree-meta{color:var(--ad-green-hl);opacity:.8}
+.tree-actions{display:none;gap:.2rem;flex-shrink:0}
+.tree-node-row:hover .tree-actions{display:flex}
+.tree-action-btn{width:1.4rem;height:1.4rem;padding:0;border:1px solid var(--ad-border);background:var(--ad-bg);color:var(--ad-muted);border-radius:4px;cursor:pointer;font-size:.85rem;line-height:1;font-family:inherit}
+.tree-action-btn:hover{border-color:var(--ad-green-hl);color:var(--ad-green-hl);background:var(--ad-green-soft)}
+.tree-children{padding-left:1rem;border-left:1px dashed var(--ad-border);margin-left:.85rem;margin-top:.1rem}
+.tree-type-badge{font-size:.65rem;padding:.1rem .4rem;border-radius:3px;border:1px solid var(--ad-border);color:var(--ad-muted);flex-shrink:0}
+.tree-type-badge.theory{color:#6ee7b7;border-color:#1a3c34}
+.tree-type-badge.training{color:#93c5fd;border-color:#1e3a5f}
+.tree-type-badge.quiz{color:#fbbf24;border-color:#4a3a1a}
+.tree-meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem;padding:.6rem 0}
+.tree-meta-grid>div{display:flex;flex-direction:column;gap:.2rem}
+.tree-meta-grid code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;color:var(--ad-green-hl);word-break:break-all}
+/* Editor */
+.admin-editor{display:flex;gap:1rem;min-height:480px}
+.theory-left,.theory-right{flex:1;display:flex;flex-direction:column;gap:1rem;min-width:0}
+.theory-section{display:flex;flex-direction:column;gap:.4rem}
+.theory-examples-header{display:flex;align-items:center;justify-content:space-between}
+.theory-examples{display:flex;flex-direction:column;gap:.5rem}
+.theory-example{border:1px solid var(--ad-border);border-radius:6px;background:var(--ad-bg-card);overflow:hidden}
+.theory-example-header{display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;cursor:pointer;background:var(--ad-bg-hover);font-size:.85rem;user-select:none}
+.theory-example-header:hover{color:var(--ad-green-hl)}
+.theory-example-body{padding:.75rem;display:flex;flex-direction:column;gap:.4rem}
+.preview{background:var(--ad-bg-card);border:1px solid var(--ad-border);border-radius:8px;padding:1rem;flex:1;overflow-y:auto;font-size:.9rem;line-height:1.6}
+.preview h1,.preview h2,.preview h3,.preview h4{color:var(--ad-fg);margin:.6em 0 .3em}
+.preview p{margin:.4em 0}
+.preview code{background:var(--ad-bg-hover);padding:.1em .35em;border-radius:3px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85em}
+.preview pre{background:var(--ad-bg-hover);padding:.6rem;border-radius:6px;overflow-x:auto}
+.preview pre code{background:transparent;padding:0}
+.preview hr{border:none;border-top:1px solid var(--ad-border);margin:.8rem 0}
+.preview-example{margin-bottom:.75rem;padding-bottom:.6rem;border-bottom:1px dashed var(--ad-border)}
+.preview-correct{color:var(--ad-green-hl);font-weight:600}
+.preview-solution,.preview-answer{margin-top:.4rem;color:var(--ad-muted);font-size:.85rem}
+.practice-list{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:.5rem;background:var(--ad-bg-card);border:1px solid var(--ad-border);border-radius:8px;padding:.6rem}
+.practice-list-items{display:flex;flex-direction:column;gap:.25rem;max-height:60vh;overflow-y:auto}
+.practice-list-item{display:flex;align-items:center;gap:.4rem;padding:.4rem .5rem;border:1px solid var(--ad-border);border-radius:6px;cursor:pointer;font-size:.8rem;background:var(--ad-bg)}
+.practice-list-item:hover{background:var(--ad-bg-hover)}
+.practice-list-item.selected{border-color:var(--ad-green);background:var(--ad-green-soft);color:var(--ad-green-hl)}
+.practice-list-num{font-weight:600;min-width:1.4rem}
+.practice-list-type{flex:1;color:var(--ad-muted);font-size:.75rem}
+.practice-list-del{margin-left:auto;background:none;border:none;color:var(--ad-muted);cursor:pointer;font-size:1rem;line-height:1;padding:0 .25rem}
+.practice-list-del:hover{color:var(--ad-danger)}
+.practice-edit{flex:1;min-width:0;background:var(--ad-bg-card);border:1px solid var(--ad-border);border-radius:8px;padding:1rem;overflow-y:auto}
+.practice-type-selector{display:flex;gap:.4rem;flex-wrap:wrap}
+.practice-type-btn{padding:.3rem .7rem;border:1px solid var(--ad-border);background:transparent;color:var(--ad-fg);border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+.practice-type-btn.active{background:var(--ad-green-soft);border-color:var(--ad-green);color:var(--ad-green-hl)}
+.practice-multi-answer{display:flex;gap:.6rem;flex-wrap:wrap}
+.practice-multi-option{display:flex;align-items:center;gap:.3rem;padding:.3rem .6rem;border:1px solid var(--ad-border);border-radius:6px;cursor:pointer;font-size:.85rem}
+.practice-multi-option:has(input:checked){border-color:var(--ad-green);background:var(--ad-green-soft);color:var(--ad-green-hl)}
+.practice-preview{flex:1;min-width:0;display:flex;flex-direction:column;gap:.4rem}
+.practice-preview .preview{flex:1}
+@media (max-width:900px){.admin-editor{flex-direction:column}.practice-list{width:100%}.tree-layout{flex-direction:column}.tree-pane{width:100%;max-height:40vh}}
+
+/* ============ 理论编辑器（admin-backoffice「编辑题目」排版：竖向字段 + 底部即时预览） ============ */
+.theory-editor{display:flex;flex-direction:column;gap:1rem;max-width:880px}
+.theory-field{display:flex;flex-direction:column;gap:.35rem}
+.theory-field>label{font-size:.78rem;color:var(--ad-muted);letter-spacing:.02em}
+.theory-examples-header{display:flex;align-items:center;justify-content:space-between}
+.theory-examples{display:flex;flex-direction:column;gap:.6rem}
+.theory-example{border:1px solid var(--ad-border);border-radius:8px;background:var(--ad-bg-card);overflow:hidden}
+.theory-example-head{display:flex;align-items:center;justify-content:space-between;padding:.55rem .8rem;background:var(--ad-bg-hover);font-size:.85rem;cursor:pointer;user-select:none}
+.theory-example-head:hover{color:var(--ad-green-hl)}
+.theory-example-body{padding:.8rem;display:flex;flex-direction:column;gap:.6rem}
+.theory-opt-list{display:flex;flex-direction:column;gap:.45rem}
+.theory-opt-row{display:flex;gap:.5rem;align-items:center}
+.theory-opt-key{width:26px;height:26px;border-radius:7px;border:1px solid var(--ad-border);background:var(--ad-bg-hover);display:grid;place-items:center;font-size:.75rem;font-weight:700;color:var(--ad-muted);cursor:pointer;flex-shrink:0;transition:.15s}
+.theory-opt-key.checked{background:var(--ad-green-hl);color:#08231a;border-color:var(--ad-green-hl)}
+.theory-opt-row input{flex:1}
+.theory-preview{display:flex;flex-direction:column;gap:.4rem;padding:.9rem 1rem;border-radius:8px;background:var(--ad-green-soft);border:1px solid var(--ad-green)}
+.theory-preview .pv-lbl{font-size:.72rem;color:var(--ad-green-hl);letter-spacing:.08em}
+.theory-preview .preview{flex:none;background:var(--ad-bg-card);border:1px solid var(--ad-border);padding:.8rem;max-height:40vh}
+/* 训练题目列表拖拽 */
+.practice-ghost{opacity:.4;background:var(--ad-green-soft);border:1px dashed var(--ad-green)}
+.practice-list-items .practice-list-item{cursor:grab}
+
+/* ============ 期末试卷（新版 builder） ============ */
+.exam-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.list{display:flex;flex-direction:column;gap:.6rem}
+.exam-card{background:var(--ad-bg-card);border:1px solid var(--ad-border);border-radius:8px;padding:.9rem 1rem;display:flex;gap:1rem;align-items:center}
+.exam-card .body{flex:1;min-width:0}
+.exam-card .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exam-card .sub{font-size:.75rem;color:var(--ad-muted);margin-top:.2rem;display:flex;gap:.4rem;flex-wrap:wrap}
+.badge{font-size:.7rem;padding:.1rem .5rem;border-radius:3px;border:1px solid var(--ad-border);color:var(--ad-muted)}
+.badge.on{color:var(--ad-green-hl);border-color:var(--ad-green)}
+.badge.off{color:var(--ad-warn);border-color:rgba(232,176,75,.45)}
+.drawer-mask{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90;opacity:0;pointer-events:none;transition:.2s}
+.drawer-mask.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:-820px;width:820px;max-width:100%;height:100vh;z-index:95;background:var(--ad-bg-card);border-left:1px solid var(--ad-border);transition:right .28s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.open{right:0}
+.d-head{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border-bottom:1px solid var(--ad-border)}
+.d-head h2{font-size:1rem}
+.d-head .step{margin-left:auto;font-size:.7rem;color:var(--ad-muted);font-family:ui-monospace,Menlo,Consolas,monospace}
+.d-body{flex:1;overflow-y:auto;padding:1.25rem}
+.d-foot{display:flex;gap:.5rem;justify-content:flex-end;padding:1rem 1.25rem;border-top:1px solid var(--ad-border)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.75rem}
+/* 期末试卷三栏编辑器 */
+.paper-editor .paper-list{width:280px;min-width:0}
+.paper-list .paper-meta{border-bottom:1px dashed var(--ad-border);padding-bottom:.6rem;margin-bottom:.4rem}
+.paper-list .paper-meta .row2,.paper-list .paper-meta .row4{grid-template-columns:1fr}
+.paper-source{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem}
+.paper-source .form-label{margin:0}
+.builder{display:grid;grid-template-columns:1fr 340px;gap:1rem;align-items:start}
+.b-pool-tip{font-size:.75rem;color:var(--ad-muted);padding:.6rem .85rem;border:1px dashed var(--ad-border);border-radius:8px}
+.b-pool{display:flex;flex-direction:column;gap:.5rem}
+.b-card{display:flex;gap:.75rem;align-items:center;background:var(--ad-bg);border:1px solid var(--ad-border);border-radius:8px;padding:.7rem .85rem;cursor:pointer}
+.b-card:hover{border-color:var(--ad-green-hl)}
+.b-card .pick{width:1.4rem;height:1.4rem;border-radius:4px;border:1px solid var(--ad-border);display:grid;place-items:center;cursor:pointer;flex-shrink:0;font-size:.75rem;color:transparent}
+.b-card .pick.on{background:var(--ad-green-hl);color:#08231a;border-color:var(--ad-green-hl)}
+.b-card.in-quiz{opacity:.45;pointer-events:none}
+.b-right{position:sticky;top:0;border:1px solid var(--ad-border);border-radius:8px;overflow:hidden;background:var(--ad-bg-card)}
+.b-right .head{padding:.8rem 1rem;background:var(--ad-bg-hover);display:flex;align-items:center;gap:.6rem}
+.b-right .head .cnt{margin-left:auto;font-size:.75rem;color:var(--ad-green-hl);font-family:ui-monospace,Menlo,Consolas,monospace}
+.b-right .rows{padding:.4rem 0;max-height:42vh;overflow-y:auto}
+.b-row{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;font-size:.75rem;color:var(--ad-muted);border-top:1px solid var(--ad-border)}
+.b-row .k{width:1.3rem;height:1.3rem;border-radius:4px;background:var(--ad-bg);display:grid;place-items:center;font-size:.7rem;flex-shrink:0}
+.b-row .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.b-row input{width:3.5rem;background:var(--ad-bg);border:1px solid var(--ad-border);color:var(--ad-fg);border-radius:4px;padding:.2rem .4rem;font-size:.75rem;text-align:center}
+.b-row .x{cursor:pointer;color:var(--ad-muted);background:none;border:none;padding:.1rem .3rem}
+.b-row .x:hover{color:var(--ad-danger)}
+.b-right .foot{padding:.8rem 1rem;border-top:1px solid var(--ad-border);display:flex;gap:.5rem;align-items:center}
+.b-right .foot .total{margin-left:auto;font-size:.75rem;color:var(--ad-muted);font-family:ui-monospace,Menlo,Consolas,monospace}
+.ans-preview{margin-top:.75rem;padding:.75rem;border-radius:8px;background:var(--ad-green-soft);border:1px solid rgba(61,220,151,.25)}
+.ans-preview .lbl{font-size:.7rem;color:var(--ad-green-hl);letter-spacing:1px;margin-bottom:.3rem}
+.ans-preview .val{font-size:.85rem}
+/* 预览弹层 */
+.preview-mask{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90;opacity:0;pointer-events:none;transition:.2s}
+.preview-mask.open{opacity:1;pointer-events:auto}
+.preview-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);width:720px;max-width:94vw;max-height:84vh;overflow-y:auto;background:var(--ad-bg-card);border:1px solid var(--ad-border);border-radius:10px;z-index:95;opacity:0;pointer-events:none;transition:.22s;padding:1.5rem}
+.preview-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.preview-modal .p-head{display:flex;align-items:center;margin-bottom:1rem}
+.preview-modal .p-head h3{font-size:1rem}
+.preview-modal .p-head .close{margin-left:auto;cursor:pointer;color:var(--ad-muted);background:none;border:none;font-size:1.25rem}
+.p-q{margin-bottom:1rem;padding-bottom:.85rem;border-bottom:1px dashed var(--ad-border)}
+.p-q .qn{font-size:.75rem;color:var(--ad-muted);margin-bottom:.3rem}
+.p-q .qt{font-size:.9rem}
+.p-q .ans-s{display:inline-block;margin-top:.4rem;font-size:.75rem;color:var(--ad-green-hl)}
+.p-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:6px}::-webkit-scrollbar-thumb:hover{background:var(--ad-green-hl)}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="main-header">
+      <h1 class="main-title" id="mainTitle">内容树</h1>
+      <div class="main-actions" id="mainActions"></div>
+    </header>
+    <div class="feedback" id="feedback" style="display:none"></div>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<!-- 期末试卷：从题库添加（弹层） -->
+<div class="drawer-mask" id="pMask" onclick="closePool()"></div>
+<div class="drawer" id="pDrawer">
+  <div class="d-head"><h2 id="pTitle">从题库添加</h2><span class="step" id="pStep">共享题库</span></div>
+  <div class="d-body">
+    <div style="font-size:.8rem;color:var(--ad-muted);margin-bottom:.6rem">共享题库题目可勾选入卷；入卷后为独立副本，可编辑但打上来源标记。</div>
+    <div class="b-pool" id="bPool"></div>
+    <div class="d-foot"><span class="total" id="bTotal" style="margin-right:auto;font-size:.8rem;color:var(--ad-muted)">已选 <span id="bCnt">0</span> 题</span><button class="btn" onclick="closePool()">取消</button><button class="btn btn-primary" onclick="addPoolToPaper()">添加选中</button></div>
+  </div>
+</div>
+
+<!-- 期末试卷预览 -->
+<div class="preview-mask" id="pvMask" onclick="closePreview()"></div>
+<div class="preview-modal" id="pvBox">
+  <div class="p-head"><h3 id="pvTitle">试卷预览</h3><button class="close" onclick="closePreview()">×</button></div>
+  <div class="p-meta" id="pvMeta"></div>
+  <div id="pvBody"></div>
+</div>
+
+<!-- 通用 modal（原版表单 CRUD） -->
+<div class="modal-overlay" id="modalOverlay" style="display:none">
+  <div class="modal">
+    <header class="modal-header"><h3 id="modalTitle"></h3><button class="modal-close" onclick="closeModal()">×</button></header>
+    <div class="modal-body" id="modalBody"></div>
+    <footer class="modal-footer"><button class="btn" onclick="closeModal()">取消</button><button class="btn btn-primary" id="modalSave">保存</button></footer>
+  </div>
+</div>
+
+<script>
+/* =================== 数据 =================== */
+const now=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
+let seq=100;
+let state={
+  section:'content-tree',
+  collapsedGroups:{},
+  feedback:null,
+  tree:{expanded:{'course:c-phy':true,'module:c-phy|m1':true},selected:null,checked:new Set()},
+  editing:null,           // {entity,row,isNew}
+  theoryEditor:null,      // {item,content,examples,collapsed}
+  practiceEditor:null,    // {item,questions,selectedIndex}
+  paperEditor:null,       // {id,name,school,college,subject,term,state,questions:[{score,source,question,ref}],selectedIndex}
+  poolOpen:false          // 期末试卷：从题库添加弹层
+};
+
+const SECTIONS=[
+  {id:'content',label:'内容管理',items:[{id:'content-tree',label:'内容树'},{id:'exams',label:'期末试卷'},{id:'kp',label:'考点'}]},
+  {id:'system',label:'系统管理',items:[{id:'users',label:'用户'},{id:'settings',label:'设置'}]}
+];
+const TITLES={'content-tree':'内容树','exams':'期末试卷','kp':'考点管理','users':'用户管理','settings':'设置'};
+
+let courses=[
+  {id:'c-phy',title:'大学物理B（上）',description:'力学 + 能量',modules:[
+    {course_id:'c-phy',module_id:'m1',title:'第一章 力学',order_index:0,items:[
+      {id:'i1',course_id:'c-phy',module_id:'m1',title:'1.1 质点运动学',type:'theory',order_index:0,content:'## 质点运动学\n\n位置矢量 $\\vec{r}$，速度 $\\vec{v}=\\frac{d\\vec{r}}{dt}$，加速度 $\\vec{a}=\\frac{d\\vec{v}}{dt}$。\n\n- 平均速度 = 位移 / 时间\n- 瞬时速度 = 导数',examples:[{id:'e1',text:'汽车0-100km/h用5s，求平均加速度。',options:['5.0 m/s²','5.56 m/s²','6.0 m/s²','20 m/s²'],answer:1,solution:'$v=27.78$m/s，$a=v/t=5.56$m/s²'}]},
+      {id:'i2',course_id:'c-phy',module_id:'m1',title:'训练：运动学',type:'training',order_index:1,questions:[
+        {id:'q1',item_id:'i2',question_type:0,title:'匀加速',content:'物体从静止匀加速，3s末速度9m/s，加速度？',options:['2 m/s²','3 m/s²','4 m/s²','5 m/s²'],answer:'1',solution:'$a=v/t=9/3=3$m/s²',difficulty:1},
+        {id:'q2',item_id:'i2',question_type:2,title:'自由落体',content:'自由落体3s下落____米。',answer:'44.1',blanks:1,solution:'$s=\\frac{1}{2}gt²=44.1$m',difficulty:1}
+      ]}]},
+    {course_id:'c-phy',module_id:'m2',title:'第二章 能量',order_index:1,items:[
+      {id:'i3',course_id:'c-phy',module_id:'m2',title:'2.1 功与动能',type:'theory',order_index:0,content:'## 功与动能\n\n$W=F\\,s\\cos\\theta$，动能定理 $W=\\Delta E_k$。',examples:[]},
+      {id:'i4',course_id:'c-phy',module_id:'m2',title:'测验：能量',type:'quiz',order_index:1,questions:[
+        {id:'q3',item_id:'i4',question_type:0,title:'能量守恒',content:'关于能量守恒，正确的是？',options:['机械能可能不守恒','能量可凭空产生','摩擦力不做功','热量自动从低温到高温'],answer:'0',solution:'摩擦耗散使机械能不守恒，但总能量守恒',difficulty:1}
+      ]}]}
+  ]}
+];
+let questions=[]; // 平台题池（用于期末试卷组卷）
+function collectAllQuestions(){const arr=[];courses.forEach(c=>c.modules.forEach(m=>m.items.forEach(it=>(it.questions||[]).forEach(q=>arr.push({...q,subject:'物理',diff:q.difficulty||1,state:1})))));return arr;}
+questions=collectAllQuestions();
+questions.push({id:101,type:'单选',subject:'数学',stem:'函数 f(x)=x²-4x+3 的对称轴是 x=____。',ans:['2'],diff:1,state:1,analysis:'x=-b/2a=2'});
+questions.push({id:102,type:'多选',subject:'化学',stem:'配平：KMnO₄ 与 H₂O₂ 酸性反应。',ans:['见解析'],diff:3,state:1,analysis:'电子守恒配平'});
+
+let papers=[
+  {id:1,name:'2026 春季物理模拟卷',school:'长沙理工大学',college:'物理学院',subject:'大学物理',term:'2025-2026-2',items:[{score:5,source:'题库 · 物理 · 单选',question:{id:'q1',question_type:0,title:'匀加速',content:'物体从静止匀加速，3s末速度9m/s，加速度？',options:['2 m/s²','3 m/s²','4 m/s²','5 m/s²'],answer:'1',solution:'$a=v/t=9/3=3$m/s²',difficulty:1}},{score:10,source:'题库 · 物理 · 单选',question:{id:'q3',question_type:0,title:'能量守恒',content:'关于能量守恒，正确的是？',options:['机械能可能不守恒','能量可凭空产生','摩擦力不做功','热量自动从低温到高温'],answer:'0',solution:'摩擦耗散使机械能不守恒',difficulty:1}}],state:'published'},
+  {id:2,name:'化学基础自测',school:'长沙理工大学',college:'化学学院',subject:'无机化学',term:'2025-2026-2',items:[{score:20,source:'题库 · 化学 · 多选',question:{id:102,question_type:1,title:'配平',content:'配平：KMnO₄ 与 H₂O₂ 酸性反应。',options:['2 KMnO₄ + 5 H₂O₂ + 3 H₂SO₄','1 KMnO₄ + 2 H₂O₂','3 KMnO₄ + H₂O₂','4 KMnO₄ + 3 H₂O₂'],answer:'',answers:['0'],solution:'电子守恒配平',difficulty:3}}],state:'draft'}
+];
+let users=[
+  {id:1,email:'lixm@coursecore.dev',role:'free',display_name:'林小满',state:'active'},
+  {id:2,email:'chen@coursecore.dev',role:'paid',display_name:'陈老师',state:'active'},
+  {id:3,email:'wangxm@coursecore.dev',role:'free',display_name:'王小明',state:'banned'},
+  {id:4,email:'zhao@coursecore.dev',role:'admin',display_name:'赵德柱',state:'active'},
+  {id:5,email:'suny@coursecore.dev',role:'free',display_name:'孙悦',state:'active'}
+];
+let kps=[
+  {id:'kp1',code:'PHY-MECH',name:'力学',source:'platform',course_id:'c-phy',item_id:'i1',sort_order:0},
+  {id:'kp2',code:'PHY-ENE',name:'能量',source:'platform',course_id:'c-phy',item_id:'i3',sort_order:1}
+];
+
+/* =================== 工具 =================== */
+const $=s=>document.querySelector(s);
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function mdEsc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function inline(s){s=mdEsc(s);s=s.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');s=s.replace(/`([^`]+)`/g,'<code>$1</code>');s=s.replace(/\$([^$\n]+)\$/g,'<span style="color:var(--ad-green-hl)">$1</span>');return s;}
+function renderMd(md){if(!md)return '';const lines=md.split('\n');let html='',inCode=false,codeBuf=[];for(const line of lines){if(/^```/.test(line)){if(inCode){html+='<pre><code>'+codeBuf.join('\n')+'</code></pre>';codeBuf=[];inCode=false;}else inCode=true;continue;}if(inCode){codeBuf.push(mdEsc(line));continue;}const h=line.match(/^(#{1,4})\s+(.*)/);if(h){html+='<h'+h[1].length+'>'+inline(h[2])+'</h'+h[1].length+'>';continue;}if(/^\s*[-*+]\s+/.test(line)){html+='<li>'+inline(line.replace(/^\s*[-*+]\s+/,''))+'</li>';continue;}if(line.trim()==='')continue;html+='<p>'+inline(line)+'</p>';}return html;}
+function setFeedback(type,msg){state.feedback={type,msg};renderFeedback();}
+function renderFeedback(){const fb=$('#feedback');if(!state.feedback){fb.style.display='none';return;}fb.className='feedback '+(state.feedback.type==='ok'?'feedback-ok':'feedback-err');fb.textContent=state.feedback.msg;fb.style.display='block';}
+function qTypeLabel(t){return ['单选','多选','填空','解答'][Number(t)]||'其他';}
+function padOptions(opts){const a=Array.isArray(opts)?opts.slice(0,4):[];while(a.length<4)a.push('');return a;}
+function kpOptions(){return `<datalist id="kp-list">${kps.map(k=>`<option value="${esc(k.name)}">`).join('')}</datalist>`;}
+
+/* =================== 侧栏 =================== */
+function renderSidebar(){
+  const html=SECTIONS.map(g=>{
+    const collapsed=!!state.collapsedGroups[g.id];
+    return `<div class="s-group">
+      <div class="s-group-header" onclick="toggleGroup('${g.id}')"><span>${esc(g.label)}</span><span class="s-group-arrow">${collapsed?'+':'−'}</span></div>
+      ${collapsed?'':'<div class="s-group-items">'+g.items.map(it=>`<button type="button" class="nav-item ${it.id===state.section?'active':''}" onclick="switchSection('${it.id}')">${esc(it.label)}</button>`).join('')+'</div>'}
+    </div>`;
+  }).join('');
+  $('#sidebar').innerHTML=`<div class="sidebar-header"><span class="sidebar-logo">CourseCore</span><span class="sidebar-sub">管理后台</span></div><nav class="sidebar-nav">${html}</nav><div class="sidebar-foot">操作闭环：操作 → 反馈 → 危险确认 → 可撤销 → 全留痕</div>`;
+}
+function toggleGroup(id){state.collapsedGroups[id]=!state.collapsedGroups[id];renderSidebar();}
+function switchSection(section){state.section=section;state.theoryEditor=null;state.practiceEditor=null;state.paperEditor=null;state.tree.selected=null;state.editing=null;render();}
+function renderMainTitle(){$('#mainTitle').textContent=TITLES[state.section]||'管理后台';}
+function renderMainActions(){
+  const el=$('#mainActions');let html='';
+  if(state.section==='content-tree'){
+    html+=`<button class="btn" onclick="openModal('course',null,true)">+ 新增课程</button>`;
+    html+=`<button class="btn btn-danger" onclick="batchDelete()" ${state.tree.checked.size===0?'disabled':''}>批量删除 (${state.tree.checked.size})</button>`;
+    html+=`<button class="btn" onclick="clearChecks()" ${state.tree.checked.size===0?'disabled':''}>清空勾选</button>`;
+  } else if(state.section==='exams'){ }
+  else if(state.section==='kp'){ html+=`<button class="btn btn-primary" onclick="openModal('kp',null,true)">+ 新增考点</button>`; }
+  else if(state.section==='users'){ html+=`<button class="btn btn-primary" onclick="openModal('user',null,true)">+ 新增用户</button>`; }
+  if(state.theoryEditor||state.practiceEditor){
+    html=`<button class="btn" onclick="backToList()">返回列表</button>`+(state.theoryEditor?`<button class="btn btn-primary" onclick="saveTheory()">保存</button>`:`<button class="btn btn-primary" onclick="savePractice()">保存全部</button>`);
+  }
+  if(state.section==='exams'&&state.paperEditor){
+    html=`<button class="btn" onclick="backToPapers()">返回列表</button><button class="btn" onclick="previewPaperWorking()">预览</button><button class="btn btn-primary" onclick="savePaper()">保存试卷</button>`;
+  }
+  el.innerHTML=html;
+}
+
+/* =================== 内容树 =================== */
+function findItem(id){for(const c of courses)for(const m of c.modules)for(const it of m.items)if(it.id===id)return it;return null;}
+function treeKey(type,o){return type==='course'?`course:${o.id}`:type==='module'?`module:${o.course_id}|${o.module_id}`:`item:${o.id}`;}
+function isExp(k){return !!state.tree.expanded[k];}
+function isSel(t,o){const s=state.tree.selected;if(!s)return false;if(t==='course')return s.type==='course'&&s.id===o.id;if(t==='module')return s.type==='module'&&s.courseId===o.course_id&&s.moduleId===o.module_id;return s.type==='item'&&s.id===o.id;}
+function isChk(k){return state.tree.checked.has(k);}
+function renderTreePane(){
+  if(!courses.length)return `<div class="empty">暂无课程，点击右上角「新增课程」开始</div>`;
+  return courses.map(c=>{
+    const key=treeKey('course',c),ex=isExp(key),sel=isSel('course',c),chk=isChk(key);
+    const mods=c.modules;
+    return `<div class="tree-node ${sel?'selected':''}">
+      <div class="tree-node-row" onclick="selTree('course','${c.id}')">
+        <input type="checkbox" class="tree-checkbox" ${chk?'checked':''} onclick="event.stopPropagation();checkTree('course','${c.id}')">
+        <span class="tree-toggle" onclick="event.stopPropagation();toggleTree('course','${c.id}')">${ex?'▾':'▸'}</span>
+        <span class="tree-icon">▶</span>
+        <span class="tree-label">${esc(c.title||c.id)}</span>
+        <span class="tree-meta">${mods.length} 模块</span>
+        <span class="tree-actions"><button class="tree-action-btn" onclick="event.stopPropagation();openModal('module',null,true,{course_id:'${c.id}'})">+</button></span>
+      </div>
+      ${ex?`<div class="tree-children">${mods.map(m=>renderModule(m)).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function renderModule(m){
+  const key=treeKey('module',m),ex=isExp(key),sel=isSel('module',m),chk=isChk(key);
+  const items=m.items;
+  return `<div class="tree-node ${sel?'selected':''}">
+    <div class="tree-node-row" onclick="selTree('module','${m.course_id}','${m.module_id}')">
+      <input type="checkbox" class="tree-checkbox" ${chk?'checked':''} onclick="event.stopPropagation();checkTree('module','${m.course_id}','${m.module_id}')">
+      <span class="tree-drag-handle">⋮</span>
+      <span class="tree-toggle" onclick="event.stopPropagation();toggleTree('module','${m.course_id}','${m.module_id}')">${ex?'▾':'▸'}</span>
+      <span class="tree-icon">■</span>
+      <span class="tree-label">${esc(m.title||m.module_id)}</span>
+      <span class="tree-meta">${items.length} 小节</span>
+      <span class="tree-actions"><button class="tree-action-btn" onclick="event.stopPropagation();openModal('item',null,true,{course_id:'${m.course_id}',module_id:'${m.module_id}'})">+</button></span>
+    </div>
+    ${ex?`<div class="tree-children">${items.map(it=>renderItem(it)).join('')}</div>`:''}
+  </div>`;
+}
+function renderItem(it){
+  const sel=isSel('item',it),chk=isChk('item:'+it.id);
+  const isTheory=it.type==='theory';
+  const cnt=isTheory?(it.examples||[]).length:(it.questions||[]).length;
+  const label={theory:'理论',training:'训练',quiz:'测验',review:'复习'}[it.type]||it.type||'—';
+  return `<div class="tree-node ${sel?'selected':''}">
+    <div class="tree-node-row" onclick="selTree('item','${it.id}')">
+      <input type="checkbox" class="tree-checkbox" ${chk?'checked':''} onclick="event.stopPropagation();checkTree('item','${it.id}')">
+      <span class="tree-drag-handle">⋮</span>
+      <span class="tree-toggle tree-leaf">•</span>
+      <span class="tree-icon tree-icon-${it.type}">${isTheory?'T':'Q'}</span>
+      <span class="tree-label">${esc(it.title||it.id)}</span>
+      <span class="tree-type-badge ${it.type}">${label}</span>
+      <span class="tree-meta">${isTheory?cnt+' 例题':cnt+' 题'}</span>
+    </div></div>`;
+}
+function toggleTree(t,id,mid){if(t==='course')state.tree.expanded['course:'+id]=!isExp('course:'+id);else state.tree.expanded['module:'+id+'|'+mid]=!isExp('module:'+id+'|'+mid);render();}
+function checkTree(t,id,mid){const k=t==='course'?'course:'+id:t==='module'?'module:'+id+'|'+mid:'item:'+id;if(state.tree.checked.has(k))state.tree.checked.delete(k);else state.tree.checked.add(k);render();}
+function clearChecks(){state.tree.checked.clear();render();}
+function batchDelete(){if(!state.tree.checked.size)return;if(!confirm(`确认删除选中的 ${state.tree.checked.size} 个节点？此操作不可撤销。`))return;state.tree.checked.clear();setFeedback('ok','批量删除成功');render();}
+function selTree(t,id,mid){
+  if(t==='course'){state.tree.selected={type:'course',id};state.tree.expanded['course:'+id]=true;}
+  else if(t==='module'){state.tree.selected={type:'module',courseId:id,moduleId:mid};state.tree.expanded['module:'+id+'|'+mid]=true;state.tree.expanded['course:'+id]=true;}
+  else{const it=findItem(id);if(!it)return;state.tree.selected={type:'item',id};state.theoryEditor=null;state.practiceEditor=null;if(it.type==='theory'){state.theoryEditor={item:it,content:it.content||'',examples:(it.examples||[]).map(e=>({...e,options:padOptions(e.options)})),collapsed:{}};}else{state.practiceEditor={item:it,questions:(it.questions||[]).map(q=>({...q,options:padOptions(q.options),answer:(q.answer!=null?String(q.answer):'0'),answers:Array.isArray(q.answers)?q.answers.map(String):[],blanks:q.blanks||1})),selectedIndex:(it.questions||[]).length>0?0:-1};}}
+  render();
+}
+function renderTreeDetail(){
+  const s=state.tree.selected;
+  if(!s)return `<div class="placeholder">从左侧选择一个节点查看详情，或点击节点旁的 + 添加子项</div>`;
+  if(s.type==='course'){const c=courses.find(x=>x.id===s.id);if(!c)return `<div class="placeholder">课程不存在</div>`;return `<section class="entity-section"><header class="entity-header"><h3 class="entity-title">课程：${esc(c.title||c.id)}</h3><div class="actions"><button class="btn btn-sm" onclick="openModal('course',c,false)">编辑</button><button class="btn btn-sm btn-danger" onclick="delTreeItem('course','${c.id}')">删除</button></div></header><div class="tree-meta-grid"><div><span class="form-label">ID</span><code>${esc(c.id)}</code></div><div><span class="form-label">描述</span><span>${esc(c.description||'—')}</span></div></div></section><section class="entity-section"><header class="entity-header"><h3 class="entity-title">模块 (${c.modules.length})</h3></header><div class="table-wrap"><table><thead><tr><th>模块 ID</th><th>标题</th><th>顺序</th><th>小节数</th><th class="actions-col">操作</th></tr></thead><tbody>${c.modules.map(m=>`<tr><td>${esc(m.module_id)}</td><td>${esc(m.title||'')}</td><td>${m.order_index}</td><td>${m.items.length}</td><td class="actions"><button class="btn btn-sm" onclick="selTree('module','${m.course_id}','${m.module_id}')">查看</button><button class="btn btn-sm" onclick="openModal('module',findModule('${m.course_id}','${m.module_id}'),false)">编辑</button><button class="btn btn-sm btn-danger" onclick="delTreeItem('module','${m.course_id}','${m.module_id}')">删除</button></td></tr>`).join('')}</tbody></table></div></section>`;}
+  if(s.type==='module'){const m=findModule(s.courseId,s.moduleId);if(!m)return `<div class="placeholder">模块不存在</div>`;return `<section class="entity-section"><header class="entity-header"><h3 class="entity-title">模块：${esc(m.title||m.module_id)}</h3><div class="actions"><button class="btn btn-sm" onclick="openModal('module',m,false)">编辑</button><button class="btn btn-sm btn-danger" onclick="delTreeItem('module','${m.course_id}','${m.module_id}')">删除</button></div></header><div class="tree-meta-grid"><div><span class="form-label">课程</span><code>${esc(m.course_id)}</code></div><div><span class="form-label">模块 ID</span><code>${esc(m.module_id)}</code></div><div><span class="form-label">顺序</span><span>${m.order_index}</span></div></div></section><section class="entity-section"><header class="entity-header"><h3 class="entity-title">小节 (${m.items.length})</h3></header><div class="table-wrap"><table><thead><tr><th>ID</th><th>标题</th><th>类型</th><th>题数</th><th class="actions-col">操作</th></tr></thead><tbody>${m.items.map(it=>{const isT=it.type==='theory';const cnt=isT?(it.examples||[]).length:(it.questions||[]).length;return `<tr><td>${esc(it.id)}</td><td>${esc(it.title||'')}</td><td><span class="tree-type-badge ${it.type}">${({theory:'理论',training:'训练',quiz:'测验',review:'复习'})[it.type]||it.type||'—'}</span></td><td>${cnt}</td><td class="actions"><button class="btn btn-sm" onclick="selTree('item','${it.id}')">打开</button><button class="btn btn-sm" onclick="openModal('item',it,false)">编辑</button><button class="btn btn-sm btn-danger" onclick="delTreeItem('item','${it.id}')">删除</button></td></tr>`;}).join('')}</tbody></table></div></section>`;}
+  if(s.type==='item'){const it=findItem(s.id);return `<div class="placeholder">正在打开「${esc(it?it.title:'' )}」编辑器…</div>`;}
+  return '';
+}
+function findModule(cid,mid){for(const c of courses)for(const m of c.modules)if(m.course_id===cid&&m.module_id===mid)return m;return null;}
+function delTreeItem(t,id,mid){const nm=t==='course'?(courses.find(c=>c.id===id)||{}).title:t==='module'?(findModule(id,mid)||{}).title:(findItem(id)||{}).title;if(!confirm(`确认删除${nm||id}？此操作不可撤销。`))return;if(t==='course')courses=courses.filter(c=>c.id!==id);else if(t==='module'){const m=findModule(id,mid);if(m){const c=courses.find(x=>x.id===id);c.modules=c.modules.filter(x=>x!==m);}}else{for(const c of courses)for(const m of c.modules)m.items=m.items.filter(it=>it.id!==id);}state.tree.selected=null;setFeedback('ok','删除成功');render();}
+function backToList(){state.theoryEditor=null;state.practiceEditor=null;if(state.section==='content-tree'&&state.tree.selected?.type==='item')state.tree.selected=null;render();}
+
+/* =================== 理论编辑器 =================== */
+function renderTheoryEditor(){
+  const ed=state.theoryEditor;
+  return `<div class="theory-editor">
+    <div class="theory-field"><label for="theory-title">小节标题</label><input id="theory-title" value="${esc(ed.item.title||'')}" oninput="updateTheoryPreview()"></div>
+    <div class="theory-field"><label for="theory-content">理论正文 (Markdown)</label><textarea id="theory-content" class="md-textarea" rows="10" oninput="updateTheoryPreview()">${esc(ed.content||'')}</textarea><span class="field-hint">支持 Markdown 与 $LaTeX$ 行内公式</span></div>
+    <div class="theory-field">
+      <div class="theory-examples-header"><label>例题 (${ed.examples.length})</label><button class="btn btn-sm" onclick="addExample()">+ 添加例题</button></div>
+      <div class="theory-examples">${ed.examples.map((ex,i)=>renderExample(ex,i)).join('')}</div>
+    </div>
+    <div class="theory-preview"><div class="pv-lbl">即时预览</div><div class="preview" id="theory-preview"></div></div>
+  </div>`;
+}
+function renderExample(ex,i){
+  const col=!!ed_collapsed(i);
+  return `<div class="theory-example">
+    <div class="theory-example-head" onclick="toggleExample(${i})"><span>例题 ${i+1}</span><span>${col?'+':'−'}</span></div>
+    ${col?'':`<div class="theory-example-body">
+      <div class="theory-field"><label for="ex-${i}-kp">考点（可手动输入或选择已有）</label><input id="ex-${i}-kp" list="kp-list" value="${esc(ex.kp||'')}" placeholder="输入或选择考点" oninput="updateTheoryPreview()">${kpOptions()}</div>
+      <div class="theory-field"><label for="ex-${i}-text">题干 (Markdown)</label><textarea id="ex-${i}-text" class="md-textarea" rows="3" oninput="updateTheoryPreview()">${esc(ex.text||'')}</textarea></div>
+      <div class="theory-field"><label>选项（点击字母标记正确答案）</label>
+        <div class="theory-opt-list">${[0,1,2,3].map(k=>`<div class="theory-opt-row"><span class="theory-opt-key ${ex.answer===k?'checked':''}" onclick="setExOpt(${i},${k})">${String.fromCharCode(65+k)}</span><input id="ex-${i}-opt-${k}" value="${esc(ex.options[k]||'')}" oninput="updateTheoryPreview()"></div>`).join('')}</div>
+      </div>
+      <div class="theory-field"><label for="ex-${i}-sol">解析 (Markdown)</label><textarea id="ex-${i}-sol" class="md-textarea" rows="2" oninput="updateTheoryPreview()">${esc(ex.solution||'')}</textarea></div>
+      <div><button class="btn btn-sm btn-danger" onclick="removeExample(${i})">删除例题</button></div>
+    </div>`}</div>`;
+}
+function setExOpt(i,k){const ed=state.theoryEditor;if(ed.examples[i])ed.examples[i].answer=k;render();}
+function ed_collapsed(i){return !!state.theoryEditor.collapsed[i];}
+function toggleExample(i){state.theoryEditor.collapsed[i]=!state.theoryEditor.collapsed[i];render();}
+function addExample(){state.theoryEditor.examples.push({text:'',options:['','','',''],answer:0,solution:''});state.theoryEditor.collapsed[state.theoryEditor.examples.length-1]=false;render();}
+function removeExample(i){state.theoryEditor.examples.splice(i,1);const nc={};Object.keys(state.theoryEditor.collapsed).forEach(k=>{const n=+k;if(n<i)nc[n]=state.theoryEditor.collapsed[k];else if(n>i)nc[n-1]=state.theoryEditor.collapsed[k];});state.theoryEditor.collapsed=nc;render();}
+function syncTheory(){
+  const ed=state.theoryEditor;
+  const g=id=>{const el=$(id);return el?el.value:null;};
+  if(g('#theory-title')!=null)ed.item.title=$('#theory-title').value;
+  if(g('#theory-content')!=null)ed.content=$('#theory-content').value;
+  ed.examples=ed.examples.map((ex,i)=>({
+    text:g('#ex-'+i+'-text')!=null?$('#ex-'+i+'-text').value:ex.text,
+    options:[0,1,2,3].map(k=>g('#ex-'+i+'-opt-'+k)!=null?$('#ex-'+i+'-opt-'+k).value:ex.options[k]),
+    answer:ex.answer,
+    solution:g('#ex-'+i+'-sol')!=null?$('#ex-'+i+'-sol').value:ex.solution
+  }));
+}
+function updateTheoryPreview(){if(!state.theoryEditor)return;syncTheory();const ed=state.theoryEditor;let html=renderMd(ed.content||'*无内容*');if(ed.examples.length){html+='<hr><h4>例题</h4>';ed.examples.forEach((ex,i)=>{html+=`<div class="preview-example"><p><strong>例 ${i+1}.</strong> ${renderMd(ex.text||'')}</p><ol type="A">${(ex.options||[]).map((o,k)=>`<li class="${ex.answer===k?'preview-correct':''}">${renderMd(o)}</li>`).join('')}</ol>${ex.solution?`<div class="preview-solution"><strong>解析:</strong> ${renderMd(ex.solution)}</div>`:''}</div>`;});}$('#theory-preview').innerHTML=html;}
+function saveTheory(){syncTheory();const ed=state.theoryEditor;ed.item.content=ed.content;ed.item.examples=ed.examples;state.theoryEditor=null;setFeedback('ok','理论内容已保存');render();}
+
+/* =================== 练习编辑器 =================== */
+function renderPracticeEditor(){
+  const ed=state.practiceEditor;
+  const qs=ed.questions,sel=ed.selectedIndex;
+  return `<div class="admin-editor">
+    <div class="practice-list"><div class="practice-list-header"><span class="form-label">题目 (${qs.length})</span></div>
+      <div class="practice-list-items" id="practiceListItems">${qs.length===0?'<div class="empty">暂无题目</div>':qs.map((q,i)=>`<div class="practice-list-item ${i===sel?'selected':''}" onclick="practiceSelect(${i})"><span class="practice-list-num">${i+1}</span><span class="practice-list-type">${qTypeLabel(q.question_type)}</span><button class="practice-list-del" onclick="event.stopPropagation();practiceRemove(${i})">×</button></div>`).join('')}</div>
+      <button class="btn btn-sm btn-primary" onclick="practiceAdd()">+ 添加题目</button></div>
+    <div class="practice-edit">${sel>=0&&qs[sel]?practiceForm(qs[sel],sel):'<div class="empty">请选择或添加题目</div>'}</div>
+    <div class="practice-preview"><span class="form-label">预览</span><div class="preview" id="practice-preview"></div></div></div>`;
+}
+function practiceForm(q,sel){
+  const t=Number(q.question_type),isMulti=t===1;
+  return `<div class="form-row"><label class="form-label">题型</label><div class="practice-type-selector">${[{v:0,l:'单选'},{v:1,l:'多选'},{v:2,l:'填空'},{v:4,l:'解答'}].map(x=>`<button class="practice-type-btn ${t===x.v?'active':''}" onclick="practiceTypeChange(${x.v})">${x.l}</button>`).join('')}</div></div>
+  <div class="form-row"><label class="form-label" for="pq-kp">考点（可手动输入或选择已有）</label><input id="pq-kp" list="kp-list" value="${esc(q.kp||'')}" placeholder="输入或选择考点" oninput="updatePracticePreview()">${kpOptions()}</div>
+  <div class="form-row"><label class="form-label" for="pq-content">题干 (Markdown)</label><textarea id="pq-content" class="md-textarea" rows="4" oninput="updatePracticePreview()">${esc(q.content||'')}</textarea></div>
+  ${t===0||isMulti?`<div class="form-row"><label class="form-label">选项（点击字母标记正确答案${isMulti?'，可多选':''}）</label>
+  <div class="theory-opt-list">${[0,1,2,3].map(i=>`<div class="theory-opt-row"><span class="theory-opt-key ${(isMulti?(q.answers||[]).includes(String(i)):String(q.answer)===String(i))?'checked':''}" onclick="pqMark(${i})">${String.fromCharCode(65+i)}</span><input id="pq-opt-${i}" value="${esc(q.options[i]||'')}" oninput="updatePracticePreview()"></div>`).join('')}</div>
+</div>`:''}
+  ${t===2?`<div class="form-row"><label class="form-label" for="pq-answer">答案</label><input id="pq-answer" value="${esc(q.answer??'')}" oninput="updatePracticePreview()"></div><div class="form-row"><label class="form-label" for="pq-blanks">空数</label><input type="number" id="pq-blanks" value="${esc(String(q.blanks??1))}"></div>`:''}
+  ${t===4?`<div class="form-row"><label class="form-label" for="pq-answer">答案</label><input id="pq-answer" value="${esc(q.answer??'')}" oninput="updatePracticePreview()"></div>`:''}
+  <div class="form-row"><label class="form-label" for="pq-solution">解析 (Markdown)</label><textarea id="pq-solution" class="md-textarea" rows="3" oninput="updatePracticePreview()">${esc(q.solution||'')}</textarea></div>
+  <div class="form-row"><label class="form-label" for="pq-difficulty">难度</label><input type="number" id="pq-difficulty" value="${esc(String(q.difficulty??1))}"></div>`;
+}
+function syncPractice(){const ed=state.practiceEditor;if(ed.selectedIndex<0)return;const q=ed.questions[ed.selectedIndex];const g=id=>{const el=$(id);return el?el.value:null;};if(g('#pq-kp')!=null)q.kp=$('#pq-kp').value;if(g('#pq-content')!=null)q.content=$('#pq-content').value;if(g('#pq-solution')!=null)q.solution=$('#pq-solution').value;if(g('#pq-difficulty')!=null)q.difficulty=+$('#pq-difficulty').value;const t=Number(q.question_type);if(t===0||t===1){q.options=[0,1,2,3].map(i=>$('#pq-opt-'+i).value);}else if(t===2||t===4){q.answer=$('#pq-answer').value;if(t===2){q.blanks=+$('#pq-blanks').value;}}}
+function updatePracticePreview(){if(!state.practiceEditor)return;syncPractice();const ed=state.practiceEditor;if(ed.selectedIndex<0)return;const q=ed.questions[ed.selectedIndex];if(!q)return;let html='';if(q.kp)html+='<div class="preview-answer"><strong>考点:</strong> '+esc(q.kp)+'</div>';html+=renderMd(q.content||'*无题干*');const t=Number(q.question_type);if(t===0||t===1){html+='<ol type="A">';const ans=new Set(t===1?(q.answers||[]):[String(q.answer)]);(q.options||[]).forEach((o,i)=>html+=`<li class="${ans.has(String(i))?'preview-correct':''}">${renderMd(o)}</li>`).join('');html+='</ol>';if(t===1)html+=`<div class="preview-answer"><strong>正确答案:</strong> ${esc((q.answers||[]).map(a=>String.fromCharCode(65+ +a)).join(', '))}</div>`;}else if(t===2){html+=`<div class="preview-answer"><strong>答案:</strong> ${esc(q.answer??'')}</div><div class="preview-answer"><strong>空数:</strong> ${esc(String(q.blanks??1))}</div>`;}else{html+=`<div class="preview-answer"><strong>答案:</strong> ${esc(q.answer??'')}</div>`;}if(q.solution)html+=`<div class="preview-solution"><strong>解析:</strong> ${renderMd(q.solution)}</div>`;$('#practice-preview').innerHTML=html;}
+function practiceSelect(i){syncPractice();state.practiceEditor.selectedIndex=i;render();}
+function practiceAdd(){syncPractice();const ed=state.practiceEditor;const it=ed.item;ed.questions.push({id:null,item_id:it.id,course_id:it.course_id,module_id:it.module_id,question_type:0,kp:'',content:'',options:['','','',''],answer:'0',answers:[],blanks:1,solution:'',difficulty:1});ed.selectedIndex=ed.questions.length-1;render();}
+function practiceRemove(i){state.practiceEditor.questions.splice(i,1);if(state.practiceEditor.selectedIndex>=state.practiceEditor.questions.length)state.practiceEditor.selectedIndex=state.practiceEditor.questions.length-1;render();}
+function practiceTypeChange(v){syncPractice();const q=state.practiceEditor.questions[state.practiceEditor.selectedIndex];q.question_type=+v;if(q.question_type===0){q.options=padOptions(q.options);q.answer='0';q.answers=[];}else if(q.question_type===1){q.options=padOptions(q.options);q.answers=[];q.answer=undefined;}else if(q.question_type===2){q.answer='';q.blanks=1;q.options=['','','',''];}else{q.answer='';q.options=['','','',''];}render();}
+function pqMark(i){const ed=state.practiceEditor;if(!ed||ed.selectedIndex<0)return;syncPractice();const q=ed.questions[ed.selectedIndex];if(!q)return;if(Number(q.question_type)===1){const s=q.answers||[];q.answers=s.includes(String(i))?s.filter(x=>x!==String(i)):[...s,String(i)];}else{q.answer=String(i);q.answers=[];}render();}
+function savePractice(){syncPractice();const ed=state.practiceEditor;ed.item.questions=ed.questions.map(q=>({...q,answer:q.answer==='0'?'0':q.answer}));state.practiceEditor=null;setFeedback('ok','题目已保存');render();}
+let practiceSortable=null;
+function initPracticeSortable(){
+  const el=$('#practiceListItems');
+  if(!el)return;
+  if(practiceSortable){try{practiceSortable.destroy();}catch(e){}practiceSortable=null;}
+  if(typeof Sortable==='undefined')return;
+  practiceSortable=Sortable.create(el,{animation:150,ghostClass:'practice-ghost',onEnd(evt){
+    const ed=state.practiceEditor;if(!ed)return;
+    const [moved]=ed.questions.splice(evt.oldIndex,1);
+    ed.questions.splice(evt.newIndex,0,moved);
+    ed.selectedIndex=evt.newIndex;
+    render();
+  }});
+}
+
+/* =================== 期末试卷（三栏编辑器 + 共享题库来源标记） =================== */
+let poolSel=[]; // 弹层中勾选的共享题库 id
+function renderExams(){
+  return `<div class="exam-top"><div style="font-size:.85rem;color:var(--ad-muted)">编辑题目（共享题库可入卷，打来源标记）→ 设分 → 预览 → 发布。</div><button class="btn btn-primary" onclick="openPaper()">+ 新建试卷</button></div>
+  <div class="list">${papers.length===0?'<div class="empty">暂无试卷</div>':papers.map(p=>{
+    const t=p.items.reduce((s,it)=>s+it.score,0);
+    return `<div class="exam-card"><div class="body"><div class="t">${esc(p.name)}</div>
+    <div class="sub"><span class="badge ${p.state==='published'?'on':'off'}">${p.state==='published'?'已发布':'草稿'}</span><span>${p.items.length} 题 · 总分 ${t}</span></div>
+    <div class="sub"><span class="badge">${esc(p.school)}</span><span class="badge">${esc(p.college)}</span><span class="badge">${esc(p.subject)}</span><span class="badge">${esc(p.term)}</span></div></div>
+    <div class="actions"><button class="btn btn-sm" onclick="previewPaper(${p.id})">预览</button><button class="btn btn-sm" onclick="openPaper(${p.id})">编辑</button>${p.state==='published'?`<button class="btn btn-sm btn-danger" onclick="unpublish(${p.id})">撤回</button>`:`<button class="btn btn-sm btn-primary" onclick="publish(${p.id})">发布</button>`}<button class="btn btn-sm btn-danger" onclick="deletePaper(${p.id})">删除</button></div></div>`;
+  }).join('')}</div>`;
+}
+function openPaper(id){
+  const p=id&&papers.find(x=>x.id===id);
+  state.paperEditor={
+    id:p?p.id:null,name:p?p.name:'',school:p?p.school:'长沙理工大学',college:p?p.college:'物理学院',
+    subject:p?p.subject:'大学物理',term:p?p.term:'2025-2026-2',state:p?p.state:'draft',
+    questions:(p?p.items:[]).map(it=>({score:it.score||5,source:it.source||'本卷新增',question:Object.assign({options:padOptions(it.question.options),answer:(it.question.answer!=null?String(it.question.answer):'0'),answers:Array.isArray(it.question.answers)?it.question.answers.map(String):[],blanks:it.question.blanks||1},it.question)})),
+    selectedIndex:(p&&p.items.length>0)?0:-1
+  };
+  render();
+}
+function paperMetaForm(){
+  const ed=state.paperEditor;
+  return `<div class="paper-meta">
+    <div class="row2">
+      <div class="form-row"><label class="form-label">试卷名称 *</label><input id="pe-name" value="${esc(ed.name)}" oninput="paperSyncMeta()"></div>
+      <div class="form-row"><label class="form-label">科目</label><input id="pe-subject" value="${esc(ed.subject)}" oninput="paperSyncMeta()"></div>
+    </div>
+    <div class="row4">
+      <div class="form-row"><label class="form-label">学校</label><input id="pe-school" value="${esc(ed.school)}" oninput="paperSyncMeta()"></div>
+      <div class="form-row"><label class="form-label">学院</label><input id="pe-college" value="${esc(ed.college)}" oninput="paperSyncMeta()"></div>
+      <div class="form-row"><label class="form-label">学期</label><input id="pe-term" value="${esc(ed.term)}" oninput="paperSyncMeta()"></div>
+      <div class="form-row"><label class="form-label">状态</label><span class="badge ${ed.state==='published'?'on':'off'}">${ed.state==='published'?'已发布':'草稿'}</span></div>
+    </div>
+  </div>`;
+}
+function renderPaperEditor(){
+  const ed=state.paperEditor,sel=ed.selectedIndex;
+  const total=ed.questions.reduce((s,it)=>s+it.score,0);
+  return `<div class="admin-editor paper-editor">
+    <div class="practice-list paper-list">
+      ${paperMetaForm()}
+      <div class="practice-list-header"><span class="form-label">题目 (${ed.questions.length}) · 总分 ${total}</span></div>
+      <div class="practice-list-items" id="paperListItems">${ed.questions.length===0?'<div class="empty">暂无题目</div>':ed.questions.map((it,i)=>`<div class="practice-list-item ${i===sel?'selected':''}" onclick="paperSelect(${i})"><span class="practice-list-num">${i+1}</span><span class="practice-list-type">${qTypeLabel(it.question.question_type)}</span><button class="practice-list-del" onclick="event.stopPropagation();paperRemove(${i})">×</button></div>`).join('')}</div>
+      <button class="btn btn-sm" onclick="openPool()">+ 从题库添加</button>
+      <button class="btn btn-sm btn-primary" onclick="paperAdd()">+ 添加题目</button>
+    </div>
+    <div class="practice-edit">${sel>=0&&ed.questions[sel]?paperForm(ed.questions[sel],sel):'<div class="empty">请选择或添加题目</div>'}</div>
+    <div class="practice-preview"><span class="form-label">预览</span><div class="preview" id="paper-preview"></div></div>
+  </div>`;
+}
+function paperForm(it,sel){
+  const q=it.question,t=Number(q.question_type),isMulti=t===1;
+  return `<div class="paper-source"><span class="form-label">来源</span><span class="badge" style="color:var(--ad-green-hl);border-color:var(--ad-green)">${esc(it.source)}</span></div>
+  <div class="form-row"><label class="form-label">分值</label><input type="number" id="pq-score" min="1" value="${esc(String(it.score))}" oninput="paperSyncScore()"></div>
+  <div class="form-row"><label class="form-label">题型</label><div class="practice-type-selector">${[{v:0,l:'单选'},{v:1,l:'多选'},{v:2,l:'填空'},{v:4,l:'解答'}].map(x=>`<button class="practice-type-btn ${t===x.v?'active':''}" onclick="paperTypeChange(${x.v})">${x.l}</button>`).join('')}</div></div>
+  <div class="form-row"><label class="form-label" for="pq-kp">考点（可手动输入或选择已有）</label><input id="pq-kp" list="kp-list" value="${esc(q.kp||'')}" placeholder="输入或选择考点" oninput="updatePaperPreview()">${kpOptions()}</div>
+  <div class="form-row"><label class="form-label" for="pq-content">题干 (Markdown)</label><textarea id="pq-content" class="md-textarea" rows="4" oninput="updatePaperPreview()">${esc(q.content||'')}</textarea></div>
+  ${t===0||isMulti?`<div class="form-row"><label class="form-label">选项（点击字母标记正确答案${isMulti?'，可多选':''}）</label>
+  <div class="theory-opt-list">${[0,1,2,3].map(i=>`<div class="theory-opt-row"><span class="theory-opt-key ${(isMulti?(q.answers||[]).includes(String(i)):String(q.answer)===String(i))?'checked':''}" onclick="paperPqMark(${i})">${String.fromCharCode(65+i)}</span><input id="pq-opt-${i}" value="${esc(q.options[i]||'')}" oninput="updatePaperPreview()"></div>`).join('')}</div>
+</div>`:''}
+  ${t===2?`<div class="form-row"><label class="form-label" for="pq-answer">答案</label><input id="pq-answer" value="${esc(q.answer??'')}" oninput="updatePaperPreview()"></div><div class="form-row"><label class="form-label" for="pq-blanks">空数</label><input type="number" id="pq-blanks" value="${esc(String(q.blanks??1))}"></div>`:''}
+  ${t===4?`<div class="form-row"><label class="form-label" for="pq-answer">答案</label><input id="pq-answer" value="${esc(q.answer??'')}" oninput="updatePaperPreview()"></div>`:''}
+  <div class="form-row"><label class="form-label" for="pq-solution">解析 (Markdown)</label><textarea id="pq-solution" class="md-textarea" rows="3" oninput="updatePaperPreview()">${esc(q.solution||'')}</textarea></div>
+  <div class="form-row"><label class="form-label" for="pq-difficulty">难度</label><input type="number" id="pq-difficulty" value="${esc(String(q.difficulty??1))}"></div>`;
+}
+function paperSyncMeta(){const ed=state.paperEditor;const g=id=>{const el=$(id);return el?el.value:null;};if(g('#pe-name')!=null)ed.name=$('#pe-name').value;if(g('#pe-subject')!=null)ed.subject=$('#pe-subject').value;if(g('#pe-school')!=null)ed.school=$('#pe-school').value;if(g('#pe-college')!=null)ed.college=$('#pe-college').value;if(g('#pe-term')!=null)ed.term=$('#pe-term').value;}
+function paperCurrent(){const ed=state.paperEditor;if(!ed||ed.selectedIndex<0)return null;return ed.questions[ed.selectedIndex];}
+function paperSync(){const it=paperCurrent();if(!it)return;const q=it.question;const g=id=>{const el=$(id);return el?el.value:null;};if(g('#pq-score')!=null)it.score=+$('#pq-score').value||5;if(g('#pq-kp')!=null)q.kp=$('#pq-kp').value;if(g('#pq-content')!=null)q.content=$('#pq-content').value;if(g('#pq-solution')!=null)q.solution=$('#pq-solution').value;if(g('#pq-difficulty')!=null)q.difficulty=+$('#pq-difficulty').value;const t=Number(q.question_type);if(t===0||t===1){q.options=[0,1,2,3].map(i=>$('#pq-opt-'+i).value);}else if(t===2||t===4){q.answer=$('#pq-answer').value;if(t===2){q.blanks=+$('#pq-blanks').value;}}}
+function paperSyncScore(){const it=paperCurrent();if(!it)return;const el=$('#pq-score');if(el)it.score=+el.value||5;render();}
+function updatePaperPreview(){const it=paperCurrent();if(!it)return;paperSync();const q=it.question;let html='';if(q.kp)html+='<div class="preview-answer"><strong>考点:</strong> '+esc(q.kp)+'</div>';html+=renderMd(q.content||'*无题干*');const t=Number(q.question_type);if(t===0||t===1){html+='<ol type="A">';const ans=new Set(t===1?(q.answers||[]):[String(q.answer)]);(q.options||[]).forEach((o,i)=>html+=`<li class="${ans.has(String(i))?'preview-correct':''}">${renderMd(o)}</li>`).join('');html+='</ol>';if(t===1)html+=`<div class="preview-answer"><strong>正确答案:</strong> ${esc((q.answers||[]).map(a=>String.fromCharCode(65+ +a)).join(', '))}</div>`;}else if(t===2){html+=`<div class="preview-answer"><strong>答案:</strong> ${esc(q.answer??'')}</div>`;}else{html+=`<div class="preview-answer"><strong>答案:</strong> ${esc(q.answer??'')}</div>`;}if(q.solution)html+=`<div class="preview-solution"><strong>解析:</strong> ${renderMd(q.solution)}</div>`;$('#paper-preview').innerHTML=html;}
+function paperSelect(i){paperSync();state.paperEditor.selectedIndex=i;render();}
+function paperAdd(){paperSync();const ed=state.paperEditor;ed.questions.push({score:5,source:'本卷新增',question:{question_type:0,kp:'',content:'',options:['','','',''],answer:'0',answers:[],blanks:1,solution:'',difficulty:1}});ed.selectedIndex=ed.questions.length-1;render();}
+function paperRemove(i){state.paperEditor.questions.splice(i,1);if(state.paperEditor.selectedIndex>=state.paperEditor.questions.length)state.paperEditor.selectedIndex=state.paperEditor.questions.length-1;render();}
+function paperTypeChange(v){paperSync();const q=paperCurrent().question;q.question_type=+v;if(q.question_type===0){q.options=padOptions(q.options);q.answer='0';q.answers=[];}else if(q.question_type===1){q.options=padOptions(q.options);q.answers=[];q.answer=undefined;}else if(q.question_type===2){q.answer='';q.blanks=1;q.options=['','','',''];}else{q.answer='';q.options=['','','',''];}render();}
+function paperPqMark(i){const it=paperCurrent();if(!it)return;paperSync();const q=it.question;if(Number(q.question_type)===1){const s=q.answers||[];q.answers=s.includes(String(i))?s.filter(x=>x!==String(i)):[...s,String(i)];}else{q.answer=String(i);q.answers=[];}render();}
+function savePaper(){
+  paperSync();const ed=state.paperEditor;
+  if(!ed.name.trim()){setFeedback('err','试卷名称不能为空');return;}
+  if(!ed.questions.length){setFeedback('err','至少添加 1 道题');return;}
+  const items=ed.questions.map(it=>({score:it.score,source:it.source,question:Object.assign({answer:it.question.answer==='0'?'0':it.question.answer},it.question)}));
+  const total=items.reduce((s,it)=>s+it.score,0);
+  const meta={name:ed.name,school:ed.school,college:ed.college,subject:ed.subject,term:ed.term};
+  const idx=ed.id!=null?papers.findIndex(p=>p.id===ed.id):-1;
+  if(idx>=0){Object.assign(papers[idx],meta,{items,score:total});setFeedback('ok','试卷已更新');}
+  else{papers.push({id:++seq,...meta,items,score:total,state:'draft'});setFeedback('ok','试卷已保存为草稿');}
+  state.paperEditor=null;render();
+}
+function backToPapers(){state.paperEditor=null;render();}
+function publish(id){const p=papers.find(x=>x.id===id);p.state='published';setFeedback('ok','试卷已发布，前台立即可刷');render();}
+function unpublish(id){if(!confirm('前台将立即下架该试卷，已产生刷题记录保留。确定撤回？'))return;const p=papers.find(x=>x.id===id);p.state='draft';setFeedback('ok','试卷已撤回为草稿');render();}
+function deletePaper(id){if(!confirm('删除后不可恢复，历史刷题记录解绑。确定删除？'))return;const p=papers.find(x=>x.id===id);papers=papers.filter(x=>x.id!==id);setFeedback('ok','已删除试卷「'+p.name+'」');render();}
+/* 从题库添加弹层 */
+function openPool(){poolSel=[];state.poolOpen=true;$('#pMask').classList.add('open');$('#pDrawer').classList.add('open');$('#pTitle').textContent='从题库添加';$('#pStep').textContent='共享题库';renderPool();}
+function closePool(){state.poolOpen=false;$('#pMask').classList.remove('open');$('#pDrawer').classList.remove('open');}
+function renderPool(){
+  $('#bPool').innerHTML=questions.filter(q=>q.state===1).map(q=>{const key=String(q.id);return `<div class="b-card ${poolSel.includes(key)?'in-quiz':''}" onclick="poolToggle('${key}')"><span class="pick ${poolSel.includes(key)?'on':''}">✓</span><div style="flex:1;min-width:0"><div style="font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(q.stem||q.content||q.title)}</div><div style="font-size:.7rem;color:var(--ad-muted);margin-top:.1rem"><span class="badge">${esc(q.subject||'物理')}</span><span class="badge">${esc(q.type||qTypeLabel(q.question_type))}</span></div></div></div>`;}).join('')||'<div class="empty">暂无可用题库题目</div>';
+  $('#bCnt').textContent=poolSel.length;
+}
+function poolToggle(key){const i=poolSel.indexOf(key);if(i>=0)poolSel.splice(i,1);else poolSel.push(key);renderPool();}
+function addPoolToPaper(){
+  if(!poolSel.length){setFeedback('err','请先勾选要添加的题目');return;}
+  paperSync();const ed=state.paperEditor;
+  poolSel.forEach(key=>{const q=questions.find(x=>String(x.id)===key);if(!q)return;const subject=q.subject||ed.subject||'通用';const type=q.type||qTypeLabel(q.question_type);ed.questions.push({score:5,source:'题库 · '+subject+' · '+type,question:{question_type:q.question_type||0,kp:q.kp||'',content:q.stem||q.content||'',options:padOptions(q.options),answer:(q.answer!=null?String(q.answer):'0'),answers:Array.isArray(q.answers)?q.answers.map(String):[],blanks:q.blanks||1,solution:q.solution||q.analysis||'',difficulty:q.difficulty||1}});});
+  ed.selectedIndex=ed.questions.length-1;
+  const added=poolSel.length;poolSel=[];closePool();setFeedback('ok','已添加 '+added+' 题');render();
+}
+function previewPaperWorking(){
+  paperSync();const ed=state.paperEditor;if(!ed)return;
+  if(!ed.name.trim()){setFeedback('err','试卷名称不能为空');return;}
+  const items=ed.questions.map(it=>({score:it.score,source:it.source,question:it.question}));
+  const total=items.reduce((s,it)=>s+it.score,0);
+  $('#pvTitle').textContent=ed.name+' · 预览（未保存）';
+  $('#pvMeta').innerHTML=`<span class="badge">${esc(ed.school)}</span><span class="badge">${esc(ed.college)}</span><span class="badge">${esc(ed.subject)}</span><span class="badge">${esc(ed.term)}</span><span class="badge">${items.length} 题 · ${total}分</span>`;
+  $('#pvBody').innerHTML=items.map((it,i)=>{const q=it.question;const stem=q?q.content||q.stem||q.title:'';const type=q?qTypeLabel(q.question_type):'';const ans=q?(q.answer!=null&&q.answer!==''?String.fromCharCode(65+ +q.answer):(Array.isArray(q.answers)&&q.answers.length?q.answers.map(a=>String.fromCharCode(65+ +a)).join(', '):'')):'';return `<div class="p-q"><div class="qn">${i+1}. [${esc(type)}] 来源 ${esc(it.source)} · ${it.score}分</div><div class="qt">${esc(stem)}</div>${q&&q.options?`<div style="font-size:.75rem;color:var(--ad-muted);margin-top:.2rem">${(q.options||[]).map((o,k)=>`${String.fromCharCode(65+k)}. ${esc(o)}`).join('　')}</div>${ans?`<span class="ans-s">答案：${esc(ans)}</span>`:''}`:(ans?`<span class="ans-s">答案：${esc(ans)}</span>`:'')}</div>`;}).join('');
+  openPreview();
+}
+function previewPaper(id){
+  const p=papers.find(x=>x.id===id);
+  $('#pvTitle').textContent=p.name+' · 预览';
+  $('#pvMeta').innerHTML=`<span class="badge">${esc(p.school)}</span><span class="badge">${esc(p.college)}</span><span class="badge">${esc(p.subject)}</span><span class="badge">${esc(p.term)}</span><span class="badge">${p.items.length} 题</span>`;
+  $('#pvBody').innerHTML=p.items.map((it,i)=>{const q=it.question;const stem=q?q.content||q.stem||q.title:'';const type=q?qTypeLabel(q.question_type):'';const ans=q?(q.answer!=null&&q.answer!==''?String.fromCharCode(65+ +q.answer):(Array.isArray(q.answers)&&q.answers.length?q.answers.map(a=>String.fromCharCode(65+ +a)).join(', '):'')):'';return `<div class="p-q"><div class="qn">${i+1}. [${esc(type)}] 来源 ${esc(it.source)} · ${it.score}分</div><div class="qt">${esc(stem)}</div>${q&&q.options?`<div style="font-size:.75rem;color:var(--ad-muted);margin-top:.2rem">${(q.options||[]).map((o,k)=>`${String.fromCharCode(65+k)}. ${esc(o)}`).join('　')}</div>${ans?`<span class="ans-s">答案：${esc(ans)}</span>`:''}`:(ans?`<span class="ans-s">答案：${esc(ans)}</span>`:'')}</div>`;}).join('');
+  openPreview();
+}
+function openPreview(){$('#pvMask').classList.add('open');$('#pvBox').classList.add('open');}
+function closePreview(){$('#pvMask').classList.remove('open');$('#pvBox').classList.remove('open');}
+
+/* 试卷题目列表拖拽 */
+let paperSortable=null;
+function initPaperSortable(){
+  const el=$('#paperListItems');
+  if(!el)return;
+  if(paperSortable){try{paperSortable.destroy();}catch(e){}paperSortable=null;}
+  if(typeof Sortable==='undefined')return;
+  paperSortable=Sortable.create(el,{animation:150,ghostClass:'practice-ghost',onEnd(evt){
+    const ed=state.paperEditor;if(!ed)return;
+    const [moved]=ed.questions.splice(evt.oldIndex,1);
+    ed.questions.splice(evt.newIndex,0,moved);
+    ed.selectedIndex=evt.newIndex;
+    render();
+  }});
+}
+
+/* =================== 考点 / 用户 表格 =================== */
+const ENTITY_FIELDS={
+  user:[['email','邮箱','text'],['role','角色','role'],['display_name','昵称','text']],
+  course:[['title','标题','text'],['description','描述','textarea']],
+  module:[['title','标题','text'],['order_index','顺序','number']],
+  item:[['title','标题','text'],['type','类型','seltype'],['order_index','顺序','number']],
+  kp:[['code','代码','text'],['name','名称','text'],['source','题库','src']]
+};
+function renderTable(entity){
+  const rows=entity==='kp'?kps:entity==='users'?users:[];
+  const cols=entity==='kp'?['code','name','source','course_id','item_id','sort_order']:entity==='users'?['id','email','role','display_name','state']:[];
+  return `<section class="entity-section"><header class="entity-header"><h3 class="entity-title">${entity==='kp'?'考点':'用户'}</h3><button class="btn btn-sm" onclick="openModal('${entity==='kp'?'kp':'user'}',null,true)">+ 新增${entity==='kp'?'考点':'用户'}</button></header>
+  <div class="table-wrap"><table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th class="actions-col">操作</th></tr></thead>
+  <tbody>${rows.length===0?'<tr><td colspan="'+(cols.length+1)+'" class="empty">暂无数据</td></tr>':rows.map(r=>`<tr>
+    ${cols.map(c=>c==='role'?`<td><select style="padding:.2rem .4rem;background:var(--ad-bg);border:1px solid var(--ad-border);color:var(--ad-fg);border-radius:4px;font-size:.75rem" onchange="changeRole(${r.id},this.value)">${['free','paid','admin'].map(o=>`<option ${r.role===o?'selected':''}>${o}</option>`).join('')}</select></td>`:c==='state'?`<td><span class="badge ${r.state==='active'?'on':'off'}">${r.state==='active'?'正常':'已封禁'}</span></td>`:`<td title="${esc(r[c])}">${c==='source'?`<span class="badge">${esc(r[c])}</span>`:c==='id'&&entity==='users'?esc(r[c]):esc(r[c])}</td>`).join('')}
+    <td class="actions">${entity==='users'?(r.state==='active'?`<button class="btn btn-sm btn-danger" onclick="banUser(${r.id})">封禁</button>`:`<button class="btn btn-sm" onclick="unbanUser(${r.id})">解封</button>`):''}<button class="btn btn-sm" onclick="openModal('${entity==='kp'?'kp':'user'}',${entity==='kp'?JSON.stringify(r).replace(/'/g,''):JSON.stringify(r).replace(/'/g,'')},false)">编辑</button><button class="btn btn-sm btn-danger" onclick="delRow('${entity}',${entity==='users'?r.id:JSON.stringify(r.id)})">删除</button></td></tr>`).join('')}</tbody></table></div></section>`;
+}
+function changeRole(id,r){const u=users.find(x=>x.id===id);u.role=r;setFeedback('ok','已将 '+u.display_name+' 设为 '+r);render();}
+function banUser(id){const u=users.find(x=>x.id===id);if(!confirm('封禁后该用户无法登录与刷题，历史记录保留。可随时解封。'))return;u.state='banned';setFeedback('ok','已封禁 '+u.display_name);render();}
+function unbanUser(id){const u=users.find(x=>x.id===id);u.state='active';setFeedback('ok','已解封 '+u.display_name);render();}
+function delRow(entity,id){if(!confirm('确认删除？此操作不可撤销。'))return;if(entity==='kp')kps=kps.filter(x=>x.id!==id);else users=users.filter(x=>x.id!==id);setFeedback('ok','删除成功');render();}
+
+/* =================== 通用 modal =================== */
+function openModal(entity,row,isNew,context){
+  let fields;
+  if(entity==='course')fields=[['title','标题','text'],['description','描述','textarea']];
+  else if(entity==='module')fields=[['title','标题','text'],['order_index','顺序','number']];
+  else if(entity==='item')fields=[['title','标题','text'],['type','类型','seltype'],['order_index','顺序','number']];
+  else if(entity==='user')fields=[['email','邮箱','text'],['role','角色','role'],['display_name','昵称','text']];
+  else if(entity==='kp')fields=[['code','代码','text'],['name','名称','text'],['source','题库','src']];
+  else return;
+  state.editing={entity,row:row||interface_safe(context||{}),isNew,fields};
+  $('#modalTitle').textContent=(isNew?'新增 ':'编辑 ')+({course:'课程',module:'模块',item:'小节',user:'用户',kp:'考点'}[entity]);
+  $('#modalBody').innerHTML=fields.map(f=>{
+    const nm=f[0],lbl=f[1],typ=f[2];let v=row?(row[nm]!==undefined?row[nm]:''):(context&&context[nm]!==undefined?context[nm]:'');
+    const disabled=(context&&context[nm]!==undefined&&!isNew)?false:false;
+    let ctrl;
+    if(typ==='role')ctrl=`<select data-f="${nm}">${['free','paid','admin'].map(o=>`<option ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+    else if(typ==='seltype')ctrl=`<select data-f="${nm}">${['theory','quiz','training','review'].map(o=>`<option ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+    else if(typ==='src')ctrl=`<select data-f="${nm}">${['platform','exam'].map(o=>`<option ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+    else if(typ==='textarea')ctrl=`<textarea class="md-textarea" data-f="${nm}" rows="3">${esc(v)}</textarea>`;
+    else if(typ==='number')ctrl=`<input type="number" data-f="${nm}" value="${esc(v)}">`;
+    else ctrl=`<input type="text" data-f="${nm}" value="${esc(v)}" placeholder="${lbl}">`;
+    return `<div class="form-row"><label class="form-label">${lbl}</label><div class="form-control">${ctrl}${context&&context[nm]!==undefined?'<span class="field-hint">由树上下文自动关联</span>':''}</div></div>`;
+  }).join('');
+  $('#modalOverlay').style.display='flex';
+  $('#modalSave').onclick=()=>saveModal();
+}
+function interface_safe(o){return o||{};}
+function saveModal(){
+  const ed=state.editing;if(!ed)return;
+  const vals={};ed.fields.forEach(f=>{const el=$('#modalBody [data-f="'+f[0]+'"]');if(el)vals[f[0]]=f[2]==='number'?(el.value===''?null:+el.value):el.value;});
+  if(ed.isNew){
+    if(ed.entity==='course'){courses.push({id:'c'+Date.now().toString(36),title:vals.title,description:vals.description||'',modules:[]});}
+    else if(ed.entity==='module'){const c=courses.find(x=>x.id===ed.row.course_id);if(c)c.modules.push({course_id:c.id,module_id:'m'+Date.now().toString(36),title:vals.title,order_index:c.modules.length,items:[]});}
+    else if(ed.entity==='item'){for(const c of courses)for(const m of c.modules)if(m.course_id===ed.row.course_id&&m.module_id===ed.row.module_id){m.items.push({id:'i'+Date.now().toString(36),course_id:m.course_id,module_id:m.module_id,title:vals.title,type:vals.type,order_index:m.items.length,content:'',examples:[],questions:[]});}}
+    else if(ed.entity==='user'){users.push({id:++seq,email:vals.email,role:vals.role,display_name:vals.display_name,state:'active'});}
+    else if(ed.entity==='kp'){kps.push({id:'kp'+Date.now().toString(36),code:vals.code,name:vals.name,source:vals.source,course_id:'c-phy',item_id:'i1',sort_order:kps.length});}
+  } else {
+    const base=ed.row;
+    if(ed.entity==='course'){const c=courses.find(x=>x.id===base.id);if(c){c.title=vals.title;c.description=vals.description;}}
+    else if(ed.entity==='module'){const m=findModule(base.course_id,base.module_id);if(m){m.title=vals.title;m.order_index=vals.order_index;}}
+    else if(ed.entity==='item'){const it=findItem(base.id);if(it){it.title=vals.title;it.type=vals.type;it.order_index=vals.order_index;if(it.type!=='theory'&&!it.questions)it.questions=[];}}
+    else if(ed.entity==='user'){const u=users.find(x=>x.id===base.id);if(u){u.email=vals.email;u.role=vals.role;u.display_name=vals.display_name;}}
+    else if(ed.entity==='kp'){const k=kps.find(x=>x.id===base.id);if(k){k.code=vals.code;k.name=vals.name;k.source=vals.source;}}
+  }
+  setFeedback('ok','保存成功');closeModal();render();
+}
+function closeModal(){state.editing=null;$('#modalOverlay').style.display='none';}
+
+/* =================== 渲染 =================== */
+function renderContent(){
+  if(state.section==='settings')return `<div class="placeholder">设置功能开发中</div>`;
+  if(state.theoryEditor)return renderTheoryEditor();
+  if(state.practiceEditor)return renderPracticeEditor();
+  if(state.section==='exams'&&state.paperEditor)return renderPaperEditor();
+  if(state.section==='content-tree')return `<div class="tree-layout"><div class="tree-pane"><div class="tree-pane-header"><span class="form-label">内容结构</span></div><div class="tree-pane-body">${renderTreePane()}</div></div><div class="tree-detail">${renderTreeDetail()}</div></div>`;
+  if(state.section==='exams')return renderExams();
+  if(state.section==='users')return renderTable('users');
+  if(state.section==='kp')return renderTable('kp');
+  return '';
+}
+function render(){renderSidebar();renderMainTitle();renderMainActions();renderFeedback();$('#content').innerHTML=renderContent();if(state.theoryEditor)updateTheoryPreview();if(state.practiceEditor)updatePracticePreview();if(state.practiceEditor)initPracticeSortable();if(state.paperEditor){updatePaperPreview();initPaperSortable();}}
+
+/* =================== 初始化 =================== */
+render();
+</script>
+</body>
+</html>
