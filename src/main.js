@@ -600,9 +600,19 @@ function initEventDelegation() {
       case 'admin-tree-check':
       case 'admin-tree-clear-checks':
       case 'admin-tree-batch-delete':
+      case 'admin-kp-edit-open':
+      case 'admin-kp-edit-close':
+      case 'admin-kp-add':
+      case 'admin-kp-remove':
+      case 'admin-kp-change':
         handleAdminAction(action, el);
         break;
-      default: break;
+      default:
+        // 兜底：所有 admin-* 未显式列的都走后台路由（paper、pool、preview 等新模块）
+        if (action && action.startsWith('admin-')) {
+          handleAdminAction(action, el);
+        }
+        break;
     }
   });
 
