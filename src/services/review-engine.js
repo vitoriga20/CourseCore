@@ -149,6 +149,9 @@ export async function markRight(userId, questionId, userAnswer) {
 }
 
 export async function processAnswer(userId, questionId, subjectId, isCorrect, userAnswer, curveType = 'classic') {
+  const serverResult = await judgeAnswer(userId, questionId, userAnswer, subjectId, curveType);
+  if (serverResult) return serverResult;
+
   if (isCorrect) {
     return markRight(userId, questionId, userAnswer);
   }

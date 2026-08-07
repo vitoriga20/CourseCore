@@ -138,15 +138,5 @@ content.get('/questions/:id', async (c) => {
   }
 });
 
-// POST /api/v1/questions/:id/reveal —— 答案/解析揭示接口（Phase 2 实现）
-// 当前返回 501：判分与答案揭示需要用户鉴权 + 答题记录，属于 Phase 2 用户写 API。
-content.post('/questions/:id/reveal', async (c) => {
-  return jsonError(
-    c,
-    501,
-    'NOT_IMPLEMENTED',
-    'answer reveal moves to Phase 2 judge endpoint (requires auth + attempt record)',
-  );
-});
-
+// 答案/解析揭示由 judge 路由统一处理，避免同一路径存在多个实现。
 export { content };

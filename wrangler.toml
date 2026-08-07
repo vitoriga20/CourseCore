@@ -9,6 +9,10 @@ compatibility_flags = ["nodejs_compat"]
 #   npx wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY
 #   -> service_role key 只在函数内使用，绝不暴露给浏览器
 #
+# 注意：前端 VITE_*（如 VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY）由 Vite 构建时
+#       从 .env.local 读取并内联进 bundle，不要写进 wrangler.toml（[vars] 只对
+#       pages dev 的 Functions 运行时生效，进不了前端 bundle）。
+#
 # ---- 可选：限流用的 KV 命名空间 ----
 #   先创建：npx wrangler kv namespace create RATE_LIMIT_KV
 #   再把下面三行取消注释，并把 id 换成真实值。

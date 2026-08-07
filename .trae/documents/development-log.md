@@ -1,3 +1,7 @@
+> 文档状态：历史开发日志，仅用于追溯；不作为当前架构、权限或部署操作依据。
+>
+> 当前状态请查看根目录 `development-log.md`、`technical-architecture.md` 和 `backend-redesign-handoff.md`。
+
 # 开发日志 - 物理填空/解答刷题网页
 
 ## 项目概览
@@ -2807,6 +2811,28 @@ c:\Users\vitoriga\.trae-cn\work\6a6323ca709f04131cc76680\
 - `npx vite build` 通过（728 modules transformed）。
 - Supabase 实锤：`exam_papers` 29 行（name 已回填）、`exam_questions` 484 行、`questions` 276 行；迁移后列存在（name/state/score），RLS policy 已覆盖 authenticated 角色。
 
+## 更新记录 - 2026-08-07
+
+### 修改
+- `src/views/admin/adminPage.js`：
+  1. 管理后台「全屏」重做：`.admin-page` 改用 `width:100vw; margin-left/right:calc(50% - 50vw); min-height:calc(100vh - 64px)` 突破 main-content 的 `max-w-7xl + px-4 + py-8` 限制，保留顶部 CourseCore header 不遮挡，宽度占满整个视口。去除之前 `position:fixed; inset:0` 错误方案。
+  2. 「内容树」题目编辑改版：理论例题 / 训练 / 期末试卷共用统一紧凑选项组件（`.theory-opt-list` / `.theory-opt-row` / `.theory-opt-key`），点击字母 A/B/C/D 标记正确答案（选中高亮）。
+  3. 消灭白框：新增 **全局控件兜底样式** `.admin-page input[type=text|number|...] / textarea / select`，统一暗底 + 暗边框 + 暗文字 + `appearance:none`，不依赖具体容器类（解决 `.paper-form / .paper-meta / .paper-list` 下 input 白底）。focus 态统一加墨绿发光描边；placeholder 统一灰色。具体容器规则（`.practice-form / .paper-form / .theory-example-body / .admin-form-control / #theory-content` 等）补入 `box-sizing:border-box` 与相同 padding。
+  4. 期末试卷新建自动填充兜底增强：不再只取 `examPapers[0]`（首条可能为空白新建卷），改为「最近一条非空值 → 众数兜底 → 硬编码常量」三级回退（科目/学期/学校/学院齐全），名称按「科目 · 学期 · 期末试卷」拼接。
+  5. 方案 C：textarea 随内容自动长高（auto-resize）。新增 `autoResizeTextarea` / `initAutoResize`，在 `mountAdmin` 中挂载，对 `.admin-page textarea` 用 scrollHeight 技巧（`height:auto` → 取 `scrollHeight`）消除“解析/题干等长文本只能上下滑动”的问题；`.admin-md-textarea` 改 `resize:none; overflow:hidden`，随内容撑高。EasyMDE 接管的 CodeMirror 不在此列（有自己的高度逻辑）。
+- 补齐期末试卷编辑器 `paper-editor` 缺失 CSS：`.paper-editor .paper-list{width:280px}`、`.paper-meta` 虚线分隔、`.paper-meta` 内部 row2/row4 单列、`.paper-source` 来源徽标排布。
+
+### 关键决策
+- 全屏用 `100vw + 50%/50vw margin trick`（经典负外边距破局法），避免 fixed 覆盖 header，也不改动 main.js 的 main-content 全局壳层（改动影响面大，前台所有页面被联动）。
+- 控件白框用「父兜底 + 容器补充」双层策略：父层打所有 admin-page 原生控件的基础暗底，容器层只覆盖 padding/字体细节，避免任何漏网之鱼（例：之前只写 .practice-form input 漏掉了 .paper-meta 里的 input）。
+- 自动填充取众数而非首条，是因为 `examPapers` 数组按更新时间升序，新建空白卷会排在 [0]，导致取到空值。众数兜底即使首条为空也能从历史试卷中抽到最常见的科目/学期。
+
+**产出文件**:
+- `src/views/admin/adminPage.js` — 全屏布局重做 + 控件暗底兜底 + paper-editor 补齐 + openPaper 三级回退
+- `.trae/documents/development-log.md` — 本更新记录
+
+**验证**: `node --check src/views/admin/adminPage.js` 通过。
+
 ## 最后更新时间
 
-2026-08-06
+2026-08-07

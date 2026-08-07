@@ -771,18 +771,13 @@ function renderTheoryExample(ex, idx, collapsed) {
             <label class="admin-form-label" for="theory-ex-${idx}-image">题图 URL (可选)</label>
             <input type="text" id="theory-ex-${idx}-image" value="${escapeHtml(ex.image || '')}" placeholder="https://...">
           </div>
-          ${[0, 1, 2, 3].map(i => `
-            <div class="admin-form-row">
-              <label class="admin-form-label" for="theory-ex-${idx}-opt-${i}">选项 ${String.fromCharCode(65 + i)}</label>
-              <textarea id="theory-ex-${idx}-opt-${i}" class="admin-md-textarea" rows="2">${escapeHtml(opts[i] || '')}</textarea>
+          <div class="admin-form-label">选项（点击字母标记正确答案）</div>
+          <div class="theory-opt-list">${[0, 1, 2, 3].map(i => `
+            <div class="theory-opt-row">
+              <span class="theory-opt-key ${answer === i ? 'checked' : ''}" data-action="admin-mark-example-opt" data-idx="${idx}" data-opt="${i}">${String.fromCharCode(65 + i)}</span>
+              <input type="text" id="theory-ex-${idx}-opt-${i}" value="${escapeHtml(opts[i] || '')}" placeholder="选项 ${String.fromCharCode(65 + i)}">
             </div>
-          `).join('')}
-          <div class="admin-form-row">
-            <label class="admin-form-label" for="theory-ex-${idx}-answer">正确答案</label>
-            <select id="theory-ex-${idx}-answer">
-              ${[0, 1, 2, 3].map(i => `<option value="${i}" ${answer === i ? 'selected' : ''}>${String.fromCharCode(65 + i)}</option>`).join('')}
-            </select>
-          </div>
+          `).join('')}</div>
           <div class="admin-form-row">
             <label class="admin-form-label" for="theory-ex-${idx}-solution">解析 (Markdown, 可选)</label>
             <textarea id="theory-ex-${idx}-solution" class="admin-md-textarea" rows="2">${escapeHtml(ex.solution || '')}</textarea>
@@ -863,29 +858,13 @@ function renderPracticeForm(q, sel) {
         <input type="text" id="pq-image" value="${escapeHtml(q.image || '')}" placeholder="https://...">
       </div>
       ${type === 0 || isMulti ? `
-        ${[0, 1, 2, 3].map(i => `
-          <div class="admin-form-row">
-            <label class="admin-form-label" for="pq-opt-${i}">选项 ${String.fromCharCode(65 + i)}</label>
-            <textarea id="pq-opt-${i}" class="admin-md-textarea" rows="2">${escapeHtml(opts[i] || '')}</textarea>
+        <div class="admin-form-label">选项（点击字母标记正确答案${isMulti ? '，可多选' : ''}）</div>
+        <div class="theory-opt-list">${[0, 1, 2, 3].map(i => `
+          <div class="theory-opt-row">
+            <span class="theory-opt-key ${(isMulti ? answersArr.map(String).includes(String(i)) : answerStr === String(i)) ? 'checked' : ''}" data-action="admin-practice-mark" data-opt="${i}">${String.fromCharCode(65 + i)}</span>
+            <textarea id="pq-opt-${i}" class="admin-md-textarea" rows="1" placeholder="选项 ${String.fromCharCode(65 + i)}">${escapeHtml(opts[i] || '')}</textarea>
           </div>
-        `).join('')}
-        <div class="admin-form-row">
-          <label class="admin-form-label" for="pq-answer">正确答案${isMulti ? '（可多选）' : ''}</label>
-          ${isMulti ? `
-            <div class="practice-multi-answer">
-              ${[0, 1, 2, 3].map(i => `
-                <label class="practice-multi-option">
-                  <input type="checkbox" id="pq-answer-${i}" value="${i}" ${answersArr.map(String).includes(String(i)) ? 'checked' : ''}>
-                  <span>${String.fromCharCode(65 + i)}</span>
-                </label>
-              `).join('')}
-            </div>
-          ` : `
-            <select id="pq-answer">
-              ${[0, 1, 2, 3].map(i => `<option value="${i}" ${answerStr === String(i) ? 'selected' : ''}>${String.fromCharCode(65 + i)}</option>`).join('')}
-            </select>
-          `}
-        </div>
+        `).join('')}</div>
       ` : type === 2 ? `
         <div class="admin-form-row">
           <label class="admin-form-label" for="pq-answer">答案</label>
@@ -1107,10 +1086,23 @@ const ADMIN_STYLES = `
   --ad-green-hl: #4ade80;
   --ad-green-soft: #0d1f1b;
   --ad-danger: #e5654a;
+  /* 全屏：宽度占满视口（突破 main-content 的 max-w-7xl 与 padding），高度 = 视口 - 顶部 header(64px)；不 fixed，不挡 header */
+  width: 100vw;
+  min-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  box-sizing: border-box;
+  min-height: calc(100vh - 64px);
   background: var(--ad-bg);
   color: var(--ad-fg);
-  min-height: 100vh;
+  padding: 0.75rem 1rem 2rem;
+  overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+/* admin 容器：消除 main-content 带来的 padding（main-content 把 admin-page 包在 py-8 px-4 lg:px-10 里，用负外边距拉满） */
+.admin-page {
+  margin-top: -2rem; /* 抵消 py-8 */
+  padding-top: calc(2rem + 0.75rem);
 }
 .admin-page * { box-sizing: border-box; }
 .admin-page a { color: var(--ad-green-hl); }
@@ -1198,6 +1190,45 @@ const ADMIN_STYLES = `
 .admin-page .admin-btn-danger:hover { background: rgba(229,101,74,0.12); color: var(--ad-danger); border-color: var(--ad-danger); }
 .admin-page .admin-btn-sm { padding: 0.25rem 0.55rem; font-size: 0.8rem; }
 .admin-page .admin-btn-block { width: 100%; }
+/* 全局控件兜底：所有 admin-page 下的原生 input/textarea/select 全部暗底，防止白框 */
+.admin-page input[type="text"],
+.admin-page input[type="number"],
+.admin-page input[type="password"],
+.admin-page input[type="email"],
+.admin-page input[type="search"],
+.admin-page input:not([type]),
+.admin-page textarea,
+.admin-page select {
+  background: var(--ad-bg);
+  color: var(--ad-fg);
+  border: 1px solid var(--ad-border);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.admin-page input[type="text"]:focus,
+.admin-page input[type="number"]:focus,
+.admin-page input[type="password"]:focus,
+.admin-page input[type="email"]:focus,
+.admin-page input[type="search"]:focus,
+.admin-page input:not([type]):focus,
+.admin-page textarea:focus,
+.admin-page select:focus {
+  outline: none;
+  border-color: var(--ad-green-hl);
+  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.25);
+}
+/* 占位符颜色统一 */
+.admin-page input::placeholder,
+.admin-page textarea::placeholder {
+  color: var(--ad-disabled);
+  opacity: 1;
+}
 .admin-page .admin-form-row { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.6rem; }
 .admin-page .admin-form-label { font-size: 0.8rem; color: var(--ad-muted); }
 .admin-page .admin-form-control input,
@@ -1207,27 +1238,40 @@ const ADMIN_STYLES = `
 .admin-page .practice-form input,
 .admin-page .practice-form select,
 .admin-page .practice-form textarea,
+.admin-page .paper-form input,
+.admin-page .paper-form select,
+.admin-page .paper-form textarea,
 .admin-page .theory-example-body select,
 .admin-page .theory-example-body textarea,
 .admin-page .theory-example-body input,
 .admin-page #theory-content {
-  width: 100%; padding: 0.45rem 0.6rem;
+  width: 100%; padding: 0.4rem 0.6rem;
   border: 1px solid var(--ad-border); background: var(--ad-bg);
   color: var(--ad-fg); border-radius: 6px;
   font-size: 0.875rem; font-family: inherit;
+  box-sizing: border-box;
 }
-.admin-page .admin-md-textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; resize: vertical; line-height: 1.5; }
+.admin-page .admin-md-textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; resize: none; overflow: hidden; line-height: 1.5; }
 .admin-page .practice-form input:focus,
 .admin-page .practice-form select:focus,
 .admin-page .practice-form textarea:focus,
+.admin-page .paper-form input:focus,
+.admin-page .paper-form select:focus,
+.admin-page .paper-form textarea:focus,
 .admin-page .theory-example-body input:focus,
 .admin-page .theory-example-body select:focus,
 .admin-page .theory-example-body textarea:focus,
 .admin-page #theory-content:focus,
 .admin-page .admin-form-control input:focus,
 .admin-page .admin-form-control select:focus,
-.admin-page .admin-form-control textarea:focus {
+.admin-page .admin-form-control textarea:focus,
+.admin-page input[type="text"]:focus,
+.admin-page input[type="number"]:focus,
+.admin-page input:not([type]):focus,
+.admin-page textarea:focus,
+.admin-page select:focus {
   outline: none; border-color: var(--ad-green-hl);
+  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.25) !important;
 }
 /* EasyMDE dark theme override (fixes black-on-black invisible text) */
 .admin-page .EasyMDEContainer .CodeMirror {
@@ -1312,6 +1356,21 @@ const ADMIN_STYLES = `
 .admin-page .theory-example-header:hover { color: var(--ad-green-hl); }
 .admin-page .theory-example-toggle { color: var(--ad-muted); }
 .admin-page .theory-example-body { padding: 0.75rem; display: flex; flex-direction: column; gap: 0.4rem; }
+/* 紧凑选项：字母键 + 单行输入（理论例题 / 训练 / 期末试卷共用） */
+.admin-page .theory-opt-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--ad-border); border-radius: 6px; overflow: hidden; }
+.admin-page .theory-opt-row { display: flex; gap: 0.5rem; align-items: center; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--ad-border); }
+.admin-page .theory-opt-row:last-child { border-bottom: none; }
+.admin-page .theory-opt-row:hover { background: var(--ad-bg-hover); }
+.admin-page .theory-opt-key {
+  width: 26px; height: 26px; border-radius: 7px;
+  border: 1px solid var(--ad-border); background: var(--ad-bg-hover);
+  display: grid; place-items: center; flex-shrink: 0;
+  font-size: 0.75rem; font-weight: 700; color: var(--ad-muted);
+  cursor: pointer; transition: 0.15s; user-select: none;
+}
+.admin-page .theory-opt-key:hover { border-color: var(--ad-green-hl); color: var(--ad-green-hl); }
+.admin-page .theory-opt-key.checked { background: var(--ad-green-hl); color: #08231a; border-color: var(--ad-green-hl); }
+.admin-page .theory-opt-row input, .admin-page .theory-opt-row textarea { flex: 1; min-width: 0; }
 .admin-page .admin-preview { background: var(--ad-bg-card); border: 1px solid var(--ad-border); border-radius: 8px; padding: 1rem; flex: 1; overflow-y: auto; font-size: 0.9rem; line-height: 1.6; color: var(--ad-fg); }
 .admin-page .admin-preview h1, .admin-page .admin-preview h2, .admin-page .admin-preview h3, .admin-page .admin-preview h4 { color: var(--ad-fg); margin: 0.6em 0 0.3em; }
 .admin-page .admin-preview p { margin: 0.4em 0; }
@@ -1336,6 +1395,11 @@ const ADMIN_STYLES = `
 .admin-page .practice-list-item.selected .practice-list-type { color: var(--ad-green-hl); }
 .admin-page .practice-list-del { margin-left: auto; background: none; border: none; color: var(--ad-muted); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 0.25rem; }
 .admin-page .practice-list-del:hover { color: var(--ad-danger); }
+.admin-page .paper-editor .practice-list, .admin-page .paper-editor .paper-list { width: 280px; min-width: 0; }
+.admin-page .paper-list .paper-meta { border-bottom: 1px dashed var(--ad-border); padding-bottom: 0.6rem; margin-bottom: 0.4rem; }
+.admin-page .paper-list .paper-meta .row2, .admin-page .paper-list .paper-meta .row4 { grid-template-columns: 1fr; }
+.admin-page .paper-source { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+.admin-page .paper-source .admin-form-label { margin: 0; }
 .admin-page .practice-edit { flex: 1; min-width: 0; background: var(--ad-bg-card); border: 1px solid var(--ad-border); border-radius: 8px; padding: 1rem; overflow-y: auto; }
 .admin-page .practice-form { display: flex; flex-direction: column; gap: 0.2rem; }
 .admin-page .practice-type-selector { display: flex; gap: 0.4rem; flex-wrap: wrap; }
@@ -1553,7 +1617,6 @@ function initEditors() {
     (adminState.theoryEditor.examples || []).forEach((_, idx) => {
       initEasyMDE(`theory-ex-${idx}-text`);
       initEasyMDE(`theory-ex-${idx}-solution`);
-      [0, 1, 2, 3].forEach(i => initEasyMDE(`theory-ex-${idx}-opt-${i}`));
     });
   } else if (adminState.practiceEditor && adminState.practiceEditor.selectedIndex >= 0) {
     initEasyMDE('pq-content');
@@ -1604,6 +1667,22 @@ function initSortable() {
       if (evt.oldIndex === evt.newIndex) return;
       practiceReorder(evt.oldIndex, evt.newIndex);
     }
+  });
+}
+
+// 方案 C：textarea 随内容自动长高（scrollHeight 技巧），解决解析/题干等长文本只能上下滑动的问题
+function autoResizeTextarea(el) {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+function initAutoResize() {
+  // 仅处理原生 textarea（EasyMDE 接管的 CodeMirror 不在此列，它们有自己的高度逻辑）
+  document.querySelectorAll('.admin-page textarea').forEach(el => {
+    if (el.dataset.autoResize) return;
+    el.dataset.autoResize = '1';
+    autoResizeTextarea(el);
+    el.addEventListener('input', () => autoResizeTextarea(el));
   });
 }
 
@@ -1659,6 +1738,7 @@ function mountAdmin() {
   // 挂载编辑器增强组件
   initEditors();
   initSplits();
+  initAutoResize();
   initSortable();
   initTreeSortables();
   initPaperSortable();
@@ -2264,6 +2344,14 @@ function toggleTheoryExample(idx) {
   rerender();
 }
 
+function markTheoryExampleOpt(idx, opt) {
+  const ed = adminState.theoryEditor;
+  if (!ed || !ed.examples[idx]) return;
+  syncTheoryFormToState();
+  ed.examples[idx].answer = opt;
+  rerender();
+}
+
 async function saveTheory() {
   try {
     syncTheoryFormToState();
@@ -2368,15 +2456,7 @@ function syncPracticeFormToState() {
       const el = document.getElementById(`pq-opt-${i}`);
       return el ? el.value : (q.options[i] || '');
     });
-    if (q.question_type === 1) {
-      q.answers = [0, 1, 2, 3].filter(i => {
-        const el = document.getElementById(`pq-answer-${i}`);
-        return el && el.checked;
-      }).map(String);
-    } else {
-      const ans = get('pq-answer');
-      if (ans != null) q.answer = String(ans);
-    }
+    // 答案由 admin-practice-mark 点击维护在 state 中，无需读 DOM
   } else if (q.question_type === 2) {
     const ans = get('pq-answer');
     if (ans != null) q.answer = ans;
@@ -2498,6 +2578,22 @@ function practiceTypeChange(value) {
   rerender();
 }
 
+function practiceMark(opt) {
+  syncPracticeFormToState();
+  const ed = adminState.practiceEditor;
+  if (ed.selectedIndex < 0) return;
+  const q = ed.questions[ed.selectedIndex];
+  if (!q) return;
+  if (Number(q.question_type) === 1) {
+    const s = q.answers || [];
+    q.answers = s.includes(String(opt)) ? s.filter(x => x !== String(opt)) : [...s, String(opt)];
+  } else {
+    q.answer = String(opt);
+    delete q.answers;
+  }
+  rerender();
+}
+
 async function savePractice() {
   try {
     syncPracticeFormToState();
@@ -2603,13 +2699,30 @@ async function openPaper(id) {
     // 扁平编辑：不再读取 exam_sections
     questions = await adminApi.listExamQuestions(p.id);
   }
+  // 新建时自动填充：取最近的非空试卷；若无可选项则用众数；仍无再用兜底常量
+  const papers = adminState.data.examPapers || [];
+  const fallback = { subject: '大学物理B', term: '2025-2026-2', school: '长沙理工大学', college: '' };
+  function pickBest(fn) {
+    const latest = papers.find(x => fn(x) && String(fn(x)).trim() !== '');
+    if (latest) return fn(latest);
+    const counts = {};
+    papers.forEach(x => { const v = fn(x); if (v) counts[v] = (counts[v] || 0) + 1; });
+    let best = null, bestN = 0;
+    Object.entries(counts).forEach(([v, n]) => { if (n > bestN) { best = v; bestN = n; } });
+    return best;
+  }
+  const subject = p ? (p.subject || '') : (pickBest(x => x.subject) || fallback.subject);
+  const term = p ? (p.term || '') : (pickBest(x => x.term) || fallback.term);
+  const school = p ? (p.school || '') : (pickBest(x => x.school) || fallback.school);
+  const college = p ? (p.college || '') : (pickBest(x => x.college) || fallback.college);
+  const name = p ? (p.name || '') : `${subject} · ${term} · 期末试卷`;
   adminState.paperEditor = {
     id: p ? p.id : null,
-    name: p ? (p.name || '') : '',
-    school: p ? (p.school || '') : '长沙理工大学',
-    college: p ? (p.college || '') : '',
-    subject: p ? (p.subject || '') : '',
-    term: p ? (p.term || '') : '',
+    name,
+    school,
+    college,
+    subject,
+    term,
     state: p ? (p.state || 'draft') : 'draft',
     questions: questions.map(q => ({
       id: q.id,
@@ -3253,6 +3366,13 @@ export async function handleAdminAction(action, el) {
       toggleTheoryExample(idx);
       break;
     }
+    case 'admin-mark-example-opt': {
+      const idx = Number(el.dataset.idx);
+      const opt = Number(el.dataset.opt);
+      if (Number.isNaN(idx) || Number.isNaN(opt)) return;
+      markTheoryExampleOpt(idx, opt);
+      break;
+    }
     case 'admin-save-theory': {
       await saveTheory();
       break;
@@ -3289,6 +3409,12 @@ export async function handleAdminAction(action, el) {
       const value = el.dataset.value;
       if (value === undefined || value === '') return;
       practiceTypeChange(value);
+      break;
+    }
+    case 'admin-practice-mark': {
+      const value = el.dataset.opt;
+      if (value === undefined || value === '') return;
+      practiceMark(Number(value));
       break;
     }
     case 'admin-save-practice': {

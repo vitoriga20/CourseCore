@@ -152,7 +152,7 @@ export async function mergeAndPushLocal(userId, localProgress, localCompleted, r
 
 export async function addWrong(userId, questionId, subjectId, userAnswer, curveType = 'classic') {
   try {
-    const { data } = await apiPost('/wrong-book', {
+    const { data } = await apiPost('/me/wrong-book', {
       question_id: questionId,
       subject_id: subjectId,
       curve_type: curveType,
@@ -166,10 +166,10 @@ export async function addWrong(userId, questionId, subjectId, userAnswer, curveT
 
 export async function markRight(userId, questionId, userAnswer) {
   try {
-    const { data: wbList } = await apiGet('/wrong-book', { includeQuestion: 'false' });
+    const { data: wbList } = await apiGet('/me/wrong-book', { includeQuestion: 'false' });
     const entry = (wbList || []).find((w) => w.question_id === questionId);
     if (!entry) return null;
-    const { data } = await apiPatch(`/wrong-book/${entry.id}`, { is_correct: true, last_answer: userAnswer });
+    const { data } = await apiPatch(`/me/wrong-book/${entry.id}`, { is_correct: true, last_answer: userAnswer });
     return data;
   } catch {
     return null;
@@ -178,13 +178,13 @@ export async function markRight(userId, questionId, userAnswer) {
 
 export async function markWrong(userId, questionId, userAnswer, reason) {
   try {
-    const { data: wbList } = await apiGet('/wrong-book', { includeQuestion: 'false' });
+    const { data: wbList } = await apiGet('/me/wrong-book', { includeQuestion: 'false' });
     const entry = (wbList || []).find((w) => w.question_id === questionId);
     if (!entry) {
-      const { data } = await apiPost('/wrong-book', { question_id: questionId, last_answer: userAnswer });
+      const { data } = await apiPost('/me/wrong-book', { question_id: questionId, last_answer: userAnswer });
       return data;
     }
-    const { data } = await apiPatch(`/wrong-book/${entry.id}`, {
+    const { data } = await apiPatch(`/me/wrong-book/${entry.id}`, {
       is_correct: false,
       last_answer: userAnswer,
       reason,
@@ -199,7 +199,7 @@ export async function getMyWrongBook(userId, subjectId = null, includeQuestion =
   try {
     const params = { includeQuestion: includeQuestion ? 'true' : 'false' };
     if (subjectId) params.subjectId = subjectId;
-    const { data } = await apiGet('/wrong-book', params);
+    const { data } = await apiGet('/me/wrong-book', params);
     return data || [];
   } catch {
     return [];
@@ -208,7 +208,7 @@ export async function getMyWrongBook(userId, subjectId = null, includeQuestion =
 
 export async function deleteWrongBookEntry(entryId) {
   try {
-    await apiDelete(`/wrong-book/${entryId}`);
+    await apiDelete(`/me/wrong-book/${entryId}`);
     return true;
   } catch {
     return false;

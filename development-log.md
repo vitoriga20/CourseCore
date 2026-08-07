@@ -2105,3 +2105,90 @@
 ## 最后更新时间
 
 2026-08-06（BFF 生产 1101 修复 + 排行榜 RPC 适配）
+
+## 更新记录 - 2026-08-06（前端 Supabase 公开密钥注入修复）
+
+### 背景
+- 线上 `coursecorepage.pages.dev` 前端 Supabase 客户端返回"Supabase 未配置"红色条，登录不可用。
+- 排查根因：项目启用了 **Cloudflare Pages「wrangler.toml 管理环境变量」模式**，Dashboard 只能管理 Secrets（一个小锁图标），Secrets 只进 Pages Functions 运行时、**不进 Vite 构建**，因此前端 `import.meta.env.VITE_*` 在 build 时恒为空 → `isSupabaseConfigured()=false` → `supabase=null`。
+- 用户提供 Supabase **publishable key**：`sb_publishable_...`（新控制台命名，等价于旧文档的 anon key，属浏览器公开 key，可明文进前端 bundle；严禁用 service_role）。
+
+### 修改
+1. `wrangler.toml`：新增 `[vars]` 段（Vite 构建时内联到前端 bundle 的 public 值）
+   - `VITE_SUPABASE_URL = https://npmfeeeyeuienekezmil.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY = sb_publishable_...`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY = sb_publishable_...`
+   - 保留注释说明：敏感密钥仍走 `wrangler pages secret put`（Secrets 只进 Functions，不进 bundle）。
+2. `src/services/supabase.js`：key 读取兼容两种命名——`VITE_SUPABASE_ANON_KEY` 优先，缺失则 fallback `VITE_SUPABASE_PUBLISHABLE_KEY`，任一配置即可初始化 `createClient`。
+3. 新增 `.env.local`（已 gitignore）：写入相同的 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` / `VITE_SUPABASE_PUBLISHABLE_KEY`，保证本地 `npm run dev` / `npm run build` 也能读到。
+
+### 关键决策
+- 前端公开 key 用 `[vars]` 明文而非 Secret → Secrets 不进 Vite 构建，放 Secret 等于白配；且 publishable/anon 本身就是浏览器公开 key，无泄露风险。
+- 服务端 `SUPABASE_SERVICE_ROLE_KEY`（sb_secret_*）继续走 Secrets，绝不写入 `[vars]`/`.env` 前端可读层 → 维持收权限链安全。
+
+### 影响面
+- 前端 Supabase Auth 客户端恢复可用；本地与生产两条注入链路（`.env.local` + `[vars]`）数据一致。
+- 需重新 `npm run build` + `wrangler pages deploy` 才能让 `[vars]` 内联进线上 bundle。
+
+### 待办
+- 重新构建并部署：`npm run build; npx wrangler pages deploy dist --project-name=coursecore`
+- 线上验证：刷新后 DevTools 打 `import.meta.env.VITE_SUPABASE_URL` 应返回 URL，"Supabase 未配置"红条消失。
+
+## 最后更新时间
+
+2026-08-06（前端 Supabase 公开密钥注入修复）
+
+## 更新记录 - 2026-08-06（Phase 0/D 收权回退：管理员后台 exam 权限修复）
+
+### 背景
+- 管理员后台打开「期末试卷」报 `permission denied for table exam_papers`。
+- 根因：此前 Phase 0/D 收权执行 `REVOKE ALL ON exam_papers/exam_sections/exam_questions FROM anon, authenticated`，而管理员后台 `src/services/admin.js` 用**浏览器端 anon key 直连**上述表。表级 GRANT 被撤销后，即使 RLS 策略 `admin_can_manage_exam_*`（`USING is_admin()`）允许管理员，GRANT 与 RLS 为「与」关系，authenticated 角色连表都访问不了。
+- 其它模块（内容树/用户/考点）正常，因收权仅针对 `exam_*` 三张表。
+
+### 迁移（方案 A：恢复 authenticated 权限 + 收紧策略）
+- `bff` 无 exam 管理路由，admin 后台保持 supabase 直连，故走数据库层修复。
+1. `GRANT SELECT, INSERT, UPDATE, DELETE ON exam_papers/exam_sections/exam_questions TO authenticated` → 恢复表级权限。
+2. `GRANT SELECT (answer, answers, solution, test_string, blanks) ON exam_questions TO authenticated` → 管理员后台需读/改答案列。
+3. 清理所有 `qual=true` 的宽松策略（每表 `auth_select/insert/update/delete_*`、`*_read_all`、`*_readable_by_everyone`、`*_admin_write`），只保留每表一条 `admin_can_manage_exam_*`（`USING is_admin()`）。
+   - 若只恢复 GRANT 不清理，普通登录用户也能读写 exam（`auth_*` 策略 `qual=true`），安全回退。
+
+### 验证（Supabase MCP）
+- 迁移 `apply_migration fix_exam_admin_access` 成功。
+- 三表 authenticated 权限均 `true`。
+- `pg_policies` 每表仅剩一条 `admin_can_manage_exam_*`（`USING is_admin()`）。
+
+### 关键决策
+- 保留 RLS `admin_can_manage_exam_*` 作为唯一策略 → 非 admin 的 authenticated 用户被 `is_admin()` 精确挡行，即使有表级/列级权限也读不到任何行。
+- 用户端刷题走 BFF（service_role），不依赖 anon 直连，此次不回退收权在 BFF 侧的收益。
+
+### 影响面
+- 仅 exam 三表权限与策略；admin 后台恢复可用；用户端走 BFF 不受影响。
+- 需管理员重新登录后刷新页面验证。
+
+## 最后更新时间
+
+2026-08-06（Phase 0/D 收权回退：管理员后台 exam 权限修复）
+
+## 更新记录 - 2026-08-06（保存期末试卷题目 section_id 非空约束修复）
+
+### 背景
+- 管理员后台保存期末试卷（新增题目）报 `null value in column "section_id" of relation "exam_questions" violates not-null constraint`。
+- 根因：线上 `exam_questions.section_id` 为 NOT NULL，但前端期末试卷三栏编辑器按**扁平编辑模式**保存时 `base.section_id = null`（`src/views/admin/adminPage.js` 保存逻辑），且 schema 文件 `scripts/supabase-schema.sql` 明确声明该列**可空**（`-- 可空：扁平编辑模式不强制大题`）。线上表结构与 schema 文件不一致。
+
+### 迁移
+- `ALTER TABLE public.exam_questions ALTER COLUMN section_id DROP NOT NULL` → 线上约束与 schema 对齐。
+
+### 验证（Supabase MCP）
+- 迁移 `apply_migration make_exam_questions_section_id_nullable` 成功。
+- `pg_attribute` 确认 `section_id` `attnotnull=false`。
+- 现有 484 条数据全部带 section_id（`null_section=0`），改可空不破坏任何数据/外键。
+
+### 关键决策
+- 以 schema 文件与前端扁平编辑设计为准（可空），而非迁就线上旧约束 → 最小改动，符合既有"期末试卷扁平编辑不强制大题"的设计。
+
+### 影响面
+- 仅 `exam_questions.section_id` 约束变化；保存新题不再报错。需管理员刷新后重试保存验证。
+
+## 最后更新时间
+
+2026-08-06（保存期末试卷题目 section_id 非空约束修复）

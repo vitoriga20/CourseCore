@@ -6,6 +6,7 @@
 import { renderQuizSession, initQuizSession, cleanupQuizSession } from '../quizSession.js';
 import { getExamPaper, getQuestionsByType } from '../../services/practice-data.js';
 import { supabase } from '../../services/supabase.js';
+import { apiPost } from '../../services/apiClient.js';
 
 // ============================================================
 // 取题：从不同来源获取题目列表
@@ -145,8 +146,6 @@ export function cleanupQuizAdapter(virtualId) {
  *   state = quizSession 的 state 对象（含 allQuestions/userAnswers/results）
  */
 export async function savePracticeRecord({ userId, mode, sourceId, sourceName, subjectId, state }) {
-  if (!supabase || !userId) return null;
-
   const total = state.allQuestions.length;
   let correct = 0;
   let wrong = 0;
@@ -169,22 +168,32 @@ export async function savePracticeRecord({ userId, mode, sourceId, sourceName, s
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
   const durationSeconds = state.startTime ? Math.round((Date.now() - state.startTime) / 1000) : 0;
 
+  const payload = {
+    mode,
+    source_id: sourceId,
+    source_name: sourceName,
+    subject_id: subjectId,
+    total,
+    answered,
+    correct,
+    wrong,
+    accuracy,
+    duration_seconds: durationSeconds,
+    details,
+  };
+
+  try {
+    const { data } = await apiPost('/me/practice-records', payload);
+    return data;
+  } catch (e) {
+    console.warn('[quiz-adapter] BFF practice record fallback:', e?.message || e);
+  }
+
+  if (!supabase || !userId) return null;
+
   const { data, error } = await supabase
     .from('practice_records')
-    .insert({
-      user_id: userId,
-      mode,
-      source_id: sourceId,
-      source_name: sourceName,
-      subject_id: subjectId,
-      total,
-      answered,
-      correct,
-      wrong,
-      accuracy,
-      duration_seconds: durationSeconds,
-      details,
-    })
+    .insert({ user_id: userId, ...payload })
     .select()
     .single();
 

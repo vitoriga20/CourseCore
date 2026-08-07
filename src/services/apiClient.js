@@ -3,28 +3,18 @@
 // 返回 Promise，失败抛错（调用方自行 fallback）
 
 import { supabase } from './supabase.js';
+import { getAuthHeader } from './auth-header.js';
 
-function getAuthHeader() {
-  if (!supabase) return null;
-  try {
-    const session = supabase.auth.getSession();
-    const token = session?.access_token;
-    return token ? `Bearer ${token}` : null;
-  } catch {
-    return null;
-  }
-}
-
-function buildHeaders(extra = {}) {
+async function buildHeaders(extra = {}) {
   const headers = { 'Content-Type': 'application/json', ...extra };
-  const auth = getAuthHeader();
+  const auth = await getAuthHeader(supabase?.auth);
   if (auth) headers['Authorization'] = auth;
   return headers;
 }
 
 async function request(path, options = {}) {
   const url = `/api/v1${path}`;
-  const headers = buildHeaders(options.headers || {});
+  const headers = await buildHeaders(options.headers || {});
   const res = await fetch(url, { ...options, headers });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
