@@ -1,11 +1,12 @@
 // 从 Supabase 拉取所有内容表，生成 src/data/*.js 静态数据文件
 // 用法: node scripts/fetch-from-supabase.js
 //
-// 输出:
-//   src/data/courses.js          — COURSES (课程 → 模块 → 小节 嵌套)
-//   src/data/questions.js        — QUESTIONS (字段名 snake_case → camelCase)
-//   src/data/theoryContents.js   — THEORY_CONTENTS (含从 items 表反查的 title)
-//   src/data/examPapers.js       — EXAM_PAPERS (试卷 → 大题 → 题目 嵌套)
+// v2 统一题库：题目本体在 questions，上下文经 item_questions / exam_paper_questions 关联表承载。
+// 输出（双轨 fallback，运行时主源为 BFF 关联查询）：
+//   src/data/courses.js          — COURSES (课程 → 模块 → 小节 嵌套, theory 正文读 items.content)
+//   src/data/questions.js        — QUESTIONS (经 item_questions join questions, 带 itemId/orderIndex/role)
+//   src/data/theoryContents.js   — THEORY_CONTENTS (经 items + item_questions(role='theory_example') join)
+//   src/data/examPapers.js       — EXAM_PAPERS (经 exam_paper_questions join questions)
 //
 // 未配置 Supabase 或表为空时打印警告并以 exit 0 退出，不阻塞构建。
 
@@ -34,7 +35,6 @@ function loadEnvLocal() {
     if (eq === -1) continue;
     const key = trimmed.slice(0, eq).trim();
     let value = trimmed.slice(eq + 1).trim();
-    // 支持 KEY="value" / KEY='value' / KEY=value 三种形式，剥离两端引号
     if ((value.startsWith('"') && value.endsWith('"')) ||
         (value.startsWith("'") && value.endsWith("'"))) {
       value = value.slice(1, -1);
@@ -66,19 +66,14 @@ async function fetchAll(table, orderBy = 'id') {
   return data || [];
 }
 
-// ─── Courses: 课程 → 模块 → 小节 嵌套 ───
+// ─── Courses: 课程 → 模块 → 小节 嵌套 (v2: theory 正文直接从 items.content 读) ───
 async function buildCourses() {
-  const [courses, modules, items, theories] = await Promise.all([
+  const [courses, modules, items] = await Promise.all([
     fetchAll('courses', 'id'),
     fetchAll('modules', 'order_index'),
-    fetchAll('items', 'order_index'),
-    fetchAll('theory_contents', 'item_id')
+    fetchAll('items', 'order_index')
   ]);
 
-  // theory_contents 按 item_id 索引
-  const theoryMap = new Map(theories.map(t => [t.item_id, t]));
-
-  // items 按 (course_id, module_id) 分组
   const itemsByCourseModule = new Map();
   for (const it of items) {
     const key = `${it.course_id}|${it.module_id}`;
@@ -86,7 +81,6 @@ async function buildCourses() {
     itemsByCourseModule.get(key).push(it);
   }
 
-  // modules 按 course_id 分组
   const modulesByCourse = new Map();
   for (const m of modules) {
     if (!modulesByCourse.has(m.course_id)) modulesByCourse.set(m.course_id, []);
@@ -102,29 +96,18 @@ async function buildCourses() {
       id: m.module_id,
       title: m.title,
       items: (itemsByCourseModule.get(`${c.id}|${m.module_id}`) || []).map(it => {
-        // 与现有 courses.js 格式一致：theory 小节带 content，其余仅 id/title/type
         const item = { id: it.id, title: it.title, type: it.type };
-        // theory 小节优先从 theory_contents 取内容，保证后台编辑与静态构建产物一致
-        if (it.type === 'theory') {
-          const t = theoryMap.get(it.id);
-          if (t?.content) item.content = t.content;
-          else if (it.content) item.content = it.content;
-        } else if (it.content) {
-          item.content = it.content;
-        }
+        if (it.content) item.content = it.content; // v2: 理论正文已并入 items.content
         return item;
       })
     }))
   }));
 }
 
-// ─── Questions: 字段名 snake_case → camelCase ───
+// ─── Questions 字段名 snake_case → camelCase ───
 function mapQuestion(q) {
   const out = {
     id: q.id,
-    courseId: q.course_id,
-    moduleId: q.module_id,
-    itemId: q.item_id,
     questionType: q.question_type,
     title: q.title,
     content: q.content,
@@ -135,7 +118,6 @@ function mapQuestion(q) {
     tags: Array.isArray(q.tags) ? q.tags : [],
     source: q.source
   };
-  // 可选字段仅在非空时写入，保持与现有 questions.js 一致
   if (Array.isArray(q.options) && q.options.length) out.options = q.options;
   if (Array.isArray(q.answers) && q.answers.length) out.answers = q.answers;
   if (q.blanks !== null && q.blanks !== undefined) out.blanks = q.blanks;
@@ -147,38 +129,65 @@ function mapQuestion(q) {
 }
 
 async function buildQuestions() {
-  const rows = await fetchAll('questions', 'id');
-  return rows.map(mapQuestion);
-}
-
-// ─── Theory contents: 关联 items 取 title ───
-async function buildTheoryContents() {
-  const [theories, items] = await Promise.all([
-    fetchAll('theory_contents', 'item_id'),
+  // v2: 题目 → 小节的归属经 item_questions(role, order_index) 关联承载
+  const [links, items] = await Promise.all([
+    supabase.from('item_questions')
+      .select('item_id, role, order_index, questions(*)')
+      .order('order_index', { ascending: true }),
     fetchAll('items', 'id')
   ]);
-  const itemMap = new Map(items.map(it => [it.id, it]));
+  if (links.error) throw new Error(`fetch item_questions: ${links.error.message}`);
 
-  return theories.map(t => {
-    const item = itemMap.get(t.item_id);
+  const itemMeta = new Map(items.map(it => [it.id, it]));
+  return (links.data || []).map(l => {
+    const q = l.questions;
+    if (!q) return null;
+    const it = itemMeta.get(l.item_id);
     return {
-      id: `${t.item_id}-theory`,
-      courseId: t.course_id,
-      moduleId: t.module_id,
-      itemId: t.item_id,
-      title: item?.title || '',
-      content: t.content || '',
-      examples: Array.isArray(t.examples) ? t.examples : []
+      ...mapQuestion(q),
+      itemId: l.item_id,
+      role: l.role ?? 'practice',
+      orderIndex: l.order_index ?? 0,
+      courseId: it?.course_id ?? null,
+      moduleId: it?.module_id ?? null
     };
-  });
+  }).filter(Boolean);
 }
 
-// ─── Exam papers: 试卷 → 大题 → 题目 嵌套 ───
+// ─── Theory contents: v2 从 items + item_questions(role='theory_example') join questions 生成 ───
+async function buildTheoryContents() {
+  const [items, links] = await Promise.all([
+    fetchAll('items', 'id'),
+    supabase.from('item_questions')
+      .select('item_id, order_index, questions(*)')
+      .eq('role', 'theory_example')
+      .order('order_index', { ascending: true })
+  ]);
+  if (links.error) throw new Error(`fetch item_questions: ${links.error.message}`);
+
+  const linksByItem = new Map();
+  for (const l of links.data || []) {
+    if (!linksByItem.has(l.item_id)) linksByItem.set(l.item_id, []);
+    linksByItem.get(l.item_id).push({ order_index: l.order_index ?? 0, q: l.questions });
+  }
+
+  return items
+    .filter(it => it.type === 'theory')
+    .map(it => ({
+      id: `${it.id}-theory`,
+      courseId: it.course_id,
+      moduleId: it.module_id,
+      itemId: it.id,
+      title: it.title || '',
+      content: it.content || '',
+      examples: (linksByItem.get(it.id) || []).map(l => mapQuestion(l.q))
+    }));
+}
+
+// ─── Exam papers: 试卷 → 大题 → 题目 嵌套 (v2: exam_paper_questions join questions) ───
 function mapExamQuestion(q) {
   const out = {
     id: q.id,
-    examId: q.exam_id,
-    sectionId: q.section_id,
     questionType: q.question_type,
     title: q.title,
     content: q.content,
@@ -187,8 +196,7 @@ function mapExamQuestion(q) {
     hint: q.hint,
     difficulty: q.difficulty,
     tags: Array.isArray(q.tags) ? q.tags : [],
-    source: q.source,
-    orderIndex: q.order_index
+    source: q.source
   };
   if (Array.isArray(q.options) && q.options.length) out.options = q.options;
   if (Array.isArray(q.answers) && q.answers.length) out.answers = q.answers;
@@ -201,16 +209,26 @@ function mapExamQuestion(q) {
 }
 
 async function buildExamPapers() {
-  const [papers, sections, questions] = await Promise.all([
+  const [papers, sections, links] = await Promise.all([
     fetchAll('exam_papers', 'id'),
     fetchAll('exam_sections', 'order_index'),
-    fetchAll('exam_questions', 'order_index')
+    supabase.from('exam_paper_questions')
+      .select('exam_id, section_id, score, order_index, questions(*)')
+      .order('order_index', { ascending: true })
   ]);
+  if (links.error) throw new Error(`fetch exam_paper_questions: ${links.error.message}`);
 
   const questionsBySection = new Map();
-  for (const q of questions) {
-    if (!questionsBySection.has(q.section_id)) questionsBySection.set(q.section_id, []);
-    questionsBySection.get(q.section_id).push(q);
+  for (const l of links.data || []) {
+    if (!l.questions) continue;
+    if (!questionsBySection.has(l.section_id)) questionsBySection.set(l.section_id, []);
+    questionsBySection.get(l.section_id).push({
+      ...mapExamQuestion(l.questions),
+      examId: l.exam_id,
+      sectionId: l.section_id,
+      orderIndex: l.order_index ?? 0,
+      score: l.score
+    });
   }
 
   const sectionsByExam = new Map();
@@ -227,9 +245,9 @@ async function buildExamPapers() {
     term: p.term || '',
     duration: p.duration,
     sections: (sectionsByExam.get(p.id) || []).map(s => ({
-      // 与现有 examPapers.js 一致：大题只保留 title + questions
       title: s.title,
-      questions: (questionsBySection.get(s.id) || []).map(mapExamQuestion)
+      questions: (questionsBySection.get(s.id) || [])
+        .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
     }))
   }));
 }
@@ -252,10 +270,8 @@ async function main() {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  // 任何表失败都不阻塞其他表，最终 exit 0
   let hasError = false;
 
-  // Courses
   try {
     const courses = await buildCourses();
     if (courses.length === 0) {
@@ -268,7 +284,6 @@ async function main() {
     hasError = true;
   }
 
-  // Questions
   try {
     const questions = await buildQuestions();
     if (questions.length === 0) {
@@ -281,11 +296,10 @@ async function main() {
     hasError = true;
   }
 
-  // Theory contents
   try {
     const theories = await buildTheoryContents();
     if (theories.length === 0) {
-      console.warn('⚠ theory_contents 表为空，跳过 theoryContents.js');
+      console.warn('⚠ 无理论小节，跳过 theoryContents.js');
     } else {
       writeFile('theoryContents.js', 'THEORY_CONTENTS', theories);
     }
@@ -294,7 +308,6 @@ async function main() {
     hasError = true;
   }
 
-  // Exam papers
   try {
     const papers = await buildExamPapers();
     if (papers.length === 0) {
