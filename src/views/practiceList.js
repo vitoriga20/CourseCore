@@ -161,6 +161,20 @@ function renderTheoryExamples(item) {
 
   if (examples.length === 0) return '';
 
+  // 从持久化的 completedQuestions 回填内存态 theoryResults/theoryAnswers，
+  // 使刷新后进度条、边框、反馈、解法、选项勾选、提交按钮保持一致。
+  for (const q of examples) {
+    if (state.theoryResults[q.id]) continue;
+    const rec = state.completedQuestions[q.id];
+    if (!rec) continue;
+    state.theoryResults[q.id] = {
+      passed: rec.passed === true,
+      manual: rec.passed === null,
+      userAnswer: rec.lastAnswer ?? null,
+    };
+    state.theoryAnswers[q.id] = rec.lastAnswer ?? null;
+  }
+
   const passedCount = examples.filter(q => {
     const r = state.theoryResults[q.id];
     return r && (r.passed || r.manual);

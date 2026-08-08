@@ -9,16 +9,22 @@ export const THEORY_CONTENTS = [
     "content": "## 这里是映射与函数\n",
     "examples": [
       {
-        "text": "1+1等于几",
-        "image": "",
-        "answer": 1,
+        "id": "c1-m1-i1-ex0",
+        "questionType": 0,
+        "title": "例题 1",
+        "content": "1+1等于几",
+        "answer": "1",
+        "solution": "你猜是多少",
+        "hint": null,
+        "difficulty": 1,
+        "tags": [],
+        "source": null,
         "options": [
           "1",
           "2",
           "3",
           "4"
-        ],
-        "solution": "你猜是多少"
+        ]
       }
     ]
   },
@@ -32,12 +38,552 @@ export const THEORY_CONTENTS = [
     "examples": []
   },
   {
+    "id": "c1-m1-i3-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m1",
+    "itemId": "c1-m1-i3",
+    "title": "函数极限",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m1-i4-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m1",
+    "itemId": "c1-m1-i4",
+    "title": "无穷小与无穷大",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m1-i5-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m1",
+    "itemId": "c1-m1-i5",
+    "title": "极限运算法则",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m1-i6-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m1",
+    "itemId": "c1-m1-i6",
+    "title": "极限存在准则与两个重要极限",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m1-i7-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m1",
+    "itemId": "c1-m1-i7",
+    "title": "无穷小的比较",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m1-i8-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m1",
+    "itemId": "c1-m1-i8",
+    "title": "函数的连续性与间断点",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m1-i9-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m1",
+    "itemId": "c1-m1-i9",
+    "title": "连续函数的运算与闭区间性质",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m2-i1-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m2",
+    "itemId": "c1-m2-i1",
+    "title": "导数的概念",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m2-i2-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m2",
+    "itemId": "c1-m2-i2",
+    "title": "函数的求导法则",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m2-i3-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m2",
+    "itemId": "c1-m2-i3",
+    "title": "高阶导数",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m2-i4-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m2",
+    "itemId": "c1-m2-i4",
+    "title": "隐函数及由参数方程确定的函数求导",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m2-i5-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m2",
+    "itemId": "c1-m2-i5",
+    "title": "函数的微分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m3-i1-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m3",
+    "itemId": "c1-m3-i1",
+    "title": "微分中值定理",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m3-i2-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m3",
+    "itemId": "c1-m3-i2",
+    "title": "洛必达法则",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m3-i3-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m3",
+    "itemId": "c1-m3-i3",
+    "title": "泰勒公式",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m3-i4-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m3",
+    "itemId": "c1-m3-i4",
+    "title": "函数的单调性与极值",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m3-i5-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m3",
+    "itemId": "c1-m3-i5",
+    "title": "函数图形的描绘",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m4-i1-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m4",
+    "itemId": "c1-m4-i1",
+    "title": "不定积分的概念与性质",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m4-i2-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m4",
+    "itemId": "c1-m4-i2",
+    "title": "换元积分法",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m4-i3-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m4",
+    "itemId": "c1-m4-i3",
+    "title": "分部积分法",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m4-i4-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m4",
+    "itemId": "c1-m4-i4",
+    "title": "有理函数的积分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m5-i1-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m5",
+    "itemId": "c1-m5-i1",
+    "title": "定积分的概念与性质",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m5-i2-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m5",
+    "itemId": "c1-m5-i2",
+    "title": "微积分基本公式",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m5-i3-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m5",
+    "itemId": "c1-m5-i3",
+    "title": "定积分的换元法和分部积分法",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m5-i4-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m5",
+    "itemId": "c1-m5-i4",
+    "title": "反常积分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m6-i1-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m6",
+    "itemId": "c1-m6-i1",
+    "title": "平面图形的面积",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m6-i2-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m6",
+    "itemId": "c1-m6-i2",
+    "title": "体积",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m6-i3-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m6",
+    "itemId": "c1-m6-i3",
+    "title": "平面曲线的弧长",
+    "content": "",
+    "examples": []
+  },
+  {
     "id": "c1-m7-i1-theory",
     "courseId": "calculus-1",
     "moduleId": "c1-m7",
     "itemId": "c1-m7-i1",
     "title": "微分方程的基本概念",
     "content": "## 这里是微分方程的基本概念",
+    "examples": []
+  },
+  {
+    "id": "c1-m7-i2-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m7",
+    "itemId": "c1-m7-i2",
+    "title": "可分离变量的微分方程",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m7-i3-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m7",
+    "itemId": "c1-m7-i3",
+    "title": "一阶线性微分方程",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c1-m7-i4-theory",
+    "courseId": "calculus-1",
+    "moduleId": "c1-m7",
+    "itemId": "c1-m7-i4",
+    "title": "二阶常系数线性微分方程",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m1-i1-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m1",
+    "itemId": "c2-m1-i1",
+    "title": "向量及其线性运算",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m1-i2-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m1",
+    "itemId": "c2-m1-i2",
+    "title": "数量积、向量积与混合积",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m1-i3-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m1",
+    "itemId": "c2-m1-i3",
+    "title": "曲面及其方程",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m1-i4-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m1",
+    "itemId": "c2-m1-i4",
+    "title": "空间曲线及其方程",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m1-i5-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m1",
+    "itemId": "c2-m1-i5",
+    "title": "平面及其方程",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m1-i6-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m1",
+    "itemId": "c2-m1-i6",
+    "title": "空间直线及其方程",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m2-i1-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m2",
+    "itemId": "c2-m2-i1",
+    "title": "多元函数的基本概念",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m2-i2-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m2",
+    "itemId": "c2-m2-i2",
+    "title": "偏导数",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m2-i3-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m2",
+    "itemId": "c2-m2-i3",
+    "title": "全微分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m2-i4-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m2",
+    "itemId": "c2-m2-i4",
+    "title": "多元复合函数的求导法则",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m2-i5-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m2",
+    "itemId": "c2-m2-i5",
+    "title": "隐函数的求导公式",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m2-i6-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m2",
+    "itemId": "c2-m2-i6",
+    "title": "多元函数微分学的几何应用",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m2-i7-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m2",
+    "itemId": "c2-m2-i7",
+    "title": "方向导数与梯度",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m2-i8-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m2",
+    "itemId": "c2-m2-i8",
+    "title": "多元函数的极值及其求法",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m3-i1-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m3",
+    "itemId": "c2-m3-i1",
+    "title": "二重积分的概念与性质",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m3-i2-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m3",
+    "itemId": "c2-m3-i2",
+    "title": "二重积分的计算法",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m3-i3-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m3",
+    "itemId": "c2-m3-i3",
+    "title": "三重积分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m3-i4-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m3",
+    "itemId": "c2-m3-i4",
+    "title": "重积分的应用",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m4-i1-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m4",
+    "itemId": "c2-m4-i1",
+    "title": "对弧长的曲线积分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m4-i2-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m4",
+    "itemId": "c2-m4-i2",
+    "title": "对坐标的曲线积分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m4-i3-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m4",
+    "itemId": "c2-m4-i3",
+    "title": "格林公式及其应用",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m4-i4-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m4",
+    "itemId": "c2-m4-i4",
+    "title": "对面积的曲面积分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m4-i5-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m4",
+    "itemId": "c2-m4-i5",
+    "title": "对坐标的曲面积分",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m4-i6-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m4",
+    "itemId": "c2-m4-i6",
+    "title": "高斯公式与斯托克斯公式",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m5-i1-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m5",
+    "itemId": "c2-m5-i1",
+    "title": "常数项级数的概念和性质",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m5-i2-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m5",
+    "itemId": "c2-m5-i2",
+    "title": "常数项级数的审敛法",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m5-i3-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m5",
+    "itemId": "c2-m5-i3",
+    "title": "幂级数",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m5-i4-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m5",
+    "itemId": "c2-m5-i4",
+    "title": "函数展开成幂级数",
+    "content": "",
+    "examples": []
+  },
+  {
+    "id": "c2-m5-i5-theory",
+    "courseId": "calculus-2",
+    "moduleId": "c2-m5",
+    "itemId": "c2-m5-i5",
+    "title": "函数的傅里叶级数",
+    "content": "",
     "examples": []
   },
   {
@@ -57,8 +603,47 @@ export const THEORY_CONTENTS = [
     "title": "质点运动学与相对运动",
     "content": "### 自然坐标系中的加速度\n\n在轨迹上某点取**切向单位矢量 $\\\\vec{e}_t$**（指向运动方向）和**法向单位矢量 $\\\\vec{e}_n$**（指向曲率中心）。加速度被分解为两个相互垂直的分量：\n\n- **切向加速度 $a_t$**：\n\n  $$ a_t = \\\\frac{dv}{dt} $$\n\n  它只改变速度的**大小**。$a_t > 0$ 表示加速运动，$a_t < 0$ 表示减速运动。\n\n- **法向加速度（向心加速度）$a_n$**：\n\n  $$ a_n = \\\\frac{v^2}{\\\\rho} $$\n\n  它只改变速度的**方向**。$\\\\rho$ 为该点轨迹的曲率半径，方向始终指向曲线的凹侧（曲率中心）。\n\n- **总加速度**：\n\n  $$ \\\\vec{a} = a_t \\\\vec{e}_t + a_n \\\\vec{e}_n, \\\\quad a = \\\\sqrt{a_t^2 + a_n^2} $$\n\n### 物理图像与拓展\n\n**圆周运动**：当轨迹是圆时，$\\\\rho = R$（半径）。引入**角量**描述：\n\n- 角位置 $\\\\theta(t)$，角速度 $\\\\omega = \\\\frac{d\\\\theta}{dt}$，角加速度 $\\\\alpha = \\\\frac{d\\\\omega}{dt} = \\\\frac{d^2\\\\theta}{dt^2}$。\n- **线量与角量的关系（核心纽带）**：\n\n  $$ s = R\\\\theta \\\\quad (\\\\text{弧长}), \\\\quad v = R\\\\omega, \\\\quad a_t = R\\\\alpha, \\\\quad a_n = R\\\\omega^2 $$\n\n- **匀角加速圆周运动公式**（类比匀变速直线运动）：\n\n  $$ \\\\omega = \\\\omega_0 + \\\\alpha t, \\\\quad \\\\theta = \\\\omega_0 t + \\\\frac{1}{2}\\\\alpha t^2, \\\\quad \\\\omega^2 - \\\\omega_0^2 = 2\\\\alpha\\\\theta $$\n\n**为什么匀速圆周运动仍有加速度？** 因为 $a_t = 0$（速度大小不变），但 $a_n = v^2/R \\\\neq 0$（速度方向不断改变）。这个加速度指向圆心，称为向心加速度。\n\n### 相对运动\n\n研究在不同参考系中观察到的同一物体的运动之间的关系。设**绝对参考系**（地面）为 $S$，**相对参考系**（运动的物体，如船、风）为 $S'$。\n\n**伽利略速度变换（Galilean Transformation）**：\n\n$$ \\\\vec{v}_{对地} = \\\\vec{v}_{对牵连} + \\\\vec{v}_{牵连对地} $$\n\n简写为：$\\\\vec{v}_{绝} = \\\\vec{v}_{相} + \\\\vec{v}_{牵}$。",
     "examples": [
-      "q-physics-b-1-p1b-m1-02-training-002",
-      "q-physics-b-1-p1b-m1-02-training-004"
+      {
+        "id": "q-physics-b-1-p1b-m1-02-training-002",
+        "questionType": 0,
+        "title": "第 2 题",
+        "content": "质点作半径为 $R$ 的变速圆周运动时的加速度大小为（   ）（$v$ 表示任一时刻质点的速率）",
+        "answer": "3",
+        "solution": "变速圆周运动的加速度由两个互相垂直的分量组成：\n\n- **切向加速度**：$a_t = \\frac{dv}{dt}$，改变速度大小。\n- **法向加速度**：$a_n = \\frac{v^2}{R}$，改变速度方向。\n\n加速度是矢量，需用勾股定理合成：\n\n$$a = \\sqrt{a_n^2 + a_t^2} = \\sqrt{\\left(\\frac{v^2}{R}\\right)^2 + \\left(\\frac{dv}{dt}\\right)^2}$$\n\n故选 **D**。\n\n注意：匀速圆周运动时 $\\frac{dv}{dt}=0$，则 $a=\\frac{v^2}{R}$（对应选项 B）。",
+        "hint": null,
+        "difficulty": 1,
+        "tags": [
+          "选择题"
+        ],
+        "source": "力学练习二.pdf 第2题",
+        "options": [
+          "$\\frac{dv}{dt}$",
+          "$\\frac{v^2}{R}$",
+          "$\\frac{v^2}{R} + \\frac{dv}{dt}$",
+          "$\\sqrt{\\left(\\frac{v^2}{R}\\right)^2 + \\left(\\frac{dv}{dt}\\right)^2}$"
+        ]
+      },
+      {
+        "id": "q-physics-b-1-p1b-m1-02-training-004",
+        "questionType": 0,
+        "title": "第 4 题",
+        "content": "质点的质量为 $m$，置于光滑球面的顶点 $A$ 处（球面固定不动），如图所示。当它由静止开始下滑到球面上 $B$ 点时（设 $OB$ 与竖直方向夹角为 $\\theta$），它的加速度的大小为（   ）",
+        "answer": "3",
+        "solution": "质点在光滑球面上运动，只有重力做功，机械能守恒。下降高度 $h = R(1-\\cos\\theta)$，故：\n\n$$mgR(1-\\cos\\theta) = \\frac{1}{2}mv^2$$\n\n$$v^2 = 2gR(1-\\cos\\theta)$$\n\n在自然坐标系下：\n\n- **法向加速度**：$a_n = \\frac{v^2}{R} = 2g(1-\\cos\\theta)$\n- **切向加速度**：$a_t = g\\sin\\theta$\n\n总加速度大小为：\n\n$$a = \\sqrt{a_n^2 + a_t^2} = g\\sqrt{4(1-\\cos\\theta)^2 + \\sin^2\\theta}$$\n\n故选 **D**。",
+        "hint": null,
+        "difficulty": 1,
+        "tags": [
+          "选择题"
+        ],
+        "source": "力学练习二.pdf 第4题",
+        "options": [
+          "$a = g\\sqrt{1 - \\cos\\theta}$",
+          "$a = g\\sin\\theta$",
+          "$a = g$",
+          "$a = g\\sqrt{4\\sin^2\\theta + (1 - \\cos\\theta)^2}$"
+        ],
+        "image": "/physics/training/p1b-m1-02-training/d9ee40d816856f6b75588d5c5adde7fbe6076a36381795ded5d2220b3ba1b1f9.jpg"
+      }
     ]
   },
   {
@@ -69,9 +654,61 @@ export const THEORY_CONTENTS = [
     "title": "牛顿运动定律与非惯性系",
     "content": "### 牛顿第一定律（惯性定律）\n\n任何物体都保持静止或匀速直线运动状态，直到外力迫使它改变这种状态为止。**定义了惯性参考系**，揭示了力是改变运动状态的原因（不是维持运动的原因）。\n\n### 牛顿第二定律（核心定律）\n\n物体受到外力作用时，所获得的加速度的大小与合外力的大小成正比，与物体质量成反比，加速度方向与合外力方向相同。\n\n$$ \\\\vec{F} = m\\\\vec{a} $$\n\n### 微分形式（长理重点/难点）\n\n当质量不变时，更本质的写法是：\n\n$$ \\\\vec{F} = \\\\frac{d\\\\vec{p}}{dt} = \\\\frac{d(m\\\\vec{v})}{dt} $$\n\n在变力问题中，常写为分量形式：\n\n$$ F_x = m\\\\frac{dv_x}{dt} = m\\\\frac{d^2x}{dt^2}, \\\\qquad F_y = m\\\\frac{dv_y}{dt} = m\\\\frac{d^2y}{dt^2} $$\n\n**注意**：\n\n1. 这是**瞬时关系**——力一旦消失，加速度立刻消失。\n2. 是**矢量关系**——$\\\\vec{F}$ 和 $\\\\vec{a}$ 始终同向，但 $\\\\vec{F}$ 和 $\\\\vec{v}$ 不一定同向（如抛体运动）。\n3. 只适用于**宏观、低速（$v \\\\ll c$）**的质点。\n\n### 牛顿第三定律（作用力与反作用力）\n\n两个物体之间的作用力和反作用力，总是大小相等、方向相反，作用在同一条直线上，且分别作用在两个不同的物体上。\n\n### 深度辨析与拓展\n\n**常见的力**：\n\n1. **重力**：$\\\\vec{G} = m\\\\vec{g}$（方向竖直向下）。\n2. **弹力**：当物体发生弹性形变时产生。**胡克定律**：$\\\\vec{F} = -k\\\\vec{x}$（$k$ 为劲度系数，$x$ 为形变量）。\n3. **摩擦力**：\n   - **静摩擦力**：大小在 $0 \\\\sim f_{\\\\max} = \\\\mu_s N$ 之间，方向与相对运动趋势方向相反。**静摩擦力随外力变化而变化**。\n   - **滑动摩擦力**：$f_k = \\\\mu_k N$，方向与相对运动方向相反。$\\\\mu_s > \\\\mu_k$。\n\n**隔离法与整体法**：\n\n- **隔离法**：对系统中的每个物体分别受力分析，列方程。优点：内力清晰。缺点：方程多。\n- **整体法**：把多个物体视为一个系统，只分析系统外力，不分析内力。优点：简化计算。使用前提：系统内各物体加速度相同。\n\n### 非惯性系与惯性力\n\n- **惯性系**：牛顿定律成立的参考系。相对于地面静止或匀速直线运动的参考系可近似视为惯性系。\n- **非惯性系**：相对于惯性系作加速运动的参考系。在非惯性系中，牛顿定律不成立。\n- **惯性力（Fictitious Force）**：为了使牛顿定律在非惯性系中形式上成立而引入的假想力。\n\n  $$ \\\\vec{F}_{惯} = -m\\\\vec{a}_{0} $$\n\n  其中 $\\\\vec{a}_0$ 是非惯性系相对于惯性系的加速度。**注意**：惯性力没有施力物体，不是真实的力。\n\n**物理图像与拓展**：\n\n- **电梯问题**：电梯加速上升（向上加速度 $a$），以电梯为参考系，人受到重力 $mg$ 向下，惯性力 $ma$ 向下，地面对人的支持力 $N$ 向上，三力平衡：$N = m(g + a)$，所以人对地板压力变大（超重）。电梯加速下降则失重。\n- **离心力**：在旋转的参考系中，物体受到沿半径向外的惯性力（离心力），方向与向心加速度方向相反。这就是“转弯时被甩出去的感觉”的真正来源——不是真实力，而是惯性效应。",
     "examples": [
-      "q-physics-b-1-p1b-m1-03-training-001",
-      "q-physics-b-1-p1b-m1-03-training-002",
-      "q-physics-b-1-p1b-m1-03-training-008"
+      {
+        "id": "q-physics-b-1-p1b-m1-03-training-001",
+        "questionType": 0,
+        "title": "第 1 题",
+        "content": "在足够长的管中装有粘滞液体，放入钢球由静止开始向下运动，下列说法中正确的是：（    ）",
+        "answer": "3",
+        "solution": "钢球在粘滞液体中向下运动时，受三个力：竖直向下的重力 $G$、竖直向上的浮力 $F_{浮}$ 和竖直向上的粘滞阻力 $f$。粘滞阻力 $f$ 随速度增大而增大。\n\n1. **初始状态**：$v=0$，$f=0$，因钢球密度大于液体，$G > F_{浮}$，合力向下，钢球开始向下加速。\n2. **加速过程**：随着 $v$ 增大，$f$ 增大，向下的合力 $F_{合}=G-F_{浮}-f$ 逐渐减小，加速度 $a$ 逐渐减小。但只要 $F_{合}>0$，速度仍在增大。\n3. **最终状态**：当 $G = F_{浮}+f$ 时，$F_{合}=0$，$a=0$，钢球以此时的速度向下做匀速直线运动，即达到**收尾速度（Terminal Velocity）**。\n\n因此钢球运动越来越快，最后达到稳定的速度。故选 **D**。",
+        "hint": null,
+        "difficulty": 1,
+        "tags": [
+          "选择题"
+        ],
+        "source": "力学练习三.pdf 第1题",
+        "options": [
+          "钢球运动越来越慢，最后静止不动",
+          "钢球运动越来越慢，最后达到稳定的速度",
+          "钢球运动越来越快，一直无限制地增加",
+          "钢球运动越来越快，最后达到稳定的速度"
+        ]
+      },
+      {
+        "id": "q-physics-b-1-p1b-m1-03-training-002",
+        "questionType": 0,
+        "title": "第 2 题",
+        "content": "质量分别为 $m$ 和 $M$ 的滑块 $A$ 和 $B$，叠放在光滑水平桌面上，如图所示。$A$、$B$ 间静摩擦系数为 $\\mu_s$，滑动摩擦系数为 $\\mu_k$，系统原处于静止。今有一水平力作用于 $A$ 上，要使 $A$、$B$ 不发生相对滑动，则应有（    ）",
+        "answer": "1",
+        "solution": "要使 $A$、$B$ 不发生相对滑动，两者必须保持相对静止，即具有相同加速度。此时 $A$、$B$ 之间的摩擦力为静摩擦力。\n\n**整体法**：将 $A$、$B$ 看作整体，总质量为 $(M+m)$，只受水平拉力 $F$：\n\n$$F = (M+m)a$$\n\n**隔离法**：单独分析滑块 $B$，水平方向只受 $A$ 对 $B$ 的静摩擦力 $f$：\n\n$$f = Ma$$\n\n临界条件为静摩擦力达到最大静摩擦力：\n\n$$f_{max} = \\mu_s N_A = \\mu_s mg$$\n\n（$N_A$ 是 $A$ 对 $B$ 的压力，大小等于 $A$ 的重力 $mg$）\n\n由隔离法得系统最大加速度：\n\n$$Ma_{max} = \\mu_s mg \\Rightarrow a_{max} = \\frac{\\mu_s mg}{M}$$\n\n代入整体法：\n\n$$F_{max} = (M+m)a_{max} = (M+m)\\cdot\\frac{\\mu_s mg}{M} = \\mu_s mg\\left(1+\\frac{m}{M}\\right)$$\n\n故选 **B**。",
+        "hint": null,
+        "difficulty": 1,
+        "tags": [
+          "选择题"
+        ],
+        "source": "力学练习三.pdf 第2题",
+        "options": [
+          "$F \\leq \\mu_s mg$",
+          "$F \\leq \\mu_s (1 + m/M)mg$",
+          "$F \\leq \\mu_s (m+M)mg$",
+          "$F \\leq \\mu_s mg \\frac{m}{M}$"
+        ],
+        "image": "/physics/training/p1b-m1-03-training/fa05c9f7443c261e509c0a00757428cdfaeed2a7f62dc8b730aba305f38e990b.jpg"
+      },
+      {
+        "id": "q-physics-b-1-p1b-m1-03-training-008",
+        "questionType": 3,
+        "title": "第 8 题",
+        "content": "质量为 $m$ 的子弹以速度 $v_0$ 水平射入沙土中，设子弹所受阻力与速度反向，大小与速度成正比，比例系数为 $K$，忽略子弹的重力。求：\n\n（1）子弹射入沙土后，速度随时间变化的函数式；\n\n（2）子弹进入沙土的最大深度。",
+        "answer": "$v(t)=v_0 e^{-rac{K}{m}t}$，$x_{max}=rac{mv_0}{K}$",
+        "solution": "本题属于质点动力学中的变力问题。阻力 $f=-Kv$ 随速度变化，加速度不是常数，不能直接使用匀变速直线运动公式，需回归牛顿第二定律的微分形式。\n\n### 第（1）问：求 $v(t)$\n\n由牛顿第二定律：\n\n$$-Kv = m\\frac{dv}{dt}$$\n\n分离变量：\n\n$$\\frac{dv}{v} = -\\frac{K}{m}dt$$\n\n代入初始条件 $t=0$ 时 $v=v_0$，两边积分：\n\n$$\\int_{v_0}^{v}\\frac{1}{v}dv = \\int_0^t -\\frac{K}{m}dt$$\n\n$$\\ln\\frac{v}{v_0} = -\\frac{K}{m}t$$\n\n$$v(t) = v_0 e^{-\\frac{K}{m}t}$$\n\n### 第（2）问：求最大深度 $x_{max}$\n\n利用链式法则 $a = \\frac{dv}{dt} = v\\frac{dv}{dx}$，代入牛顿第二定律：\n\n$$-Kv = mv\\frac{dv}{dx}$$\n\n因 $v \\neq 0$，两边消去 $v$：\n\n$$-Kdx = mdv$$\n\n代入 $x=0$ 时 $v=v_0$，$x=x_{max}$ 时 $v=0$，积分：\n\n$$\\int_0^{x_{max}} -Kdx = \\int_{v_0}^{0} mdv$$\n\n$$-Kx_{max} = -mv_0$$\n\n$$x_{max} = \\frac{mv_0}{K}$$",
+        "hint": null,
+        "difficulty": 1,
+        "tags": [
+          "计算题"
+        ],
+        "source": "力学练习三.pdf 第8题"
+      }
     ]
   },
   {
