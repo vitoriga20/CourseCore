@@ -199,7 +199,7 @@ export async function getReviewQueue(userId, subjectId = null) {
     if (!isSupabaseConfigured()) return [];
     let q = supabase
       .from('wrong_book')
-      .select(`*,exam_questions!inner(id,question_type,title,content,options,answer,solution,tags)`)
+      .select(`*,questions!inner(id,question_type,title,content,options,answer,solution,tags)`)
       .eq('user_id', userId)
       .neq('status', '已掌握')
       .order('next_review_at', { ascending: true });
@@ -221,7 +221,7 @@ export async function getTodayReview(userId) {
     const now = new Date().toISOString();
     const { data, error } = await supabase
       .from('wrong_book')
-      .select(`*,exam_questions!inner(id,question_type,title,content,options,answer,solution,tags)`)
+      .select(`*,questions!inner(id,question_type,title,content,options,answer,solution,tags)`)
       .eq('user_id', userId)
       .neq('status', '已掌握')
       .lte('next_review_at', now)
@@ -246,7 +246,7 @@ export async function getStats(userId, subjectId = null) {
     if (!isSupabaseConfigured()) return { byReason: {}, byTag: {} };
     let q = supabase
       .from('wrong_book')
-      .select('reason, status, exam_questions(tags)')
+      .select('reason, status, questions(tags)')
       .eq('user_id', userId);
     if (subjectId) q = q.eq('subject_id', subjectId);
     const { data, error } = await q;
@@ -261,7 +261,7 @@ export async function getStats(userId, subjectId = null) {
 
     const byTag = {};
     for (const e of data) {
-      const tags = e.exam_questions?.tags || [];
+      const tags = e.questions?.tags || [];
       for (const t of tags) {
         byTag[t] = (byTag[t] || 0) + 1;
       }

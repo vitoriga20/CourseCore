@@ -36,7 +36,7 @@ async function fetchQuestionsByType(subject, questionType) {
 }
 
 function fetchQuestionsFromWrongEntries(wrongEntries) {
-  const questions = wrongEntries.map(e => e.exam_questions).filter(Boolean);
+  const questions = wrongEntries.map(e => e.questions).filter(Boolean);
   const subjectId = wrongEntries[0]?.subject_id || '';
   return {
     questions,
@@ -54,12 +54,12 @@ async function fetchQuestionsByMyPaper(myPaperId) {
     .maybeSingle();
   if (error || !data) return { questions: [], title: '', subjectId: '' };
 
-  // 按 question_ids 顺序从 exam_questions 取题
+  // 按 question_ids 顺序从统一 questions 表取题
   const ids = data.question_ids || [];
   if (ids.length === 0) return { questions: [], title: data.name, subjectId: '' };
 
   const { data: qs, error: e2 } = await supabase
-    .from('exam_questions')
+    .from('questions')
     .select('*')
     .in('id', ids);
   if (e2 || !qs) return { questions: [], title: data.name, subjectId: '' };
@@ -80,7 +80,7 @@ async function fetchQuestionsByMyPaper(myPaperId) {
  * @param {Object} params - 入参（四选一）
  * @param {string} params.examId - 按试卷
  * @param {string} params.subject + {number} params.questionType - 按题型
- * @param {Array} params.wrongEntries - 错题复盘（wrong_book JOIN exam_questions 的结果）
+ * @param {Array} params.wrongEntries - 错题复盘（wrong_book JOIN questions 的结果）
  * @param {string} params.myPaperId - 我的试卷
  * @returns {Promise<{virtualId, questions, title, mode, sourceId, subjectId}>}
  */

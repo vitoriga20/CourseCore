@@ -68,7 +68,7 @@ async function fetchExamPapersFromBff() {
           examId: sec.exam_id,
           title: sec.title,
           orderIndex: sec.order_index,
-          questions: (sec.exam_questions || [])
+          questions: (sec.questions || [])
             .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
             .map(normalizeQuestion)
         }))

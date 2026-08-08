@@ -274,7 +274,7 @@ function _renderWrongQueue(entries) {
     return;
   }
   el.innerHTML = entries.map(e => {
-    const q = e.exam_questions || {};
+    const q = e.questions || {};
     const typeName = TYPE_NAMES[q.question_type] || '题型';
     const statusStyle = STATUS_STYLES[e.status] || '';
     const titleText = (q.title || q.content || '').slice(0, 60);
