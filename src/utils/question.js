@@ -1,18 +1,47 @@
 import { QUESTIONS } from '../data/questions.js';
 import { EXAM_PAPERS } from '../data/examPapers.js';
+import { THEORY_CONTENTS } from '../data/theoryContents.js';
+import { COURSES } from '../data/courses.js';
 import { state } from '../state.js';
 
 // 运行时从 Supabase 读取的题目缓存（按 itemId 分组）与本地 QUESTIONS 合并
 // v2: 训练题在 state.runtimeQuestions（经 item_questions role='practice'），
 //     理论例题在 state.runtimeTheoryContent[itemId].examples（经 role='theory_example'），
 //     两者都纳入该小节的题目集合，供进度判定/上一题下一题使用。
+// 理论小节只有例题（role='theory_example'），不含训练题（role='practice'）。
+// 训练刷题/进度判定对理论小节只统计例题，避免误挂的 practice 训练题阻塞理论进度。
+function getItemType(itemId) {
+  for (const c of COURSES) {
+    for (const m of c.modules) {
+      for (const i of m.items) if (i.id === itemId) return i.type;
+    }
+  }
+  return null;
+}
+
 export function getItemQuestions(itemId) {
-  const runtime = state.runtimeQuestions[itemId] || [];
+  const isTheory = getItemType(itemId) === 'theory';
+  const runtime = isTheory ? [] : (state.runtimeQuestions[itemId] || []);
   const theoryExamples = state.runtimeTheoryContent[itemId]?.examples || [];
-  const local = QUESTIONS.filter(q => q.itemId === itemId);
+  const local = isTheory ? [] : QUESTIONS.filter(q => q.itemId === itemId);
+
+  // 静态理论例题（THEORY_CONTENTS.examples）也纳入该小节题目集合，
+  // 使 syncItemProgress 能对带例题的理论小节做进度判定。（与 normalizeTheoryExamples 同源）
+  const staticTheory = (THEORY_CONTENTS.find(t => t.itemId === itemId)?.examples || [])
+    .map((ex, idx) => ex.id ? ex : {
+      id: `${itemId}-ex${idx}`,
+      questionType: 0,
+      title: `例题 ${idx + 1}`,
+      content: ex.content || ex.text || '',
+      image: ex.image || '',
+      options: ex.options || [],
+      answer: ex.answer !== undefined ? String(ex.answer) : '0',
+      solution: ex.solution || '',
+      itemId: itemId,
+    });
 
   const mergedMap = new Map();
-  for (const q of [...local, ...runtime, ...theoryExamples]) mergedMap.set(q.id, q);
+  for (const q of [...local, ...runtime, ...theoryExamples, ...staticTheory]) mergedMap.set(q.id, q);
   return Array.from(mergedMap.values()).sort((a, b) => {
     const ai = Number(a.order_index ?? a.sort_order ?? a.order ?? 0);
     const bi = Number(b.order_index ?? b.sort_order ?? b.order ?? 0);

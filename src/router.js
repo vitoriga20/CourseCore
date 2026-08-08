@@ -617,10 +617,7 @@ export function handleSubmitTheoryExamples(itemId) {
     markQuestion(q.id, result);
   }
 
-  if (allPassed && !state.progress[itemId]) {
-    state.progress[itemId] = true;
-    saveProgress();
-  }
+  syncItemProgress(itemId);
 
   renderMain();
 
