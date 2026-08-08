@@ -1,5 +1,26 @@
 # Checklist — 统一题库数据模型重构验收
 
+## 验收纪律（必读，铁律）
+
+> 每个验收点都必须能独立 git 回滚。做法：
+>
+> 1. **每完成一个 Task，就单独 commit 一次**，message 带 `（Task N）` 前缀，如 `feat(db): schema-v2 统一题库（Task 1）`。**禁止跨 Task 混提**。
+> 2. **每打钩一个验收点前，先确认对应改动已 commit**。若验证发现 bug → 先修再补 commit，不破坏上一个 checkpoint。
+> 3. **回滚方法**：`git revert <commit>` 或 `git checkout <commit> -- <路径>`。列表见下，每个 Task 一个锚点。
+> 4. **杂项隔离**：与重构无关的改动（docs/tmp/diagrams 等）**不混入** Task commit，单独提交或暂不动，避免污染 checkpoint。
+
+| Task | commit 锚点（回滚目标） | 状态 |
+|------|------------------------|------|
+| Task 1 schema | `a923c32` | Done |
+| Task 2 migrate | `c749d62` | Done |
+| Task 3 seed 策略 | `d1152f9` | Done |
+| Task 4 BFF | *(待提交)* | Todo |
+| Task 5 数据层 | *(待提交)* | Todo |
+| Task 6 例题渲染 | *(待提交)* | Todo |
+| Task 7 管理端 | *(待提交)* | Todo |
+| Task 8 剩余引用 | *(待提交)* | Todo |
+| Task 9 验收 | *(待提交)* | Todo |
+
 ## 数据库 Schema（Task 1）
 - [ ] `questions` 表已删除 `item_id`/`course_id`/`module_id` 冗余列，只保留题目本体字段，`id TEXT PRIMARY KEY` 全局唯一
 - [ ] `item_questions` 表已创建，含 `item_id → items.id`、`question_id → questions.id`、`role('practice'|'theory_example')`、`order_index`，并有唯一约束与索引
