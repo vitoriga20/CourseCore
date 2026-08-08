@@ -126,7 +126,7 @@ export function renderQuizAdapter(virtualId) {
  * 初始化答题会话
  */
 export function initQuizAdapter(virtualId, questions) {
-  initQuizSession(virtualId, questions);
+  return initQuizSession(virtualId, questions);
 }
 
 /**
