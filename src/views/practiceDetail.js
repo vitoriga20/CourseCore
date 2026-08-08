@@ -69,9 +69,8 @@ export function renderPracticeDetail(questionId) {
 export async function hydrateQuestionKps(questionId) {
   const host = document.querySelector(`[data-question-kps][data-qid="${CSS.escape(questionId)}"]`);
   if (!host) return;
-  const source = host.getAttribute('data-source') || 'platform';
   try {
-    const kps = await loadQuestionKps(source, questionId);
+    const kps = await loadQuestionKps(questionId);
     host.outerHTML = renderQuestionKps(kps);
   } catch (e) {
     host.remove();

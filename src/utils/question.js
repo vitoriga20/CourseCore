@@ -3,25 +3,34 @@ import { EXAM_PAPERS } from '../data/examPapers.js';
 import { state } from '../state.js';
 
 // 运行时从 Supabase 读取的题目缓存（按 itemId 分组）与本地 QUESTIONS 合并
+// v2: 训练题在 state.runtimeQuestions（经 item_questions role='practice'），
+//     理论例题在 state.runtimeTheoryContent[itemId].examples（经 role='theory_example'），
+//     两者都纳入该小节的题目集合，供进度判定/上一题下一题使用。
 export function getItemQuestions(itemId) {
   const runtime = state.runtimeQuestions[itemId] || [];
+  const theoryExamples = state.runtimeTheoryContent[itemId]?.examples || [];
   const local = QUESTIONS.filter(q => q.itemId === itemId);
-  if (runtime.length === 0) return local;
 
   const mergedMap = new Map();
-  for (const q of local) mergedMap.set(q.id, q);
-  for (const q of runtime) mergedMap.set(q.id, q);
+  for (const q of [...local, ...runtime, ...theoryExamples]) mergedMap.set(q.id, q);
   return Array.from(mergedMap.values()).sort((a, b) => {
-    const ai = Number(a.sort_order ?? a.order ?? 0);
-    const bi = Number(b.sort_order ?? b.order ?? 0);
+    const ai = Number(a.order_index ?? a.sort_order ?? a.order ?? 0);
+    const bi = Number(b.order_index ?? b.sort_order ?? b.order ?? 0);
     return ai - bi;
   });
 }
 
 export function findQuestion(qid) {
-  // 优先从运行时缓存中查找
+  // 优先从运行时缓存中查找（训练题）
   for (const itemId in state.runtimeQuestions) {
     const found = state.runtimeQuestions[itemId].find(q => q.id === qid);
+    if (found) return found;
+  }
+
+  // 理论例题（v2: examples 为 questions 真实行）
+  for (const itemId in state.runtimeTheoryContent) {
+    const examples = state.runtimeTheoryContent[itemId]?.examples || [];
+    const found = examples.find(q => q.id === qid);
     if (found) return found;
   }
 

@@ -14,43 +14,67 @@ function snakeToCamel(obj) {
   return out;
 }
 
+// v2: 理论正文并入 items.content，例题为 questions 真实行（经 item_questions role='theory_example' 关联）
+// 返回: { content, examples: Question[] } | null
 export async function loadTheoryContent(itemId) {
   if (!supabase || !itemId) return null;
   const { data, error } = await supabase
-    .from('theory_contents')
-    .select('*')
-    .eq('item_id', itemId)
+    .from('items')
+    .select('content')
+    .eq('id', itemId)
     .single();
   if (error && error.code !== 'PGRST116') {
     console.error('loadTheoryContent failed', error);
     return null;
   }
-  return data ? snakeToCamel(data) : null;
+  const content = data?.content ?? null;
+
+  // v2: 例题经 item_questions(role='theory_example') join questions
+  const { data: exLinks, error: exErr } = await supabase
+    .from('item_questions')
+    .select('order_index, questions(*)')
+    .eq('item_id', itemId)
+    .eq('role', 'theory_example')
+    .order('order_index', { ascending: true });
+  if (exErr) {
+    console.error('loadTheoryExamples failed', exErr);
+  }
+  const examples = (exLinks || []).map(l => ({
+    ...l.questions,
+    order_index: l.order_index ?? 0,
+    item_id: itemId,
+  }));
+  return snakeToCamel({ content, examples });
 }
 
+// v2: 训练题经 item_questions(role='practice') join questions
 export async function loadQuestions(itemId) {
   if (!supabase || !itemId) return [];
   const { data, error } = await supabase
-    .from('questions')
-    .select('*')
+    .from('item_questions')
+    .select('order_index, role, questions(*)')
     .eq('item_id', itemId)
-    .order('sort_order', { ascending: true });
+    .order('order_index', { ascending: true });
   if (error) {
     console.error('loadQuestions failed', error);
     return [];
   }
-  return snakeToCamel(data || []);
+  return snakeToCamel((data || []).map(l => ({
+    ...l.questions,
+    order_index: l.order_index ?? 0,
+    role: l.role ?? 'practice',
+    item_id: itemId,
+  })));
 }
 
 // 运行时读取题的考点列表 (公开可读, 学生侧展示)
-// source: 'platform' | 'exam'
+// v2: question_kp 已去 source 多态列, 单一 FK → questions.id
 // 返回: [{ id, role, weight, kp: { id, code, name, courseId, itemId, source } }]
-export async function loadQuestionKps(source, questionId) {
+export async function loadQuestionKps(questionId) {
   if (!supabase || !questionId) return [];
   const { data, error } = await supabase
     .from('question_kp')
     .select('id, role, weight, knowledge_points(id, code, name, course_id, item_id, source)')
-    .eq('source', source)
     .eq('question_id', questionId);
   if (error) {
     console.error('loadQuestionKps failed', error);
