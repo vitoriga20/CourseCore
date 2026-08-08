@@ -39,6 +39,8 @@ const compiled = Object.entries(ROUTES).map(([name, cfg]) => {
 });
 
 export function matchRoute(path) {
+  // 统一去掉尾斜杠（根路径除外），避免 Cloudflare 把 /admin 重定向成 /admin/ 后匹配失败
+  if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
   for (const { name, cfg, regex, paramNames } of compiled) {
     const m = path.match(regex);
     if (!m) continue;
