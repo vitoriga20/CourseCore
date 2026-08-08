@@ -440,7 +440,7 @@ export async function listExamQuestions(examId) {
   if (!supabase) return [];
   let q = supabase
     .from('exam_paper_questions')
-    .select('id, section_id, question_id, score, order_index, questions(*)')
+    .select('id, exam_id, section_id, question_id, score, order_index, questions(*)')
     .order('order_index');
   if (examId) q = q.eq('exam_id', examId);
   const { data, error } = await q;
@@ -452,7 +452,7 @@ export async function listExamQuestions(examId) {
     question_id: l.question_id,
     score: l.score,
     order_index: l.order_index,
-    exam_id: examId,
+    exam_id: l.exam_id,
     ...(l.questions || {})
   }));
 }
