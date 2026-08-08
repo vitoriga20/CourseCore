@@ -1,7 +1,7 @@
-// bff/node_modules/hono/dist/request/constants.js
+// node_modules/hono/dist/request/constants.js
 var GET_MATCH_RESULT = /* @__PURE__ */ Symbol();
 
-// bff/node_modules/hono/dist/utils/buffer.js
+// node_modules/hono/dist/utils/buffer.js
 var bufferToFormData = (arrayBuffer, contentType) => {
   const response = new Response(arrayBuffer, {
     headers: {
@@ -12,7 +12,7 @@ var bufferToFormData = (arrayBuffer, contentType) => {
   return response.formData();
 };
 
-// bff/node_modules/hono/dist/utils/body.js
+// node_modules/hono/dist/utils/body.js
 var isRawRequest = (request) => "headers" in request;
 var parseBody = async (request, options = /* @__PURE__ */ Object.create(null)) => {
   const { all = false, dot = false } = options;
@@ -98,7 +98,7 @@ var handleParsingNestedValues = (form, key, value) => {
   });
 };
 
-// bff/node_modules/hono/dist/utils/url.js
+// node_modules/hono/dist/utils/url.js
 var splitPath = (path) => {
   const paths = path.split("/");
   if (paths[0] === "") {
@@ -300,7 +300,7 @@ var getQueryParams = (url, key) => {
 };
 var decodeURIComponent_ = decodeURIComponent;
 
-// bff/node_modules/hono/dist/request.js
+// node_modules/hono/dist/request.js
 var HonoRequest = class {
   /**
    * `.raw` can get the raw Request object.
@@ -581,7 +581,7 @@ var HonoRequest = class {
   }
 };
 
-// bff/node_modules/hono/dist/utils/html.js
+// node_modules/hono/dist/utils/html.js
 var HtmlEscapedCallbackPhase = {
   Stringify: 1,
   BeforeStream: 2,
@@ -623,7 +623,7 @@ var resolveCallback = async (str, phase, preserveCallbacks, context, buffer) => 
   }
 };
 
-// bff/node_modules/hono/dist/context.js
+// node_modules/hono/dist/context.js
 var TEXT_PLAIN = "text/plain; charset=UTF-8";
 var setDefaultContentType = (contentType, headers) => {
   return {
@@ -1045,7 +1045,7 @@ var Context = class {
   };
 };
 
-// bff/node_modules/hono/dist/adapter/cloudflare-pages/handler.js
+// node_modules/hono/dist/adapter/cloudflare-pages/handler.js
 var handle = (app2) => (eventContext) => {
   return app2.fetch(
     eventContext.request,
@@ -1058,7 +1058,7 @@ var handle = (app2) => (eventContext) => {
   );
 };
 
-// bff/node_modules/hono/dist/compose.js
+// node_modules/hono/dist/compose.js
 var compose = (middleware, onError, onNotFound) => {
   return (context, next) => {
     let index = -1;
@@ -1102,7 +1102,7 @@ var compose = (middleware, onError, onNotFound) => {
   };
 };
 
-// bff/node_modules/hono/dist/router.js
+// node_modules/hono/dist/router.js
 var METHOD_NAME_ALL = "ALL";
 var METHOD_NAME_ALL_LOWERCASE = "all";
 var METHODS = ["get", "post", "put", "delete", "options", "patch", "query"];
@@ -1110,10 +1110,10 @@ var MESSAGE_MATCHER_IS_ALREADY_BUILT = "Can not add a route since the matcher is
 var UnsupportedPathError = class extends Error {
 };
 
-// bff/node_modules/hono/dist/utils/constants.js
+// node_modules/hono/dist/utils/constants.js
 var COMPOSED_HANDLER = "__COMPOSED_HANDLER";
 
-// bff/node_modules/hono/dist/hono-base.js
+// node_modules/hono/dist/hono-base.js
 var notFoundHandler = (c) => {
   return c.text("404 Not Found", 404);
 };
@@ -1490,7 +1490,7 @@ var Hono = class _Hono {
   };
 };
 
-// bff/node_modules/hono/dist/router/reg-exp-router/matcher.js
+// node_modules/hono/dist/router/reg-exp-router/matcher.js
 var emptyParam = [];
 function match(method, path) {
   const matchers = this.buildAllMatchers();
@@ -1511,7 +1511,7 @@ function match(method, path) {
   return match2(method, path);
 }
 
-// bff/node_modules/hono/dist/router/reg-exp-router/node.js
+// node_modules/hono/dist/router/reg-exp-router/node.js
 var LABEL_REG_EXP_STR = "[^/]+";
 var ONLY_WILDCARD_REG_EXP_STR = ".*";
 var TAIL_WILDCARD_REG_EXP_STR = "(?:|/.*)";
@@ -1618,7 +1618,7 @@ var Node = class _Node {
   }
 };
 
-// bff/node_modules/hono/dist/router/reg-exp-router/trie.js
+// node_modules/hono/dist/router/reg-exp-router/trie.js
 var Trie = class {
   #context = { varIndex: 0 };
   #root = new Node();
@@ -1682,7 +1682,7 @@ var Trie = class {
   }
 };
 
-// bff/node_modules/hono/dist/router/reg-exp-router/router.js
+// node_modules/hono/dist/router/reg-exp-router/router.js
 var wildcardRegExpCache = /* @__PURE__ */ Object.create(null);
 function buildWildcardRegExp(path) {
   return wildcardRegExpCache[path] ??= new RegExp(
@@ -1840,7 +1840,7 @@ var RegExpRouter = class {
   }
 };
 
-// bff/node_modules/hono/dist/router/smart-router/router.js
+// node_modules/hono/dist/router/smart-router/router.js
 var SmartRouter = class {
   name = "SmartRouter";
   #routers = [];
@@ -1895,7 +1895,7 @@ var SmartRouter = class {
   }
 };
 
-// bff/node_modules/hono/dist/router/trie-router/node.js
+// node_modules/hono/dist/router/trie-router/node.js
 var emptyParams = /* @__PURE__ */ Object.create(null);
 var hasChildren = (children) => {
   for (const _ in children) {
@@ -2079,7 +2079,7 @@ var Node2 = class _Node2 {
   }
 };
 
-// bff/node_modules/hono/dist/router/trie-router/router.js
+// node_modules/hono/dist/router/trie-router/router.js
 var TrieRouter = class {
   name = "TrieRouter";
   #node;
@@ -2101,7 +2101,7 @@ var TrieRouter = class {
   }
 };
 
-// bff/node_modules/hono/dist/hono.js
+// node_modules/hono/dist/hono.js
 var Hono2 = class extends Hono {
   /**
    * Creates an instance of the Hono class.
@@ -2116,7 +2116,7 @@ var Hono2 = class extends Hono {
   }
 };
 
-// bff/node_modules/hono/dist/middleware/cors/index.js
+// node_modules/hono/dist/middleware/cors/index.js
 var cors = (options) => {
   const opts = {
     origin: "*",
@@ -2449,6 +2449,29 @@ content.get("/questions/:id", async (c) => {
   }
 });
 
+// bff/src/lib/wrong-reasons.ts
+var WRONG_REASONS = Object.freeze([
+  "\u6982\u5FF5 / \u5B9A\u4E49\u6CA1\u638C\u63E1",
+  "\u516C\u5F0F / \u5B9A\u7406\u8BB0\u4E0D\u4F4F",
+  "\u89E3\u9898\u65B9\u6CD5\u4E0D\u4F1A",
+  "\u9898\u578B\u4E0D\u719F",
+  "\u8BA1\u7B97\u8FC7\u7A0B\u51FA\u9519",
+  "\u5BA1\u9898\u9057\u6F0F\u6761\u4EF6"
+]);
+var WRONG_REASON_SET = new Set(WRONG_REASONS);
+function parseWrongReasons(value, required) {
+  if (value === null || value === void 0) return required ? null : [];
+  if (!Array.isArray(value) || required && value.length === 0) return null;
+  const seen = /* @__PURE__ */ new Set();
+  for (const reason of value) {
+    if (typeof reason !== "string" || !WRONG_REASON_SET.has(reason) || seen.has(reason)) {
+      return null;
+    }
+    seen.add(reason);
+  }
+  return [...value];
+}
+
 // bff/src/middleware/auth.ts
 async function verifyAuth(c, next) {
   const authHeader = c.req.header("Authorization");
@@ -2479,7 +2502,7 @@ async function verifyAuth(c, next) {
 
 // bff/src/routes/user.ts
 var user = new Hono2();
-var WRONG_BOOK_FIELDS = "id,user_id,question_id,subject_id,curve_type,stage,wrong_count,right_count,streak_correct_count,status,reason,last_wrong_at,last_correct_at,last_reviewed_at,next_review_at,last_answer,created_at,updated_at";
+var WRONG_BOOK_FIELDS = "id,user_id,question_id,subject_id,curve_type,stage,wrong_count,right_count,streak_correct_count,status,reason,reasons,last_wrong_at,last_correct_at,last_reviewed_at,next_review_at,last_answer,created_at,updated_at";
 var ANSWER_FIELDS = "id,user_id,item_id,question_id,answer,is_correct,created_at";
 var PROGRESS_FIELDS = "id,user_id,item_id,status,score,updated_at";
 var DAY_MS = 864e5;
@@ -2527,8 +2550,10 @@ user.post("/wrong-book", verifyAuth, async (c) => {
   try {
     const userId = c.get("user").id;
     const body = await c.req.json();
-    const { question_id, subject_id, curve_type = "classic", last_answer } = body;
+    const { question_id, subject_id, curve_type = "classic", last_answer, reasons } = body;
     if (!question_id) return jsonError2(c, 400, "VALIDATION_ERROR", "question_id is required");
+    const parsedReasons = parseWrongReasons(reasons, false);
+    if (!parsedReasons) return jsonError2(c, 400, "VALIDATION_ERROR", "invalid wrong reasons");
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
     const now = (/* @__PURE__ */ new Date()).toISOString();
     const nextReview = getNextReviewAt(0, curve_type);
@@ -2554,7 +2579,8 @@ user.post("/wrong-book", verifyAuth, async (c) => {
         last_reviewed_at: now,
         next_review_at: nextReview,
         last_answer: last_answer ?? null,
-        updated_at: now
+        updated_at: now,
+        ...reasons === void 0 ? {} : { reasons: parsedReasons }
       };
       const result2 = await fetch(
         `${c.env.SUPABASE_URL}/rest/v1/wrong_book?id=eq.${existingAny.id}`,
@@ -2593,7 +2619,8 @@ user.post("/wrong-book", verifyAuth, async (c) => {
         last_wrong_at: now,
         last_reviewed_at: now,
         next_review_at: nextReview,
-        last_answer: last_answer ?? null
+        last_answer: last_answer ?? null,
+        ...reasons === void 0 ? {} : { reasons: parsedReasons }
       })
     });
     const created = await result.json();
@@ -2608,7 +2635,9 @@ user.patch("/wrong-book/:id", verifyAuth, async (c) => {
     const id = c.req.param("id");
     if (!id) return jsonError2(c, 400, "VALIDATION_ERROR", "id is required");
     const body = await c.req.json();
-    const { is_correct, last_answer, reason } = body;
+    const { is_correct, last_answer, reason, reasons } = body;
+    const parsedReasons = parseWrongReasons(reasons, false);
+    if (!parsedReasons) return jsonError2(c, 400, "VALIDATION_ERROR", "invalid wrong reasons");
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
     const { data: existingRaw } = await sb.query("wrong_book", {
       select: "*",
@@ -2656,6 +2685,7 @@ user.patch("/wrong-book/:id", verifyAuth, async (c) => {
       stage: 0,
       status: "\u672A\u638C\u63E1",
       reason: reason ?? existing.reason,
+      ...reasons === void 0 ? {} : { reasons: parsedReasons },
       last_wrong_at: now,
       last_reviewed_at: now,
       next_review_at: getNextReviewAt(0, existing.curve_type),
@@ -2859,7 +2889,7 @@ judge.post("/questions/:id/judge", verifyAuth, async (c) => {
     const questionId = c.req.param("id");
     if (!questionId) return jsonError3(c, 400, "VALIDATION_ERROR", "question id is required");
     const body = await c.req.json();
-    const { user_answer, subject_id, curve_type = "classic" } = body;
+    const { user_answer, subject_id, curve_type = "classic", reasons } = body;
     if (!user_answer) return jsonError3(c, 400, "VALIDATION_ERROR", "user_answer is required");
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
     const { data: question } = await sb.query("questions", {
@@ -2906,6 +2936,8 @@ judge.post("/questions/:id/judge", verifyAuth, async (c) => {
       default:
         isCorrect = String(userAns).trim() === String(q.answer).trim();
     }
+    const parsedReasons = parseWrongReasons(reasons, !isCorrect);
+    if (!parsedReasons) return jsonError3(c, 400, "VALIDATION_ERROR", "invalid wrong reasons");
     await fetch(`${c.env.SUPABASE_URL}/rest/v1/answers`, {
       method: "POST",
       headers: {
@@ -2969,6 +3001,7 @@ judge.post("/questions/:id/judge", verifyAuth, async (c) => {
           streak_correct_count: 0,
           stage: 0,
           status: "\u672A\u638C\u63E1",
+          reasons: parsedReasons,
           last_wrong_at: (/* @__PURE__ */ new Date()).toISOString(),
           last_reviewed_at: (/* @__PURE__ */ new Date()).toISOString(),
           next_review_at: new Date(Date.now() + days * DAY_MS2).toISOString(),
@@ -3004,6 +3037,7 @@ judge.post("/questions/:id/judge", verifyAuth, async (c) => {
           right_count: 0,
           streak_correct_count: 0,
           status: "\u672A\u638C\u63E1",
+          reasons: parsedReasons,
           last_wrong_at: (/* @__PURE__ */ new Date()).toISOString(),
           last_reviewed_at: (/* @__PURE__ */ new Date()).toISOString(),
           next_review_at: new Date(Date.now() + days * DAY_MS2).toISOString(),

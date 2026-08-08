@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './supabase.js';
 import { apiGet, apiPost, apiDelete } from './apiClient.js';
+import { countReasons, normaliseReasons } from './wrong-reasons.js';
 
 export const CURVES = {
   classic: { intervals: [1, 2, 4, 7, 15], name: '经典', label: '1-2-4-7-15 天' },
@@ -23,12 +24,14 @@ function isMastered(stage, streak, curveType) {
 // Phase 2: 服务端判分 — 调 BFF /api/v1/questions/:id/judge
 // BFF 负责: 判分 + 写答题记录 + 错题本更新 + 按 answer_reveal 规则返回答案
 // 失败时回退到本地判分 + Supabase 直写
-export async function judgeAnswer(userId, questionId, userAnswer, subjectId, curveType = 'classic') {
+export async function judgeAnswer(userId, questionId, userAnswer, subjectId, curveType = 'classic', reasons = []) {
+  const normalizedReasons = normaliseReasons(reasons);
   try {
     const { data } = await apiPost(`/questions/${questionId}/judge`, {
       user_answer: userAnswer,
       subject_id: subjectId,
       curve_type: curveType,
+      reasons: normalizedReasons,
     });
     return {
       is_correct: data.is_correct,
@@ -44,7 +47,7 @@ export async function judgeAnswer(userId, questionId, userAnswer, subjectId, cur
   }
 }
 
-async function fallbackAddWrong(userId, questionId, subjectId, userAnswer, curveType = 'classic') {
+async function fallbackAddWrong(userId, questionId, subjectId, userAnswer, curveType = 'classic', reasons = []) {
   if (!isSupabaseConfigured()) return null;
   const now = new Date().toISOString();
   const nextReviewAt = getNextReviewAt(0, curveType);
@@ -65,6 +68,7 @@ async function fallbackAddWrong(userId, questionId, subjectId, userAnswer, curve
         streak_correct_count: 0,
         stage: 0,
         status: '未掌握',
+        reasons,
         last_wrong_at: now,
         last_reviewed_at: now,
         next_review_at: nextReviewAt,
@@ -90,6 +94,7 @@ async function fallbackAddWrong(userId, questionId, subjectId, userAnswer, curve
       right_count: 0,
       streak_correct_count: 0,
       status: '未掌握',
+      reasons,
       last_wrong_at: now,
       last_reviewed_at: now,
       next_review_at: nextReviewAt,
@@ -140,22 +145,23 @@ async function fallbackMarkRight(userId, questionId, userAnswer) {
   return data;
 }
 
-export async function addWrong(userId, questionId, subjectId, userAnswer, curveType = 'classic') {
-  return fallbackAddWrong(userId, questionId, subjectId, userAnswer, curveType);
+export async function addWrong(userId, questionId, subjectId, userAnswer, curveType = 'classic', reasons = []) {
+  return fallbackAddWrong(userId, questionId, subjectId, userAnswer, curveType, reasons);
 }
 
 export async function markRight(userId, questionId, userAnswer) {
   return fallbackMarkRight(userId, questionId, userAnswer);
 }
 
-export async function processAnswer(userId, questionId, subjectId, isCorrect, userAnswer, curveType = 'classic') {
-  const serverResult = await judgeAnswer(userId, questionId, userAnswer, subjectId, curveType);
+export async function processAnswer(userId, questionId, subjectId, isCorrect, userAnswer, curveType = 'classic', reasons = []) {
+  const normalizedReasons = normaliseReasons(reasons);
+  const serverResult = await judgeAnswer(userId, questionId, userAnswer, subjectId, curveType, normalizedReasons);
   if (serverResult) return serverResult;
 
   if (isCorrect) {
     return markRight(userId, questionId, userAnswer);
   }
-  return addWrong(userId, questionId, subjectId, userAnswer, curveType);
+  return addWrong(userId, questionId, subjectId, userAnswer, curveType, normalizedReasons);
 }
 
 export async function switchCurve(userId, newCurveType) {
@@ -235,29 +241,19 @@ export async function getStats(userId, subjectId = null) {
   try {
     const { data } = await apiGet('/me/wrong-book', { includeQuestion: 'false' });
     if (!data) return { byReason: {}, byTag: {} };
-    const byReason = {};
-    const REASONS = ['概念不清', '计算失误', '审题错误', '方法不熟', '时间不够'];
-    REASONS.forEach(r => byReason[r] = 0);
-    for (const e of data) {
-      if (e.reason) byReason[e.reason] = (byReason[e.reason] || 0) + 1;
-    }
+    const byReason = countStoredReasons(data);
     return { byReason, byTag: {}, total: data.length };
   } catch {
     if (!isSupabaseConfigured()) return { byReason: {}, byTag: {} };
     let q = supabase
       .from('wrong_book')
-      .select('reason, status, questions(tags)')
+      .select('reason, reasons, status, questions(tags)')
       .eq('user_id', userId);
     if (subjectId) q = q.eq('subject_id', subjectId);
     const { data, error } = await q;
     if (error || !data) return { byReason: {}, byTag: {} };
 
-    const byReason = {};
-    const REASONS = ['概念不清', '计算失误', '审题错误', '方法不熟', '时间不够'];
-    REASONS.forEach(r => byReason[r] = 0);
-    for (const e of data) {
-      if (e.reason) byReason[e.reason] = (byReason[e.reason] || 0) + 1;
-    }
+    const byReason = countStoredReasons(data);
 
     const byTag = {};
     for (const e of data) {
@@ -268,6 +264,22 @@ export async function getStats(userId, subjectId = null) {
     }
     return { byReason, byTag, total: data.length };
   }
+}
+
+const LEGACY_REASON_MAP = Object.freeze({
+  概念不清: '概念 / 定义没掌握',
+  计算失误: '计算过程出错',
+  审题错误: '审题遗漏条件',
+  方法不熟: '解题方法不会',
+});
+
+function countStoredReasons(entries) {
+  return countReasons(entries.map((entry) => {
+    const reasons = normaliseReasons(entry.reasons);
+    if (reasons.length > 0) return { reasons };
+    const migratedLegacyReason = LEGACY_REASON_MAP[entry.reason];
+    return { reasons: migratedLegacyReason ? [migratedLegacyReason] : [] };
+  }));
 }
 
 export async function getUserCurve(userId) {

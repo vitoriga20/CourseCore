@@ -5,6 +5,7 @@
 import { startPracticeSession, renderQuizAdapter, initQuizAdapter, savePracticeRecord } from './quiz-adapter.js';
 import { processAnswer } from '../../services/review-engine.js';
 import { state, setLastSession } from '../../state.js';
+import { mountWrongReasonSummary } from './wrong-reason-summary.js';
 
 export function renderPracticeSession() {
   return `
@@ -71,58 +72,64 @@ export async function initPracticeSession() {
     const quizState = initQuizAdapter(session.virtualId, session.questions);
     if (quizState) {
       quizState.startTime = Date.now();
-      quizState.onFinish = async (s) => {
-        try {
-          // 逐题更新错题本（仅登录用户）
-          if (userId) {
-            for (const q of s.allQuestions) {
-              const result = s.results[q.id];
-              const isCorrect = result?.passed === true;
-              const userAnswer = s.userAnswers[q.id];
-              await processAnswer(userId, q.id, session.subjectId, isCorrect, userAnswer);
-            }
+      const persistFinishedSession = async (s, selections) => {
+        if (userId) {
+          for (const q of s.allQuestions) {
+            const result = s.results[q.id];
+            if (!result || result.manual) continue;
+            const isCorrect = result.passed === true;
+            const userAnswer = s.userAnswers[q.id];
+            const reasons = isCorrect ? [] : (selections[q.id] || []);
+            await processAnswer(userId, q.id, session.subjectId, isCorrect, userAnswer, 'classic', reasons);
           }
-          // 保存刷题记录
-          if (userId) {
-            await savePracticeRecord({
-              userId,
-              mode: session.mode,
-              sourceId: session.sourceId,
-              sourceName: session.title,
-              subjectId: session.subjectId,
-              state: s,
-            });
-          }
-          // 记录最后一次会话，用于首页"继续上次"
-          const correctCount = s.allQuestions.filter(q => s.results[q.id]?.passed === true).length;
-          const total = s.allQuestions.length;
-          const currentItemId = session.sourceId;
-          const title = session.title;
-          setLastSession({
-            itemId: currentItemId,
-            title,
-            lastIndex: 0,
-            total,
-            correct: correctCount
+          await savePracticeRecord({
+            userId,
+            mode: session.mode,
+            sourceId: session.sourceId,
+            sourceName: session.title,
+            subjectId: session.subjectId,
+            state: s,
           });
-          // 提示完成
-          const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-          const finishMsg = document.createElement('div');
-          finishMsg.className = 'card mt-4 text-center';
-          finishMsg.style.cssText = 'background: var(--practice-card); border-color: var(--practice-accent); padding: 1.5rem;';
-          finishMsg.innerHTML = `
-            <div class="text-3xl font-extrabold mb-2" style="color: var(--practice-accent);">${accuracy}%</div>
-            <p class="text-sm font-semibold mb-1" style="color: var(--practice-text);">正确 ${correctCount} / ${total}</p>
-            <p class="text-xs" style="color: var(--practice-muted);">${userId ? '错题已自动收录到错题库' : '登录后错题可自动收录'}</p>
-            <div class="flex gap-2 justify-center mt-4">
-              <a href="/practice/exams" class="btn-pill text-sm" style="background: var(--practice-accent); color: #fff; padding: 0.5rem 1.5rem;">继续刷题</a>
-              ${userId && correctCount < total ? `<a href="/kb" class="btn-pill text-sm" style="border: 1px solid var(--practice-border); color: var(--practice-text); padding: 0.5rem 1.5rem;">查看错题</a>` : ''}
-            </div>
-          `;
-          container.appendChild(finishMsg);
-        } catch (e) {
-          console.warn('[practice-session] onFinish:', e);
         }
+
+        const correctCount = s.allQuestions.filter(q => s.results[q.id]?.passed === true).length;
+        const total = s.allQuestions.length;
+        setLastSession({
+          itemId: session.sourceId,
+          title: session.title,
+          lastIndex: 0,
+          total,
+          correct: correctCount,
+        });
+
+        const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+        const finishMsg = document.createElement('div');
+        finishMsg.className = 'card mt-4 text-center';
+        finishMsg.style.cssText = 'background: var(--practice-card); border-color: var(--practice-accent); padding: 1.5rem;';
+        finishMsg.innerHTML = `
+          <div class="text-3xl font-extrabold mb-2" style="color: var(--practice-accent);">${accuracy}%</div>
+          <p class="text-sm font-semibold mb-1" style="color: var(--practice-text);">正确 ${correctCount} / ${total}</p>
+          <p class="text-xs" style="color: var(--practice-muted);">${userId ? '练习记录与错题薄弱点已保存' : '登录后错题可自动收录'}</p>
+          <div class="flex gap-2 justify-center mt-4">
+            <a href="/practice/exams" class="btn-pill text-sm" style="background: var(--practice-accent); color: #fff; padding: 0.5rem 1.5rem;">继续刷题</a>
+            ${userId && correctCount < total ? `<a href="/kb" class="btn-pill text-sm" style="border: 1px solid var(--practice-border); color: var(--practice-text); padding: 0.5rem 1.5rem;">查看错题</a>` : ''}
+          </div>
+        `;
+        container.appendChild(finishMsg);
+      };
+
+      quizState.onFinish = async (s) => {
+        const wrongQuestions = s.allQuestions.filter((q) => {
+          const result = s.results[q.id];
+          return result && !result.passed && !result.manual;
+        });
+        if (wrongQuestions.length === 0) {
+          await persistFinishedSession(s, {});
+          return;
+        }
+        mountWrongReasonSummary(container, wrongQuestions, async (selections) => {
+          await persistFinishedSession(s, selections);
+        });
       };
     }
   } catch (e) {

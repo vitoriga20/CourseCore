@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build:training": "node builders/training-builder.js",
+    "build:bff": "node scripts/build-bff.js",
     "build:data": "node builders/question-builder.js",
     "fetch:data": "node scripts/fetch-from-supabase.js",
     "validate:data": "node builders/question-builder.js --validate",

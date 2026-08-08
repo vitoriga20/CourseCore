@@ -460,7 +460,7 @@ function renderResults(state) {
         <div class="summary-right">
           <h3 class="summary-right-title">错题回顾</h3>
           <div class="wrong-list">${wrongList}</div>
-          <div class="summary-tip">未掌握题目将自动进入错题库，按复习曲线安排复盘。</div>
+          <div class="summary-tip">请标记每道错题的薄弱点，系统会据此生成复习计划。</div>
         </div>
       </div>
     </div>

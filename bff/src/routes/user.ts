@@ -1,12 +1,13 @@
 import { Hono } from 'hono';
 import type { Bindings } from '../env';
 import { SupabaseRest } from '../lib/supabase';
+import { parseWrongReasons } from '../lib/wrong-reasons';
 import { verifyAuth, type AuthedContext } from '../middleware/auth';
 
 const user = new Hono<{ Bindings: Bindings }>();
 
 const WRONG_BOOK_FIELDS =
-  'id,user_id,question_id,subject_id,curve_type,stage,wrong_count,right_count,streak_correct_count,status,reason,last_wrong_at,last_correct_at,last_reviewed_at,next_review_at,last_answer,created_at,updated_at';
+  'id,user_id,question_id,subject_id,curve_type,stage,wrong_count,right_count,streak_correct_count,status,reason,reasons,last_wrong_at,last_correct_at,last_reviewed_at,next_review_at,last_answer,created_at,updated_at';
 
 const ANSWER_FIELDS = 'id,user_id,item_id,question_id,answer,is_correct,created_at';
 const PROGRESS_FIELDS = 'id,user_id,item_id,status,score,updated_at';
@@ -69,9 +70,11 @@ user.post('/wrong-book', verifyAuth, async (c) => {
   try {
     const userId = c.get('user').id;
     const body = await c.req.json();
-    const { question_id, subject_id, curve_type = 'classic', last_answer } = body;
+    const { question_id, subject_id, curve_type = 'classic', last_answer, reasons } = body;
 
     if (!question_id) return jsonError(c, 400, 'VALIDATION_ERROR', 'question_id is required');
+    const parsedReasons = parseWrongReasons(reasons, false);
+    if (!parsedReasons) return jsonError(c, 400, 'VALIDATION_ERROR', 'invalid wrong reasons');
 
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
     const now = new Date().toISOString();
@@ -101,6 +104,7 @@ user.post('/wrong-book', verifyAuth, async (c) => {
         next_review_at: nextReview,
         last_answer: last_answer ?? null,
         updated_at: now,
+        ...(reasons === undefined ? {} : { reasons: parsedReasons }),
       };
       const result = await fetch(
         `${c.env.SUPABASE_URL}/rest/v1/wrong_book?id=eq.${existingAny.id}`,
@@ -141,6 +145,7 @@ user.post('/wrong-book', verifyAuth, async (c) => {
         last_reviewed_at: now,
         next_review_at: nextReview,
         last_answer: last_answer ?? null,
+        ...(reasons === undefined ? {} : { reasons: parsedReasons }),
       }),
     });
     const created = await result.json();
@@ -157,7 +162,9 @@ user.patch('/wrong-book/:id', verifyAuth, async (c) => {
     const id = c.req.param('id');
     if (!id) return jsonError(c, 400, 'VALIDATION_ERROR', 'id is required');
     const body = await c.req.json();
-    const { is_correct, last_answer, reason } = body;
+    const { is_correct, last_answer, reason, reasons } = body;
+    const parsedReasons = parseWrongReasons(reasons, false);
+    if (!parsedReasons) return jsonError(c, 400, 'VALIDATION_ERROR', 'invalid wrong reasons');
 
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
     const { data: existingRaw } = await sb.query('wrong_book', {
@@ -210,6 +217,7 @@ user.patch('/wrong-book/:id', verifyAuth, async (c) => {
       stage: 0,
       status: '未掌握',
       reason: reason ?? existing.reason,
+      ...(reasons === undefined ? {} : { reasons: parsedReasons }),
       last_wrong_at: now,
       last_reviewed_at: now,
       next_review_at: getNextReviewAt(0, existing.curve_type),

@@ -441,6 +441,24 @@ ALTER TABLE public.progress
   ADD CONSTRAINT fk_progress_item FOREIGN KEY (item_id)
     REFERENCES public.items(id) ON DELETE CASCADE;
 
+-- 错题薄弱点多选（wrong_book 由 practice-board 迁移创建，reason 标量继续兼容旧数据）
+ALTER TABLE public.wrong_book
+  ADD COLUMN IF NOT EXISTS reasons TEXT[] NOT NULL DEFAULT '{}'::TEXT[];
+
+ALTER TABLE public.wrong_book
+  DROP CONSTRAINT IF EXISTS wrong_book_reasons_allowed;
+
+ALTER TABLE public.wrong_book
+  ADD CONSTRAINT wrong_book_reasons_allowed
+  CHECK (reasons <@ ARRAY[
+    '概念 / 定义没掌握',
+    '公式 / 定理记不住',
+    '解题方法不会',
+    '题型不熟',
+    '计算过程出错',
+    '审题遗漏条件'
+  ]::TEXT[]);
+
 -- ============================================================
 -- 级联删除说明 (v2)
 --   modules.course_id → courses.id            CASCADE

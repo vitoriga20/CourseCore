@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import type { Bindings } from '../env';
 import { SupabaseRest } from '../lib/supabase';
+import { parseWrongReasons } from '../lib/wrong-reasons';
 import { verifyAuth, type AuthedContext } from '../middleware/auth';
 
 const judge = new Hono<{ Bindings: Bindings }>();
@@ -17,7 +18,7 @@ judge.post('/questions/:id/judge', verifyAuth, async (c) => {
     const questionId = c.req.param('id');
     if (!questionId) return jsonError(c, 400, 'VALIDATION_ERROR', 'question id is required');
     const body = await c.req.json();
-    const { user_answer, subject_id, curve_type = 'classic' } = body;
+    const { user_answer, subject_id, curve_type = 'classic', reasons } = body;
 
     if (!user_answer) return jsonError(c, 400, 'VALIDATION_ERROR', 'user_answer is required');
 
@@ -68,6 +69,9 @@ judge.post('/questions/:id/judge', verifyAuth, async (c) => {
       default:
         isCorrect = String(userAns).trim() === String(q.answer).trim();
     }
+
+    const parsedReasons = parseWrongReasons(reasons, !isCorrect);
+    if (!parsedReasons) return jsonError(c, 400, 'VALIDATION_ERROR', 'invalid wrong reasons');
 
     // 写答题记录
     await fetch(`${c.env.SUPABASE_URL}/rest/v1/answers`, {
@@ -137,6 +141,7 @@ judge.post('/questions/:id/judge', verifyAuth, async (c) => {
           streak_correct_count: 0,
           stage: 0,
           status: '未掌握',
+          reasons: parsedReasons,
           last_wrong_at: new Date().toISOString(),
           last_reviewed_at: new Date().toISOString(),
           next_review_at: new Date(Date.now() + days * DAY_MS).toISOString(),
@@ -172,6 +177,7 @@ judge.post('/questions/:id/judge', verifyAuth, async (c) => {
           right_count: 0,
           streak_correct_count: 0,
           status: '未掌握',
+          reasons: parsedReasons,
           last_wrong_at: new Date().toISOString(),
           last_reviewed_at: new Date().toISOString(),
           next_review_at: new Date(Date.now() + days * DAY_MS).toISOString(),
