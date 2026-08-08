@@ -128,24 +128,30 @@ function renderTheoryExample(question, idx) {
   `;
 }
 
-// 支持两种例题格式：旧格式（题目 ID 字符串数组）和新格式（内联对象数组）
+// 支持三种例题来源：
+//  v2 真实行（questions 表，经 item_questions role='theory_example' 关联，已带真实 id）——直接用
+//  旧格式①（题目 ID 字符串数组）——findQuestion 解析
+//  旧格式②（内联对象数组）——生成 `${itemId}-ex${idx}` 兜底 id（仅本地静态数据 fallback）
 function normalizeTheoryExamples(theory, itemId) {
   const raw = theory?.examples || [];
   if (raw.length === 0) return [];
   if (typeof raw[0] === 'string') {
     return raw.map(id => findQuestion(id)).filter(Boolean);
   }
-  return raw.map((ex, idx) => ({
-    id: `${itemId}-ex${idx}`,
-    questionType: 0,
-    title: `\u4f8b\u9898 ${idx + 1}`,
-    content: ex.text || '',
-    image: ex.image || '',
-    options: ex.options || [],
-    answer: ex.answer !== undefined ? String(ex.answer) : '0',
-    solution: ex.solution || '',
-    itemId: itemId,
-  }));
+  return raw.map((ex, idx) => {
+    if (ex.id) return ex; // v2 真实行：保留真实 id，进度判定才能对上
+    return {
+      id: `${itemId}-ex${idx}`,
+      questionType: 0,
+      title: `\u4f8b\u9898 ${idx + 1}`,
+      content: ex.content || ex.text || '',
+      image: ex.image || '',
+      options: ex.options || [],
+      answer: ex.answer !== undefined ? String(ex.answer) : '0',
+      solution: ex.solution || '',
+      itemId: itemId,
+    };
+  });
 }
 
 function renderTheoryExamples(item) {
