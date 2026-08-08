@@ -1,3 +1,7 @@
+> 文档状态：历史计划，物理训练题接入已实现；`build:training` 是独立构建流程。
+>
+> 当前事实以 `builders/training-builder.js`、`curriculum/raw/questions/physics-b-1/` 和 `src/data/courses.js` 为准。
+
 # 大学物理B（上）练习PDF接入"训练"小节执行计划
 
 ## 1. 概要（Summary）

@@ -1,3 +1,7 @@
+> 文档状态：历史计划，已被当前根目录 Vite + Cloudflare Pages 方案取代。
+>
+> 本文中的“缺失文件”和嵌套 `coursecore/` 路径不代表当前代码状态。
+
 # CourseCore Vite 部署完善计划
 
 ## 1. 摘要

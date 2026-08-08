@@ -1,3 +1,7 @@
+> 文档状态：历史计划，核心课程接入已实现；保留用于追溯物理课程数据来源和决策。
+>
+> 当前代码和数据以 `curriculum/raw/questions/physics-b-1/`、`src/data/courses.js` 和 `src/views/` 为准。
+
 # 大学物理B（上）题库接入 CourseCore 执行计划（更新版）
 
 ## 1. 概要（Summary）

@@ -1,3 +1,7 @@
+> 文档状态：历史计划，已被当前根目录结构和 Cloudflare Pages 部署方案取代。
+>
+> 本文中的嵌套 `coursecore/`、Vercel/Netlify 默认部署和未完成清单仅用于历史追溯。
+
 # CourseCore 部署就绪文件结构完善计划
 
 ## 1. Summary

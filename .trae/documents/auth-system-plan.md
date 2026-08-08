@@ -1,3 +1,7 @@
+> 文档状态：历史方案，部分实现；当前认证事实以 `.trae/documents/technical-architecture.md` 为准。
+>
+> 说明：本文中的 `coursecore/` 路径、支付规划和未勾选清单不代表当前待办；注册/重置密码入口当前暂时关闭。
+
 # CourseCore 用户登录与付费体系实现方案
 
 > 版本: 1.1  

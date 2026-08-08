@@ -1,3 +1,5 @@
+> 文档状态：外部视觉参考分析，不是产品需求、架构规范或实现验收标准。
+
 # Reconstruct 视频几何设计分析文档
 
 > 分析对象：`c:\Users\vitoriga\Downloads\物理试题\_Reconstruct__video.mp4`  

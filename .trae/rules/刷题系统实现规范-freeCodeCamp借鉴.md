@@ -3,6 +3,8 @@ alwaysApply: false
 ---
 # 刷题系统实现规范 —— freeCodeCamp 借鉴版
 
+> 文档状态：开发规范参考，需与当前 `src/config/question-types.js`、`src/validators/` 和 `curriculum/raw/` 保持同步；本文中的旧目录示例不代表当前仓库路径。
+
 > 本文档总结 freeCodeCamp 主仓库（`freeCodeCamp-main`）刷题系统的核心实现模式，作为 CourseCore / 物理刷题平台后续功能开发的自动借鉴规范。
 > 重点学习其**代码实现、数据模型、验证机制、状态管理**，不复制其外观。
 

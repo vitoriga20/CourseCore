@@ -1,223 +1,136 @@
-# CourseCore 后端架构重构方案（Backend Architecture Redesign）
+# CourseCore 后端架构：当前基线与迁移路线
 
-> 角色：后端架构师（Backend Architect）
-> 目标：可扩展（scale horizontally）、稳定（99.9%+ 可用）、安全（考试数据防泄漏）的后端
-> 现状诊断基于 `src/services/*`、`scripts/supabase-schema.sql`、`scripts/migrations/001-practice-board.sql`、`package.json` 实测代码
+> 文档状态：当前架构基线
+>
+> 更新时间：2026-08-07
+>
+> 本文描述已经存在的代码与部署事实；历史方案和未完成事项会明确标注为“目标”或“待办”。任何数据库权限变更前，必须先核对线上前端、BFF 和 Supabase schema 的实际状态。
 
----
+## 1. 当前结论
 
-## 一、现状诊断（As-Is）
+CourseCore 当前不是“纯静态 SPA + 前端直连 Supabase”的单一架构，而是一个正在收敛的混合架构：
 
-当前是 **Vite 静态 SPA + Supabase（PostgREST）** 的极简结构，前端用 `@supabase/supabase-js` + 浏览器 anon key 直接读写数据库，**没有独立的应用服务层（BFF/API Server）**。
-
-### 1.1 现状拓扑
-```
-浏览器 (Vite SPA)
-  ├─ import.meta.env.VITE_SUPABASE_ANON_KEY  ← 公钥直接进前端
-  ├─ src/services/supabase.js → @supabase/supabase-js
-  ├─ src/data/questions.js(211KB) / examPapers.js(404KB) / courses.js(44KB) / theoryContents.js(30KB)
-  │     ← 构建期由 scripts/fetch-from-supabase.js 从 Supabase 拉全量内容，写死进前端 bundle
-  └─ 直接调用 supabase.from(...).select/insert/update/delete (auth.js / sync.js / admin.js / review-engine.js / practice-data.js)
-                         │
-                         ▼
-                 Supabase (Postgres + Auth + RLS)
-                   ├─ 内容表: courses/modules/items/questions/theory_contents/exam_papers/exam_sections/exam_questions/knowledge_points/question_kp
-                   ├─ 用户表: profiles/answers/progress/favorites/wrong_book/posts/post_favorites/my_papers/practice_records
-                   └─ RLS 策略 + SECURITY DEFINER 函数 (is_admin / admin_list_users / admin_delete_user / get_leaderboard)
-```
-
-### 1.2 可扩展性 / 稳定性痛点（带代码证据）
-
-| # | 问题 | 证据 | 影响 |
-|---|------|------|------|
-| P1 | **整库题库/试卷打包进前端 bundle** | `src/data/examPapers.js` 404KB、`questions.js` 211KB；`practice-data.js` 默认 fallback 用 `EXAM_PAPERS`；`fetch-from-supabase.js` 构建期写死 | 首屏 JS 体积巨大（>650KB 纯数据），TTI 差、移动端体验差；**内容变更必须全量重建+重部署**，无法热更新 |
-| P2 | **无应用服务层，前端即唯一 API 客户端** | `src/services/*.js` 全部直接 `supabase.from(...)`；`admin.js` 浏览器内 CRUD | 无服务端限流/校验/版本化/集中错误处理；业务逻辑（错题状态机、sync 合并、admin CRUD）散在浏览器，难测试、难演进 |
-| P3 | **RLS 是唯一安全边界，且内容表对匿名完全可读** | `supabase-schema.sql` 第 260-283 行 `questions/exam_questions ... USING (true)`；`answer/solution` 字段随题目一起 SELECT | **考试数据泄露风险**：任何人（含未登录）可拉走全部题目+答案+解析。对考试/题库平台是学术诚信硬伤 |
-| P4 | **anon key 进浏览器，数据模型完全暴露** | `src/services/supabase.js` 第 3-4 行；`package.json` 暴露 `VITE_SUPABASE_*` | 所有防护仅靠 RLS；PostgREST 全表可探；无法做审计、限流、WAF |
-| P5 | **无缓存层（Redis/KV）** | `practice-data.js` 仅 memCache + localStorage(TTL 1h)；每次热启动拉 `exam_papers→sections→questions` 大 join | 高频读放大到 PostgREST；Supabase 读额度/连接受限；排行榜 `get_leaderboard` 全表聚合无缓存 |
-| P6 | **无法水平扩展 / 无服务拆分** | 仅单 Supabase 项目；无自建服务 | 扩展上限=Supabase 套餐 + PostgREST；业务增长撞墙 |
-| P7 | **无可观测性 / 容灾** | 仅 `console.warn`/`console.error`；`practice-data.js` Supabase 失败→fallback 静态 | 无指标/告警/熔断；构建期 Supabase 不可用→`exit 0` 静默用陈旧数据 |
-| P8 | **客户端合并逻辑（sync.js）无服务端权威** | `sync.js` `mergeAndPushLocal` 按时间戳 last-write-wins | 多端并发时出现数据丢失/不一致风险 |
-
-### 1.3 现状中"做得对"的部分（保留）
-- Supabase 的 **RLS 行级安全模型** 方向正确（用户隔离靠 `auth.uid()`）。
-- DB 层已有 **触发器**（`handle_new_user` 自动建 profile）、**部分唯一索引**（`uq_qk_primary_once`）、**级联删除**、**`answer_reveal` 字段**已建模"即时/提交后判分"。
-- `wrong_book` 状态机（`review-engine.js`）逻辑清晰，只是位置错了（应在服务端）。
-
----
-
-## 二、目标架构（To-Be）
-
-**核心思路**：保留 Supabase 作为「数据与身份认证底座」（Postgres + Auth + RLS 很成熟，不必重造），但**新增一层无状态应用服务（BFF / API Gateway）**，把"业务权威逻辑"从浏览器收回到服务端，并补齐缓存、安全、可观测性三件套。
-
-### 2.1 架构分层
-```
-┌─────────────────────────────────────────────────────────────┐
-│  客户端 (Vite SPA，体积骤减)                                   │
-│   - 不再打包题库；只持有 UI 代码                                │
-│   - 所有数据走 /api/v1/* ；认证走 BFF 转发 Supabase Auth       │
-└───────────┬───────────────────────────────┬─────────────────┘
-            │ 静态资源 / 缓存内容            │ 动态 API
-            ▼                                ▼
-┌──────────────────────┐        ┌──────────────────────────────────────────┐
-│ Edge / CDN            │        │ API Gateway (BFF, 无状态, 可水平扩)        │
-│ (CloudBase/EdgeOne)   │        │  - helmet / 限流 / JWT 校验 / 参数校验     │
-│  - 缓存内容 API 响应  │        │  - 审计日志 / 错误处理 / 版本化 (/api/v1)  │
-│  - 静态 SPA 托管       │        │  - service_role key 仅存服务端，绝不进前端  │
-└──────────────────────┘        └───┬───────────────┬──────────────────────┘
-                                     │               │
-                          ┌──────────▼───┐   ┌───────▼──────────┐
-                          │ Content API  │   │ User/Write API    │
-                          │ (读多, 强缓存)│   │ (写多, 限流, 鉴权) │
-                          │ 分页/字段裁剪 │   │ 错题机/同步/排行   │
-                          └──────┬───────┘   └───────┬──────────┘
-                                 │                    │
-                          ┌──────▼───────┐    ┌───────▼──────────┐
-                          │ Redis / KV   │    │ Supabase          │
-                          │ 内容+排行榜缓存│    │ Postgres + Auth   │
-                          │ (TTL 5~15min) │    │ RLS (用户隔离)    │
-                          └──────────────┘    └───────────────────┘
+```text
+浏览器
+  ├─ Vite 静态前端
+  │   ├─ 课程/题目静态构建数据（离线与降级使用）
+  │   ├─ Supabase Auth 浏览器会话
+  │   └─ apiClient → 同域 /api/v1
+  │
+  ├─ Cloudflare Pages
+  │   ├─ dist/ 静态资源
+  │   └─ Pages Function → Hono BFF
+  │
+  └─ Supabase
+      ├─ Auth
+      ├─ Postgres
+      └─ BFF 使用的 service_role（仅服务端）
 ```
 
-### 2.2 关键设计决策
+默认部署入口是根目录 `wrangler.toml` 指定的 Cloudflare Pages。BFF 源码位于 `bff/src/`，`functions/api/[[route]].js` 是打包生成的 Pages Function，不是手工维护的 TypeScript 源文件。
 
-**D1 — 引入无状态 BFF / API 服务（解决 P2/P4/P6）**
-- 技术选型：Node + **Hono**（轻量、边缘友好）或 **Fastify/Express**；部署到 CloudBase 云函数 / 容器，按流量自动扩缩（scale-to-zero / HPA）。
-- 前端**不再直接持 anon key 读写业务表**；仅保留 Supabase Auth 的浏览器会话（或 BFF 代理 auth）。admin 写操作、错题状态机、sync 合并、排行榜聚合全部移到 BFF，服务端成为"数据权威"。
-- BFF 持有 `service_role`（仅服务端），但仍**保留 RLS** 作纵深防御；BFF 在写前做应用层校验与授权。
+## 2. 已实现的 BFF 能力
 
-**D2 — 内容配送与用户数据分离（解决 P1/P5）**
-- 内容（课程/题目/试卷/解析）改为 **Content API 服务端按分页返回 + 字段裁剪**，前端按需加载，彻底移除 `src/data/*.js` 大 bundle。
-- 内容 API 响应在 **Edge/CDN + Redis 双缓存**（TTL 5~15min）；题库变更由 admin 操作后主动失效缓存（cache purge），实现热更新、免重建。
-- 用户数据（answers/progress/wrong_book/practice_records/favorites/my_papers）走 **User API**，必经鉴权 + 限流，不进 CDN 缓存。
+BFF 在 `bff/src/app.ts` 注册了以下路由：
 
-**D3 — 考试安全加固（解决 P3，最高优先级）**
-- 公开内容 API **默认不返回 `answer`/`solution`/`answers`**；列表/详情接口只给题目题干+选项。
-- 答案仅在「提交判分后」或「已掌握/已发布解析」场景下，由**独立 gated 接口**按 `answer_reveal` 规则返回（复用已有 `answer_reveal` 字段）。
-- RLS 调整：内容表从 `USING (true)` 改为 `USING (true)` 但 **通过列级策略/视图隐藏答案列**（见 §2.4）。
+| 能力 | 路径 | 鉴权 | 当前状态 |
+|---|---|---:|---|
+| 健康检查 | `GET /api/v1/healthz` | 否 | 已实现 |
+| 内容读取 | `GET /api/v1/papers*`、`/questions/:id` | 否 | 已实现，默认隐藏答案 |
+| 服务端判分 | `POST /api/v1/questions/:id/judge` | 是 | 已实现，并写入答题记录/错题本 |
+| 答案揭示 | `POST /api/v1/questions/:id/reveal` | 是 | 已实现，按 `answer_reveal` 与提交记录控制 |
+| 用户进度与记录 | `/api/v1/me/progress`、`/me/practice-records` | 是 | 已实现，前端优先使用 |
+| 错题本 | `/api/v1/me/wrong-book`、`/wrong-book` | 是 | 已实现，保留 Supabase fallback |
+| 排行榜 | `/api/v1/leaderboard` | 视接口而定 | 已实现 |
 
-**D4 — 服务端成为错题/同步权威（解决 P8）**
-- `wrong_book` 状态机、`sync.js` 合并逻辑迁到 BFF 事务内执行，消除客户端 last-write-wins 冲突。
-- `practice_records` 提交走单个幂等写接口（`idempotency-key`），避免重复提交。
+前端 `practice-data.js` 已优先通过 BFF 加载试卷；`review-engine.js` 与 `sync.js` 也已优先使用 BFF，但部分流程仍保留直接 Supabase fallback。
 
-**D5 — 可观测性 + 容灾（解决 P7）**
-- 结构化日志 + 指标（P95 延迟、错误率、DB 查询耗时、缓存命中率）+ 健康检查 `/healthz`。
-- Supabase 已具备 PITR 备份；BFF 侧配置熔断 + 优雅降级（内容 API 降级读缓存/静态快照）。
+## 3. 当前边界与未完成迁移
 
-### 2.3 API 设计规范（示例：Hono，/api/v1）
+以下内容仍不能表述为“全部经 BFF”：
 
-```typescript
-// api/src/index.ts — BFF 入口（节选）
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
-import { secureHeaders } from 'hono/secure-headers';
-import { rateLimiter } from './middleware/rate-limit';
-import { requireAuth } from './middleware/auth';   // 校验 Supabase JWT
-import { requireRole } from './middleware/role';    // admin 校验（服务端）
-import { contentRoutes } from './routes/content';
-import { userRoutes } from './routes/user';
-import { adminRoutes } from './routes/admin';
+- 管理后台 CRUD 仍主要通过 `src/services/admin.js` 直接访问 Supabase。
+- 社区、部分练习记录、我的试卷等页面仍有直接 Supabase 查询。
+- `src/services/content.js` 仍保留运行时 Supabase 内容读取。
+- 部分同步和错题流程在 BFF 失败时会 fallback 到 Supabase。
+- 内容 API 仍支持过渡参数 `includeAnswer=true`；该参数应在服务端判分链稳定后移除。
+- 静态 `src/data/questions.js`、`examPapers.js` 仍包含构建期数据，不能把“默认不返回答案”误写成“前端 bundle 完全没有答案”。
 
-const app = new Hono().basePath('/api/v1');
+因此，当前不能直接执行“全面撤销 anon/authenticated 对业务表的 SELECT 权限”。必须先完成各业务域迁移、线上验证和回滚方案。
 
-app.use('*', secureHeaders());
-app.use('*', cors({ origin: ['https://your-domain'], credentials: true }));
-app.use('*', logger());
+## 4. 数据流与数据权威
 
-// 内容：读多、强缓存、无需登录，但隐藏答案
-app.route('/content', contentRoutes);
+### 4.1 构建期内容
 
-// 用户数据：必登录 + 限流
-app.route('/me', userRoutes);
+`curriculum/raw/`、题库 Markdown 或数据库内容经 `builders/question-builder.js`、`scripts/fetch-from-supabase.js` 生成或拉取到 `src/data/*.js`。这些文件是前端构建输入/降级快照，不应人工直接编辑。
 
-// 管理：必 admin
-app.route('/admin', adminRoutes);
+### 4.2 运行时内容
 
-// 健康检查
-app.get('/healthz', (c) => c.json({ status: 'ok', ts: Date.now() }));
+试卷和题目读取优先走 BFF。BFF 使用服务端 Supabase 客户端读取 Postgres，并通过字段投影隐藏 `answer`、`answers`、`solution`、`test_string` 等敏感字段。
 
-export default app;
+当前 `includeAnswer=true` 是迁移兼容机制，不是安全模型。长期目标是：浏览器只提交答案给服务端，服务端判分后按规则返回结果和解析。
+
+### 4.3 用户数据
+
+登录用户通过 Supabase Auth 获取会话；BFF 使用 JWT 鉴权并以用户 ID 约束进度、答案、错题本等读写。前端本地状态仍承担游客体验和临时缓存职责。
+
+## 5. 安全边界
+
+- `SUPABASE_SERVICE_ROLE_KEY` 只能存在 Cloudflare Secret 或本地 `.dev.vars`，不能进入 `VITE_*`、静态 bundle 或仓库。
+- BFF 负责鉴权、字段裁剪、服务端判分、用户归属校验、限流、缓存和安全响应头。
+- Supabase RLS 仍是纵深防御，不因为 BFF 存在就可以删除。
+- 任何 `REVOKE`、RLS 收紧或表权限调整，都必须满足：对应前端读写已经迁移、BFF 线上验证通过、管理员写入路径已确认、存在回滚 SQL。
+
+## 6. 部署与开发
+
+### 根目录前端与 Pages
+
+```bash
+npm run build
+npx wrangler pages deploy dist
 ```
 
-```typescript
-// api/src/routes/content.ts — 内容接口（分页 + 字段裁剪 + 缓存 + 隐藏答案）
-app.get('/exams/:id', rateLimiter({ window: 60, max: 120 }), async (c) => {
-  const id = c.req.param('id');
-  const cacheKey = `exam:${id}`;
-  const cached = await redis.get(cacheKey);
-  if (cached) return c.json(JSON.parse(cached));
+根目录 `wrangler.toml` 使用 `pages_build_output_dir = "dist"`。Pages Function 产物由 `scripts/build-bff.js` 从 `bff/src/pages-entry.ts` 打包到 `functions/api/[[route]].js`。
 
-  const paper = await contentService.getExamPaper(id, {
-    // 关键：不 select answer/solution，除非调用方拥有解锁态
-    fields: ['id','title','content','options','hint','difficulty','tags'],
-    includeAnswer: false,
-  });
-  if (!paper) return c.json({ error: 'NOT_FOUND', code: 'EXAM_NOT_FOUND' }, 404);
+### 独立 Worker 开发
 
-  await redis.set(cacheKey, JSON.stringify(paper), 'EX', 900); // 15min
-  return c.json({ data: paper });
-});
+```bash
+cd bff
+npm install
+npm run typecheck
+npm run dev
 ```
 
-### 2.4 数据库安全加固（SQL 补丁示例）
+独立 Worker 是可选运行方式；生产默认是 Pages 同域模式。
 
-```sql
--- 用视图+列裁剪替代 "内容表 USING(true) 且返回答案"
--- 1) 公开只读视图：剔除 answer/solution/answers
-CREATE OR REPLACE VIEW public.v_questions_public AS
-SELECT id, course_id, module_id, item_id, question_type, title, content,
-       options, hint, difficulty, tags, source, image, test_string,
-       blanks, tolerance, unit, order_index, created_at
-FROM public.questions;
+## 7. 迁移路线
 
--- 2) 原 questions 表 RLS 仍保留 admin 可写；公开读改为走视图
-DROP POLICY IF EXISTS "questions_readable_by_everyone" ON public.questions;
--- 答案仅在"提交后判分"或"已发布解析"接口经 BFF 用 service_role 读取
+### 已完成：BFF 基础设施与主要用户链路
 
--- 3) 同理 exam_questions 建 v_exam_questions_public
-```
+- Hono app、Cloudflare Pages entry、Supabase service-role 客户端
+- Content API、缓存、限流、安全头
+- 前端内容读取切换为 BFF 优先
+- JWT 中间件、服务端判分、答案揭示、错题本、进度、排行榜
+- 线上健康检查、内容读取、无 token 拒绝等基础验证
 
-### 2.5 部署形态
+### 下一阶段：收敛直接 Supabase 访问
 
-| 层 | 选型 | 扩展方式 |
-|----|------|---------|
-| 静态 SPA | CloudBase 静态托管 / EdgeOne | CDN 边缘缓存 |
-| BFF 服务 | CloudBase 云函数 或 容器（Hono/Fastify） | 按 QPS 自动扩缩 |
-| 缓存 | Redis（云数据库 Redis）/ CloudBase KV | 内存级，TTL 失效 |
-| 数据与身份 | Supabase（保留） | 读副本 + PITR |
-| 可观测 | 自建日志/指标 + 告警 | —— |
+1. 为管理后台建立明确的 `/api/v1/admin/*` 契约，并迁移 CRUD。
+2. 迁移社区、我的试卷、练习记录和剩余同步读写。
+3. 修复并验证前端 JWT 注入、错误处理和 fallback 边界。
+4. 移除 `includeAnswer=true` 过渡逻辑和静态答案依赖，或明确其发布范围。
+5. 完成线上回归后，逐表收窄 anon/authenticated 权限。
 
----
+## 8. 诊断与验证清单
 
-## 三、分阶段迁移计划（不中断现有运行）
+每次后端变更至少验证：
 
-**Phase 0 — 安全止血（半天~1天，零架构改动）**
-- 内容表答案列改为视图剥离（§2.4），前端经 BFF 才见答案。
-- 确认 RLS 备份/PITR 开启。
-- 给 Supabase anon key 加 **表级/列级最小权限**（即使前端仍用 anon，也收窄可访问面）。
+- `cd bff && npm run typecheck`
+- `GET /api/v1/healthz` 返回 200
+- 未登录访问用户和判分接口返回 401
+- 内容默认响应不含答案/解析字段
+- 登录后判分能返回结果并写入答题记录/错题本
+- 前端内容 API 失败时 fallback 行为符合预期
+- 管理后台和社区等仍直连 Supabase 的功能未被权限调整破坏
 
-**Phase 1 — 引入 BFF + Content API（先解决 P1/P5，最大收益）**
-- 新建 BFF 服务，实现 `/api/v1/content/*`（分页+缓存+隐藏答案）。
-- 前端把 `practice-data.js` 的数据源从"bundle + Supabase 直连"切到 Content API；`src/data/examPapers.js` 等逐步废弃。
-- 结果：首屏体积骤降、内容可热更新、读压力卸载到缓存。
-
-**Phase 2 — 业务权威上移（解决 P2/P4/P8）**
-- 把 admin CRUD、wrong_book 状态机、sync 合并、排行榜聚合并入 BFF；前端只调 `/api/v1/me/*` 与 `/api/v1/admin/*`。
-- 移除浏览器内 `service_role`/直连写表的代码路径；anon key 仅用于 Auth 会话。
-- 加限流、校验、审计、幂等。
-
-**Phase 3 — 弹性与可观测（解决 P6/P7）**
-- Redis 缓存 + CDN 缓存策略调优；BFF 自动扩缩容压测。
-- 接入指标/告警/熔断；10x 流量演练。
-
----
-
-## 四、需要你确认的方向
-
-1. **BFF 技术栈**：Hono（边缘/云函数友好，推荐）还是 Fastify/Express（生态熟）？
-2. **部署目标**：继续用腾讯云 CloudBase（函数/容器）还是自建容器（K8s/轻量）？
-3. **Phase 0 安全止血**是否现在就做（建议立即，涉及考试数据防泄露）？
-4. 是否要我把 **Phase 1 的 BFF 脚手架 + Content API** 直接落地成可运行代码？
-
-> 下一步建议：先拍板 Phase 0 安全项 + BFF 技术栈，我即可开始写代码。
+本文件现在是后端事实基线；旧的架构讨论、迁移草案和执行日志只用于追溯，不应覆盖本文的当前状态。

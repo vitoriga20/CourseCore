@@ -1,90 +1,109 @@
-# CourseCore BFF / Content API
+# CourseCore BFF
 
-基于 **Hono + Cloudflare Pages Functions** 的无状态后端网关（Phase 1），与前端 SPA **同域部署**——`xxx.pages.dev` 同时托管页面与 `/api`，免去 CORS、一次部署前后端一起上线。同时保留「独立 Worker」模式作为可选项。
+> 文档状态：当前开发说明
+>
+> 更新时间：2026-08-07
 
-职责：把"业务权威"从浏览器收回服务端，替代前端用 `anon key` 直连 Supabase 的做法。本阶段只读 Content API（试卷 / 题目），默认**不返回答案与解析**，从根上堵住题库泄露。
+CourseCore BFF 基于 Hono，默认以 Cloudflare Pages Functions 形式与前端同域部署。它负责把需要业务授权、字段裁剪、服务端判分和用户归属校验的逻辑从浏览器收回到服务端。
 
-## 部署形态（二选一，默认 Pages）
+## 部署形态
 
-| 形态 | 入口 | 配置 | 说明 |
-|---|---|---|---|
-| **Pages Functions（默认/推荐）** | `functions/api/[[route]].ts` | 根 `wrangler.toml`（`pages_build_output_dir = "dist"`） | 同域、免 CORS、一次部署 |
-| 独立 Worker（可选） | `bff/src/index.ts` | `bff/wrangler.toml` | 独立域名 `api.xxx.workers.dev`，需 CORS（已内置） |
+| 形态 | 源码入口 | 用途 |
+|---|---|---|
+| Cloudflare Pages Functions（默认） | `bff/src/pages-entry.ts` | 与根目录 `dist/` 同域部署 |
+| 独立 Worker（可选） | `bff/src/index.ts` | 独立 API 域名或本地 Worker 开发 |
 
-两套形态**复用同一个 `bff/src/app.ts` 的 Hono 实例**，业务逻辑只写一份。
+Pages Function 的生成文件是 `functions/api/[[route]].js`，由构建脚本生成，不要手工编辑。根目录 `wrangler.toml` 是 Pages 部署配置；`bff/wrangler.toml` 只用于独立 Worker 模式。
 
-## 目录结构
+## 当前能力
 
-```
-CourseCore/
-├── functions/
-│   └── api/
-│       └── [[route]].ts      # Pages Functions 入口（接管 /api/*）
-├── wrangler.toml            # 根：Pages 部署配置（指向 dist）
-├── .dev.vars.example        # 本地密钥样例（复制到 .dev.vars）
-├── bff/
-│   ├── src/
-│   │   ├── app.ts           # 共享 Hono app（中间件 + 路由）
-│   │   ├── index.ts         # 独立 Worker 入口（export default app）
-│   │   ├── env.ts           # Bindings 类型
-│   │   ├── lib/supabase.ts  # 极简 PostgREST 客户端（service_role 仅服务端）
-│   │   ├── middleware/{security,cache,rateLimit}.ts
-│   │   └── routes/{health,content}.ts
-│   ├── wrangler.toml        # 可选：独立 Worker 配置
-│   ├── package.json / tsconfig.json
-└── dist/                    # 前端 Vite 构建产物（也是 Pages 静态目录）
+所有接口挂在 `/api/v1` 下：
+
+- `GET /healthz`：健康检查
+- `GET /papers`、`GET /papers/:id`：试卷读取
+- `GET /papers/:id/questions`：试卷题目分页读取
+- `GET /questions/:id`：单题读取
+- `POST /questions/:id/judge`：登录后服务端判分，并写入答题记录/错题本
+- `POST /questions/:id/reveal`：登录后按提交记录和 `answer_reveal` 控制答案揭示
+- `/me/progress`：用户进度
+- `/me/practice-records`：用户刷题记录
+- `/me/wrong-book`：用户错题本和复习状态
+- `/leaderboard`：排行榜
+
+内容接口默认不返回 `answer`、`answers`、`solution`、`test_string` 等敏感字段。`includeAnswer=true` 仍保留为迁移兼容参数，不能当作长期安全边界；新功能应使用服务端判分或 reveal 接口。
+
+## 目录
+
+```text
+bff/
+├── src/
+│   ├── app.ts                 # Hono app、中间件和路由挂载
+│   ├── pages-entry.ts         # Pages Functions 适配器
+│   ├── index.ts               # 独立 Worker 入口
+│   ├── env.ts                 # Cloudflare bindings 类型
+│   ├── lib/supabase.ts        # 服务端 Supabase REST 客户端
+│   ├── middleware/            # auth、cache、rateLimit、security
+│   └── routes/                # health、content、user、judge、leaderboard
+├── package.json
+├── tsconfig.json
+└── wrangler.toml              # 独立 Worker 配置
 ```
 
 ## 本地开发
 
+独立 Worker 模式：
+
 ```bash
-# 1. 在 bff 安装 Hono/wrangler/typescript（已在 bff 管理）
-cd bff && npm install
-
-# 2. 根目录放 .dev.vars（填 SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY）
-cp .dev.vars.example .dev.vars
-
-# 3. 启动 Pages 模式本地预览（同时起前端 dist + 函数，默认 http://localhost:8788）
-npx wrangler pages dev dist
-curl http://localhost:8788/api/v1/papers?pageSize=5
-
-# 或仅起独立 Worker 模式本地预览（http://localhost:8787）
-cd bff && npm run dev
+cd bff
+npm install
+npm run typecheck
+npm run dev
 ```
 
-## 部署（Pages，推荐）
+Pages Functions 模式需要根目录已有 `dist/`，并从项目根目录运行：
+
+```bash
+npm run build
+npx wrangler pages dev dist
+```
+
+本地密钥放在根目录 `.dev.vars`，至少包含：
+
+```text
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+```
+
+service role 只能用于 BFF 服务端。不要使用 `VITE_SUPABASE_SERVICE_ROLE_KEY`，也不要把它写入静态资源。
+
+## 部署
 
 ```bash
 npx wrangler login
-
-# 密钥仅存 Cloudflare 侧，不进仓库
 npx wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY
-
-# 可选：限流 KV（见根 wrangler.toml 注释）
-npx wrangler kv namespace create RATE_LIMIT_KV
-
-# 一次部署前后端（读取根 wrangler.toml）
 npx wrangler pages deploy dist
 ```
 
-部署后前端读取 `https://<your-site>.pages.dev/api/v1/...`（**同域，无需 CORS**）。
+完整前端构建会先生成内容数据并抓取构建所需数据。部署前应确认 `functions/api/[[route]].js` 已由当前 BFF 源码重新生成。
 
-## 接入前端
+## 前端接入约定
 
-把前端里 `supabase.from('exam_papers' | 'exam_sections' | 'exam_questions')` 的**读操作**改请求 `/api/v1/...`（同域相对路径即可）。迁移完成后，即可在 Supabase 收窄 `anon` 权限，彻底关闭浏览器直连。
+前端通过 `src/services/apiClient.js` 调用同域 `/api/v1`。内容读取由 `src/services/practice-data.js` 优先走 BFF；判分、错题和同步也优先走 BFF，并在部分历史路径保留 fallback。
 
-## SPA 深链说明
+当前仍有直接访问 Supabase 的业务：管理后台、社区、部分练习记录、我的试卷和部分 fallback。迁移没有完成前，不得全面收窄浏览器端 Supabase 权限。
 
-`functions/api/[[route]].ts` 只接管 `/api/*`，其余路径走静态托管（dist）。若前端用 history 路由做深链（如 `/practice/123`）并需要回退 `index.html`，在 `public/_redirects` 加：
+## 验证清单
 
-```
-/* /index.html 200
-```
+- `npm run typecheck` 通过。
+- `/api/v1/healthz` 返回 200。
+- 未登录访问 `/api/v1/me/*`、`/api/v1/questions/:id/judge` 返回 401。
+- 公开内容默认不含答案/解析。
+- 登录后判分返回结果，并写入答题记录与错题本。
+- 线上部署的 Pages Function 与当前源码一致。
+- 管理后台、社区和 fallback 路径仍可用。
 
-`/api/*` 由函数优先处理，不会被该规则拦截。当前站点若用 hash 路由（`#/...`）则无需此文件。
+## 关联文档
 
-## 下一步（Phase 2）
-
-- 判分 / 答案 reveal 的 gated 接口（需用户鉴权）
-- admin 写操作、错题本、同步、排行榜上移 BFF
-- 用户鉴权（Supabase Auth JWT 校验中间件）
+- [后端当前架构](../backend-architecture-redesign.md)
+- [后端交接基线](../backend-redesign-handoff.md)
+- [技术架构事实](../.trae/documents/technical-architecture.md)

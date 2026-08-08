@@ -1,523 +1,217 @@
-# 技术架构文档 - CourseCore 大学基础课学习平台
+# CourseCore 技术架构
 
-## 1. 技术栈
+> 文档状态：当前事实基线
+>
+> 更新时间：2026-08-07
+>
+> 本文以当前仓库源码、构建脚本、BFF 路由和部署配置为准。设计提案、旧开发日志和历史计划不覆盖本文的当前状态。
+
+## 1. 架构总览
+
+CourseCore 是 Vite 前端、Supabase 数据底座和 Hono BFF 组成的混合架构：
+
+```text
+浏览器
+  ├─ Vite SPA / 静态预渲染页面
+  ├─ localStorage 本地状态
+  ├─ Supabase Auth 浏览器会话
+  └─ /api/v1 → Cloudflare Pages Function → Hono BFF
+                                      └─ Supabase Postgres/Auth 数据
+```
+
+核心课程可通过构建生成的静态数据和 fallback 浏览；登录、云同步、服务端判分、错题本、社区和管理后台依赖运行时服务。
+
+## 2. 技术栈
 
 | 层级 | 技术 |
-|------|------|
-| 构建工具 | Vite 5 |
-| 样式框架 | Tailwind CSS 3 (npm) + PostCSS + Autoprefixer |
-| 脚本模块 | 原生 ES Modules |
-| 组件搜索 MCP | shadcn MCP server + React Bits registry（仅搜索，不引入 React 运行时） |
-| 数学公式 | MathJax 3 (tex-mml-chtml) |
-| PDF 抽取 | MinerU（`pipeline` 后端，`MINERU_MODEL_SOURCE=modelscope`） |
-| 动态背景 | HTML5 Canvas 2D 全局背景 + p5.js 测验几何背景（球面投影网格与三角分布十字星星） |
-| 状态管理 | 中央 `state.js` + localStorage 持久化 |
-| 路由 | HTML5 History API + 集中路由表（`src/config/routes.js`）+ 构建时预渲染 |
-| 交互 | `data-action` 事件委托模式 + `<a>` 内部链接客户端拦截 |
-| 后端服务 | Supabase Auth + Supabase Postgres（RLS + RPC） |
-| 考点系统 | Supabase Postgres `knowledge_points` 字典表 + `question_kp` 关联表（主/次考点，权重 1.0/0.5） |
-| 管理后台 | `src/views/admin/adminPage.js` + `src/services/admin.js` + `src/services/content.js` |
-| Markdown 编辑器 | EasyMDE |
-| 分栏拖拽 | Split.js（编辑器分栏）+ SortableJS（题目排序） |
-| 部署目标 | Vercel / Netlify / GitHub Pages |
+|---|---|
+| 前端构建 | Vite 5 |
+| 前端代码 | 原生 JavaScript ES Modules |
+| 样式 | Tailwind CSS 3 + PostCSS + 自定义 CSS |
+| 公式 | MathJax 3，部分页面使用 CDN |
+| Markdown | `marked`；后台编辑使用 EasyMDE |
+| 图表/交互 | ECharts、SortableJS、Split.js、Canvas、p5.js |
+| 身份与数据库 | Supabase Auth + Postgres + RLS/RPC |
+| 应用服务 | Hono + Cloudflare Pages Functions |
+| 内容构建 | `gray-matter`、Node builders、Markdown |
+| 部署 | Cloudflare Pages（默认）；独立 Worker 为可选模式 |
 
-## 2. 项目目录说明
+## 3. 目录与职责
 
-仓库根目录即 CourseCore Vite 项目，不再嵌套 `coursecore/` 子目录。
+仓库根目录即 CourseCore，不存在需要进入的嵌套 `coursecore/` 项目目录。
 
-```
-c:\Users\vitoriga\OneDrive\Desktop\CourseCore\
-├── .trae\documents\
-│   ├── development-log.md              # 开发日志
-│   ├── technical-architecture.md       # 本文件
-│   ├── prd.md                          # 产品需求文档
-│   └── ...                             # 其他专项文档
-├── .github\workflows\
-│   └── deploy.yml                      # GitHub Pages 自动部署
-├── index.html                          # 应用入口
-├── package.json                        # 依赖与脚本
-├── vite.config.js                      # Vite 配置
-├── tailwind.config.js                  # Tailwind 内容扫描路径
-├── postcss.config.js                   # PostCSS 插件配置
-├── vercel.json                         # Vercel SPA 回写
-├── netlify.toml                        # Netlify 构建与重定向
-├── README.md                           # 项目说明与部署指南
-├── .env.example                        # 环境变量示例
-├── .env.local                          # 本地敏感配置（不提交 Git）
-├── .gitignore
-├── components.json                     # shadcn registry 配置
-├── jsconfig.json                       # 路径别名（满足 shadcn CLI 检查）
-├── public\                             # 构建后原样复制的静态资源
-│   ├── favicon.svg
-│   └── physics\                        # 物理题图（含 training/ 子目录）
-├── builders\                           # 构建时脚本
-│   ├── question-builder.js             # Markdown → src/data/*.js
-│   ├── physics-quiz-builder.js         # 物理综合测验 JSON → Markdown
-│   ├── training-extract.py             # MinerU 抽取 PDF 训练题题干 → Markdown
-│   ├── training-builder.js             # Node.js 包装，prebuild 调用 Python 脚本
-│   └── compress-images.js              # 基于 sharp 批量压缩 public/physics 题图
-├── scripts\                            # 辅助脚本
-│   ├── prerender.js                    # 构建后为每条路由生成静态 index.html
-│   ├── supabase-schema.sql             # Supabase 建表、RLS、触发器脚本
-│   ├── test-supabase-connection.js     # 验证 Supabase 连接与表结构
-│   └── test-auth-flow.js               # 后端认证与同步链路端到端测试
-├── curriculum\                         # Markdown 源题库
-│   └── raw\
-│       ├── questions\                  # 平台题目（按学科/模块组织）
-│       │   ├── calculus-1\             # 高等数学（上）题目源文件
-│       │   ├── calculus-2\             # 高等数学（下）题目源文件
-│       │   └── physics-b-1\            # 大学物理B（上）理论 + 测验题目源文件
-│       └── exams\                      # 期末试卷
-└── src\
-    ├── main.js                         # 应用初始化、App 外壳、事件委托、锚点导航拦截
-    ├── router.js                       # History API 视图路由、答题处理、导航高亮
-    ├── state.js                        # 全局状态与 localStorage
-    ├── theme.js                        # 深色/浅色主题
-    ├── background.js                   # Canvas 2D 全局几何背景
-    ├── quiz-background.js              # p5.js 测验专用几何背景（初始化/销毁/素白模式回退）
-    ├── utils.js                        # 通用工具函数
-    ├── style.css                       # Tailwind 指令 + CSS 变量主题
-    ├── components\                      # 可复用 UI 组件（原生 JS + Tailwind）
-    │   ├── authModal.js                # 登录/注册/重置密码弹窗
-    │   ├── auth-components.css         # 认证组件样式
-    │   ├── userMenu.js                 # 右上角用户状态菜单
-    │   ├── avatarPicker.js             # 头像选择弹窗
-    │   ├── pillNav.js                  # PillNav 胶囊导航（原生 JS，毛玻璃主题色背景）
-    │   └── loading.js                  # 加载组件：spinner、skeleton、progress、page-loader、image-loader
-    ├── config\                         # 全局配置
-    │   ├── routes.js                   # 路由表、URL 匹配、链接生成、静态路径枚举
-    │   ├── access.js                   # 课程内容免费访问规则与 `isItemFree` 判断
-    │   └── question-types.js           # 题型枚举与行为映射表
-    ├── data\                           # 数据模块（由构建脚本生成）
-    │   ├── platform.js                 # 平台名称与标语
-    │   ├── labels.js                   # 题型与内容类型标签
-    │   ├── courses.js                  # 课程/模块/小节数据
-    │   ├── questions.js                # 平台题库
-    │   ├── theoryContents.js           # theory 小节 Markdown 讲义 + 例题 ID 列表
-    │   └── examPapers.js               # 期末试卷数据
-    ├── services\                       # 认证、同步与管理后台服务
-    │   ├── supabase.js                 # Supabase 客户端初始化
-    │   ├── auth.js                     # 游客初始化、登录/注册/登出、数据合并
-    │   ├── sync.js                     # 云端 answers / progress 读写与合并
-    │   ├── admin.js                    # 管理后台 CRUD 服务（users / courses / modules / items / questions / exam_* / theory_contents / knowledge_points / question_kp）
-    │   └── content.js                  # 非管理员运行时内容读取（theory_contents / questions / question_kp）
-    ├── validators\                     # 独立答案验证器
-    │   ├── index.js                    # validate(question, userAnswer) 入口
-    │   ├── exact.js                    # 精确匹配
-    │   ├── normalized.js               # 归一化匹配
-    │   ├── tolerance.js                # 数值容差
-    │   ├── set.js                      # 集合匹配（多选）
-    │   ├── manual.js                   # 人工/半自动（证明/简答）
-    │   ├── runner.js                   # 代码题沙箱执行
-    │   └── mixed.js                    # 综合混合题
-    ├── utils\                          # 业务工具
-    │   ├── answer-collector.js         # 根据题型收集用户输入
-    │   ├── question.js                 # 题目查找与导航
-    │   ├── progress.js                 # localStorage 读写与迁移
-    │   └── avatars.js                  # 黑白几何占位头像
-    └── views\                          # 页面视图组件
-        ├── landing.js                  # 首页（学习/知识库双板块）
-        ├── course.js                   # 课程详情
-        ├── practiceList.js             # 小节独立页面（支持 theory 讲义渲染+例题面板 / quiz / training；顶部渲染墨绿色课程/小节导航栏）
-        ├── quizSession.js              # 通用测验视图（顺序/随机/字体/背景/导航/报告），被 quiz 与 training 复用
-        ├── inlinePractice.js           # inline 多题训练区
-        ├── practiceDetail.js           # 单题作答与解法（薄包装）
-        ├── practiceBank.js             # 刷题板块
-        ├── knowledgeBase.js            # 知识库
-        ├── examPapers.js            # 期末试卷列表
-        ├── examDetail.js            # 试卷详情
-        ├── legal.js                 # 隐私政策 / 用户协议页面
-        ├── user\                    # 用户中心
-        │   └── userPage.js          # /user 页面渲染
-        └── question\                # 题型模板
-            ├── index.js                # renderQuestion(question) 入口
-            ├── choice.js               # 单选/多选/判断
-            ├── fill.js                 # 填空/简答
-            ├── calc.js                 # 计算/证明
-            ├── code.js                 # 代码题
-            ├── chrome.js               # 题目标题/反馈/解法/导航
-            └── preview.js              # 列表页题干预览
+```text
+CourseCore/
+├── index.html
+├── package.json
+├── vite.config.js
+├── wrangler.toml                  # Cloudflare Pages 配置
+├── src/
+│   ├── main.js                    # 初始化、全局事件、认证入口
+│   ├── router.js                  # History API 路由与页面分发
+│   ├── state.js                   # 应用状态与 localStorage
+│   ├── config/                    # routes/access/question-types
+│   ├── data/                      # 构建生成或静态 fallback 数据
+│   ├── components/                # Auth、用户菜单、加载等组件
+│   ├── services/                  # Auth、BFF client、内容、同步、管理
+│   ├── validators/                # 题型验证器
+│   └── views/                     # 页面、练习、题型渲染器
+├── curriculum/raw/                # 课程、理论、题目和试卷源文件
+├── builders/                      # Markdown/训练题构建器
+├── scripts/                       # 数据抓取、BFF 打包、预渲染
+├── bff/src/                       # Hono BFF 源码
+├── functions/api/[[route]].js     # BFF Pages Function 生成物
+└── public/                        # 静态资源与重定向
 ```
 
-## 3. 数据流
+`functions/api/[[route]].js` 不应手工编辑；它由 `scripts/build-bff.js` 从 `bff/src/pages-entry.ts` 生成。
 
-```
-Markdown 源文件（curriculum/raw/）
+## 4. 内容与数据流
+
+### 4.1 构建期内容
+
+```text
+curriculum/raw/ 或数据库内容
         │
-        ▼
-builders/question-builder.js（构建时）
-  - 解析题目 Markdown：gray-matter 读取 YAML frontmatter + 正文分区（Content / Options / Answer / Solution）。
-  - 解析试卷 Markdown：试卷由多个重复的 `## Section` 与 `### Question` 组成，使用 `parseRepeatedSections` 按出现顺序提取，避免按标题名去重导致只保留最后一节/最后一题。
-  - 解析 theory 小节 Markdown（`type: theory`），读取 YAML frontmatter（支持 `examples` 字段，值为题目 ID 数组），生成 `src/data/theoryContents.js`。
-  - 输出 ES Module 数据文件 `src/data/questions.js`、`src/data/theoryContents.js` 与 `src/data/examPapers.js`。
-  - 物理综合测验题库由 `builders/physics-quiz-builder.js` 从 `index（综合混合）.html` 的 JSON 中提取，按力学/波动光学拆分后生成 Markdown 源文件；图片路径由 `assets/qXXX.jpg` 改写为 `/physics/qXXX.jpg`.
-  - 题目配图在入库后由 `builders/compress-images.js` 批量压缩：JPEG/WebP 质量 80、最大宽度 1200px、无透明 PNG 转 JPEG，以控制静态托管与后端存储成本（当前 63 张图从 379.50 KB 降至 292.42 KB）。
-        │
-        ▼
-src/data/questions.js / src/data/theoryContents.js / src/data/examPapers.js
-        │
-        ▼
-router.js 根据 URL（`window.location.pathname`）匹配路由并分发到对应视图函数
-        │
-        ▼
-src/views/question/*.js 根据 questionType 渲染输入模板
-        │
-        ▼
-MathJax.typesetPromise([main]) 渲染 LaTeX 公式
-        │
-        ▼
-用户交互 → data-action 事件委托
-        │
-        ▼
-answer-collector.js 收集答案 → validators/index.js 判定
-        │
-        ▼
-state 更新 → saveProgress() → localStorage 持久化
+        ├─ builders/question-builder.js
+        ├─ builders/training-builder.js（独立的物理训练构建）
+        └─ scripts/fetch-from-supabase.js
+                │
+                └─ src/data/*.js
 ```
 
-## 4. 数据格式
+`src/data/*.js` 是构建产物或静态快照，不是人工维护的唯一源文件。内容变更应维护 Markdown/源数据，再运行构建和校验脚本。
 
-### 4.1 课程
+当前数据基线：
 
-```js
-{
-  id: 'calculus',
-  title: '高等数学',
-  description: '...',
-  requirements: [
-    '完成每个理论小节配套的即时训练题',
-    '完成每个模块末尾的综合练习',
-    '完成每个模块末尾的测验'
-  ],
-  modules: [
-    {
-      id: 'm1',
-      title: '极限与连续',
-      items: [
-        {
-          id: 'i1',
-          title: '数列极限',
-          type: 'theory',
-          content: '数列是按自然数编号的一列实数...'  // 可选：内联 Markdown + LaTeX 教学文本
-        },
-        { id: 'i2', title: '函数极限综合训练', type: 'training' },
-        { id: 'i3', title: '极限小测', type: 'quiz' }
-      ]
-    }
-  ]
-}
-```
+- `calculus-1`：7 个模块、41 个小节
+- `calculus-2`：6 个模块、35 个小节
+- `physics-b-1`：2 个模块、30 个小节
+- 题目总量约 276 道；期末试卷 2 套
+- 小节类型：`theory`、`quiz`、`training`、`review`
 
-小节 `type` 支持 `theory` / `quiz` / `training` / `review`。
-`theory` 小节的正文可内联在 `courses.js` 的 `content` 字段，也可由 `src/data/theoryContents.js` 提供（用于占位或后续替换真实讲义）。
-`quiz` 小节进入 `src/views/quizSession.js` 通用测验视图，题目顺序/随机切换（答题状态按题目 ID 跟随）、字体切换、几何/素白背景切换、题号导航、完成报告均在该视图内完成；几何背景由 `src/quiz-background.js` 通过 p5.js 渲染，并在离开测验视图时由 `router.js` 调用 `cleanupQuizSession` 清理。
+### 4.2 运行时内容
 
-### 4.2 题目
+试卷和期末题目由 `src/services/practice-data.js` 优先通过 `/api/v1/papers` 读取；BFF 不可用时才使用静态 `src/data/examPapers.js`。
 
-```js
-{
-  id: 'q001',
-  itemId: 'i2',
-  courseId: 'calculus',
-  moduleId: 'm1',
-  questionType: 0,       // questionTypes 枚举值
-  title: '极限选择题',
-  content: '题干，使用 \( ... \) 表示行内公式',
-  options: ['0', '1', '∞'],   // 选择/判断题必填
-  answer: '0',           // 单选/判断/填空/计算/代码标准答案
-  answers: ['A', 'C'],   // 多选题标准答案集合
-  blanks: 2,             // 填空题空位数量
-  tolerance: 0.01,       // 计算题数值容差
-  unit: 'm/s',           // 计算题单位要求
-  solution: '解法说明',
-  hint: '提示文本',
-  testString: '',        // 代码题验证表达式
-  image: '/physics/q006.jpg', // 题图，可选
-  difficulty: 1,
-  tags: ['极限', '无穷小'],
-  source: '力学练习一第3题'
-}
-```
+BFF 默认裁剪 `answer`、`answers`、`solution`、`test_string` 等字段。`includeAnswer=true` 是旧客户端迁移的临时兼容参数，不能视为长期的答案安全边界。
 
-> **当前题库数据说明**：高等数学（上/下）的平台题库已统一为选择题类型（`singleChoice` / `multipleChoice` / `trueFalse`）。大学物理B（上）的综合测验保留原有填空题（`fillInBlank`）与证明/解答题（`proof`），以便学生输入表达式或对照参考答案自查；期末试卷（`curriculum/raw/exams/`）保持原题型不变。
+理论内容和部分平台题目仍有 `src/services/content.js` 的直接 Supabase 读取；这是待收敛的边界，不应写成“所有内容都经过 BFF”。
 
-题型枚举定义于 `src/config/question-types.js`：
+### 4.3 用户数据
 
-| 枚举值 | 名称 | 含义 |
-|--------|------|------|
-| 0 | singleChoice | 单选题 |
-| 1 | multipleChoice | 多选题 |
-| 2 | fillInBlank | 填空题 |
-| 3 | calculation | 计算/解答题 |
-| 4 | proof | 证明题 |
-| 5 | trueFalse | 判断题 |
-| 6 | shortAnswer | 简答题 |
-| 7 | code | 代码题 |
-| 8 | composite | 综合混合题 |
+登录后，前端通过 Supabase Auth 持有会话；`apiClient.js` 将请求发送到 BFF。BFF 使用 JWT 确认用户身份，再访问进度、答案、错题本和排行榜数据。
 
-三种行为映射表决定题型表现：
-
-- `viewTypes`：渲染模板（choice / fill / calc / code / exam）。
-- `validatorTypes`：验证方式（exact / normalized / tolerance / set / manual / runner / mixed）。
-- `submitTypes`：提交方式（instant 点击选项即判定 / button 提交按钮判定）。
-
-### 4.3 期末试卷
-
-```js
-{
-  id: 'exam-csust-mechanics-2024',
-  school: '长沙理工大学',
-  college: '土木工程学院',
-  subject: '大学物理（力学）',
-  term: '2024-2025 第一学期',
-  duration: '120分钟',
-  sections: [
-    {
-      title: '一、选择题',
-      questions: [ /* 同 4.2 题目格式 */ ]
-    }
-  ]
-}
-```
-
-### 4.4 考点（knowledge points）
-
-颗粒度：知识点级。`knowledge_points` 字典在 item 下挂（platform kp 必填 `item_id`）或跨题库（exam kp `item_id=NULL`，按学科 `course_id` 归类）。`question_kp` 关联表为题-考点多对多，每题 1 主考点（`role='primary'`, `weight=1.0`） + N 次考点（`role='secondary'`, `weight=0.5`）。
-
-```js
-// knowledge_points 行
-{
-  id: 'uuid',                   // DB 自动生成
-  code: 'CAL-M1-I1-K01',        // 唯一代码: platform {COURSE}-{MODULE}-{ITEM}-K{nn}; exam EXAM-{SUBJECT}-K{nn}
-  name: '夹逼准则',
-  course_id: 'calculus-1',      // 学科归属
-  item_id: 'i1',                // 平台题挂小节; 试卷题为 null
-  source: 'platform',           // 'platform' | 'exam'
-  parent_id: null,              // 预留层级扩展
-  sort_order: 0
-}
-
-// question_kp 行 (source + question_id 联合区分两套题库)
-{
-  source: 'platform',           // 'platform' → question_id 关联 questions.id; 'exam' → 关联 exam_questions.id
-  question_id: 'q-calculus-1-c1-m1-001',
-  kp_id: 'uuid',
-  role: 'primary',              // 'primary' | 'secondary'
-  weight: 1.0                   // primary=1.0, secondary=0.5
-}
-```
-
-约束：
-- DB 层：`kp_platform_requires_item` CHECK（source='platform' 必填 item_id）；部分唯一索引 `uq_qk_primary_once` 保证每题 primary 至多 1 个。
-- 应用层：`admin.js` 强制 primary weight=1.0 / secondary weight=0.5；`deleteQuestion` / `deleteExamQuestion` 手动清理 `question_kp` 关联（因 `questions.id` / `exam_questions.id` 非 `question_kp` 外键，不级联）。
-- 现有 `questions.tags` / `exam_questions.tags` 保留为"自由标签"，与 `question_kp` 互补不冲突。
+当前 `admin.js`、社区页面、我的试卷、部分练习记录以及若干 fallback 仍直接使用 Supabase。权限迁移必须逐业务域完成，不能按“BFF 已存在”整体收权。
 
 ## 5. 前端运行时
 
-### 5.1 初始化流程
+### 5.1 初始化
 
-1. `index.html` 加载 MathJax 配置与脚本。
-2. `DOMContentLoaded` 触发 `src/main.js` 的 `init()`。
-3. `loadProgress()` 从 `localStorage` 恢复学习进度。
-4. `setTheme(state.theme)` 设置 CSS 变量与图标。
-5. `renderAppShell()` 渲染 header / sidebar / main / footer，并在全局右上角渲染右侧折叠导航菜单（`.staggered-menu-wrapper`）。
-6. `initEventDelegation()` 绑定 `data-action` 事件委托，包含菜单的 `toggle-menu` 与 `toggle-course-submenu` 交互。
-7. `renderSidebarContent()` 渲染侧边栏课程列表。
-8. `showLanding()` 渲染首页。
-9. `initBackground(() => state.theme)` 启动 Canvas 几何背景。
+`src/main.js` 初始化状态、认证监听、背景、页面容器和全局事件。`src/state.js` 保存用户、完成小节、当前练习会话、主题和本地进度；`lastSession` 用于恢复最近一次练习入口。
 
-### 5.2 路由与视图切换
+### 5.2 路由
 
-- 路由配置集中在 `src/config/routes.js`，定义了全部 URL 模式与对应视图：
-  - `/` → 首页（内部包含学习板块与知识库板块 tab 切换）
-  - `/kb` → 知识库（首页"进入知识库"跳转的独立页面）
-  - `/bank` → 刷题板块
-  - `/exams` → 期末试卷列表
-  - `/course/:courseId` → 课程详情
-  - `/item/:itemId` → 小节练习列表
-  - `/question/:qid` → 单题作答
-  - `/exams/:examId` → 试卷详情
-  - `/exams/:examId/questions/:qid` → 试卷逐题作答
-- `router.js` 使用 `matchRoute(path)` 解析当前 URL，调用 `history.pushState/replaceState` 更新地址，再由 `applyRoute(route)` 调用对应视图函数；`navigateTo(path)` 是内部跳转的统一入口。
-- 首页内的「学习板块」「知识库板块」通过 `state.landingTab` 控制，由 `showLanding(tab)` 直接切换视图，不修改 URL；`landingTab` 持久化到 `localStorage`。
-- `main.js` 在全局点击事件中拦截 `<a href="/...">` 内部链接，阻止默认跳转并调用 `navigateTo`，实现无刷新客户端路由；外部链接不受影响。
-- `renderMain()` 根据 `state.view` 调用对应视图函数，生成 HTML 后调用 `typeset(main)` 触发 MathJax 渲染。
-- 导航高亮由 `setActiveNav(view)` 根据当前视图更新 `.nav-link.active`；当前顶部导航仅保留刷题相关入口，首页 tab 切换不依赖导航高亮。
-- 构建时 `scripts/prerender.js` 读取 `dist/index.html` 模板，为 `getStaticPaths()` 返回的每条路由生成对应目录的 `index.html`，保证静态托管直接访问子路径不 404；`vercel.json` 与 `netlify.toml` 仍保留 SPA fallback 作为兜底。
+路由定义在 `src/config/routes.js`，使用 HTML5 History API：
 
-### 5.3 小节完成状态
+```text
+/                         首页
+/kb                       知识库
+/bank                     题库
+/exams                    期末试卷
+/practice                 刷题中心
+/practice/exams           按试卷刷题
+/practice/types           按题型刷题
+/practice/quiz            刷题会话
+/practice/add             我的试卷
+/kb/review                错题复习
+/community                社区
+/community/post           发布文章
+/community/:postId        文章详情
+/user                     用户中心
+/user/records             刷题记录
+/admin                    管理后台
+/privacy                  隐私政策
+/terms                    用户协议
+/course/:courseId         课程详情
+/item/:itemId             小节详情
+/question/:qid            单题详情
+/exams/:examId            试卷详情
+/exams/:examId/questions/:qid 试卷题目详情
+```
 
-- `state.progress` 仍记录用户手动勾选的项目（项目/复习等无训练题小节）。
-- `state.completedQuestions` 记录每道题的完成状态。
-- `isItemCompleted(itemId)` 判断小节是否完成：
-  - 若该小节关联训练题，则所有题目都完成后小节才算完成；
-  - 否则回退到 `state.progress[itemId]` 的手动状态。
-- `syncItemProgress(itemId)` 在小节练习页加载或题目提交后被调用，自动将"全部训练题已完成"的小节写入 `state.progress`。
-- 课程详情页与侧边栏统一使用 `getStatus(itemId)` 渲染状态点，理论小节点击进入 `practice-list` 而非直接 toggle。
+构建后 `scripts/prerender.js` 为静态路径生成深链页面；开发和运行时仍由 SPA router 接管导航。
 
-### 5.4 事件委托
+### 5.3 题型系统
 
-`main.js` 在 `#app` 上统一监听 `click` / `input` / `change`：
+题型枚举位于 `src/config/question-types.js`：
 
-- `click`：读取最近 `data-action` 祖先元素，分发到 `router.js` 的对应函数；同时处理全局右侧折叠菜单的 `toggle-menu` / `toggle-course-submenu`，并在点击菜单外部时自动关闭菜单。
-- `<a href="/...">` 内部链接被拦截后，先关闭折叠菜单再调用 `navigateTo`，保证菜单关闭与 SPA 无刷新跳转同步。
-- `input`：全局搜索、知识库搜索、刷题搜索。
-- `change`：刷题筛选（题型、学科）。
+| 值 | 名称 | 渲染/校验 |
+|---:|---|---|
+| 0 | `singleChoice` | choice / exact |
+| 1 | `multipleChoice` | choice / set |
+| 2 | `fillInBlank` | fill / normalized |
+| 3 | `calculation` | calc / tolerance |
+| 4 | `proof` | calc / manual |
+| 5 | `trueFalse` | choice / exact |
+| 6 | `shortAnswer` | fill / normalized |
+| 7 | `code` | code / runner，预留能力 |
+| 8 | `composite` | exam / mixed |
 
-优点：避免全局函数污染，便于 Vite tree-shaking，新增交互只需在 HTML 中添加 `data-action`。
+输入收集由 `src/utils/answer-collector.js` 负责，验证器位于 `src/validators/`。题型新增时必须同时更新枚举、行为映射、渲染器、验证器和测试数据。
 
-### 5.5 答题流程
+### 5.4 答题与复习
 
-1. 用户在题目详情页选择选项或输入答案；`input` 事件实时更新 `state.userAnswer`。
-2. 点击提交按钮触发 `handleSubmitAnswer(qid)`。
-3. `answer-collector.js` 根据 `viewTypes` 收集当前输入（单选字符串 / 多选数组 / 填空字符串或数组 / 计算或代码字符串）。
-4. `validators/index.js` 根据 `validatorTypes` 选择验证器并返回统一结果结构 `{ passed, userAnswer, correctAnswer, message, manual }`。
-5. `state.validationResult` 保存结果；非人工题调用 `markQuestion(qid, result)` 更新 `state.completedQuestions` 并持久化。
-6. 模板重新渲染反馈区与解法区，并触发 MathJax 重新排版。
-7. 若 `submitTypes` 为 `instant` 且回答正确，自动跳转下一题。
-8. `handleSubmitAnswer` 调用 `syncItemProgress(itemId)`：当某小节关联的全部训练题均已完成时，自动将该小节标记为完成并持久化到 `state.progress`。
+- 练习会话由 `src/views/quizSession.js` 统一渲染，支持顺序/随机、字体、背景、题号导航和提交报告。
+- 服务端判分通过 `POST /api/v1/questions/:id/judge`；失败时部分历史路径仍有本地或 Supabase fallback。
+- 错题复习由 `review-engine.js` 和 BFF 用户路由共同承担，包含错题状态、复习间隔、掌握状态和错题记录。
+- `answer_reveal` 控制即时揭示或提交后揭示；新的调用应优先使用 `/judge`/`/reveal`，不要扩散 `includeAnswer=true`。
 
-### 5.6 测验视图（quizSession）
+## 6. 认证与访问控制
 
-`src/views/quizSession.js` 为 `type: 'quiz'` 小节提供通用测验视图：
+- Supabase Auth 负责邮箱密码登录、会话和登出。
+- `profiles.role` 用于管理员判断；后台页面仍由前端权限与 Supabase RLS 共同保护。
+- 注册和重置密码入口当前在 UI 中暂时关闭，不能在 PRD 中标记为完整可用。
+- 课程访问控制由 `src/config/access.js` 与 `isItemFree` 负责；登录用户和游客的可访问范围必须与产品文档同步。
+- BFF 用户路由使用 JWT middleware；未登录访问用户数据和判分接口应返回 401。
 
-- 按 `itemId` 过滤题目，内部维护 `mode`（顺序/随机）、`font`（衬线/无衬线）、`bg`（几何/素白）、`currentIndex`、用户答案与判题结果等闭包状态，不污染全局 `state.inlineAnswers/inlineResults`。
-- 顶部控制栏显示模式标签、小节标题、顺序/随机切换、字体切换、背景切换与进度条。
-- 主体渲染当前题目；`renderQuestion` 已支持 `image` 字段，题图在输入区之前展示。
-- 单选/判断题（`submitType: instant`）选择后立即判题，正确自动进入下一题；填空/证明题使用提交按钮，证明题走 `manual` 验证，仅显示参考答案。
-- 桌面端右侧题号网格 + 移动端底部导航，支持点击跳转；底部提供上一题/下一题/完成练习。
-- 全部题目作答后点击完成练习显示结果页（正确数/总题数/正确率），并调用 `syncItemProgress(itemId)` 标记小节完成。
-- 测验状态不持久化，允许反复刷题；字体与背景偏好写入 `localStorage`（`quiz-font` / `quiz-bg`）。
-
-### 5.7 主题与背景
-
-- CSS 变量定义在 `src/style.css`，通过 `html[data-theme="dark"]` / `html[data-theme="light"]` 切换。
-- `background.js` 使用 Canvas 2D 绘制球面投影网格与星芒，主题变化时重绘。
-- 测验视图通过 `body[data-bg="geo"]` / `body[data-bg="plain"]` 临时覆盖几何背景显隐，离开测验页时恢复。
-
-### 5.8 题型系统与验证器
-
-题型行为由 `src/config/question-types.js` 中的三重映射表驱动，禁止在路由或视图中直接判断字符串 `kind`：
-
-| questionType | viewType | validatorType | submitType |
-|--------------|----------|---------------|------------|
-| singleChoice (0) | choice | exact | instant |
-| multipleChoice (1) | choice | set | button |
-| fillInBlank (2) | fill | normalized | button |
-| calculation (3) | calc | tolerance | button |
-| proof (4) | calc | manual | button |
-| trueFalse (5) | choice | exact | instant |
-| shortAnswer (6) | fill | normalized | button |
-| code (7) | code | runner | button |
-| composite (8) | exam | mixed | button |
-
-验证器位于 `src/validators/`，统一入口 `validate(question, userAnswer)`：
-
-- `exact`：字符串精确匹配（单选、判断）。
-- `normalized`：去空白、转小写、去全角标点、去 LaTeX 命令后匹配（填空、简答）。
-- `tolerance`：`parseFloat` 后按 `tolerance` 容差比较，边界处加 `1e-9`  epsilon（计算题）。
-- `set`：`Set` 比较用户选项与标准答案集合（多选）。
-- `manual`：不自动判定，记录作答并显示参考答案（证明题）。
-- `runner`：使用 `new Function()` 执行 `testString` 判定用户代码；当前仅用于内置代码题，未来必须迁移到 iframe 沙箱。
-- `mixed`：综合混合题占位，按子题类型递归验证。
-
-### 5.9 题目模板
-
-`src/views/question/index.js` 提供统一入口 `renderQuestion(question)`，根据 `viewTypes` 分发到：
-
-- `choice.js`：radio / checkbox 选项。
-- `fill.js`：单空或多空 input。
-- `calc.js`：输入框 + 解法区。
-- `code.js`：textarea + 运行反馈。
-
-`renderQuestion(question)` 在调用具体题型模板前先渲染 `question.image` 题图；`chrome.js` 渲染题目标题、题型标签、操作按钮、反馈区、解法区、上下题导航；`preview.js` 用于列表页只展示题干与标签。
-
-### 5.10 内容访问控制
-
-- 免费范围定义在 `src/config/access.js`：每个课程的第一个模块中，按顺序前 4 个 `item` 对游客开放。
-- `isItemFree(itemId)` 在构建时计算所有免费 item ID 集合，运行时以 `Set.has` 判断。
-- 未登录用户访问非免费内容时：
-  - 课程详情页（`src/views/course.js`）小节列表显示锁图标与“登录解锁”按钮，点击通过 `data-action="auth-open"` 唤起登录弹窗。
-  - 小节独立页（`src/views/practiceList.js`）直接渲染登录提示卡片，提供登录按钮与返回课程目录链接。
-  - 单题作答页（`src/views/practiceDetail.js`）若题目所属 item 不免费，同样渲染登录提示卡片。
-- 已登录用户不受限制，可访问全部课程内容。
-
-### 5.11 考点系统（knowledge points）
-
-考点（kp）用于按"考查点"对题目分类与检索，与现有自由标签 `tags` 互补：
-
-- **DB 层**：`knowledge_points`（字典）+ `question_kp`（多对多关联，含主/次角色与权重）。见 [scripts/supabase-schema.sql](scripts/supabase-schema.sql) 第 14 节。RLS：公开可读 + admin 可写。
-- **服务层**：
-  - `src/services/admin.js` 提供 kp 字典 CRUD（`listKnowledgePoints` / `createKnowledgePoint` / `updateKnowledgePoint` / `deleteKnowledgePoint`）与题-考点关联 CRUD（`listQuestionKps` / `replaceQuestionKps` / `addQuestionKp` / `removeQuestionKp`）；`deleteQuestion` / `deleteExamQuestion` 内置关联清理。
-  - `src/services/content.js` 提供 `loadQuestionKps(source, questionId)` 运行时只读 API，返回带 kp 详情的关联列表。
-- **学生侧渲染**：
-  - `src/views/question/chrome.js` 的 `renderQuestionHeader` 在标题下渲染考点 chip 行（主考点主题色高亮、次考点淡灰），样式见 `src/style.css` 的 `.kp-chip*`。
-  - chip 通过占位元素 `<div data-question-kps data-source data-qid>` 异步填充：`src/router.js` 在 `case "practice"` 渲染 `main.innerHTML` 后立即调用 `src/views/practiceDetail.js` 的 `hydrateQuestionKps(questionId)`，后者 fetch `loadQuestionKps` 并用 `renderQuestionKps` 替换占位。
-  - 平台题与试卷题统一走 `renderPracticeDetail`（试卷题作答时 `state.examContext` 非空，chip 占位 `data-source="exam"`）。
-- **管理后台**：`src/views/admin/adminPage.js` 侧边栏「内容管理 → 考点」section 提供字典 CRUD（字段：code / name / source / course_id / item_id / parent_id / sort_order）；question / exam_question 表格行新增「考点」按钮，打开独立 modal（`adminState.kpEditor`）编辑题-考点关联：主考点下拉（至多 1 个）+ 次考点列表（可增删），保存调 `replaceQuestionKps`。
-
-## 6. 依赖
-
-- 浏览器环境：现代 Chromium/Edge/Firefox/Safari（ES Modules、CSS 变量、Canvas 2D）。
-- 网络：首次加载需要 MathJax CDN 与 Google Fonts（Inter）。
-- 本地构建：Node.js >= 18，npm >= 9。
-- 构建产物：`dist/` 目录，可直接作为静态站点部署。
-- 主要 npm 依赖：
-  - 运行时：`@supabase/supabase-js`、`marked`、`easymde`、`split.js`、`sortablejs`。
-  - 开发时：`vite`、`tailwindcss`、`postcss`、`autoprefixer`、`gray-matter`、`sharp`、`ws`。
-- 后台编辑器：`easymde` 提供 Markdown 工具栏与双栏预览；`split.js` 实现理论/训练/测试编辑器的可拖拽分栏；`sortablejs` 实现训练/测试题目列表的拖拽排序。
-
-## 7. 可复现构建步骤
+## 7. 构建、验证与部署
 
 ```bash
-cd coursecore
-npm install
-npm run build:data        # Markdown → src/data/*.js
-npm run validate:data     # 校验题目 schema
-npm run build             # Vite 生产构建
-npm run preview           # 本地预览生产产物
+npm run build:data
+npm run validate:data
+npm run build
+npm run preview
+
+cd bff
+npm run typecheck
 ```
 
-`package.json` 已配置 `predev` 与 `prebuild` 钩子，开发或生产构建前会自动执行 `build:data`。
+根目录 `package.json` 的 `predev`/`prebuild` 会运行 `build:data` 和 `fetch:data`。`build:training` 是独立的重流程，不应假设每次普通前端构建都会自动执行它。
 
-## 8. 部署配置
+生产默认使用：
 
-### Vercel
-
-`vercel.json`：
-
-```json
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
+```text
+Cloudflare Pages
+  ├─ dist/                         静态前端
+  └─ functions/api/[[route]].js   Hono BFF
 ```
 
-### Netlify
+service role 只配置在 Cloudflare Secret 或本地 `.dev.vars`，不可放入 `VITE_*` 或静态 bundle。
 
-`netlify.toml`：
+## 8. 依赖与安全边界
 
-```toml
-[build]
-  command = "npm run build"
-  publish = "dist"
+浏览器仍然使用 Supabase anon key 完成 Auth 和部分历史业务读取；BFF 使用 service role 访问服务端业务数据。当前尚未完成全部业务域迁移，因此不能直接撤销所有浏览器端业务表权限。
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-```
+`src/services/apiClient.js` 的注释要求自动附带 JWT，但该行为需要通过登录态请求验证；不要仅依据注释假设鉴权链路正确。
 
-### GitHub Pages
+## 9. 已知限制与后续工作
 
-`.github/workflows/deploy.yml` 已配置：push 到 `main` 自动构建并部署。
+1. 管理后台 CRUD 尚未迁移到 `/api/v1/admin/*`。
+2. 社区、我的试卷和部分练习记录仍存在直接 Supabase 访问。
+3. 静态题库和试卷快照仍可能包含答案，构建 bundle 不是完整的答案防泄露方案。
+4. `includeAnswer=true` 需要在服务端判分链稳定后移除。
+5. JWT 注入、错误 fallback 和各业务域的权限策略需要持续回归。
+6. 主题设计和部分学习优化仍属于产品/视觉目标，不应自动视为已实现能力。
 
-## 9. 已知技术限制
-
-- 用户进度保存在浏览器 `localStorage`，跨设备/浏览器不互通；后续可通过接入后端或云存储解决。
-- 填空/简答题答案匹配基于字符串归一化，不处理复杂等价变形；计算题使用数值容差，可接受近似值。
-- 代码题 `runner` 验证器当前使用 `new Function()` 沙箱，仅用于内置代码题；涉及用户可输入代码时必须迁移到 iframe 隔离环境。
-- 大学物理B（上）理论讲义与训练题答案已补充；后台编辑器支持 theory 小节、训练/测试题的实时编辑与保存，保存后学生侧通过运行时 Supabase 读取即可看到更新（静态构建环境仍需 `npm run fetch:data` 重新生成数据文件）。
-- MathJax 公式渲染依赖外部 CDN，离线环境需改为本地 MathJax 包。
+本文是技术事实基线；后端迁移细节见根目录 `backend-architecture-redesign.md` 与 `backend-redesign-handoff.md`。

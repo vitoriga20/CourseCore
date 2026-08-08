@@ -1,3 +1,7 @@
+> 文档状态：历史实施计划，用户中心基础能力已实现；未勾选项不自动代表当前缺陷。
+>
+> 当前入口、路由和行为以 `src/views/user/userPage.js`、`src/config/routes.js` 和 `src/main.js` 为准。
+
 # 用户中心页面实现计划
 
 ## 1. 目标
