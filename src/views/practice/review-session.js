@@ -4,7 +4,7 @@
 // 提交后调用 review-engine.processAnswer 更新错题本 + savePracticeRecord
 
 import { startPracticeSession, renderQuizAdapter, initQuizAdapter, savePracticeRecord } from './quiz-adapter.js';
-import { getTodayReview, getReviewQueue, processAnswer } from '../../services/review-engine.js';
+import { getReviewQueue, processAnswer } from '../../services/review-engine.js';
 import { state } from '../../state.js';
 import { mountWrongReasonSummary } from './wrong-reason-summary.js';
 
@@ -43,7 +43,7 @@ async function _initReviewSession() {
   }
 
   try {
-    // 优先用 sessionStorage 传入的选中错题，否则用今日复习
+    // 优先用 sessionStorage 传入的选中错题，否则复习完整的未掌握错题队列
     let entries;
     const selectedIds = JSON.parse(sessionStorage.getItem('review-selected') || '[]');
     if (selectedIds.length > 0) {
@@ -51,7 +51,7 @@ async function _initReviewSession() {
       entries = all.filter(e => selectedIds.includes(e.id));
       sessionStorage.removeItem('review-selected'); // 用完清除
     } else {
-      entries = await getTodayReview(userId);
+      entries = await getReviewQueue(userId);
     }
 
     // 无错题
@@ -59,9 +59,9 @@ async function _initReviewSession() {
       container.innerHTML = `
         <div class="card text-center py-12" style="background: var(--practice-card); border-color: var(--practice-border);">
           <div class="text-4xl mb-3">🎉</div>
-          <p class="text-sm font-semibold mb-1" style="color: var(--practice-text);">今日无复习任务</p>
-          <p class="text-xs" style="color: var(--practice-muted);">到期的错题会自动出现在这里</p>
-          <a href="/kb" class="btn-pill inline-block mt-4" style="background: var(--practice-accent); color: #fff; padding: 0.5rem 1.5rem;">查看错题库</a>
+          <p class="text-sm font-semibold mb-1" style="color: var(--practice-text);">还没有待复习错题</p>
+          <p class="text-xs" style="color: var(--practice-muted);">先去刷题建立你的复习计划</p>
+          <a href="/practice/exams" class="btn-pill inline-block mt-4" style="background: var(--practice-accent); color: #fff; padding: 0.5rem 1.5rem;">去刷题</a>
         </div>
       `;
       return;
@@ -73,7 +73,7 @@ async function _initReviewSession() {
     // 渲染答题容器
     container.innerHTML = `
       <div class="mb-4">
-        <h1 class="text-2xl font-extrabold" style="color: var(--practice-text);">${session.title}</h1>
+        <h1 class="text-2xl font-extrabold" style="color: var(--practice-text);">今日复习</h1>
         <p class="text-sm mt-1" style="color: var(--practice-muted);">${entries.length} 题 · 自动评判 · 解析点击「查看答案」展开</p>
       </div>
       ${renderQuizAdapter(session.virtualId)}

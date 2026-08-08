@@ -82,3 +82,21 @@ test('user wrong-book writes expose and validate optional reason arrays', () => 
   assert.match(source, /WRONG_BOOK_FIELDS[\s\S]*reason,reasons/);
   assert.match(source, /parseWrongReasons\(reasons,\s*false\)/);
 });
+
+test('knowledge base makes today review the primary action', () => {
+  const source = read('src/views/knowledgeBase.js');
+
+  assert.ok(source.includes('开始今日复习'), 'missing primary review CTA');
+  assert.ok(source.includes('href="/kb/review"'), 'CTA must open the review session');
+  assert.ok(source.includes('>今日复习</h1>'), 'page heading should reinforce the review task');
+  assert.doesNotMatch(source, /selected-count|start-review-btn|wrong-checkbox/);
+  assert.doesNotMatch(source, /radar-chart|_renderRadar|_bindRadar/);
+  assert.ok(source.includes('薄弱点排行'), 'missing compact weakness ranking');
+});
+
+test('review entry uses the complete wrong-answer queue when no selection is passed', () => {
+  const source = read('src/views/practice/review-session.js');
+
+  assert.match(source, /entries\s*=\s*await\s+getReviewQueue\(userId\)/);
+  assert.ok(source.includes('href="/practice/exams"'), 'empty state should route to practice');
+});

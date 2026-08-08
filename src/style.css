@@ -2277,6 +2277,65 @@ body[data-bg="geo"] #bg-canvas {
   color: #fff;
 }
 
+/* 今日复习：任务优先 + 紧凑错题网格 */
+.today-review-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--practice-accent);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), var(--practice-card));
+}
+.today-review-primary {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+}
+.today-review-card {
+  min-height: 142px;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.today-review-card:hover {
+  border-color: var(--practice-accent);
+  transform: translateY(-1px);
+}
+.weakness-ranking-row + .weakness-ranking-row {
+  margin-top: 0.7rem;
+}
+.weakness-ranking-bar {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--practice-card-hover, #1e1e2e);
+}
+.weakness-ranking-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--practice-accent);
+}
+.wrong-reason-summary {
+  border-radius: 12px;
+}
+.wrong-reason-chip[aria-pressed="true"] {
+  border-color: var(--practice-accent);
+  color: var(--practice-accent);
+  background: rgba(22, 163, 74, 0.12);
+}
+@media (max-width: 640px) {
+  .today-review-hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .today-review-primary {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 /* ===== 课程页：目录 + 本节预览 ===== */
 .course-item-selected {
   background-color: rgba(40, 120, 80, 0.12);

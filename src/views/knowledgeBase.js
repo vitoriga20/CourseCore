@@ -1,12 +1,12 @@
-// 知识库（Screen 4 + Screen 6 统一 hub）
+// 今日复习（Screen 4 + Screen 6 统一 hub）
 // 单路由 /kb，页内 [错题库 | 收藏] tab 切换；齿轮展开复习曲线设置（经典/紧凑）
-// 错题库: 学科切换 + 复习队列 + 掌握度雷达图 + 已选复盘；收藏: 四分类筛选 + 卡片列表
+// 错题库: 任务入口 + 学科筛选 + 紧凑复习队列 + 薄弱点排行；收藏: 四分类筛选 + 卡片列表
 
 import { state } from '../state.js';
 import { escapeHtml } from '../utils.js';
 import { getSubjects } from '../services/practice-data.js';
 import {
-  getReviewQueue, getStats, getTodayReview,
+  getReviewQueue, getStats,
   getUserCurve, switchCurve, CURVES, markRight
 } from '../services/review-engine.js';
 
@@ -38,9 +38,7 @@ const STATUS_STYLES = {
 const _kbState = {
   tab: 'wrong',          // 'wrong' | 'favorites'
   currentSubject: null,
-  radarTab: 'reason',    // 'reason' | 'tag'
   entries: [],
-  selected: new Set(),
   curve: 'classic',      // 'classic' | 'compact'
   curvePanelOpen: false,
   curveApplied: false    // 本次会话是否已应用过曲线
@@ -60,13 +58,10 @@ function pageShell(content) {
 export function renderKnowledgeBase() {
   _initKnowledgeBase();
   return pageShell(`
-    <!-- 顶部：标题 + 今日复习 + 齿轮 -->
+    <!-- 顶部：今日复习 + 齿轮 -->
     <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-extrabold" style="color: var(--practice-text);">知识库</h1>
+      <h1 class="text-2xl font-extrabold" style="color: var(--practice-text);">今日复习</h1>
       <div class="flex items-center gap-3">
-        <a href="/kb/review" id="today-review-btn" class="px-3 py-1.5 rounded-lg text-sm font-semibold" style="background: rgba(22, 163, 74, 0.15); color: var(--practice-accent); border: 1px solid var(--practice-accent);">
-          今日复习 <span id="today-review-count" style="font-weight: 700;">0</span>
-        </a>
         <button id="kb-curve-toggle" class="kb-gear-btn${_kbState.curvePanelOpen ? ' open' : ''}" title="复习曲线设置" aria-label="复习曲线设置" aria-expanded="${_kbState.curvePanelOpen ? 'true' : 'false'}">⚙</button>
       </div>
     </div>
@@ -107,53 +102,39 @@ export function renderKnowledgeBase() {
 // ============================================================
 function _renderWrongTabBody() {
   return `
-    <!-- 摘要条：今日待复习 / 即将遗忘 / 未掌握总数 -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-      <div class="card" style="background: var(--practice-card); border-color: var(--practice-border); padding: 1rem;">
-        <div class="text-xs font-semibold" style="color: var(--practice-muted);">今日待复习</div>
-        <div id="kb-sum-today" class="text-2xl font-extrabold mt-1" style="color: var(--practice-accent);">–</div>
+    <div class="today-review-hero mb-5">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider" style="color: var(--practice-accent);">错题复习入口</p>
+        <h2 class="text-2xl font-extrabold mt-1" style="color: var(--practice-text);">今天先解决这些错题</h2>
+        <p class="text-sm mt-2" style="color: var(--practice-muted);">复习内容来自你刷题时答错的题目，点击后直接进入第一题。</p>
       </div>
-      <div class="card" style="background: var(--practice-card); border-color: var(--practice-border); padding: 1rem;">
-        <div class="text-xs font-semibold" style="color: var(--practice-muted);">即将遗忘（24h）</div>
-        <div id="kb-sum-due" class="text-2xl font-extrabold mt-1" style="color: var(--practice-accent);">–</div>
-      </div>
-      <div class="card" style="background: var(--practice-card); border-color: var(--practice-border); padding: 1rem;">
-        <div class="text-xs font-semibold" style="color: var(--practice-muted);">未掌握错题</div>
-        <div id="kb-sum-queue" class="text-2xl font-extrabold mt-1" style="color: var(--practice-accent);">–</div>
-      </div>
+      <a href="/kb/review" class="btn-pill today-review-primary" style="background: var(--practice-accent); color: #fff;">开始今日复习 <span id="today-review-count">0</span> 题 →</a>
     </div>
 
-    <!-- 学科切换器（数字 = 该科错题数） -->
     <div id="wrong-subjects" class="flex gap-2 mb-6 flex-wrap"></div>
 
-    <!-- 主体两栏：复习队列 + 掌握度雷达图 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="today-review-grid grid grid-cols-1 md:grid-cols-[minmax(0,1.45fr)_minmax(250px,0.8fr)] gap-5 mb-6">
       <div>
-        <h2 class="text-lg font-bold mb-3" style="color: var(--practice-text);">复习队列</h2>
-        <div id="wrong-queue" class="space-y-2">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-bold" style="color: var(--practice-text);">待巩固错题</h2>
+          <span class="text-xs" style="color: var(--practice-muted);">按复习顺序排列</span>
+        </div>
+        <div id="wrong-queue" class="today-review-grid-cards grid grid-cols-1 xl:grid-cols-2 gap-3">
           <div class="text-center py-8" style="color: var(--practice-muted);">
             <div class="flex justify-center mb-2" style="opacity: 0.3; color: var(--practice-muted);">${icon('clock')}</div>
             <p class="text-sm">加载中...</p>
           </div>
         </div>
       </div>
-      <div>
+      <aside class="weakness-ranking card" style="background: var(--practice-card); border-color: var(--practice-border); padding: 1rem; align-self: start;">
         <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-bold" style="color: var(--practice-text);">掌握度分析</h2>
-          <div class="flex gap-1 text-xs">
-            <span class="px-2 py-1 rounded font-semibold cursor-pointer radar-tab${_kbState.radarTab === 'reason' ? ' active' : ''}" data-tab="reason" style="${_kbState.radarTab === 'reason' ? 'background: var(--practice-accent); color: #fff;' : 'background: var(--practice-card); color: var(--practice-muted); border: 1px solid var(--practice-border);'}">错误原因</span>
-            <span class="px-2 py-1 rounded font-semibold cursor-pointer radar-tab${_kbState.radarTab === 'tag' ? ' active' : ''}" data-tab="tag" style="${_kbState.radarTab === 'tag' ? 'background: var(--practice-accent); color: #fff;' : 'background: var(--practice-card); color: var(--practice-muted); border: 1px solid var(--practice-border);'}">考点</span>
-          </div>
+          <h2 class="text-lg font-bold" style="color: var(--practice-text);">薄弱点排行</h2>
+          <span class="text-xs" style="color: var(--practice-muted);">按错题数</span>
         </div>
-        <div id="radar-chart" style="width: 100%; height: 320px;"></div>
-      </div>
-    </div>
-
-    <!-- 底部 CTA -->
-    <div class="text-center pt-4 border-t" style="border-color: var(--practice-border);">
-      <button id="start-review-btn" class="btn-pill inline-block" style="background: var(--practice-accent); color: #fff; padding: 0.75rem 2.5rem; font-weight: 700;" disabled>
-        已选 <span id="selected-count">0</span> 题 · 开始复盘
-      </button>
+        <div id="weakness-ranking-list" class="space-y-2">
+          <p class="text-sm" style="color: var(--practice-muted);">加载中...</p>
+        </div>
+      </aside>
     </div>
   `;
 }
@@ -174,18 +155,14 @@ async function _initWrongTab() {
       `;
     }
     _renderSubjects(subjects, {});
-    _renderSummary([], []);
-    _renderRadar({ byReason: {}, byTag: {} });
-    _bindRadarTabs({ byReason: {}, byTag: {} });
-    _bindStartReviewBtn();
+    _renderWeaknessRanking({ byReason: {} });
     return;
   }
 
   try {
-    const [entries, stats, todayReview] = await Promise.all([
+    const [entries, stats] = await Promise.all([
       getReviewQueue(userId),
-      getStats(userId),
-      getTodayReview(userId)
+      getStats(userId)
     ]);
 
     _kbState.entries = entries;
@@ -196,32 +173,34 @@ async function _initWrongTab() {
     }
     _renderSubjects(subjects, subjectCounts);
     _renderWrongQueue(entries);
-    _renderSummary(todayReview, entries);
-
     const todayCountEl = document.getElementById('today-review-count');
-    if (todayCountEl) todayCountEl.textContent = String(todayReview.length);
-
-    _renderRadar(stats);
-    _bindRadarTabs(stats);
-    _bindStartReviewBtn();
+    if (todayCountEl) todayCountEl.textContent = String(entries.length);
+    _renderWeaknessRanking(stats);
   } catch (e) {
     console.warn('[kb] 错题库数据加载失败:', e);
   }
 }
 
-function _renderSummary(todayReview, entries) {
-  const set = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = String(val);
-  };
-  const now = Date.now();
-  const due = entries.filter(e => {
-    const t = e.next_review_at ? new Date(e.next_review_at).getTime() : 0;
-    return t > 0 && t - now <= 24 * 3600 * 1000;
-  }).length;
-  set('kb-sum-today', Array.isArray(todayReview) ? todayReview.length : 0);
-  set('kb-sum-due', due);
-  set('kb-sum-queue', entries.length);
+function _renderWeaknessRanking(stats) {
+  const el = document.getElementById('weakness-ranking-list');
+  if (!el) return;
+  const rows = Object.entries(stats.byReason || {})
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1]);
+  if (rows.length === 0) {
+    el.innerHTML = '<p class="text-sm" style="color: var(--practice-muted);">完成刷题总结后，这里会显示你的薄弱点。</p>';
+    return;
+  }
+  const max = rows[0][1];
+  el.innerHTML = rows.map(([reason, count]) => `
+    <div class="weakness-ranking-row">
+      <div class="flex items-center justify-between gap-3 text-xs mb-1">
+        <span class="truncate" style="color: var(--practice-text);">${escapeHtml(reason)}</span>
+        <strong style="color: var(--practice-accent);">${count}</strong>
+      </div>
+      <div class="weakness-ranking-bar"><span style="width: ${Math.max(10, Math.round((count / max) * 100))}%;"></span></div>
+    </div>
+  `).join('');
 }
 
 function _renderSubjects(subjects, counts) {
@@ -278,33 +257,25 @@ function _renderWrongQueue(entries) {
     const typeName = TYPE_NAMES[q.question_type] || '题型';
     const statusStyle = STATUS_STYLES[e.status] || '';
     const titleText = (q.title || q.content || '').slice(0, 60);
+    const reasons = Array.isArray(e.reasons) && e.reasons.length > 0 ? e.reasons : (e.reason ? [e.reason] : []);
     return `
-      <div class="card flex items-start gap-3 cursor-pointer wrong-item" data-id="${e.id}" data-question-id="${q.id}" style="background: var(--practice-card); border-color: var(--practice-border); padding: 1rem;">
-        <input type="checkbox" class="mt-1 wrong-checkbox" data-id="${e.id}" data-question-id="${q.id}" style="accent-color: var(--practice-accent);">
+      <article class="today-review-card card" data-id="${e.id}" data-question-id="${q.id}" style="background: var(--practice-card); border-color: var(--practice-border); padding: 0.9rem;">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
             <span class="text-xs px-2 py-0.5 rounded font-semibold" style="background: rgba(22, 163, 74, 0.15); color: var(--practice-accent);">${typeName}</span>
             <span class="text-xs px-2 py-0.5 rounded font-semibold" style="${statusStyle}">${e.status}</span>
-            ${e.reason ? `<span class="text-xs px-2 py-0.5 rounded font-semibold" style="background: var(--practice-card-hover); color: var(--practice-muted);">${escapeHtml(e.reason)}</span>` : ''}
           </div>
           <div class="text-sm font-medium" style="color: var(--practice-text);">${escapeHtml(titleText)}</div>
+          <div class="flex flex-wrap gap-1 mt-2">${reasons.slice(0, 2).map(reason => `<span class="text-xs px-2 py-0.5 rounded" style="background: rgba(22, 163, 74, 0.1); color: var(--practice-accent);">${escapeHtml(reason)}</span>`).join('')}${reasons.length > 2 ? `<span class="text-xs px-2 py-0.5 rounded" style="background: var(--practice-card-hover); color: var(--practice-muted);">+${reasons.length - 2}</span>` : ''}</div>
           <div class="text-xs mt-1" style="color: var(--practice-muted);">错 ${e.wrong_count} 次 · 下次复习 ${e.next_review_at ? new Date(e.next_review_at).toLocaleDateString() : '—'}</div>
           <div class="flex items-center gap-2 mt-2 flex-wrap">
             ${q.id ? `<a href="/question/${q.id}" class="text-xs px-2.5 py-1 rounded-lg font-semibold" style="background: var(--practice-card-hover); color: var(--practice-text); border: 1px solid var(--practice-border);">查看解析</a>` : ''}
             <button class="text-xs px-2.5 py-1 rounded-lg font-semibold wrong-mark" data-id="${e.id}" data-question-id="${q.id}" style="background: rgba(22, 163, 74, 0.15); color: var(--practice-accent); border: 1px solid var(--practice-accent);">标记已掌握</button>
           </div>
         </div>
-      </div>
+      </article>
     `;
   }).join('');
-
-  el.querySelectorAll('.wrong-checkbox').forEach(cb => {
-    cb.addEventListener('change', () => {
-      if (cb.checked) _kbState.selected.add(cb.dataset.id);
-      else _kbState.selected.delete(cb.dataset.id);
-      _updateReviewButton();
-    });
-  });
 
   el.querySelectorAll('.wrong-mark').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -314,85 +285,14 @@ function _renderWrongQueue(entries) {
       if (!userId || !qid) return;
       markRight(userId, qid, null)
         .then(() => {
-          _kbState.selected.delete(id);
           _kbState.entries = _kbState.entries.filter(e => e.id !== id);
           _renderWrongQueue(_kbState.currentSubject
             ? _kbState.entries.filter(e => e.subject_id === _kbState.currentSubject)
             : _kbState.entries);
-          _updateReviewButton();
+          const countEl = document.getElementById('today-review-count');
+          if (countEl) countEl.textContent = String(_kbState.entries.length);
         })
         .catch(err => console.warn('[kb] 标记已掌握失败:', err));
-    });
-  });
-}
-
-function _updateReviewButton() {
-  const countEl = document.getElementById('selected-count');
-  const btn = document.getElementById('start-review-btn');
-  if (countEl) countEl.textContent = String(_kbState.selected.size);
-  if (btn) {
-    btn.disabled = _kbState.selected.size === 0;
-    btn.style.opacity = _kbState.selected.size === 0 ? '0.5' : '1';
-  }
-}
-
-function _bindStartReviewBtn() {
-  const startBtn = document.getElementById('start-review-btn');
-  if (!startBtn) return;
-  startBtn.onclick = () => {
-    if (_kbState.selected.size === 0) return;
-    const selectedIds = Array.from(_kbState.selected);
-    sessionStorage.setItem('review-selected', JSON.stringify(selectedIds));
-    window.location.href = '/kb/review';
-  };
-}
-
-async function _renderRadar(stats) {
-  try {
-    const { renderRadarChart } = await import('../services/charts.js');
-    const container = document.getElementById('radar-chart');
-    if (!container) return;
-
-    if (_kbState.radarTab === 'reason') {
-      const reasons = ['概念不清', '计算失误', '审题错误', '方法不熟', '时间不够'];
-      const values = reasons.map(r => stats.byReason?.[r] || 0);
-      const max = Math.max(...values, 5);
-      renderRadarChart(
-        container,
-        reasons.map(r => ({ name: r, max })),
-        [{ name: '错误次数', value: values }]
-      );
-    } else {
-      const tagEntries = Object.entries(stats.byTag || {}).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      if (tagEntries.length === 0) {
-        container.innerHTML = '<div class="flex items-center justify-center h-full"><p class="text-sm" style="color: var(--practice-muted);">暂无考点数据</p></div>';
-        return;
-      }
-      const max = Math.max(...tagEntries.map(([, n]) => n), 5);
-      renderRadarChart(
-        container,
-        tagEntries.map(([tag]) => ({ name: tag, max })),
-        [{ name: '错误次数', value: tagEntries.map(([, n]) => n) }]
-      );
-    }
-  } catch (e) {
-    console.warn('[kb] 雷达图加载失败:', e);
-  }
-}
-
-function _bindRadarTabs(stats) {
-  document.querySelectorAll('.radar-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      _kbState.radarTab = tab.dataset.tab;
-      document.querySelectorAll('.radar-tab').forEach(t => {
-        t.style.background = 'var(--practice-card)';
-        t.style.color = 'var(--practice-muted)';
-        t.style.border = '1px solid var(--practice-border)';
-      });
-      tab.style.background = 'var(--practice-accent)';
-      tab.style.color = '#fff';
-      tab.style.border = 'none';
-      _renderRadar(stats);
     });
   });
 }
@@ -538,7 +438,6 @@ async function _applyCurve(type) {
   }
   // 切换后重载错题队列（next_review_at 已按新曲线重算）
   if (_kbState.tab === 'wrong') {
-    _kbState.selected.clear();
     _initWrongTab();
   }
 }

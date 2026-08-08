@@ -20,6 +20,6 @@
 - 本索引已建立，后续长期记忆统一写入 Memory/。
 - 试卷题目排序约定见 `DOMAINS/admin-exam-paper-ordering.md`。
 - 数学公式与 Markdown 混排约定见 `DOMAINS/math-rendering.md`。
-- 刷题中心交卷后错题/记录同步约定见 `DOMAINS/practice-session-sync.md`。
+- 刷题中心交卷后错题/记录同步约定（含错题薄弱点总结门槛）见 `DOMAINS/practice-session-sync.md`。
 - 错题驱动的今日复习主线与错因标记约定见 `DECISIONS/2026-08-08-wrong-answer-review-mainline.md`。
 - 最近更新：2026-08-08。

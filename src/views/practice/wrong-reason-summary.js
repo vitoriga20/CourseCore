@@ -19,7 +19,7 @@ export function mountWrongReasonSummary(container, wrongQuestions, onComplete) {
 
   const root = document.createElement('section');
   root.dataset.wrongReasonSummary = '';
-  root.className = 'card mt-4';
+  root.className = 'wrong-reason-summary card mt-4';
   root.style.cssText = 'background: var(--practice-card); border-color: var(--practice-border); padding: 1rem;';
   container.appendChild(root);
 
@@ -47,7 +47,7 @@ export function mountWrongReasonSummary(container, wrongQuestions, onComplete) {
                 const selected = selections[question.id].includes(reason);
                 return `
                   <button type="button"
-                    class="btn-pill text-xs${selected ? ' is-selected' : ''}"
+                    class="wrong-reason-chip btn-pill text-xs${selected ? ' is-selected' : ''}"
                     data-wrong-question-index="${questionIndex}"
                     data-wrong-reason-index="${reasonIndex}"
                     aria-pressed="${selected}"
