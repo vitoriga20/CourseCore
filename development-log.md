@@ -2265,4 +2265,4 @@ if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
 - `functions/api/[[route]].js` 与 `bff/src/` 已无 `exam_questions`/`theory_contents` 引用（仅注释与兼容字段）。
 
 ### commit
-- `CHECKPOINT_TODO`（Task 4）
+- `d5233aa`（Task 4）

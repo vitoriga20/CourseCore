@@ -14,7 +14,7 @@
 | Task 1 schema | `a923c32` | Done |
 | Task 2 migrate | `c749d62` | Done |
 | Task 3 seed 策略 | `d1152f9` | Done |
-| Task 4 BFF | *(待提交)* | Todo |
+| Task 4 BFF | `d5233aa` | Done |
 | Task 5 数据层 | *(待提交)* | Todo |
 | Task 6 例题渲染 | *(待提交)* | Todo |
 | Task 7 管理端 | *(待提交)* | Todo |
