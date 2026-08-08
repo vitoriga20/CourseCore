@@ -92,9 +92,9 @@ END $$;
 -- ========== 4. 试卷题 → questions + exam_paper_questions ==========
 INSERT INTO public.questions
   (id, question_type, title, content, options, answer, answers, blanks, tolerance, unit,
-   solution, hint, test_string, image, difficulty, tags, source, created_at, updated_at)
+   solution, hint, test_string, image, difficulty, tags, source)
 SELECT id, question_type, title, content, options, answer, answers, blanks, tolerance, unit,
-       solution, hint, test_string, image, difficulty, tags, source, created_at, updated_at
+       solution, hint, test_string, image, difficulty, tags, source
 FROM public.exam_questions
 ON CONFLICT (id) DO NOTHING;
 
