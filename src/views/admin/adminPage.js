@@ -1799,7 +1799,7 @@ async function openKpEditor(source, questionId, questionTitle, itemId) {
   rerender();
   try {
     const [rawKps, availableKps] = await Promise.all([
-      adminApi.listQuestionKps(source, questionId),
+      adminApi.listQuestionKps(questionId),
       adminApi.listKnowledgePoints(
         source === 'platform' ? { source: 'platform', itemId } : { source: 'exam' }
       )
@@ -1852,7 +1852,7 @@ async function saveKpEditor() {
     kps.push({ kp_id: k.kp_id, role: 'secondary' });
   });
   try {
-    await adminApi.replaceQuestionKps(ed.source, ed.questionId, kps);
+    await adminApi.replaceQuestionKps(ed.questionId, kps);
     adminState.feedback = { type: 'success', message: '考点关联已保存' };
     adminState.kpEditor = null;
   } catch (e) {
@@ -1892,28 +1892,23 @@ async function loadSectionData(section) {
     if (section === 'users') {
       adminState.data.users = await adminApi.listUsers();
     } else if (section === 'content-tree') {
-      // 内容树需加载全部内容数据：courses/modules/items/theoryContents/questions
-      const [courses, modules, items, theoryContents, questions] = await Promise.all([
+      // 内容树需加载全部内容数据：courses/modules/items/理论例题/题库
+      const [courses, modules, items, examplesMap, questions] = await Promise.all([
         adminApi.listCourses(),
         adminApi.listModules(),
         adminApi.listItems(),
-        adminApi.listTheoryContents(),
+        adminApi.listItemTheoryExamples(),
         adminApi.listQuestions()
       ]);
       adminState.data.courses = courses;
       adminState.data.modules = modules;
-      adminState.data.theoryContents = theoryContents;
       adminState.data.questions = questions;
-      const theoryMap = new Map(theoryContents.map(t => [t.item_id, t]));
-      adminState.data.items = items.map(it => {
-        const t = theoryMap.get(it.id);
-        if (!t || it.type !== 'theory') return it;
-        return {
-          ...it,
-          content: t.content || it.content || '',
-          examples: Array.isArray(t.examples) ? t.examples : []
-        };
-      });
+      // items 自带 content；例题从 item_questions(role='theory_example') 关联注入
+      adminState.data.items = items.map(it => ({
+        ...it,
+        content: it.content || '',
+        examples: examplesMap.get(it.id) || []
+      }));
     } else if (section === 'exams') {
       // 扁平编辑：不再依赖 exam_sections（规避 RLS/权限空白问题）
       const [papers, questions] = await Promise.all([
@@ -1943,27 +1938,21 @@ async function loadSectionData(section) {
 // 内容树内部刷新（保留选中/展开状态，不清编辑器）
 async function refreshTreeData() {
   try {
-    const [courses, modules, items, theoryContents, questions] = await Promise.all([
+    const [courses, modules, items, examplesMap, questions] = await Promise.all([
       adminApi.listCourses(),
       adminApi.listModules(),
       adminApi.listItems(),
-      adminApi.listTheoryContents(),
+      adminApi.listItemTheoryExamples(),
       adminApi.listQuestions()
     ]);
     adminState.data.courses = courses;
     adminState.data.modules = modules;
-    adminState.data.theoryContents = theoryContents;
     adminState.data.questions = questions;
-    const theoryMap = new Map(theoryContents.map(t => [t.item_id, t]));
-    adminState.data.items = items.map(it => {
-      const t = theoryMap.get(it.id);
-      if (!t || it.type !== 'theory') return it;
-      return {
-        ...it,
-        content: t.content || it.content || '',
-        examples: Array.isArray(t.examples) ? t.examples : []
-      };
-    });
+    adminState.data.items = items.map(it => ({
+      ...it,
+      content: it.content || '',
+      examples: examplesMap.get(it.id) || []
+    }));
     rerender();
   } catch (e) {
     adminState.feedback = { type: 'error', message: `刷新失败: ${e.message}` };
@@ -2003,16 +1992,7 @@ async function handleSave(entity, id) {
       } else {
         await adminApi.createItem(values);
       }
-      // theory 小节同步写入 theory_contents，保持内容表与 items 一致
-      if (values.type === 'theory') {
-        await adminApi.upsertTheoryContent({
-          item_id: id || values.id,
-          course_id: values.course_id,
-          module_id: values.module_id,
-          content: itemUpdates.content || '',
-          examples: Array.isArray(examples) ? examples : []
-        });
-      }
+      // 新模型：正文已存 items.content，例题经 item_questions(role='theory_example') 关联，无需 theory_contents
     } else if (entity === 'question') {
       if (id) {
         const { id: _omit, ...updates } = values;
@@ -2027,20 +2007,7 @@ async function handleSave(entity, id) {
       } else {
         await adminApi.createExamPaper(values);
       }
-    } else if (entity === 'exam_section') {
-      if (id) {
-        const { id: _omit, ...updates } = values;
-        await adminApi.updateExamSection(id, updates);
-      } else {
-        await adminApi.createExamSection(values);
-      }
-    } else if (entity === 'exam_question') {
-      if (id) {
-        const { id: _omit, ...updates } = values;
-        await adminApi.updateExamQuestion(id, updates);
-      } else {
-        await adminApi.createExamQuestion(values);
-      }
+      // 试卷题经统一题库 + exam_paper_questions 关联，在三栏试卷编辑器内维护（无独立 modal）
     } else if (entity === 'knowledge_point') {
       // source='platform' 必须挂 item_id; exam 留空 item_id
       const payload = { ...values };
@@ -2090,10 +2057,6 @@ async function handleDelete(entity, id) {
       await adminApi.deleteQuestion(id);
     } else if (entity === 'exam_paper') {
       await adminApi.deleteExamPaper(id);
-    } else if (entity === 'exam_section') {
-      await adminApi.deleteExamSection(id);
-    } else if (entity === 'exam_question') {
-      await adminApi.deleteExamQuestion(id);
     } else if (entity === 'knowledge_point') {
       await adminApi.deleteKnowledgePoint(id);
     }
@@ -2192,13 +2155,13 @@ async function handleTreeReorder(childrenOfKey, orderedIds) {
 }
 
 // ─── Theory editor ───
+// 把例题（统一题库 questions 行，或旧内联对象）归一化为编辑器对象，保留真实 question id
 async function normalizeTheoryExamples(itemId, rawExamples) {
   if (!Array.isArray(rawExamples) || rawExamples.length === 0) return [];
-  // 旧格式：元素为字符串 ID → 按 ID 查题目转内联对象（例题可能来自同模块的训练题，itemId 与理论小节不同）
+  // 旧格式：元素为字符串 ID → 按 ID 查题目转编辑器对象
   if (typeof rawExamples[0] === 'string') {
     try {
       let questions = adminState.data.questions || [];
-      // 本地未缓存时兜底拉取全部题目
       if (questions.length === 0) {
         questions = await adminApi.listQuestions();
       }
@@ -2207,6 +2170,7 @@ async function normalizeTheoryExamples(itemId, rawExamples) {
         .map(qid => qMap.get(qid))
         .filter(Boolean)
         .map(q => ({
+          id: q.id,
           text: q.content || q.title || '',
           image: q.image || '',
           options: padOptions(q.options),
@@ -2217,14 +2181,28 @@ async function normalizeTheoryExamples(itemId, rawExamples) {
       return [];
     }
   }
-  // 已是内联对象
-  return rawExamples.map(ex => ({
-    text: ex.text || '',
-    image: ex.image || '',
-    options: padOptions(ex.options),
-    answer: typeof ex.answer === 'number' ? ex.answer : 0,
-    solution: ex.solution || ''
-  }));
+  // 新模型：questions 行（含真实 id）或旧内联对象
+  return rawExamples.map(ex => {
+    const isQuestionRow = ex && typeof ex === 'object' && ('content' in ex || 'id' in ex);
+    if (isQuestionRow) {
+      return {
+        id: ex.id || null,
+        text: ex.content || ex.title || '',
+        image: ex.image || '',
+        options: padOptions(ex.options),
+        answer: parseInt(ex.answer, 10) || 0,
+        solution: ex.solution || ''
+      };
+    }
+    return {
+      id: ex && ex.id ? ex.id : null,
+      text: (ex && ex.text) || '',
+      image: (ex && ex.image) || '',
+      options: padOptions(ex && ex.options),
+      answer: (ex && typeof ex.answer === 'number') ? ex.answer : 0,
+      solution: (ex && ex.solution) || ''
+    };
+  });
 }
 
 function padOptions(opts) {
@@ -2238,13 +2216,10 @@ async function openTheoryEditor(itemId) {
     const item = adminState.data.items.find(it => it.id === itemId);
     if (!item) throw new Error('未找到小节');
 
-    let theory = await adminApi.getTheoryContent(itemId);
-    let content = '';
-    let examples = [];
-    if (theory) {
-      content = theory.content || '';
-      examples = Array.isArray(theory.examples) ? theory.examples : [];
-    }
+    // 新模型：正文在 items.content，例题经 getItemContent 关联读取
+    const theory = await adminApi.getItemContent(itemId);
+    let content = (theory && theory.content) || (item.content || '');
+    let examples = (theory && theory.examples) || [];
     examples = await normalizeTheoryExamples(itemId, examples);
 
     adminState.theoryEditor = {
@@ -2275,6 +2250,7 @@ function syncTheoryFormToState() {
     const solutionEl = document.getElementById(`theory-ex-${idx}-solution`);
     const optEls = [0, 1, 2, 3].map(i => document.getElementById(`theory-ex-${idx}-opt-${i}`));
     return {
+      id: ex.id || null, // 保留真实 question id，供差量保存
       text: getEasyMDEValue(`theory-ex-${idx}-text`, textEl),
       image: imageEl ? imageEl.value.trim() : (ex.image || ''),
       options: optEls.map((el, i) => getEasyMDEValue(`theory-ex-${idx}-opt-${i}`, el)),
@@ -2361,15 +2337,8 @@ async function saveTheory() {
       rerender();
       return;
     }
-    await adminApi.upsertTheoryContent({
-      item_id: ed.itemId,
-      course_id: ed.course_id,
-      module_id: ed.module_id,
-      content: ed.content,
-      examples: ed.examples
-    });
-    // 同步 items.content，保持列表展示一致
-    try { await adminApi.updateItem(ed.itemId, { content: ed.content }); } catch (_) { /* ignore */ }
+    // 新模型：正文入 items.content，例题差量同步 questions + item_questions(role='theory_example')
+    await adminApi.saveTheoryContent({ itemId: ed.itemId, content: ed.content, examples: ed.examples });
     adminState.feedback = { type: 'success', message: '理论内容已保存' };
     adminState.theoryEditor = null;
     if (adminState.section === 'content-tree') {
@@ -2604,6 +2573,10 @@ async function savePractice() {
       return;
     }
     const itemId = ed.itemId;
+    // 差量同步：先记下当前小节已有关联的 practice 题 id，用于清理被移除题的关联
+    const existingLinks = await adminApi.listQuestions({ itemId });
+    const existingIds = new Set(existingLinks.map(x => x.id));
+    const keepIds = new Set();
     for (let i = 0; i < ed.questions.length; i++) {
       const q = ed.questions[i];
       const payload = { ...q };
@@ -2624,12 +2597,23 @@ async function savePractice() {
         delete payload.answers;
       }
       if (payload.id) {
+        keepIds.add(payload.id);
         const { id, ...updates } = payload;
         await adminApi.updateQuestion(id, updates);
       } else {
-        // 新题：客户端生成唯一 ID
+        // 新题：客户端生成唯一 ID + 建立训练题关联
         payload.id = `${itemId}-q${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
         await adminApi.createQuestion(payload);
+        keepIds.add(payload.id);
+        await adminApi.linkItemQuestion(itemId, payload.id, 'practice', i);
+      }
+    }
+    // 清理被移除题的关联（不删 questions 本体，题库可能他处复用）
+    for (const qid of existingIds) {
+      if (!keepIds.has(qid)) {
+        try {
+          await adminApi.removeItemQuestion(itemId, qid, 'practice');
+        } catch (_) {}
       }
     }
     adminState.feedback = { type: 'success', message: '题目已保存' };
@@ -2724,20 +2708,25 @@ async function openPaper(id) {
     subject,
     term,
     state: p ? (p.state || 'draft') : 'draft',
-    questions: questions.map(q => ({
-      id: q.id,
-      score: Number(q.score) || 5,
-      source: q.source || '本卷新增',
-      question: {
-        ...q,
-        options: padOptions(q.options),
-        answer: q.answer != null ? String(q.answer) : '0',
-        answers: Array.isArray(q.answers) ? q.answers.map(String) : [],
-        blanks: q.blanks || 1,
-        solution: q.solution || '',
-        difficulty: q.difficulty || 1
-      }
-    })),
+    questions: questions.map(q => {
+      // listExamQuestions 已展平：q.id=关联行id(linkId)，q.question_id=统一题库题id
+      const qid = q.question_id;
+      return {
+        id: q.id, // 关联行 id，用于删除/排序
+        score: Number(q.score) || 5,
+        source: q.source || '本卷新增',
+        question: {
+          ...q,
+          id: qid,
+          options: padOptions(q.options),
+          answer: q.answer != null ? String(q.answer) : '0',
+          answers: Array.isArray(q.answers) ? q.answers.map(String) : [],
+          blanks: q.blanks || 1,
+          solution: q.solution || '',
+          difficulty: q.difficulty || 1
+        }
+      };
+    }),
     selectedIndex: questions.length > 0 ? 0 : -1
   };
   rerender();
@@ -2791,7 +2780,7 @@ function paperForm(it, sel) {
   const q = it.question;
   const t = Number(q.question_type);
   const isMulti = t === 1;
-  const hasKpBtn = !!it.id; // 未保存新题暂不能关联考点（需 question_id）
+  const hasKpBtn = !!(it.question && it.question.id); // 需真实 question_id 才能关联考点
   return `
     <div class="paper-form">
       <div class="paper-source"><span class="admin-form-label">来源</span><span class="badge" style="color:var(--ad-green-hl);border-color:var(--ad-green)">${escapeHtml(it.source)}</span></div>
@@ -2800,7 +2789,7 @@ function paperForm(it, sel) {
       <div class="admin-form-row">
         <label class="admin-form-label">考点 ${hasKpBtn ? '' : '<span class="admin-kp-hint">（保存后可设置）</span>'}</label>
         ${hasKpBtn
-          ? `<button type="button" class="admin-btn admin-btn-sm" data-action="admin-kp-edit" data-source="exam" data-id="${escapeHtml(it.id)}" data-title="${escapeHtml(q.title || q.content || it.id)}">设置考点</button>`
+          ? `<button type="button" class="admin-btn admin-btn-sm" data-action="admin-kp-edit" data-source="exam" data-id="${escapeHtml(it.question.id)}" data-title="${escapeHtml(q.title || q.content || it.question.id)}">设置考点</button>`
           : `<span class="admin-kp-hint">尚未保存，无法关联考点</span>`}
       </div>
       <div class="admin-form-row"><label class="admin-form-label" for="pq-content">题干 (Markdown)</label><textarea id="pq-content" class="admin-md-textarea" rows="4">${escapeHtml(q.content || '')}</textarea></div>
@@ -2964,21 +2953,19 @@ async function savePaper() {
       ed.id = paperId;
     }
 
-    // 扁平编辑：不再依赖 exam_sections（规避 RLS/权限空白问题）
-    // 差量同步：已删除列表中不存在的题、保留 id 的更新、新增的创建（保留 question_kp 关联）
+    // 新模型：复用统一题库，经 exam_paper_questions 关联；差量同步
     const existing = await adminApi.listExamQuestions(paperId);
     for (const eq of existing) {
-      if (!ed.questions.some(it => it.id === eq.id)) {
-        try { await adminApi.deleteExamQuestion(eq.id); } catch (_) {}
+      // eq.question_id 为该行题目 id；列表中存在则保留，否则移除该关联
+      if (!ed.questions.some(it => it.question && it.question.id === eq.question_id)) {
+        try { await adminApi.removeExamQuestion(eq.id); } catch (_) {}
       }
     }
     for (let i = 0; i < ed.questions.length; i++) {
       const it = ed.questions[i];
       const q = { ...it.question };
-      const base = {
-        section_id: null,
+      const body = {
         question_type: Number(q.question_type) || 0,
-        score: it.score || 5,
         title: q.title || '',
         content: q.content || '',
         options: (q.question_type === 0 || q.question_type === 1) ? (q.options || []).slice(0, 4) : [],
@@ -2987,16 +2974,17 @@ async function savePaper() {
         blanks: q.question_type === 2 ? (q.blanks || 1) : null,
         solution: q.solution || '',
         difficulty: q.difficulty || 1,
-        source: it.source || '本卷新增',
-        order_index: i
+        source: it.source || '本卷新增'
       };
-      if (it.id) {
-        await adminApi.updateExamQuestion(it.id, base);
-      } else {
-        const newId = `peq${paperId}-${i}-${Date.now().toString(36)}`;
-        it.id = newId;
-        await adminApi.createExamQuestion({ id: newId, exam_id: paperId, ...base });
-      }
+      const res = await adminApi.saveExamQuestion({
+        examId: paperId,
+        sectionId: null,
+        question: { id: q.id || null, ...body },
+        score: it.score || 5,
+        orderIndex: i
+      });
+      it.id = res.linkId;
+      if (q.id !== res.questionId) it.question.id = res.questionId;
     }
 
     adminState.feedback = { type: 'success', message: '试卷已保存' };
@@ -3062,7 +3050,7 @@ function renderPool() {
         <span class="pick ${on ? 'on' : ''}">✓</span>
         <div class="b-card-body">
           <div class="b-card-title">${escapeHtml(q.content || q.title || '')}</div>
-          <div class="b-card-sub"><span class="badge">${escapeHtml(q.subject || '')}</span><span class="badge">${escapeHtml(questionTypeLabel(q.question_type))}</span></div>
+          <div class="b-card-sub"><span class="badge">#${escapeHtml(String(q.difficulty ?? 1))} 难度</span><span class="badge">${escapeHtml(questionTypeLabel(q.question_type))}</span></div>
         </div>
       </div>`;
   }).join('') || '<div class="admin-empty">暂无可用题库题目</div>';
@@ -3112,7 +3100,7 @@ async function addPoolToPaper() {
       score: 5,
       source: '题库',
       question: {
-        id: null,
+        id: q.id, // 复用题库题：保留真实 id，保存时仅建关联，不重复建题
         question_type: q.question_type || 0,
         title: q.title || '',
         content: q.content || '',
