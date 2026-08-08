@@ -10,12 +10,35 @@ const content = new Hono<{ Bindings: Bindings }>();
 // 显式请求答案列；Phase 2 把判分与服务端化后，此参数随前端判分移除一并删掉。
 const PAPER_FIELDS = 'id,school,college,subject,term,duration,created_at,updated_at';
 const SECTION_FIELDS = 'id,exam_id,title,order_index';
+// v2: questions 表只存题目本体，已无 exam_id/section_id/order_index/answer_reveal 列。
+// 试卷题通过 exam_paper_questions(score, order_index) 关联 questions。
 const QUESTION_BASE =
-  'id,exam_id,section_id,question_type,title,content,options,hint,image,difficulty,tags,source,order_index,answer_reveal';
+  'id,question_type,title,content,options,hint,image,difficulty,tags,source';
 const QUESTION_ANSWERS = 'answer,answers,blanks,tolerance,unit,solution,test_string';
 
 function questionFields(includeAnswer: boolean): string {
   return includeAnswer ? `${QUESTION_BASE},${QUESTION_ANSWERS}` : QUESTION_BASE;
+}
+
+// 把 exam_paper_questions→questions 的嵌套结果展平为题目数组（order_index/score 取自关联表），
+// 保持与 v1 前端 `questions` 数组消费形状一致。
+function flattenSectionQuestions(sec: any): any {
+  const links = Array.isArray(sec?.exam_paper_questions) ? sec.exam_paper_questions : [];
+  const questions = links
+    .map((l: any) => {
+      const q = l?.questions;
+      if (!q) return null;
+      return {
+        ...q,
+        order_index: l.order_index ?? 0,
+        score: l.score ?? null,
+        // v2 questions 无 answer_reveal 列，统一按 'after_submit' 揭示
+        answer_reveal: 'after_submit',
+      };
+    })
+    .filter(Boolean);
+  const { exam_paper_questions, ...rest } = sec;
+  return { ...rest, questions };
 }
 
 function jsonError(c: any, status: number, code: string, message: string) {
@@ -43,11 +66,11 @@ content.get('/papers', async (c) => {
     if (school) filters.school = ['eq', school];
     if (term) filters.term = ['eq', term];
 
-    // 过渡期：`includeQuestions=true` 时在 sections 内联题目，`includeAnswer=true` 时带答案列
+    // v2: includeQuestions=true 时在 sections 经 exam_paper_questions join questions 内联题目
     const includeQuestions = c.req.query('includeQuestions') === 'true';
     const includeAnswer = c.req.query('includeAnswer') === 'true';
     const secFields = includeQuestions
-      ? `${SECTION_FIELDS},exam_questions(${questionFields(includeAnswer)})`
+      ? `${SECTION_FIELDS},exam_paper_questions(score,order_index,questions(${questionFields(includeAnswer)}))`
       : SECTION_FIELDS;
 
     const { data, total } = await sb.query('exam_papers', {
@@ -58,8 +81,14 @@ content.get('/papers', async (c) => {
       offset,
     });
 
+    const papers = (data as any[])?.map((p: any) =>
+      Array.isArray(p?.sections)
+        ? { ...p, sections: p.sections.map((s: any) => flattenSectionQuestions(s)) }
+        : p,
+    );
+
     return c.json({
-      data: data ?? [],
+      data: papers ?? [],
       meta: { page, pageSize, total: total ?? (data as unknown[])?.length ?? 0 },
     });
   } catch (e: any) {
@@ -75,13 +104,16 @@ content.get('/papers/:id', async (c) => {
     const includeAnswer = c.req.query('includeAnswer') === 'true';
 
     const { data } = await sb.query('exam_papers', {
-      select: `${PAPER_FIELDS},sections:exam_sections(${SECTION_FIELDS},exam_questions(${questionFields(includeAnswer)}))`,
+      select: `${PAPER_FIELDS},sections:exam_sections(${SECTION_FIELDS},exam_paper_questions(score,order_index,questions(${questionFields(includeAnswer)})))`,
       filters: { id: ['eq', id] },
       single: true,
     });
 
     if (!data) return jsonError(c, 404, 'PAPER_NOT_FOUND', 'paper not found');
-    return c.json({ data });
+    const paper = Array.isArray((data as any)?.sections)
+      ? { ...(data as any), sections: (data as any).sections.map((s: any) => flattenSectionQuestions(s)) }
+      : data;
+    return c.json({ data: paper });
   } catch (e: any) {
     return jsonError(c, 502, 'UPSTREAM_ERROR', e?.message || 'supabase query failed');
   }
@@ -101,16 +133,24 @@ content.get('/papers/:id/questions', async (c) => {
     if (type) filters.question_type = ['eq', type];
 
     const includeAnswer = c.req.query('includeAnswer') === 'true';
-    const { data, total } = await sb.query('exam_questions', {
-      select: questionFields(includeAnswer),
+    // v2: 经 exam_paper_questions 关联 questions
+    const { data, total } = await sb.query('exam_paper_questions', {
+      select: `order_index,score,questions(${questionFields(includeAnswer)})`,
       filters,
       order: 'order_index.asc',
       limit: pageSize,
       offset,
     });
 
+    const questions = (data as any[])?.map((l: any) => ({
+      ...(l?.questions ?? {}),
+      order_index: l.order_index ?? 0,
+      score: l.score ?? null,
+      answer_reveal: 'after_submit',
+    }));
+
     return c.json({
-      data: data ?? [],
+      data: questions ?? [],
       meta: { page, pageSize, total: total ?? (data as unknown[])?.length ?? 0 },
     });
   } catch (e: any) {
@@ -125,7 +165,7 @@ content.get('/questions/:id', async (c) => {
     const id = c.req.param('id');
     const includeAnswer = c.req.query('includeAnswer') === 'true';
 
-    const { data } = await sb.query('exam_questions', {
+    const { data } = await sb.query('questions', {
       select: questionFields(includeAnswer),
       filters: { id: ['eq', id] },
       single: true,

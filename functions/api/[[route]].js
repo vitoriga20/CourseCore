@@ -2322,10 +2322,26 @@ var SupabaseRest = class {
 var content = new Hono2();
 var PAPER_FIELDS = "id,school,college,subject,term,duration,created_at,updated_at";
 var SECTION_FIELDS = "id,exam_id,title,order_index";
-var QUESTION_BASE = "id,exam_id,section_id,question_type,title,content,options,hint,image,difficulty,tags,source,order_index,answer_reveal";
+var QUESTION_BASE = "id,question_type,title,content,options,hint,image,difficulty,tags,source";
 var QUESTION_ANSWERS = "answer,answers,blanks,tolerance,unit,solution,test_string";
 function questionFields(includeAnswer) {
   return includeAnswer ? `${QUESTION_BASE},${QUESTION_ANSWERS}` : QUESTION_BASE;
+}
+function flattenSectionQuestions(sec) {
+  const links = Array.isArray(sec?.exam_paper_questions) ? sec.exam_paper_questions : [];
+  const questions = links.map((l) => {
+    const q = l?.questions;
+    if (!q) return null;
+    return {
+      ...q,
+      order_index: l.order_index ?? 0,
+      score: l.score ?? null,
+      // v2 questions 无 answer_reveal 列，统一按 'after_submit' 揭示
+      answer_reveal: "after_submit"
+    };
+  }).filter(Boolean);
+  const { exam_paper_questions, ...rest } = sec;
+  return { ...rest, questions };
 }
 function jsonError(c, status, code, message) {
   return c.json({ error: message, code }, status);
@@ -2348,7 +2364,7 @@ content.get("/papers", async (c) => {
     if (term) filters.term = ["eq", term];
     const includeQuestions = c.req.query("includeQuestions") === "true";
     const includeAnswer = c.req.query("includeAnswer") === "true";
-    const secFields = includeQuestions ? `${SECTION_FIELDS},exam_questions(${questionFields(includeAnswer)})` : SECTION_FIELDS;
+    const secFields = includeQuestions ? `${SECTION_FIELDS},exam_paper_questions(score,order_index,questions(${questionFields(includeAnswer)}))` : SECTION_FIELDS;
     const { data, total } = await sb.query("exam_papers", {
       select: `${PAPER_FIELDS},sections:exam_sections(${secFields})`,
       filters,
@@ -2356,8 +2372,11 @@ content.get("/papers", async (c) => {
       limit: pageSize,
       offset
     });
+    const papers = data?.map(
+      (p) => Array.isArray(p?.sections) ? { ...p, sections: p.sections.map((s) => flattenSectionQuestions(s)) } : p
+    );
     return c.json({
-      data: data ?? [],
+      data: papers ?? [],
       meta: { page, pageSize, total: total ?? data?.length ?? 0 }
     });
   } catch (e) {
@@ -2370,12 +2389,13 @@ content.get("/papers/:id", async (c) => {
     const id = c.req.param("id");
     const includeAnswer = c.req.query("includeAnswer") === "true";
     const { data } = await sb.query("exam_papers", {
-      select: `${PAPER_FIELDS},sections:exam_sections(${SECTION_FIELDS},exam_questions(${questionFields(includeAnswer)}))`,
+      select: `${PAPER_FIELDS},sections:exam_sections(${SECTION_FIELDS},exam_paper_questions(score,order_index,questions(${questionFields(includeAnswer)})))`,
       filters: { id: ["eq", id] },
       single: true
     });
     if (!data) return jsonError(c, 404, "PAPER_NOT_FOUND", "paper not found");
-    return c.json({ data });
+    const paper = Array.isArray(data?.sections) ? { ...data, sections: data.sections.map((s) => flattenSectionQuestions(s)) } : data;
+    return c.json({ data: paper });
   } catch (e) {
     return jsonError(c, 502, "UPSTREAM_ERROR", e?.message || "supabase query failed");
   }
@@ -2391,15 +2411,21 @@ content.get("/papers/:id/questions", async (c) => {
     if (sectionId) filters.section_id = ["eq", sectionId];
     if (type) filters.question_type = ["eq", type];
     const includeAnswer = c.req.query("includeAnswer") === "true";
-    const { data, total } = await sb.query("exam_questions", {
-      select: questionFields(includeAnswer),
+    const { data, total } = await sb.query("exam_paper_questions", {
+      select: `order_index,score,questions(${questionFields(includeAnswer)})`,
       filters,
       order: "order_index.asc",
       limit: pageSize,
       offset
     });
+    const questions = data?.map((l) => ({
+      ...l?.questions ?? {},
+      order_index: l.order_index ?? 0,
+      score: l.score ?? null,
+      answer_reveal: "after_submit"
+    }));
     return c.json({
-      data: data ?? [],
+      data: questions ?? [],
       meta: { page, pageSize, total: total ?? data?.length ?? 0 }
     });
   } catch (e) {
@@ -2411,7 +2437,7 @@ content.get("/questions/:id", async (c) => {
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
     const id = c.req.param("id");
     const includeAnswer = c.req.query("includeAnswer") === "true";
-    const { data } = await sb.query("exam_questions", {
+    const { data } = await sb.query("questions", {
       select: questionFields(includeAnswer),
       filters: { id: ["eq", id] },
       single: true
@@ -2421,14 +2447,6 @@ content.get("/questions/:id", async (c) => {
   } catch (e) {
     return jsonError(c, 502, "UPSTREAM_ERROR", e?.message || "supabase query failed");
   }
-});
-content.post("/questions/:id/reveal", async (c) => {
-  return jsonError(
-    c,
-    501,
-    "NOT_IMPLEMENTED",
-    "answer reveal moves to Phase 2 judge endpoint (requires auth + attempt record)"
-  );
 });
 
 // bff/src/middleware/auth.ts
@@ -2493,7 +2511,7 @@ user.get("/wrong-book", verifyAuth, async (c) => {
     if (subjectId) filters.subject_id = ["eq", subjectId];
     if (status) filters.status = ["eq", status];
     const includeQuestion = c.req.query("includeQuestion") === "true";
-    const select = includeQuestion ? `${WRONG_BOOK_FIELDS},exam_questions(id,question_type,title,content,options,tags)` : WRONG_BOOK_FIELDS;
+    const select = includeQuestion ? `${WRONG_BOOK_FIELDS},questions(id,question_type,title,content,options,tags)` : WRONG_BOOK_FIELDS;
     const { data, total } = await sb.query("wrong_book", {
       select,
       filters,
@@ -2844,8 +2862,8 @@ judge.post("/questions/:id/judge", verifyAuth, async (c) => {
     const { user_answer, subject_id, curve_type = "classic" } = body;
     if (!user_answer) return jsonError3(c, 400, "VALIDATION_ERROR", "user_answer is required");
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
-    const { data: question } = await sb.query("exam_questions", {
-      select: "id,question_type,answer,answers,blanks,tolerance,unit,solution,content,options,answer_reveal",
+    const { data: question } = await sb.query("questions", {
+      select: "id,question_type,answer,answers,blanks,tolerance,unit,solution,content,options",
       filters: { id: ["eq", questionId] },
       single: true
     });
@@ -2993,8 +3011,7 @@ judge.post("/questions/:id/judge", verifyAuth, async (c) => {
         })
       });
     }
-    const reveal = q.answer_reveal || "after_submit";
-    const shouldReveal = reveal === "after_submit" || reveal === "immediate";
+    const shouldReveal = true;
     return c.json({
       data: {
         question_id: questionId,
@@ -3017,25 +3034,13 @@ judge.post("/questions/:id/reveal", verifyAuth, async (c) => {
     const questionId = c.req.param("id");
     if (!questionId) return jsonError3(c, 400, "VALIDATION_ERROR", "question id is required");
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
-    const { data: question } = await sb.query("exam_questions", {
-      select: "id,answer,answers,blanks,tolerance,unit,solution,answer_reveal",
+    const { data: question } = await sb.query("questions", {
+      select: "id,answer,answers,blanks,tolerance,unit,solution",
       filters: { id: ["eq", questionId] },
       single: true
     });
     if (!question) return jsonError3(c, 404, "QUESTION_NOT_FOUND", "question not found");
     const q = question;
-    const reveal = q.answer_reveal || "after_submit";
-    if (reveal === "immediate") {
-      return c.json({
-        data: {
-          answer: q.answer,
-          answers: q.answers,
-          solution: q.solution,
-          tolerance: q.tolerance,
-          unit: q.unit
-        }
-      });
-    }
     const { data: attempts } = await sb.query("answers", {
       select: "id",
       filters: { user_id: ["eq", userId], question_id: ["eq", questionId] },

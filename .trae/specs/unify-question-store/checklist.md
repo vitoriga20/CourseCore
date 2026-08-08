@@ -39,8 +39,8 @@
 - [ ] `question_kp` 已去 source 维度，id 冲突已重命名空间，`questions` 全局唯一
 
 ## 后端 BFF（Task 4）
-- [ ] `content.ts` papers 内联题目经 `exam_paper_questions → questions` join，`/questions/:id` 查统一 `questions`
-- [ ] `user.ts`、`judge.ts`、`functions/api/[[route]].js` 已无 `exam_questions`/`theory_contents` 引用
+- [x] `content.ts` papers 内联题目经 `exam_paper_questions → questions` join，`/questions/:id` 查统一 `questions`
+- [x] `user.ts`、`judge.ts`、`functions/api/[[route]].js` 已无 `exam_questions`/`theory_contents` 引用
 
 ## 前端数据层（Task 5、6）
 - [ ] `getItemQuestions` 经 `item_questions` 关联返回题目（含 theory_example 角色），顺序正确

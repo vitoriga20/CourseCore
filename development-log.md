@@ -2192,3 +2192,77 @@
 ## 最后更新时间
 
 2026-08-06（保存期末试卷题目 section_id 非空约束修复）
+
+## 更新记录 - 2026-08-07（部署与路由问题修复）
+
+### 背景
+- 线上访问常用域 `https://coursecorepage.pages.dev/admin/` 时页面异常，而 preview 域 `https://d9ae3b98.coursecorepage.pages.dev/admin`（无尾斜杠）正常。
+- 用户反馈"网页还是不行"，排查部署分支与浏览器缓存两端。
+
+### 问题 13: 带尾斜杠 URL 导致 admin 路由匹配失败
+**日期**: 2026-08-07
+**现象**: 直接访问 `.../admin/`（Cloudflare Pages 会把 `/admin` 规范化为 `/admin/`）时，前端 SPA 拿到的 pathname 是 `/admin/`，与原路由正则 `^/admin$` 不匹配 → 路由失配，页面不渲染。
+**原因**: 路由匹配 `matchRoute` 用 `^...$` 精确锚定，未对 URL 尾斜杠做归一化；Cloudflare 自动补/重定向尾斜杠后 pathname 带 `/`。
+**解决**: 在 `src/config/routes.js` 的 `matchRoute` 入口统一去掉尾斜杠（根路径 `/` 除外）：
+```js
+if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+```
+**产出文件**:
+- `src/config/routes.js` — `matchRoute` 增加尾斜杠归一化
+**影响面**: 所有历史已知路由（`/admin`、`/practice`、`/kb`、`/course/:id` 等）在带/不带尾斜杠时均能匹配；`isInternalPath` 复用同一函数同步受益。
+
+### 问题 14: 部署到错误分支
+**日期**: 2026-08-07
+**现象**: 改动推送到 `production` 分支后线上无变化，页面仍异常。
+**原因**: Cloudflare Pages 项目 `coursecore` 绑定的生产分支是 `deploy/coursecore-pages`，而非 `production`；推错分支不会触发生产部署。
+**解决**: 将构建产物推送到正确分支 `deploy/coursecore-pages`，通过 Cloudflare 部署日志 + `curl` 根域验证生效。
+
+### 问题 15: 浏览器/边缘缓存旧 JS bundle
+**日期**: 2026-08-07
+**现象**: 修复已部署，但浏览器仍加载旧 JS bundle，页面行为不变。
+**原因**: Cloudflare 边缘缓存 + 浏览器本地缓存命中旧资源；`index.html` 中带 hash 的新 bundle 未刷新加载。
+**解决**:
+- 验证时用 cache-busting：`?nocache=777` 等查询参数强制拉取新资源。
+- 确认 `dist/index.html` 中 asset hash 已更新、请求返回新 bundle 后即恢复正常。
+- 正式访问以 `curl` 直连（绕过浏览器缓存）核对服务端返回，再以浏览器刷新确认。
+
+### 关键决策
+- 尾斜杠归一化放在 `matchRoute` 单点而非各调用处 → 一处修复覆盖全部路由与 `isInternalPath`，避免散点 patch。
+- 部署/排障以部署分支、部署日志、服务端 `curl` 为权威依据，浏览器缓存仅作辅助 → 避免被旧缓存误导。
+
+### 影响面
+- 路由层归一化影响所有前端 SPA 路由匹配，行为更健壮（兼容带/不带尾斜杠）。
+- 部署分支与缓存排障为运维流程沉淀，后续同样流程可复用。
+
+## 更新记录 - 2026-08-08（统一题库重构 Task 4：适配 BFF 路由）
+
+### 背景
+统一题库重构（`.trae/specs/unify-question-store/`）已定：删 `theory_contents`/`exam_questions`，新增 `item_questions`/`exam_paper_questions` 关联表，`question_kp` 去 source。本阶段改 BFF 路由，让后端不再引用旧表，改查统一 `questions` + 关联表。
+
+### 操作
+- `bff/src/routes/content.ts`：
+  - `QUESTION_BASE` 去掉 `exam_id/section_id/order_index/answer_reveal`（v2 `questions` 表已无这些列）。
+  - `/papers`、`/papers/:id`：sections 内联题目改经 `exam_paper_questions(score,order_index,questions(...))` join，并用 `flattenSectionQuestions` 展平为 `questions` 数组（`order_index`/`score` 取自关联表，`answer_reveal` 恒为 `after_submit`）。
+  - `/papers/:id/questions`：改查 `exam_paper_questions` join `questions` 并展平。
+  - `/questions/:id`：改查统一 `questions`。
+- `bff/src/routes/user.ts`：wrong-book `includeQuestion` 的 `exam_questions(...)` 改 `questions(...)`。
+- `bff/src/routes/judge.ts`：`/judge`、`/reveal` 改查统一 `questions`；因 v2 无 `answer_reveal` 列，揭示逻辑统一按 `after_submit`，删除恒假的 `immediate` 分支。
+- `functions/api/[[route]].js`：由 `node scripts/build-bff.js` 重新打包（不手工编辑）。
+
+### 关键决策
+- `answer_reveal` 列在 v2 `questions` 中不存在 → 统一按 `after_submit` 揭示，前端 `answer_reveal` 字段由 BFF 展平时补 `'after_submit'` 保持兼容。
+- `functions/api/[[route]].js` 是构建产物，改源码后重打包，避免手工改产生漂移。
+
+### 产出文件
+- `bff/src/routes/content.ts` — 试卷/题目查询改统一题库 + 关联表 join
+- `bff/src/routes/user.ts` — wrong-book 题目 join 改 `questions`
+- `bff/src/routes/judge.ts` — 判分/揭示改查统一 `questions`
+- `functions/api/[[route]].js` — 重新构建的 Pages Functions 产物
+
+### 验证
+- `npx tsc --noEmit -p bff/tsconfig.json` 通过。
+- `node scripts/build-bff.js` 打包成功（97.4kb）。
+- `functions/api/[[route]].js` 与 `bff/src/` 已无 `exam_questions`/`theory_contents` 引用（仅注释与兼容字段）。
+
+### commit
+- `CHECKPOINT_TODO`（Task 4）

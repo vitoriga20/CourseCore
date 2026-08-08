@@ -28,10 +28,10 @@
 
 ## 阶段 B：后端 BFF
 
-- [ ] Task 4: 适配 BFF 路由
-  - [ ] 4.1 `bff/src/routes/content.ts`：papers 内联题目改经 `exam_paper_questions → questions` join；`/questions/:id` 改查统一 `questions`
-  - [ ] 4.2 `bff/src/routes/user.ts`、`bff/src/routes/judge.ts`：所有 `exam_questions`/`theory_contents` 引用改统一 `questions`
-  - [ ] 4.3 `functions/api/[[route]].js`：同步旧直连逻辑
+- [x] Task 4: 适配 BFF 路由
+  - [x] 4.1 `bff/src/routes/content.ts`：papers 内联题目改经 `exam_paper_questions → questions` join；`/questions/:id` 改查统一 `questions`
+  - [x] 4.2 `bff/src/routes/user.ts`、`bff/src/routes/judge.ts`：所有 `exam_questions`/`theory_contents` 引用改统一 `questions`
+  - [x] 4.3 `functions/api/[[route]].js`：同步旧直连逻辑（改源码后 `node scripts/build-bff.js` 重新打包）
 
 ## 阶段 C：前端数据层
 

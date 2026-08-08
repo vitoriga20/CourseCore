@@ -23,8 +23,8 @@ judge.post('/questions/:id/judge', verifyAuth, async (c) => {
 
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
 
-    const { data: question } = await sb.query('exam_questions', {
-      select: 'id,question_type,answer,answers,blanks,tolerance,unit,solution,content,options,answer_reveal',
+    const { data: question } = await sb.query('questions', {
+      select: 'id,question_type,answer,answers,blanks,tolerance,unit,solution,content,options',
       filters: { id: ['eq', questionId] },
       single: true,
     });
@@ -180,9 +180,8 @@ judge.post('/questions/:id/judge', verifyAuth, async (c) => {
       });
     }
 
-    // 按 answer_reveal 规则决定是否返回答案
-    const reveal = q.answer_reveal || 'after_submit';
-    const shouldReveal = reveal === 'after_submit' || reveal === 'immediate';
+    // v2: questions 无 answer_reveal 列，统一按 'after_submit' 揭示
+    const shouldReveal = true;
 
     return c.json({
       data: {
@@ -210,28 +209,15 @@ judge.post('/questions/:id/reveal', verifyAuth, async (c) => {
     if (!questionId) return jsonError(c, 400, 'VALIDATION_ERROR', 'question id is required');
     const sb = new SupabaseRest(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
 
-    const { data: question } = await sb.query('exam_questions', {
-      select: 'id,answer,answers,blanks,tolerance,unit,solution,answer_reveal',
+    const { data: question } = await sb.query('questions', {
+      select: 'id,answer,answers,blanks,tolerance,unit,solution',
       filters: { id: ['eq', questionId] },
       single: true,
     });
     if (!question) return jsonError(c, 404, 'QUESTION_NOT_FOUND', 'question not found');
 
     const q = question as any;
-    const reveal = q.answer_reveal || 'after_submit';
-
-    if (reveal === 'immediate') {
-      return c.json({
-        data: {
-          answer: q.answer,
-          answers: q.answers,
-          solution: q.solution,
-          tolerance: q.tolerance,
-          unit: q.unit,
-        },
-      });
-    }
-
+    // v2: questions 无 answer_reveal 列，统一按 'after_submit' 揭示
     // after_submit: 检查用户是否提交过
     const { data: attempts } = await sb.query('answers', {
       select: 'id',
