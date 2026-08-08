@@ -46,13 +46,13 @@
 
 ## 阶段 D：前端管理端与静态数据
 
-- [ ] Task 7: 适配管理端 CRUD
-  - [ ] 7.1 `src/services/admin.js`：`listTheoryContents`/`updateTheoryContent`/`upsertTheoryContent` 改 items.content；题目 CRUD 去 `item_id`，改维护 `item_questions`；`exam_questions` CRUD 改维护 `questions` + `exam_paper_questions`；`question_kp` 去 source；删题时清理 `question_kp`+关联表
-  - [ ] 7.2 `src/views/admin/adminPage.js`、`src/views/knowledgeBase.js`：理论编辑器/训练编辑器/期末试卷编辑器/考点管理适配新数据模型
+- [x] Task 7: 适配管理端 CRUD
+  - [x] 7.1 `src/services/admin.js`：`listTheoryContents`/`updateTheoryContent`/`upsertTheoryContent` 改 items.content；题目 CRUD 去 `item_id`，改维护 `item_questions`；`exam_questions` CRUD 改维护 `questions` + `exam_paper_questions`；`question_kp` 去 source；删题时清理 `question_kp`+关联表
+  - [x] 7.2 `src/views/admin/adminPage.js`、`src/views/knowledgeBase.js`：理论编辑器/训练编辑器/期末试卷编辑器/考点管理适配新数据模型
 
-- [ ] Task 8: 适配剩余引用与静态数据
-  - [ ] 8.1 `src/services/practice-data.js`、`src/services/review-engine.js`、`src/services/sync.js`：适配统一题库与关联表查询
-  - [ ] 8.2 静态数据 `src/data/questions.js`、`src/data/examPapers.js` 双轨处理（保留或迁移到关联表结构）
+- [x] Task 8: 适配剩余引用与静态数据
+  - [x] 8.1 `src/services/practice-data.js`（试卷题读 `sec.questions`）、`src/services/review-engine.js`（wrong_book join 改 `questions`）、`src/services/sync.js`（仅操作 answers/progress/wrong_book，无需改）；连带 consumer `knowledgeBase.js`/`quiz-adapter.js` 读 `e.questions`、我的试卷从统一 `questions` 取题
+  - [x] 8.2 静态数据 `src/data/questions.js`、`src/data/examPapers.js`、`src/data/theoryContents.js` 双轨保留（作为 seed 源 + 运行时 fallback，不迁移到关联表结构）
 
 ## 阶段 E：验收
 

@@ -2266,3 +2266,75 @@ if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
 
 ### commit
 - `d5233aa`（Task 4）
+
+## 更新记录 - 2026-08-08（统一题库重构 Task 7：适配管理端 CRUD）
+
+### 背景
+统一题库重构（`.trae/specs/unify-question-store/`）后端 BFF（Task 4）与前端数据层（Task 5/6）已完成。本阶段改管理端：理论内容从 `theory_contents` 并入 `items.content`，例题/训练题经 `item_questions`(role) 关联，试卷题经 `exam_paper_questions` 关联，`question_kp` 去 source。
+
+### 操作
+- `src/services/admin.js`：
+  - **理论内容**：删除旧 `listTheoryContents`/`getTheoryContent`/`updateTheoryContent`/`upsertTheoryContent`，新增 `getItemContent`（读 `items.content` + `item_questions(role='theory_example')`）、`saveTheoryContent`（正文写 `items.content`，例题差量同步 `questions` 行 + 关联）、`listItemTheoryExamples`（全量拉各小节例题供内容树展示）。
+  - **题目 CRUD**：`listQuestions({itemId})` 改经 `item_questions(role='practice')` join；`createQuestion`/`updateQuestion` 剥离冗余 `item_id/course_id/module_id`；新增 `linkItemQuestion`/`removeItemQuestion` 维护小节-题目关联；`deleteQuestion` 依赖 DB 外键 CASCADE 清理 `question_kp` + 两关联表。
+  - **试卷题**：删除旧 `listExamQuestions`/`createExamQuestion`/`updateExamQuestion`/`deleteExamQuestion`，新增 `listExamQuestions`（经 `exam_paper_questions` join `questions` 展平）、`saveExamQuestion`（新题落 `questions` + upsert 关联，复用题更新本体）、`removeExamQuestion`（删关联不删题本体，题库可复用）。
+  - **考点关联**：`listQuestionKps`/`replaceQuestionKps`/`addQuestionKp`/`removeQuestionKp` 全部移除 `source` 参数，单一 FK `question_id → questions.id`。
+- `src/views/admin/adminPage.js`：
+  - 内容树 `loadSectionData` 移除 `theoryContents` 依赖，例题从 `listItemTheoryExamples` 注入。
+  - 理论编辑器改 `getItemContent`/`saveTheoryContent`，支持例题差量同步。
+  - 训练题编辑器 `savePractice`：新题 `createQuestion` + `linkItemQuestion(role='practice')`；**新增差量清理**——保存前读现有 practice 关联 id，保存后对不再保留的题 `removeItemQuestion` 解绑（不删题本体，题库可复用）。
+  - 试卷编辑器改 `saveExamQuestion`/`removeExamQuestion`，差量同步关联。
+  - 考点编辑器去 `source`，`replaceQuestionKps` 按 `questionId` 直接关联。
+  - 清理 `exam_section`/`exam_question` 相关死代码分支。
+
+### 关键决策
+- 删除题目只删 `questions` 本体，靠 DB `ON DELETE CASCADE` 级联清 `question_kp`/`item_questions`/`exam_paper_questions` → 不写前端手动清理，避免漏删。
+- 训练题/例题被移除时**只解绑关联不删题本体** → 统一题库下题可被他小节/试卷复用，删本体可能破坏他处引用。
+- 保存一律差量同步（读现有关联 → upsert keep → 删多余）→ 幂等，重复保存不产生业务死数据。
+
+### 产出文件
+- `src/services/admin.js` — 理论内容/题目/试卷题/考点关联接口全部适配统一题库
+- `src/views/admin/adminPage.js` — 内容树/理论编辑器/训练编辑器/试卷编辑器/考点编辑器适配 + 训练题差量清理
+
+### 验证
+- `node --check src/services/admin.js`、`node --check src/views/admin/adminPage.js` 均通过。
+- 全仓 Grep 确认已无 `theory_contents`/`getTheoryContent`/`upsertTheoryContent`/`createExamQuestion` 等旧 API 引用。
+- `knowledgeBase.js` 无 `question_kp` 引用（属 Task 8 范畴，本阶段无需改动）。
+
+### commit
+- `7547d87`（Task 7）
+
+## 更新记录 - 2026-08-08（统一题库重构 Task 8：适配剩余引用与静态数据）
+
+### 背景
+统一题库重构（`.trae/specs/unify-question-store/`）已完成后端（Task 4）、前端数据层（Task 5/6）、管理端（Task 7）。本阶段收尾剩余引用：刷题/错题链路改查统一 `questions`，并确认静态数据双轨策略。
+
+### 操作
+- `src/services/practice-data.js`：试卷小节题目读取路径 `sec.exam_questions` → `sec.questions`（BFF 已把 `exam_paper_questions→questions` 展平为 `sections[].questions`）。
+- `src/services/review-engine.js`：wrong_book 三处 join 改统一题库——`exam_questions!inner(...)` → `questions!inner(...)`、`exam_questions(tags)` → `questions(tags)`、`e.exam_questions?.tags` → `e.questions?.tags`。
+- `src/services/sync.js`：仅操作 `answers`/`progress`/`wrong_book`，经 `findQuestion` 解析题目 id，无需改。
+- 连带 consumer（wrong_book 返回 `questions` 后）：
+  - `src/views/knowledgeBase.js`：错题卡片 `e.exam_questions` → `e.questions`。
+  - `src/views/practice/quiz-adapter.js`：错题复盘 `e.exam_questions` → `e.questions`；「我的试卷」取题 `from('exam_questions')` → `from('questions')`。
+  - `src/services/admin.js`：3 处注释去掉已删的 `theory_contents` 级联说明（纯注释）。
+- 静态数据双轨（Task 3 决策：保留为 seed 源 + 运行时 fallback，不迁移到关联表结构）：
+  - `src/data/questions.js`、`src/data/examPapers.js` 保持旧结构，供 `getItemQuestions`/`findQuestion`/`practice-data` fallback。
+  - `src/data/theoryContents.js` 仅供 fallback；`normalizeTheoryExamplesForSubmit` 双轨兼容（v2 真实行保留真实 id / 旧格式兜底伪 id）。
+
+### 关键决策
+- 静态数据只做 fallback，不迁移到关联表结构 → 它仍是 seed 数据源，改结构会让 seed 与代码脱节；运行时以 Supabase 关联表为准，fallback 仅兜底离线/降级。
+- wrong_book 的 join 一次性改 `questions`，consumer 同步读 `e.questions`，保证整条错题链路一致。
+
+### 产出文件
+- `src/services/practice-data.js`、`src/services/review-engine.js`、`src/views/knowledgeBase.js`、`src/views/practice/quiz-adapter.js`、`src/services/admin.js`
+
+### 验证
+- `node --check` 对 5 个改动文件全部通过。
+- 全仓 Grep 仅剩注释级 `exam_questions`/`theory_contents` 引用（已更新），无运行时旧表引用。
+
+### commit
+- `72c95a0`（Task 8）
+- `d1342c3`（无关：路由匹配前统一去尾斜杠，修复 `/admin` 被 Cloudflare 重定向为 `/admin/` 失配）
+
+## 最后更新时间
+
+2026-08-08（统一题库重构 Task 8：适配剩余引用与静态数据）
