@@ -435,18 +435,48 @@ export async function deleteUser(userId) {
 
 // ─── Exam Questions（复用统一题库，经 exam_paper_questions 关联）───
 
+// 试卷题的顺序由「大题顺序 + 大题内题目顺序」共同决定。新编辑器创建的无大题题目
+// 则仅按自身 order_index 排列；两种数据混用时，保留有大题归属的原试卷题目在前。
+export function sortExamQuestionLinks(links) {
+  const indexOf = value => Number.isFinite(Number(value)) ? Number(value) : 0;
+  const orderKeyOf = link => {
+    const section = link.exam_sections;
+    if (section && Number.isFinite(Number(section.order_index))) {
+      return { group: 0, section: Number(section.order_index), question: indexOf(link.order_index) };
+    }
+
+    // 旧试卷题目的 ID 形如 q-<paper>-s<大题序号>-<题号>。当迁移数据缺少
+    // section 关联时，仍可据此恢复原试卷顺序，避免各大题的第 1 题交错显示。
+    const legacyMatch = String(link.question_id || '').match(/-s(\d+)-(\d+)$/);
+    if (legacyMatch) {
+      return { group: 0, section: Number(legacyMatch[1]), question: Number(legacyMatch[2]) };
+    }
+
+    return { group: 1, section: 0, question: indexOf(link.order_index) };
+  };
+
+  return [...links].sort((a, b) => {
+    const orderA = orderKeyOf(a);
+    const orderB = orderKeyOf(b);
+    if (orderA.group !== orderB.group) return orderA.group - orderB.group;
+    if (orderA.section !== orderB.section) return orderA.section - orderB.section;
+    if (orderA.question !== orderB.question) return orderA.question - orderB.question;
+    return String(a.id || '').localeCompare(String(b.id || ''));
+  });
+}
+
 // 返回试卷的所有题（含内嵌 question_id 与题目本体）
 export async function listExamQuestions(examId) {
   if (!supabase) return [];
   let q = supabase
     .from('exam_paper_questions')
-    .select('id, exam_id, section_id, question_id, score, order_index, questions(*)')
+    .select('id, exam_id, section_id, question_id, score, order_index, exam_sections(order_index), questions(*)')
     .order('order_index');
   if (examId) q = q.eq('exam_id', examId);
   const { data, error } = await q;
   if (error) throw error;
   // 展平：关联行 + 内嵌题目，保证 relation id（用于删除/排序）与 question_id 并存
-  return (data || []).map(l => ({
+  return sortExamQuestionLinks(data || []).map(l => ({
     id: l.id,
     section_id: l.section_id,
     question_id: l.question_id,

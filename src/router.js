@@ -29,6 +29,7 @@ import { renderAddMyPaper } from './views/practice/add-my-paper.js';
 import { renderPrivacy, renderTerms } from './views/legal.js';
 import { renderUserPage } from './views/user/userPage.js';
 import { renderAdminPage, initAdminPage } from './views/admin/adminPage.js';
+import { renderDownloadCenter, initDownloadCenter } from './views/downloadCenter.js';
 import { initPillNav } from './components/pillNav.js';
 import { loadTheoryContent, loadQuestions } from './services/content.js';
 import { showPageLoader, hidePageLoader, initImageLoaders, renderButtonLoader } from './components/loading.js';
@@ -100,6 +101,9 @@ async function applyRoute(route) {
       break;
     case 'user':
       showUserPage();
+      break;
+    case 'download':
+      showDownloadCenter();
       break;
     case 'admin':
       showAdminPage();
@@ -325,6 +329,15 @@ export function showTerms() {
 
 export function showUserPage() {
   state.view = "user";
+  state.currentCourseId = null;
+  clearQuestionState();
+  setActiveNav('landing');
+  renderMain();
+  window.scrollTo({ top: 0 });
+}
+
+export function showDownloadCenter() {
+  state.view = "download";
   state.currentCourseId = null;
   clearQuestionState();
   setActiveNav('landing');
@@ -763,6 +776,10 @@ export function renderMain() {
       break;
     case "user":
       main.innerHTML = renderUserPage();
+      break;
+    case "download":
+      main.innerHTML = renderDownloadCenter();
+      initDownloadCenter();
       break;
     case "admin":
       main.innerHTML = renderAdminPage();

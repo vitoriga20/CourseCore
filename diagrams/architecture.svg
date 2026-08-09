@@ -1,0 +1,84 @@
+<svg viewBox="0 0 680 560" width="100%" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>CourseCore 系统架构图</title>
+<desc>Vite SPA 客户端、Cloudflare 边缘层(BFF Hono + CDN)、Supabase 数据层的分层架构，含构建期打包与运行时直连降级通道</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<style>
+.t{font:500 14px var(--font-sans,sans-serif);fill:#D3D1C7}
+.ts{font:400 12px var(--font-sans,sans-serif);fill:#B4B2A9}
+.lab{font:400 11px var(--font-sans,sans-serif);fill:#9aa0a6}
+.gray{fill:#2C2C2A;stroke:#B4B2A9;stroke-width:.5}
+.blue{fill:#0C447C;stroke:#85B7EB;stroke-width:.5}
+.purple{fill:#3C3489;stroke:#AFA9EC;stroke-width:.5}
+.teal{fill:#085041;stroke:#5DCAA5;stroke-width:.5}
+.green{fill:#27500A;stroke:#97C459;stroke-width:.5}
+.bt{fill:#B5D4F4}.bs{fill:#85B7EB}.pt{fill:#CECBF6}.ps{fill:#AFA9EC}.tt{fill:#9FE1CB}.tts{fill:#5DCAA5}.gt{fill:#C0DD97}
+.arr{stroke:#9aa0a6;stroke-width:1.5;fill:none}
+.dash{stroke:#9aa0a6;stroke-width:1.5;fill:none;stroke-dasharray:5 4}
+</style>
+<text class="t" x="340" y="26" text-anchor="middle" font-size="15">CourseCore 系统架构图</text>
+<text class="ts" x="340" y="44" text-anchor="middle">Vite SPA + 边缘 BFF(Hono) + Supabase 的混合架构</text>
+
+<rect class="gray" x="96" y="62" width="488" height="116" rx="16"/>
+<text class="t" x="112" y="80">① 客户端 · Vite SPA（浏览器）</text>
+<rect class="blue" x="112" y="98" width="104" height="54" rx="8"/>
+<text class="bt" x="164" y="118" text-anchor="middle">入口·路由</text>
+<text class="bs" x="164" y="136" text-anchor="middle">main / router</text>
+<rect class="blue" x="228" y="98" width="104" height="54" rx="8"/>
+<text class="bt" x="280" y="118" text-anchor="middle">全局状态</text>
+<text class="bs" x="280" y="136" text-anchor="middle">state · 本地存储</text>
+<rect class="blue" x="344" y="98" width="104" height="54" rx="8"/>
+<text class="bt" x="396" y="118" text-anchor="middle">业务服务</text>
+<text class="bs" x="396" y="136" text-anchor="middle">apiClient / sync</text>
+<rect class="blue" x="460" y="98" width="104" height="54" rx="8"/>
+<text class="bt" x="512" y="118" text-anchor="middle">视图层</text>
+<text class="bs" x="512" y="136" text-anchor="middle">课程/刷题/社区</text>
+
+<rect class="gray" x="96" y="204" width="488" height="150" rx="16"/>
+<text class="t" x="112" y="222">② 边缘层 · Cloudflare Pages / CDN</text>
+<rect class="blue" x="112" y="240" width="216" height="54" rx="8"/>
+<text class="bt" x="220" y="260" text-anchor="middle">静态资源分发</text>
+<text class="bs" x="220" y="278" text-anchor="middle">CDN 缓存 dist/ 前端产物</text>
+<rect class="purple" x="348" y="240" width="216" height="54" rx="8"/>
+<text class="pt" x="456" y="260" text-anchor="middle">BFF · Hono 网关</text>
+<text class="ps" x="456" y="278" text-anchor="middle">/api/v1 · 持有 service_role</text>
+<rect class="gray" x="112" y="306" width="452" height="30" rx="8"/>
+<text class="ts" x="338" y="325" text-anchor="middle">中间件：安全头 · CORS · 限流 · 边缘缓存</text>
+
+<rect class="gray" x="96" y="380" width="488" height="132" rx="16"/>
+<text class="t" x="112" y="398">③ 数据层</text>
+<rect class="teal" x="112" y="416" width="300" height="80" rx="8"/>
+<text class="tt" x="262" y="440" text-anchor="middle">Supabase</text>
+<text class="tts" x="262" y="460" text-anchor="middle">Postgres：内容表 + 用户表</text>
+<text class="tts" x="262" y="478" text-anchor="middle">Auth · RLS 行级安全</text>
+<rect class="green" x="428" y="416" width="140" height="80" rx="8"/>
+<text class="gt" x="498" y="440" text-anchor="middle">KV 缓存</text>
+<text class="gt" x="498" y="460" text-anchor="middle">内容 / 排行</text>
+<text class="gt" x="498" y="478" text-anchor="middle">TTL 缓存</text>
+
+<line class="arr" x1="340" y1="178" x2="340" y2="198" marker-end="url(#arrow)"/>
+<text class="lab" x="348" y="192">HTTPS 请求</text>
+<line class="arr" x1="340" y1="354" x2="340" y2="374" marker-end="url(#arrow)"/>
+<text class="lab" x="348" y="368">service_role 读写</text>
+<line class="dash" x1="456" y1="294" x2="498" y2="410" marker-end="url(#arrow)"/>
+<text class="lab" x="430" y="350">缓存读写</text>
+
+<line class="dash" x1="68" y1="178" x2="108" y2="452" marker-end="url(#arrow)"/>
+<text class="lab" x="40" y="250">anon key</text>
+<text class="lab" x="40" y="264">Auth 会话</text>
+<text class="lab" x="40" y="278">+ 直连降级</text>
+
+<line class="dash" x1="568" y1="456" x2="528" y2="152" marker-end="url(#arrow)"/>
+<text class="lab" x="584" y="250">构建期</text>
+<text class="lab" x="584" y="264">fetch→</text>
+<text class="lab" x="584" y="278">src/data</text>
+<text class="lab" x="584" y="292">静态 FB</text>
+
+<line class="arr" x1="112" y1="536" x2="142" y2="536" marker-end="url(#arrow)"/>
+<text class="lab" x="148" y="540">运行时调用</text>
+<line class="dash" x1="250" y1="536" x2="280" y2="536" marker-end="url(#arrow)"/>
+<text class="lab" x="286" y="540">构建期打包 / 降级通道</text>
+</svg>

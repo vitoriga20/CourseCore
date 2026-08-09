@@ -2335,6 +2335,47 @@ if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
 - `72c95a0`（Task 8）
 - `d1342c3`（无关：路由匹配前统一去尾斜杠，修复 `/admin` 被 Cloudflare 重定向为 `/admin/` 失配）
 
+## 更新记录 - 2026-08-09（下载中心 + 五类内容 PDF 导出）
+
+### 背景
+用户要求实现下载功能，覆盖五类内容：理论、训练题、综合测试、期末试卷、复习错题。支持自由勾选、学科/题型/含答案筛选、队列合并导出或逐份导出；并在刷题中心/试卷列表提供「刷一个下载一个」单份入口。PDF 采用矢量分页（html2canvas → jsPDF），非截图式整页。
+
+### 新增文件
+- `src/services/download.js` — 导出核心：数据聚合（collectTheory/collectTraining/collectExams/collectReview）+ 主题化导出 DOM 组装（buildTheoryHtml/buildQuestionSetHtml/buildExamHtml/buildReviewHtml）+ MathJax 等待 + html2canvas→jsPDF 分页导出（exportPdf）。
+- `src/services/download-queue.js` — 下载队列（localStorage `cc-download-queue-v1` 持久化；add/remove/toggle/clear/state 查询）。
+- `src/views/downloadCenter.js` — 下载中心视图：5 个 tab（理论/训练题/综合测试/期末试卷/复习）+ 学科/题型/含答案筛选 + 队列栏（合并导出/逐份导出/清空）+ 单份试卷/题目导出 action。
+
+### 修改文件
+- `src/main.js` — 右上角错落菜单加「下载中心」入口（第 04 行）；事件委托接 `dl-*` action → `handleDownloadAction`；修复按钮嵌在 `<a>` 内时点击误触发链接导航（`if (el.tagName==='BUTTON' && el.closest('a[href]')) e.preventDefault()`）。
+- `src/config/routes.js` — 新增 `/download` 路由（view `download`）；`matchRoute` 入口统一去尾斜杠（修复 `/admin` 被 Cloudflare 重定向为 `/admin/` 失配）。
+- `src/router.js` — import downloadCenter 视图；`applyRoute` 加 `download` case；`showDownloadCenter` + `renderMain` 挂载。
+- `src/views/examPapers.js` — 试卷卡片加「下载」按钮（`data-action=dl-single-exam`）。
+- `src/views/practiceBank.js` — 训练题卡片加「下载」按钮（`data-action=dl-single-question`）。
+- `package.json` — 移除 `html2pdf.js`，新增 `html2canvas@^1.4.1`、`jspdf@^2.5.2`。
+
+### 关键决策
+- 不在线上多页截图，而是把选中内容聚合到单个隐藏导出容器（`#cc-export-container`，视口内低 z-index，避免 off-screen 挂起）→ 套主题 CSS 变量 → 等 MathJax → 整份 html2canvas 分页切片导出。
+- PDF 导出始终用打印友好的浅色墨绿底（`--cc-primary:#2d6a4f`），不随应用明暗主题变，保证打印/阅读可用；主题订阅逻辑保留（`getActiveTheme` + `THEME_VARS`），后续新增主题只需扩展变量表。
+- 下载队列用 localStorage 持久化，跨刷新保留；合并导出为单份合集，逐份导出按队列逐份生成。
+- 按钮嵌链接导航修复放在事件委托单点（`el.closest('a[href]')` 判断），一处覆盖所有卡片内下载按钮。
+
+### 验证
+- `npx vite build` 通过（1095 modules）；修复 download-queue.js 动态+静态重复导入警告后再构建通过。
+- 集成浏览器实测 `http://localhost:5175/download`：
+  - 页面渲染 5 tab + 学科/题型/含答案筛选 + 队列栏正常；
+  - 理论/训练题 tab 数据加载正常（730/821 行快照）；
+  - 勾选理论项入队 → 「合并导出 PDF」激活 → 点击导出，按钮进入「导出中…」→ 完成后恢复，`Downloads/CourseCore-下载合集-*.pdf`（65KB）生成；console 无导出报错（BFF/supabase 拉取失败为静态数据 fallback 警告，正常）。
+
+### 影响面
+- 新增下载链路自包含：下载中心视图 + 导出服务 + 队列 store + 路由/菜单接入；不触碰刷题判分、错题本、同步等既有链路。
+- 单份导出入口复用相同导出服务，刷题中心/试卷列表仅加按钮与 action 分发。
+- 复习内容需登录（依赖 `state.user.id`），未登录时复习 tab 显示空态提示。
+
+### 待办（下次）
+- 复习内容导出端到端验证（需登录态下的错题本数据）。
+- 大内容集合导出性能优化（当前整份 html2canvas，超大集合可能耗时/内存高）。
+- 更多筛选维度（难度、考点）可按需补充。
+
 ## 最后更新时间
 
-2026-08-08（统一题库重构 Task 8：适配剩余引用与静态数据）
+2026-08-09（下载中心 + 五类内容 PDF 导出）

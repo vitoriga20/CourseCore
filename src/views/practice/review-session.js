@@ -4,8 +4,9 @@
 // 提交后调用 review-engine.processAnswer 更新错题本 + savePracticeRecord
 
 import { startPracticeSession, renderQuizAdapter, initQuizAdapter, savePracticeRecord } from './quiz-adapter.js';
-import { getTodayReview, getReviewQueue, processAnswer } from '../../services/review-engine.js';
+import { getReviewQueue, processAnswer } from '../../services/review-engine.js';
 import { state } from '../../state.js';
+import { mountWrongReasonSummary } from './wrong-reason-summary.js';
 
 export function renderReviewSession() {
   _initReviewSession();
@@ -42,7 +43,7 @@ async function _initReviewSession() {
   }
 
   try {
-    // 优先用 sessionStorage 传入的选中错题，否则用今日复习
+    // 优先用 sessionStorage 传入的选中错题，否则复习完整的未掌握错题队列
     let entries;
     const selectedIds = JSON.parse(sessionStorage.getItem('review-selected') || '[]');
     if (selectedIds.length > 0) {
@@ -50,7 +51,7 @@ async function _initReviewSession() {
       entries = all.filter(e => selectedIds.includes(e.id));
       sessionStorage.removeItem('review-selected'); // 用完清除
     } else {
-      entries = await getTodayReview(userId);
+      entries = await getReviewQueue(userId);
     }
 
     // 无错题
@@ -58,9 +59,9 @@ async function _initReviewSession() {
       container.innerHTML = `
         <div class="card text-center py-12" style="background: var(--practice-card); border-color: var(--practice-border);">
           <div class="text-4xl mb-3">🎉</div>
-          <p class="text-sm font-semibold mb-1" style="color: var(--practice-text);">今日无复习任务</p>
-          <p class="text-xs" style="color: var(--practice-muted);">到期的错题会自动出现在这里</p>
-          <a href="/kb" class="btn-pill inline-block mt-4" style="background: var(--practice-accent); color: #fff; padding: 0.5rem 1.5rem;">查看错题库</a>
+          <p class="text-sm font-semibold mb-1" style="color: var(--practice-text);">还没有待复习错题</p>
+          <p class="text-xs" style="color: var(--practice-muted);">先去刷题建立你的复习计划</p>
+          <a href="/practice/exams" class="btn-pill inline-block mt-4" style="background: var(--practice-accent); color: #fff; padding: 0.5rem 1.5rem;">去刷题</a>
         </div>
       `;
       return;
@@ -72,7 +73,7 @@ async function _initReviewSession() {
     // 渲染答题容器
     container.innerHTML = `
       <div class="mb-4">
-        <h1 class="text-2xl font-extrabold" style="color: var(--practice-text);">${session.title}</h1>
+        <h1 class="text-2xl font-extrabold" style="color: var(--practice-text);">今日复习</h1>
         <p class="text-sm mt-1" style="color: var(--practice-muted);">${entries.length} 题 · 自动评判 · 解析点击「查看答案」展开</p>
       </div>
       ${renderQuizAdapter(session.virtualId)}
@@ -82,37 +83,46 @@ async function _initReviewSession() {
     const quizState = initQuizAdapter(session.virtualId, session.questions);
     if (quizState) {
       quizState.startTime = Date.now();
-      // 提交后回调: 更新错题本 + 保存记录
-      quizState.onFinish = async (s) => {
-        try {
-          // 逐题更新错题本
-          for (const q of s.allQuestions) {
-            const result = s.results[q.id];
-            const isCorrect = result?.passed === true;
-            const userAnswer = s.userAnswers[q.id];
-            await processAnswer(userId, q.id, session.subjectId, isCorrect, userAnswer);
-          }
-          // 保存刷题记录
-          await savePracticeRecord({
-            userId,
-            mode: 'wrong_review',
-            sourceId: 'wrong',
-            sourceName: session.title,
-            subjectId: session.subjectId,
-            state: s,
-          });
-          // 提示完成
-          const finishMsg = document.createElement('div');
-          finishMsg.className = 'card mt-4 text-center';
-          finishMsg.style.cssText = 'background: var(--practice-card); border-color: var(--practice-accent); padding: 1rem;';
-          finishMsg.innerHTML = `
-            <p class="text-sm font-semibold" style="color: var(--practice-accent);">✓ 复盘完成，错题本已更新</p>
-            <a href="/kb" class="text-xs mt-2 inline-block" style="color: var(--practice-muted);">返回错题库查看更新</a>
-          `;
-          container.appendChild(finishMsg);
-        } catch (e) {
-          console.warn('[review-session] onFinish:', e);
+      const persistFinishedSession = async (s, selections) => {
+        for (const q of s.allQuestions) {
+          const result = s.results[q.id];
+          if (!result || result.manual) continue;
+          const isCorrect = result.passed === true;
+          const userAnswer = s.userAnswers[q.id];
+          const reasons = isCorrect ? [] : (selections[q.id] || []);
+          await processAnswer(userId, q.id, session.subjectId, isCorrect, userAnswer, 'classic', reasons);
         }
+        await savePracticeRecord({
+          userId,
+          mode: 'wrong_review',
+          sourceId: 'wrong',
+          sourceName: session.title,
+          subjectId: session.subjectId,
+          state: s,
+        });
+
+        const finishMsg = document.createElement('div');
+        finishMsg.className = 'card mt-4 text-center';
+        finishMsg.style.cssText = 'background: var(--practice-card); border-color: var(--practice-accent); padding: 1rem;';
+        finishMsg.innerHTML = `
+          <p class="text-sm font-semibold" style="color: var(--practice-accent);">✓ 复盘完成，错题本已更新</p>
+          <a href="/kb" class="text-xs mt-2 inline-block" style="color: var(--practice-muted);">返回错题库查看更新</a>
+        `;
+        container.appendChild(finishMsg);
+      };
+
+      quizState.onFinish = async (s) => {
+        const wrongQuestions = s.allQuestions.filter((q) => {
+          const result = s.results[q.id];
+          return result && !result.passed && !result.manual;
+        });
+        if (wrongQuestions.length === 0) {
+          await persistFinishedSession(s, {});
+          return;
+        }
+        mountWrongReasonSummary(container, wrongQuestions, async (selections) => {
+          await persistFinishedSession(s, selections);
+        });
       };
     }
   } catch (e) {

@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build:training": "node builders/training-builder.js",
+    "build:bff": "node scripts/build-bff.js",
     "build:data": "node builders/question-builder.js",
     "fetch:data": "node scripts/fetch-from-supabase.js",
     "validate:data": "node builders/question-builder.js --validate",
@@ -36,6 +37,8 @@
     "easymde": "^2.21.0",
     "echarts": "^5.6.0",
     "hono": "^4.13.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
     "marked": "^18.0.7",
     "sortablejs": "^1.15.7",
     "split.js": "^1.6.5"
