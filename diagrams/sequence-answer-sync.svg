@@ -1,0 +1,65 @@
+<svg viewBox="0 0 680 540" width="100%" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>答题判分与进度错题同步时序图</title>
+<desc>学生提交答案后，由 router 调 validators 判分，写本地状态，并经 BFF(/me/progress, /wrong-book) 落到 Supabase；BFF 不可用时降级直连</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<style>
+.t{font:500 13px var(--font-sans,sans-serif);fill:#D3D1C7}
+.lab{font:400 11px var(--font-sans,sans-serif);fill:#c9cdd4}
+.life{stroke:#5F5E5A;stroke-width:.5;stroke-dasharray:4 4}
+.box{fill:#2C2C2A;stroke:#B4B2A9;stroke-width:.5}
+.arr{stroke:#9aa0a6;stroke-width:1.5;fill:none}
+.dash{stroke:#9aa0a6;stroke-width:1.5;fill:none;stroke-dasharray:5 4}
+.note{font:400 11px var(--font-sans,sans-serif);fill:#9aa0a6}
+</style>
+<text class="t" x="340" y="24" text-anchor="middle">时序图 · 答题判分与进度/错题同步</text>
+
+<rect class="box" x="58" y="40" width="84" height="40" rx="8"/>
+<text class="lab" x="100" y="64" text-anchor="middle">学生浏览器</text>
+<rect class="box" x="158" y="40" width="84" height="40" rx="8"/>
+<text class="lab" x="200" y="64" text-anchor="middle">路由 router</text>
+<rect class="box" x="258" y="40" width="84" height="40" rx="8"/>
+<text class="lab" x="300" y="64" text-anchor="middle">校验器</text>
+<rect class="box" x="358" y="40" width="84" height="40" rx="8"/>
+<text class="lab" x="400" y="64" text-anchor="middle">客户端服务</text>
+<rect class="box" x="458" y="40" width="84" height="40" rx="8"/>
+<text class="lab" x="500" y="64" text-anchor="middle">BFF /api/v1</text>
+<rect class="box" x="558" y="40" width="84" height="40" rx="8"/>
+<text class="lab" x="600" y="64" text-anchor="middle">Supabase</text>
+
+<line class="life" x1="100" y1="80" x2="100" y2="482"/>
+<line class="life" x1="200" y1="80" x2="200" y2="482"/>
+<line class="life" x1="300" y1="80" x2="300" y2="482"/>
+<line class="life" x1="400" y1="80" x2="400" y2="482"/>
+<line class="life" x1="500" y1="80" x2="500" y2="482"/>
+<line class="life" x1="600" y1="80" x2="600" y2="482"/>
+
+<line class="arr" x1="100" y1="104" x2="200" y2="104" marker-end="url(#arrow)"/>
+<text class="lab" x="150" y="98">提交答案 handleSubmitAnswer</text>
+<line class="arr" x1="200" y1="140" x2="300" y2="140" marker-end="url(#arrow)"/>
+<text class="lab" x="250" y="134">validate(question, answer)</text>
+<line class="arr" x1="300" y1="176" x2="200" y2="176" marker-end="url(#arrow)"/>
+<text class="lab" x="250" y="170">{passed, correctAnswer}</text>
+<line class="arr" x1="200" y1="212" x2="400" y2="212" marker-end="url(#arrow)"/>
+<text class="lab" x="300" y="206">markQuestion + syncItemProgress</text>
+<line class="arr" x1="200" y1="248" x2="100" y2="248" marker-end="url(#arrow)"/>
+<text class="lab" x="150" y="242">渲染判分结果 + 解析</text>
+<line class="arr" x1="400" y1="284" x2="500" y2="284" marker-end="url(#arrow)"/>
+<text class="lab" x="450" y="278">POST /me/progress</text>
+<line class="arr" x1="500" y1="320" x2="600" y2="320" marker-end="url(#arrow)"/>
+<text class="lab" x="550" y="314">service_role 写 answers/progress</text>
+<line class="arr" x1="400" y1="356" x2="500" y2="356" marker-end="url(#arrow)"/>
+<text class="lab" x="450" y="350">POST/PATCH /wrong-book</text>
+<line class="arr" x1="500" y1="392" x2="600" y2="392" marker-end="url(#arrow)"/>
+<text class="lab" x="550" y="386">写 wrong_book 状态机</text>
+<line class="arr" x1="500" y1="428" x2="400" y2="428" marker-end="url(#arrow)"/>
+<text class="lab" x="450" y="422">200 OK</text>
+<line class="arr" x1="400" y1="464" x2="200" y2="464" marker-end="url(#arrow)"/>
+<text class="lab" x="300" y="458">同步完成</text>
+
+<line class="dash" x1="400" y1="470" x2="600" y2="470" marker-end="url(#arrow)"/>
+<text class="note" x="400" y="504">降级通道：BFF 失败时，客户端服务以 anon key 直连 Supabase 写 answers/progress（sync.js 的 fallback* 路径）</text>
+</svg>

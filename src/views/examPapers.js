@@ -36,7 +36,10 @@ export function renderExamPapers() {
                     <h3 class="text-lg font-bold" style="color: var(--fg);">${escapeHtml(exam.term || exam.id)}</h3>
                     <p class="text-sm" style="color: var(--muted);">${qCount} 题 · ${exam.duration ? exam.duration + ' 分钟' : '时长待定'}</p>
                   </div>
-                  <span class="btn-pill btn-ghost shrink-0">开始模拟</span>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" data-action="dl-single-exam" data-exam-id="${exam.id}" class="btn-pill btn-ghost" title="下载这份试卷为 PDF">下载</button>
+                    <span class="btn-pill btn-ghost">开始模拟</span>
+                  </div>
                 </div>
               </a>`;
             }).join('')}

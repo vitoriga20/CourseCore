@@ -55,6 +55,7 @@ import {
   handleQuizSelectOption
 } from './views/quizSession.js';
 import { renderLandingContent } from './views/landing.js';
+import { handleDownloadAction } from './views/downloadCenter.js';
 import { showPageLoader, hidePageLoader, initImageLoaders } from './components/loading.js';
 import { initGuest, initAuth, signUp, signIn, signOut, resetPassword, updateUserProfile, getDefaultAvatar } from './services/auth.js';
 import { showAuthModal, hideAuthModal, switchAuthTab, getActiveAuthTab } from './components/authModal.js';
@@ -159,6 +160,9 @@ function renderAppShell() {
             </li>
             <li class="sm-panel-itemWrap">
               <a href="/kb" class="sm-panel-item" data-index="03"><span class="sm-panel-label">知识库</span></a>
+            </li>
+            <li class="sm-panel-itemWrap">
+              <a href="/download" class="sm-panel-item" data-index="04"><span class="sm-panel-label">下载中心</span></a>
             </li>
           </ul>
         </nav>
@@ -416,7 +420,8 @@ function initEventDelegation() {
 
   app.addEventListener('click', e => {
     const link = e.target.closest('a[href]');
-    if (link) {
+    // 点击到链接内嵌的按钮控件（如卡片内的下载按钮）时，不当作链接导航
+    if (link && !e.target.closest('button[data-action]')) {
       const href = link.getAttribute('href');
       if (href && href.startsWith('/')) {
         const pathname = href.split('#')[0];
@@ -437,6 +442,8 @@ function initEventDelegation() {
       if (userMenu && !userMenu.contains(e.target)) closeUserMenu();
       return;
     }
+    // 按钮若位于 <a> 内（如卡片下载按钮），阻止默认链接导航
+    if (el.tagName === 'BUTTON' && el.closest('a[href]')) e.preventDefault();
     const action = el.dataset.action;
     const itemId = el.dataset.itemId;
     const qid = el.dataset.qid;
@@ -608,6 +615,10 @@ function initEventDelegation() {
         handleAdminAction(action, el);
         break;
       default:
+        if (action && action.startsWith('dl-')) {
+          handleDownloadAction(action, el);
+          break;
+        }
         // 兜底：所有 admin-* 未显式列的都走后台路由（paper、pool、preview 等新模块）
         if (action && action.startsWith('admin-')) {
           handleAdminAction(action, el);

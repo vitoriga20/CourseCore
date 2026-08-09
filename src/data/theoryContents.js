@@ -18,12 +18,12 @@ export const THEORY_CONTENTS = [
         "hint": null,
         "difficulty": 1,
         "tags": [],
-        "source": null,
+        "source": "题库",
         "options": [
-          "1",
-          "2",
-          "3",
-          "4"
+          "",
+          "",
+          "",
+          ""
         ]
       }
     ]

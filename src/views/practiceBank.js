@@ -93,13 +93,16 @@ export function renderPracticeBank() {
                         </div>
                         <div class="space-y-2">
                           ${questions.map(q => `
-                            <a href="${href('question', { qid: q.id })}" class="card card-hover cursor-pointer p-3" style="background: transparent; border: 1px solid var(--line);">
+                            <div class="card card-hover cursor-pointer p-3" style="background: transparent; border: 1px solid var(--line);">
                               <div class="flex items-center gap-2 mb-1">
-                                <span class="kind-tag">${QUESTION_TYPE_LABELS[q.questionType]}</span>
-                                ${state.completedQuestions[q.id] ? `<span class="text-xs font-semibold" style="color:var(--success)">已完成</span>` : ''}
+                                <a href="${href('question', { qid: q.id })}" class="flex items-center gap-2 flex-1 min-w-0">
+                                  <span class="kind-tag">${QUESTION_TYPE_LABELS[q.questionType]}</span>
+                                  ${state.completedQuestions[q.id] ? `<span class="text-xs font-semibold" style="color:var(--success)">已完成</span>` : ''}
+                                </a>
+                                <button type="button" data-action="dl-single-question" data-key="${escapeHtml(q.id)}" class="btn-pill btn-ghost" style="padding:0.25rem 0.6rem;font-size:0.7rem;" title="下载本题为 PDF">下载</button>
                               </div>
-                              <div class="text-sm" style="color: var(--fg);">${escapeHtml(q.title)}</div>
-                            </a>
+                              <a href="${href('question', { qid: q.id })}" class="text-sm" style="color: var(--fg);">${escapeHtml(q.title)}</a>
+                            </div>
                           `).join('')}
                         </div>
                       </div>

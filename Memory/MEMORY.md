@@ -18,8 +18,12 @@
 ## 当前状态
 
 - 本索引已建立，后续长期记忆统一写入 Memory/。
+- 项目稳定事实与全局约束见 `PROJECT.md`。
+- 架构、边界和数据流见 `ARCHITECTURE.md`。
+- 下载中心与 PDF 导出约定（导出容器/主题/队列/嵌入链接坑）见 `DOMAINS/download-center.md`。
 - 试卷题目排序约定见 `DOMAINS/admin-exam-paper-ordering.md`。
 - 数学公式与 Markdown 混排约定见 `DOMAINS/math-rendering.md`。
 - 刷题中心交卷后错题/记录同步约定（含错题薄弱点总结门槛）见 `DOMAINS/practice-session-sync.md`。
 - 错题驱动的今日复习主线与错因标记约定见 `DECISIONS/2026-08-08-wrong-answer-review-mainline.md`。
-- 最近更新：2026-08-08。
+- 历史平台私有记忆（`.workbuddy/memory/`）仅作迁移/追溯来源，新内容一律写入 Memory/。
+- 最近更新：2026-08-09。

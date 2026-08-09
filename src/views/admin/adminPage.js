@@ -6,12 +6,12 @@
 
 import { isAdmin } from '../../services/auth.js';
 import { escapeHtml } from '../../utils.js';
-import { marked } from 'marked';
 import EasyMDE from 'easymde';
 import 'easymde/dist/easymde.min.css';
 import Split from 'split.js';
 import Sortable from 'sortablejs';
 import * as adminApi from '../../services/admin.js';
+import { renderMarkdownWithMath } from '../../utils/markdown.js';
 
 // ─── Admin state ───
 const adminState = {
@@ -281,7 +281,7 @@ function parseJsonField(str) {
 function renderMd(md) {
   if (!md) return '';
   try {
-    const out = marked.parse(md);
+    const out = renderMarkdownWithMath(md);
     return typeof out === 'string' ? out : '';
   } catch (e) {
     return escapeHtml(String(md));
