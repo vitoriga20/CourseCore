@@ -9,7 +9,6 @@ import { state } from '../../state.js';
 import { mountWrongReasonSummary } from './wrong-reason-summary.js';
 
 export function renderReviewSession() {
-  _initReviewSession();
   return `
     <section class="max-w-4xl mx-auto px-4 pt-8 pb-16" style="min-height: 70vh;">
       <div class="mb-4">
@@ -25,7 +24,7 @@ export function renderReviewSession() {
   `;
 }
 
-async function _initReviewSession() {
+export async function initReviewSession() {
   const userId = state.user?.id;
   const container = document.getElementById('review-container');
   if (!container) return;

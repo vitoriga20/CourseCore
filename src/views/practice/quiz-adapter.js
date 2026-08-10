@@ -35,8 +35,18 @@ async function fetchQuestionsByType(subject, questionType) {
   };
 }
 
+// wrong_book 联表返回的 questions 是 Supabase 原始 snake_case 字段，
+// 而 quizSession / renderQuestion 读取 camelCase（questionType）。此处统一转换。
+function normalizeDbQuestion(q) {
+  if (!q) return null;
+  return {
+    ...q,
+    questionType: Number(q.question_type ?? q.questionType ?? 0),
+  };
+}
+
 function fetchQuestionsFromWrongEntries(wrongEntries) {
-  const questions = wrongEntries.map(e => e.questions).filter(Boolean);
+  const questions = wrongEntries.map(e => normalizeDbQuestion(e.questions)).filter(Boolean);
   const subjectId = wrongEntries[0]?.subject_id || '';
   return {
     questions,

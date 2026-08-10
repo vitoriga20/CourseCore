@@ -2221,6 +2221,7 @@ async function openTheoryEditor(itemId) {
     let content = (theory && theory.content) || (item.content || '');
     let examples = (theory && theory.examples) || [];
     examples = await normalizeTheoryExamples(itemId, examples);
+    const figures = (theory && theory.figures) || [];
 
     adminState.theoryEditor = {
       itemId,
@@ -2229,6 +2230,7 @@ async function openTheoryEditor(itemId) {
       module_id: item.module_id || '',
       content,
       examples,
+      figures,
       collapsed: {}
     };
     rerender();
@@ -2266,7 +2268,7 @@ function updateTheoryPreview() {
   syncTheoryFormToState();
   const preview = document.getElementById('theory-preview');
   if (!preview) return;
-  let html = renderMd(ed.content || '*无内容*');
+  let html = renderTheoryPreviewBody(ed.content || '*无内容*', ed.figures);
   if (ed.examples.length > 0) {
     html += '<hr><h4>例题</h4>';
     ed.examples.forEach((ex, idx) => {
@@ -2287,6 +2289,30 @@ function updateTheoryPreview() {
   }
   preview.innerHTML = html;
   typeset(preview);
+}
+
+// 解析正文里的 [图N:名称] / [表N:名称] 占位符，替换为 content_figures 数据库中的内容。
+// 与前端 practiceList.renderTheoryContent 保持一致：先换 token 再还原，避免 marked 干扰。
+function renderTheoryPreviewBody(content, figures) {
+  const placeholderList = Array.isArray(figures) ? figures : [];
+  const figureMap = {};
+  for (const f of placeholderList) {
+    if (f && f.placeholder) figureMap[f.placeholder] = f;
+  }
+  const tokens = [];
+  const protectedSource = String(content || '').replace(/\[(图|表)(\d+):([^\]]+)\]/g, (m, kind, num) => {
+    const key = `${kind}${num}`;
+    const f = figureMap[key];
+    if (!f) return m; // 未入库的占位符保留原文
+    const idx = tokens.length;
+    tokens.push(f.kind === 'table'
+      ? `<div class="cc-figure cc-table">${f.content || ''}</div>`
+      : `<div class="cc-figure">${f.content || ''}</div>`);
+    return `@@COURSECORE_FIGURE_${idx}@@`;
+  });
+  let html = renderMd(protectedSource || '');
+  html = html.replace(/@@COURSECORE_FIGURE_(\d+)@@/g, (_, index) => tokens[Number(index)] || '');
+  return html;
 }
 
 function addTheoryExample() {

@@ -30,9 +30,40 @@ function renderItemNav(course, module, item) {
   `;
 }
 
-function renderTheoryContent(content) {
-  const html = marked.parse(content || '');
-  return `<div class="lesson-content prose prose-invert max-w-none text-base leading-relaxed mb-8" style="color: var(--fg);">${html}</div>`;
+// 把 content 里的 [图N:名称] / [表N:名称] 占位符替换为 DB 中的图/表内容。
+// 先替换成占位 token，避免 marked 干扰，渲染后再还原为真实 HTML。
+const FIGURE_TOKEN = /@@COURSECORE_FIGURE_(\d+)@@/g;
+const FIGURE_PLACEHOLDER = /\[(图|表)(\d+):([^\]]+)\]/g;
+
+function renderFigureFigure(f) {
+  if (!f) return '';
+  if (f.kind === 'table') {
+    return `<div class="cc-figure cc-table">${f.content || ''}</div>`;
+  }
+  // SVG 图：内联展示，可缩放、适配主题
+  return `<div class="cc-figure">${f.content || ''}</div>`;
+}
+
+function renderTheoryContent(content, figures) {
+  const placeholderList = Array.isArray(figures) ? figures : [];
+  const figureMap = {};
+  for (const f of placeholderList) {
+    if (f && f.placeholder) figureMap[f.placeholder] = f;
+  }
+
+  const tokens = [];
+  const protectedSource = String(content || '').replace(FIGURE_PLACEHOLDER, (m, kind, num, name) => {
+    const key = `${kind}${num}`;
+    const f = figureMap[key];
+    if (!f) return m; // 未入库的占位符保留原文
+    const idx = tokens.length;
+    tokens.push(renderFigureFigure(f));
+    return `@@COURSECORE_FIGURE_${idx}@@`;
+  });
+
+  const html = marked.parse(protectedSource || '');
+  const final = html.replace(FIGURE_TOKEN, (_, index) => tokens[Number(index)] || '');
+  return `<div class="lesson-content prose prose-invert max-w-none text-base leading-relaxed mb-8" style="color: var(--fg);">${final}</div>`;
 }
 
 function renderTheoryPlaceholder(item) {
@@ -41,7 +72,7 @@ function renderTheoryPlaceholder(item) {
   const content = runtime?.content || theory?.content || item.content;
 
   if (content) {
-    return renderTheoryContent(content);
+    return renderTheoryContent(content, runtime?.figures);
   }
 
   return `

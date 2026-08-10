@@ -1,0 +1,67 @@
+-- ============================================================
+-- Seed: 物理“质点运动学基础”(p1b-m1-01) 位置矢量图入库
+-- 在 scripts/migrations/003-content-figures.sql 之后运行
+-- ============================================================
+
+INSERT INTO public.content_figures (item_id, placeholder, kind, alt, content)
+VALUES (
+  'p1b-m1-01',
+  '图1',
+  'figure',
+  '位置矢量',
+  $$
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" width="100%" height="auto" role="img" aria-label="位置矢量（位矢）三维示意图">
+  <defs>
+    <marker id="pv_ax" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L7 4 L1 7 Z" fill="#9AAE9F"/>
+    </marker>
+    <marker id="pv_vec" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L7 4 L1 7 Z" fill="#1E6B4E"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="720" height="520" rx="12" fill="#F3F6F3"/>
+
+  <!-- 标题 -->
+  <text x="360" y="34" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="17" font-weight="600" fill="#1F2A24">位置矢量 r(t)：从原点 O 指向质点 P</text>
+
+  <!-- 坐标轴 -->
+  <g stroke="#7C8A80" stroke-width="1.6" opacity="0.85">
+    <line x1="250" y1="400" x2="598" y2="400" marker-end="url(#pv_ax)"/>
+    <line x1="250" y1="400" x2="250" y2="98" marker-end="url(#pv_ax)"/>
+    <line x1="250" y1="400" x2="148" y2="500" marker-end="url(#pv_ax)"/>
+  </g>
+  <g font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="15" fill="#1F2A24">
+    <text x="608" y="396">x</text>
+    <text x="258" y="88">z</text>
+    <text x="138" y="512">y</text>
+  </g>
+  <text x="262" y="422" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="13" fill="#5A6B61">O</text>
+
+  <!-- 分量投影虚线 -->
+  <g stroke="#7C8A80" stroke-width="1.2" stroke-dasharray="5 5" opacity="0.9">
+    <line x1="437" y1="284" x2="437" y2="400"/>
+    <line x1="250" y1="284" x2="437" y2="284"/>
+    <line x1="437" y1="284" x2="530" y2="190"/>
+  </g>
+  <g font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="13" fill="#5A6B61">
+    <text x="445" y="348">z(t)</text>
+    <text x="330" y="302">x(t)</text>
+    <text x="468" y="228">y(t)</text>
+  </g>
+
+  <!-- 位矢（主墨绿） -->
+  <line x1="250" y1="400" x2="437" y2="284" stroke="#1E6B4E" stroke-width="3" stroke-linecap="round" marker-end="url(#pv_vec)"/>
+  <text x="318" y="352" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="15" font-weight="600" fill="#1E6B4E">r(t)</text>
+
+  <!-- 质点 P -->
+  <circle cx="437" cy="284" r="5" fill="#1E6B4E"/>
+  <text x="450" y="298" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="14" fill="#1F2A24">P(x,y,z)</text>
+
+  <!-- 底部公式 -->
+  <text x="360" y="486" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="14" fill="#1F2A24">r = |r| = √(x² + y² + z²)</text>
+</svg>
+  $$
+)
+ON CONFLICT (item_id, placeholder)
+DO UPDATE SET kind = EXCLUDED.kind, alt = EXCLUDED.alt, content = EXCLUDED.content, updated_at = NOW();
