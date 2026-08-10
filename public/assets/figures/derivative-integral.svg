@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" width="100%" height="auto" role="img" aria-label="速度加速度微分积分转化关系图">
+  <defs>
+    <marker id="df_arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L7 4 L1 7 Z" fill="#7C8A80"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="760" height="420" rx="12" fill="#F3F6F3"/>
+
+  <!-- 标题 -->
+  <text x="380" y="40" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="17" font-weight="600" fill="#1F2A24">三类运动量：微分 / 积分相互转化</text>
+
+  <!-- 三个盒子 -->
+  <g font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif">
+    <!-- r(t) -->
+    <rect x="60" y="150" width="180" height="90" rx="12" fill="#1E6B4E"/>
+    <text x="150" y="192" text-anchor="middle" font-size="20" font-weight="600" fill="#FFFFFF">r(t)</text>
+    <text x="150" y="218" text-anchor="middle" font-size="13" fill="#DCE8E0">位置</text>
+    <!-- v(t) -->
+    <rect x="290" y="150" width="180" height="90" rx="12" fill="#2E7D5B"/>
+    <text x="380" y="192" text-anchor="middle" font-size="20" font-weight="600" fill="#FFFFFF">v(t)</text>
+    <text x="380" y="218" text-anchor="middle" font-size="13" fill="#DCE8E0">速度</text>
+    <!-- a(t) -->
+    <rect x="520" y="150" width="180" height="90" rx="12" fill="#40916C"/>
+    <text x="610" y="192" text-anchor="middle" font-size="20" font-weight="600" fill="#FFFFFF">a(t)</text>
+    <text x="610" y="218" text-anchor="middle" font-size="13" fill="#DCE8E0">加速度</text>
+  </g>
+
+  <!-- 微分箭头（上） -->
+  <g font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif">
+    <line x1="240" y1="165" x2="290" y2="165" stroke="#C62828" stroke-width="2.5" marker-end="url(#df_arrow)"/>
+    <text x="265" y="150" text-anchor="middle" font-size="13" fill="#C62828">微分</text>
+    <text x="265" y="132" text-anchor="middle" font-size="11" fill="#C62828">d/dt</text>
+    <line x1="470" y1="165" x2="520" y2="165" stroke="#C62828" stroke-width="2.5" marker-end="url(#df_arrow)"/>
+    <text x="495" y="150" text-anchor="middle" font-size="13" fill="#C62828">微分</text>
+    <text x="495" y="132" text-anchor="middle" font-size="11" fill="#C62828">d/dt</text>
+  </g>
+
+  <!-- 积分箭头（下） -->
+  <g font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif">
+    <line x1="520" y1="225" x2="470" y2="225" stroke="#1E6B4E" stroke-width="2.5" marker-end="url(#df_arrow)"/>
+    <text x="495" y="258" text-anchor="middle" font-size="13" fill="#1E6B4E">积分</text>
+    <text x="495" y="276" text-anchor="middle" font-size="11" fill="#1E6B4E">∫dt</text>
+    <line x1="290" y1="225" x2="240" y2="225" stroke="#1E6B4E" stroke-width="2.5" marker-end="url(#df_arrow)"/>
+    <text x="265" y="258" text-anchor="middle" font-size="13" fill="#1E6B4E">积分</text>
+    <text x="265" y="276" text-anchor="middle" font-size="11" fill="#1E6B4E">∫dt</text>
+  </g>
+
+  <!-- 底部说明 -->
+  <text x="380" y="340" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="14" fill="#1F2A24">已知 r(t) 求导得 v(t)、a(t)；已知 a(t) 积分得 v(t)、r(t)</text>
+  <text x="380" y="372" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="13" fill="#5A6B61">微分问题：直接求导；积分问题：需初始条件 r₀, v₀</text>
+</svg>

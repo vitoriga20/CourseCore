@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" width="100%" height="auto" role="img" aria-label="位移与路程区别二维示意图">
+  <defs>
+    <marker id="ds_ax" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L7 4 L1 7 Z" fill="#9AAE9F"/>
+    </marker>
+    <marker id="ds_vec" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L7 4 L1 7 Z" fill="#1E6B4E"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="720" height="520" rx="12" fill="#F3F6F3"/>
+
+  <!-- 标题 -->
+  <text x="360" y="34" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="17" font-weight="600" fill="#1F2A24">位移 Δr 与路程 Δs：直线距离 vs 轨迹长度</text>
+
+  <!-- 坐标轴 -->
+  <g stroke="#7C8A80" stroke-width="1.6" opacity="0.85">
+    <line x1="120" y1="400" x2="640" y2="400" marker-end="url(#ds_ax)"/>
+    <line x1="120" y1="400" x2="120" y2="80" marker-end="url(#ds_ax)"/>
+  </g>
+  <g font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="15" fill="#1F2A24">
+    <text x="650" y="396">x</text>
+    <text x="128" y="70">y</text>
+  </g>
+  <text x="132" y="422" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="13" fill="#5A6B61">O</text>
+
+  <!-- 轨迹曲线（路程） -->
+  <path d="M 200 330 C 260 300, 300 200, 380 210 S 500 300, 520 180" fill="none" stroke="#7C8A80" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 0"/>
+  <text x="470" y="250" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="13" fill="#5A6B61">轨迹（路程 Δs）</text>
+
+  <!-- 起点 P1 -->
+  <circle cx="200" cy="330" r="6" fill="#1E6B4E"/>
+  <text x="150" y="322" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="14" fill="#1F2A24">P₁</text>
+  <!-- 起点位矢 r₁ -->
+  <line x1="120" y1="400" x2="200" y2="330" stroke="#5A6B61" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#ds_vec)"/>
+  <text x="140" y="380" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="13" fill="#5A6B61">r(t₁)</text>
+
+  <!-- 终点 P2 -->
+  <circle cx="520" cy="180" r="6" fill="#1E6B4E"/>
+  <text x="530" y="172" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="14" fill="#1F2A24">P₂</text>
+  <!-- 终点位矢 r₂ -->
+  <line x1="120" y1="400" x2="520" y2="180" stroke="#5A6B61" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#ds_vec)"/>
+  <text x="470" y="380" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="13" fill="#5A6B61">r(t₂)</text>
+
+  <!-- 位移 Δr（主墨绿粗线） -->
+  <line x1="200" y1="330" x2="520" y2="180" stroke="#1E6B4E" stroke-width="4" stroke-linecap="round" marker-end="url(#ds_vec)"/>
+  <text x="330" y="262" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="15" font-weight="600" fill="#1E6B4E">Δr = r₂ − r₁</text>
+
+  <!-- 底部说明 -->
+  <text x="360" y="486" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',system-ui,sans-serif" font-size="14" fill="#1F2A24">|Δr| ≤ Δs，仅单向直线运动时二者相等</text>
+</svg>
