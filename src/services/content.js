@@ -44,7 +44,17 @@ export async function loadTheoryContent(itemId) {
     order_index: l.order_index ?? 0,
     item_id: itemId,
   }));
-  return snakeToCamel({ content, examples });
+
+  // v2: 图/表占位符内容（content_figures），前端按 [图N:名称]/[表N:名称] 替换展示
+  const { data: figures, error: figErr } = await supabase
+    .from('content_figures')
+    .select('placeholder, kind, alt, content')
+    .eq('item_id', itemId);
+  if (figErr) {
+    console.error('loadContentFigures failed', figErr);
+  }
+
+  return snakeToCamel({ content, examples, figures: figures || [] });
 }
 
 // v2: 训练题经 item_questions(role='practice') join questions

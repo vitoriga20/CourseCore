@@ -277,7 +277,20 @@ export async function getItemContent(itemId) {
     .order('order_index');
   if (linkRes.error) throw linkRes.error;
   const examples = (linkRes.data || []).map(l => l.questions).filter(Boolean);
-  return { content: item ? (item.content || '') : '', examples };
+
+  // 图/表占位符内容（content_figures），供后台预览替换展示
+  let figures = [];
+  const figRes = await supabase
+    .from('content_figures')
+    .select('placeholder, kind, alt, content')
+    .eq('item_id', itemId);
+  if (figRes.error) {
+    console.error('loadContentFigures failed', figRes.error);
+  } else {
+    figures = figRes.data || [];
+  }
+
+  return { content: item ? (item.content || '') : '', examples, figures };
 }
 
 // 批量读全部小节的 theory_example 关联，供内容树一次性展示例题数

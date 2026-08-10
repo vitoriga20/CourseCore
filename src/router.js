@@ -23,7 +23,7 @@ import {
   renderCommunity, renderCommunityDetail,
   renderUserRecords
 } from './views/practice/index.js';
-import { renderReviewSession } from './views/practice/review-session.js';
+import { renderReviewSession, initReviewSession } from './views/practice/review-session.js';
 import { renderPracticeSession, initPracticeSession } from './views/practice/practice-session.js';
 import { renderAddMyPaper } from './views/practice/add-my-paper.js';
 import { renderPrivacy, renderTerms } from './views/legal.js';
@@ -398,6 +398,10 @@ export async function showPracticeItem(itemId) {
       if (runtime.content && runtime.content !== localContent) {
         state.runtimeTheoryContent[itemId] = runtime;
         renderMain();
+      } else if (runtime.figures && runtime.figures.length > 0) {
+        // 内容相同但带图/表占位内容时也要注入，保证占位符能被替换
+        state.runtimeTheoryContent[itemId] = runtime;
+        renderMain();
       }
     }
   } else if (item?.type === 'quiz' || item?.type === 'training') {
@@ -755,6 +759,7 @@ export function renderMain() {
       break;
     case "review-session":
       main.innerHTML = renderReviewSession();
+      initReviewSession();
       break;
     case "community":
       main.innerHTML = renderCommunity();

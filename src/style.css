@@ -2344,3 +2344,35 @@ body[data-bg="geo"] #bg-canvas {
 .course-item-selected:hover {
   background-color: rgba(40, 120, 80, 0.18);
 }
+
+/* ===== 理论正文图/表（content_figures 占位符替换） ===== */
+.cc-figure {
+  margin: 1.25rem 0;
+  display: flex;
+  justify-content: center;
+}
+.cc-figure svg {
+  max-width: 100%;
+  height: auto;
+  background: transparent;
+}
+.cc-figure.cc-table {
+  display: block;
+  overflow-x: auto;
+}
+.cc-figure.cc-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  color: var(--fg);
+}
+.cc-figure.cc-table th,
+.cc-figure.cc-table td {
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.cc-figure.cc-table th {
+  background: var(--card);
+  font-weight: 600;
+}
