@@ -2352,7 +2352,7 @@ body[data-bg="geo"] #bg-canvas {
   justify-content: center;
 }
 .cc-figure svg {
-  max-width: 100%;
+  max-width: 75%;
   height: auto;
   background: transparent;
 }
