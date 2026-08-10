@@ -1506,8 +1506,19 @@ const ADMIN_STYLES = `
 /* 理论编辑器正文区头部（标签 + 插入按钮） */
 .admin-page .theory-sec-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
 /* 方案3: 插入图/表资源库弹层 */
-.admin-page .drawer-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 90; }
-.admin-page .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: 420px; max-width: 92vw; background: var(--ad-bg-card); border-left: 1px solid var(--ad-border); z-index: 91; display: flex; flex-direction: column; box-shadow: -8px 0 24px rgba(0,0,0,.25); }
+.admin-page .drawer-mask,
+.admin-page .preview-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 90; display: none; }
+.admin-page .drawer-mask.open { display: block; }
+.admin-page .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: 420px; max-width: 92vw; background: var(--ad-bg-card); border-left: 1px solid var(--ad-border); z-index: 91; display: none; flex-direction: column; box-shadow: -8px 0 24px rgba(0,0,0,.25); }
+.admin-page .drawer.open { display: flex; }
+.admin-page .preview-mask.open { display: block; }
+.admin-page .preview-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 720px; max-width: 94vw; max-height: 88vh; overflow-y: auto; background: var(--ad-bg-card); border: 1px solid var(--ad-border); border-radius: 10px; z-index: 92; display: none; flex-direction: column; box-shadow: 0 16px 48px rgba(0,0,0,.35); }
+.admin-page .preview-modal.open { display: flex; }
+.admin-page .preview-modal .p-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid var(--ad-border); position: sticky; top: 0; background: var(--ad-bg-card); }
+.admin-page .preview-modal .p-head h3 { margin: 0; font-size: 1rem; color: var(--ad-fg); }
+.admin-page .preview-modal .close { background: none; border: none; color: var(--ad-muted); font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0; }
+.admin-page .preview-modal .p-meta { padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--ad-border); font-size: 0.8rem; color: var(--ad-muted); }
+.admin-page .preview-modal #pvBody { padding: 1.25rem; }
 .admin-page .drawer .d-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.15rem; border-bottom: 1px solid var(--ad-border); }
 .admin-page .drawer .d-head h2 { margin: 0; font-size: 1rem; color: var(--ad-fg); }
 .admin-page .drawer .d-head-actions { display: flex; gap: 0.4rem; }
@@ -3298,6 +3309,7 @@ function renderAssetOverlay() {
                 <code class="asset-id">[${a.kind === 'table' ? '表' : '图'}:${escapeHtml(a.id)}]</code>
               </div>
               <button type="button" class="admin-btn admin-btn-sm admin-btn-primary" data-action="admin-asset-insert" data-id="${escapeHtml(a.id)}" data-kind="${a.kind}">插入</button>
+              <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" data-action="admin-asset-delete" data-id="${escapeHtml(a.id)}" data-name="${escapeHtml(a.name || a.id)}">删除</button>
             </div>
           `).join('')}
         </div>
@@ -3309,6 +3321,10 @@ function renderAssetOverlay() {
 function assetOpen() {
   adminState.assetOpen = true;
   rerender();
+  const mask = document.getElementById('aMask');
+  const drawer = document.getElementById('aDrawer');
+  if (mask) mask.classList.add('open');
+  if (drawer) drawer.classList.add('open');
 }
 
 // 把 [图:id] / [表:id] 引用插入到正文 EasyMDE 光标处
@@ -3356,6 +3372,24 @@ async function assetNew() {
     rerender();
   } catch (e) {
     adminState.feedback = { type: 'error', message: `创建资源失败: ${e.message}` };
+    rerender();
+  }
+}
+
+// 删除资源：确认后删除，并刷新编辑器 assets
+async function assetDelete(id, name) {
+  if (!id) return;
+  if (!confirm(`确认删除资源【${name || id}】？\n删除后，正文中引用 [图:${id}] / [表:${id}] 的占位符将无法显示。\n此操作不可恢复。`)) return;
+  try {
+    await adminApi.deleteAsset(id);
+    adminState.feedback = { type: 'success', message: `资源 ${name || id} 已删除` };
+    if (adminState.theoryEditor) {
+      const theory = await adminApi.getItemContent(adminState.theoryEditor.itemId);
+      adminState.theoryEditor.assets = (theory && theory.assets) || [];
+    }
+    rerender();
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `删除资源失败: ${e.message}` };
     rerender();
   }
 }
@@ -3544,6 +3578,10 @@ export async function handleAdminAction(action, el) {
     }
     case 'admin-asset-new': {
       await assetNew();
+      break;
+    }
+    case 'admin-asset-delete': {
+      await assetDelete(el.dataset.id, el.dataset.name);
       break;
     }
     case 'admin-practice-select': {
