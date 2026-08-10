@@ -1078,6 +1078,42 @@ function renderKpEditor() {
 
 // ─── Styles (dark theme, scoped under .admin-page) ───
 const ADMIN_STYLES = `
+/* admin 后台滚动条：墨绿色主题（Firefox） */
+.admin-page, .admin-page * {
+  scrollbar-width: thin;
+  scrollbar-color: #2EBD72 #0d0f0f;
+}
+
+/* admin 后台滚动条：墨绿色主题（WebKit） */
+.admin-page::-webkit-scrollbar,
+.admin-page *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.admin-page::-webkit-scrollbar-track,
+.admin-page *::-webkit-scrollbar-track {
+  background: #0d0f0f;
+  border-radius: 5px;
+}
+
+.admin-page::-webkit-scrollbar-thumb,
+.admin-page *::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #2A8958, #2EBD72);
+  border-radius: 5px;
+  border: 2px solid #0d0f0f;
+}
+
+.admin-page::-webkit-scrollbar-thumb:hover,
+.admin-page *::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #2EBD72, #32F08C);
+}
+
+.admin-page::-webkit-scrollbar-button,
+.admin-page *::-webkit-scrollbar-button {
+  display: none;
+}
+
 .admin-page {
   --ad-bg: #050505;
   --ad-bg-card: #0a0a0a;
