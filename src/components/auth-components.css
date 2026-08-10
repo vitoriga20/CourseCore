@@ -633,6 +633,37 @@
   overflow-x: auto;
 }
 
+/* 全局滚动条：墨绿色主题（Firefox） */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2EBD72 #1E2A24;
+}
+
+/* 全局滚动条：墨绿色主题（WebKit: Chrome/Edge/Safari） */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #1E2A24;
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #2A8958, #2EBD72);
+  border-radius: 5px;
+  border: 2px solid #1E2A24;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #2EBD72, #32F08C);
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
 .user-heatmap-wrapper {
   display: grid;
   grid-template-columns: auto 1fr auto;
