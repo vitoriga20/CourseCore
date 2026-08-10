@@ -2534,7 +2534,7 @@ user.get("/wrong-book", verifyAuth, async (c) => {
     if (subjectId) filters.subject_id = ["eq", subjectId];
     if (status) filters.status = ["eq", status];
     const includeQuestion = c.req.query("includeQuestion") === "true";
-    const select = includeQuestion ? `${WRONG_BOOK_FIELDS},questions(id,question_type,title,content,options,tags)` : WRONG_BOOK_FIELDS;
+    const select = includeQuestion ? `${WRONG_BOOK_FIELDS},questions(id,question_type,title,content,options,answer,answers,solution,tags)` : WRONG_BOOK_FIELDS;
     const { data, total } = await sb.query("wrong_book", {
       select,
       filters,

@@ -12,10 +12,25 @@ async function buildHeaders(extra = {}) {
   return headers;
 }
 
+// 请求超时（ms）：BFF 或上游 Supabase 挂起时快速失败，让调用方走 fallback，避免无限转圈
+const REQUEST_TIMEOUT_MS = 15000;
+
 async function request(path, options = {}) {
   const url = `/api/v1${path}`;
   const headers = await buildHeaders(options.headers || {});
-  const res = await fetch(url, { ...options, headers });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let res;
+  try {
+    res = await fetch(url, { ...options, headers, signal: controller.signal });
+  } catch (e) {
+    if (e?.name === 'AbortError') {
+      throw new Error(`API ${path} 请求超时（${REQUEST_TIMEOUT_MS}ms）`);
+    }
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     const err = new Error(`API ${res.status}: ${body.slice(0, 300)}`);
