@@ -398,8 +398,8 @@ export async function showPracticeItem(itemId) {
       if (runtime.content && runtime.content !== localContent) {
         state.runtimeTheoryContent[itemId] = runtime;
         renderMain();
-      } else if (runtime.figures && runtime.figures.length > 0) {
-        // 内容相同但带图/表占位内容时也要注入，保证占位符能被替换
+      } else if ((runtime.figures && runtime.figures.length > 0) || (runtime.assets && runtime.assets.length > 0)) {
+        // 内容相同但带图/表内容或全局资源引用时也要注入，保证占位符/引用能被替换
         state.runtimeTheoryContent[itemId] = runtime;
         renderMain();
       }

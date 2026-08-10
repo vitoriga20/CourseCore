@@ -35,7 +35,8 @@ const adminState = {
     checked: new Set()   // 批量操作选中：key 形如 'course:<id>' / 'module:<courseId>|<moduleId>' / 'item:<id>'
   },
   editing: null, // { entity, row, isNew, context? } — modal 表单；context 用于树上下文预填
-  theoryEditor: null, // { itemId, title, course_id, module_id, content, examples, collapsed }
+  theoryEditor: null, // { itemId, title, course_id, module_id, content, examples, collapsed, assets }
+  assetOpen: false, // 理论编辑器：插入资源弹层是否打开
   practiceEditor: null, // { itemId, itemType, title, questions, selectedIndex }
   paperEditor: null, // { id, name, school, college, subject, term, state, questions:[{id,score,source,question}], selectedIndex }
   poolOpen: false, // 期末试卷：从题库添加弹层
@@ -731,7 +732,10 @@ function renderTheoryEditor() {
     <div class="admin-editor admin-editor-theory" id="theory-editor">
       <div class="theory-left">
         <div class="theory-section">
-          <label class="admin-form-label" for="theory-content">理论正文 (Markdown)</label>
+          <div class="theory-sec-header">
+            <label class="admin-form-label" for="theory-content">理论正文 (Markdown)</label>
+            <button type="button" class="admin-btn admin-btn-sm" data-action="admin-insert-asset">插入图/表</button>
+          </div>
           <textarea id="theory-content" class="admin-md-textarea" rows="14">${escapeHtml(ed.content || '')}</textarea>
         </div>
         <div class="theory-section">
@@ -1499,6 +1503,26 @@ const ADMIN_STYLES = `
   .admin-page .admin-tree-layout { flex-direction: column; }
   .admin-page .admin-tree-pane { width: 100%; max-height: 40vh; }
 }
+/* 理论编辑器正文区头部（标签 + 插入按钮） */
+.admin-page .theory-sec-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+/* 方案3: 插入图/表资源库弹层 */
+.admin-page .drawer-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 90; }
+.admin-page .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: 420px; max-width: 92vw; background: var(--ad-bg-card); border-left: 1px solid var(--ad-border); z-index: 91; display: flex; flex-direction: column; box-shadow: -8px 0 24px rgba(0,0,0,.25); }
+.admin-page .drawer .d-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.15rem; border-bottom: 1px solid var(--ad-border); }
+.admin-page .drawer .d-head h2 { margin: 0; font-size: 1rem; color: var(--ad-fg); }
+.admin-page .drawer .d-head-actions { display: flex; gap: 0.4rem; }
+.admin-page .drawer .d-body { padding: 1rem 1.15rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.8rem; }
+.admin-page .drawer .d-tip { font-size: 0.78rem; color: var(--ad-muted); line-height: 1.5; }
+.admin-page .asset-grid { display: flex; flex-direction: column; gap: 0.7rem; }
+.admin-page .asset-card { border: 1px solid var(--ad-border); border-radius: 8px; padding: 0.6rem; background: var(--ad-bg); }
+.admin-page .asset-preview { max-height: 160px; overflow: auto; font-size: 0.8rem; color: var(--ad-fg); }
+.admin-page .asset-preview svg { max-width: 100%; height: auto; }
+.admin-page .asset-preview table { border-collapse: collapse; width: 100%; font-size: 0.75rem; }
+.admin-page .asset-preview th, .admin-page .asset-preview td { border: 1px solid var(--ad-border); padding: 0.25rem 0.4rem; }
+.admin-page .asset-meta { display: flex; align-items: center; gap: 0.4rem; margin: 0.4rem 0; flex-wrap: wrap; }
+.admin-page .asset-name { font-weight: 600; color: var(--ad-fg); font-size: 0.85rem; }
+.admin-page .asset-kind { font-size: 0.7rem; color: var(--ad-green-hl, #2dd288); border: 1px solid currentColor; border-radius: 4px; padding: 0 0.3rem; }
+.admin-page .asset-id { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.72rem; color: var(--ad-muted); word-break: break-all; }
 `;
 
 // ─── Render: page ───
@@ -1564,6 +1588,7 @@ export function renderAdminPage() {
       ${renderModal()}
       ${renderKpEditor()}
       ${renderPoolOverlay()}
+      ${adminState.assetOpen ? renderAssetOverlay() : ''}
       ${renderPreviewOverlay()}
     </div>
   `;
@@ -2222,6 +2247,7 @@ async function openTheoryEditor(itemId) {
     let examples = (theory && theory.examples) || [];
     examples = await normalizeTheoryExamples(itemId, examples);
     const figures = (theory && theory.figures) || [];
+    const assets = (theory && theory.assets) || [];
 
     adminState.theoryEditor = {
       itemId,
@@ -2231,8 +2257,10 @@ async function openTheoryEditor(itemId) {
       content,
       examples,
       figures,
+      assets,
       collapsed: {}
     };
+    adminState.assetOpen = false;
     rerender();
   } catch (e) {
     adminState.feedback = { type: 'error', message: `打开理论编辑器失败: ${e.message}` };
@@ -2268,7 +2296,7 @@ function updateTheoryPreview() {
   syncTheoryFormToState();
   const preview = document.getElementById('theory-preview');
   if (!preview) return;
-  let html = renderTheoryPreviewBody(ed.content || '*无内容*', ed.figures);
+  let html = renderTheoryPreviewBody(ed.content || '*无内容*', ed.figures, ed.assets);
   if (ed.examples.length > 0) {
     html += '<hr><h4>例题</h4>';
     ed.examples.forEach((ex, idx) => {
@@ -2291,25 +2319,41 @@ function updateTheoryPreview() {
   typeset(preview);
 }
 
-// 解析正文里的 [图N:名称] / [表N:名称] 占位符，替换为 content_figures 数据库中的内容。
+// 解析正文里的 [图N:名称] / [表N:名称] 占位符 与 [图:asset_id] / [表:asset_id] 引用，
+// 替换为 content_figures / content_assets 数据库中的内容。
 // 与前端 practiceList.renderTheoryContent 保持一致：先换 token 再还原，避免 marked 干扰。
-function renderTheoryPreviewBody(content, figures) {
-  const placeholderList = Array.isArray(figures) ? figures : [];
+function renderTheoryPreviewBody(content, figures, assets) {
   const figureMap = {};
-  for (const f of placeholderList) {
+  for (const f of Array.isArray(figures) ? figures : []) {
     if (f && f.placeholder) figureMap[f.placeholder] = f;
   }
+  const assetMap = {};
+  for (const a of Array.isArray(assets) ? assets : []) {
+    if (a && a.id) assetMap[a.id] = a;
+  }
   const tokens = [];
-  const protectedSource = String(content || '').replace(/\[(图|表)(\d+):([^\]]+)\]/g, (m, kind, num) => {
-    const key = `${kind}${num}`;
-    const f = figureMap[key];
-    if (!f) return m; // 未入库的占位符保留原文
-    const idx = tokens.length;
-    tokens.push(f.kind === 'table'
-      ? `<div class="cc-figure cc-table">${f.content || ''}</div>`
-      : `<div class="cc-figure">${f.content || ''}</div>`);
-    return `@@COURSECORE_FIGURE_${idx}@@`;
-  });
+  const protectedSource = String(content || '')
+    // 方案3: [图:asset_id] / [表:asset_id] 全局资源引用
+    .replace(/\[(图|表):([^\]\s]+)\]/g, (m, kind, id) => {
+      const a = assetMap[id];
+      if (!a) return m; // 未入库的资源引用保留原文
+      const idx = tokens.length;
+      tokens.push(a.kind === 'table'
+        ? `<div class="cc-figure cc-table">${a.content || ''}</div>`
+        : `<div class="cc-figure">${a.content || ''}</div>`);
+      return `@@COURSECORE_FIGURE_${idx}@@`;
+    })
+    // 旧语法: [图N:名称] / [表N:名称]（content_figures 兼容）
+    .replace(/\[(图|表)(\d+):([^\]]+)\]/g, (m, kind, num) => {
+      const key = `${kind}${num}`;
+      const f = figureMap[key];
+      if (!f) return m; // 未入库的占位符保留原文
+      const idx = tokens.length;
+      tokens.push(f.kind === 'table'
+        ? `<div class="cc-figure cc-table">${f.content || ''}</div>`
+        : `<div class="cc-figure">${f.content || ''}</div>`);
+      return `@@COURSECORE_FIGURE_${idx}@@`;
+    });
   let html = renderMd(protectedSource || '');
   html = html.replace(/@@COURSECORE_FIGURE_(\d+)@@/g, (_, index) => tokens[Number(index)] || '');
   return html;
@@ -3225,6 +3269,97 @@ function renderPoolOverlay() {
     </div>`;
 }
 
+// 方案3: 理论编辑器「插入图/表」资源库弹层
+function renderAssetOverlay() {
+  const assets = (adminState.theoryEditor && adminState.theoryEditor.assets) || [];
+  const empty = assets.length === 0
+    ? `<div class="admin-placeholder">资源库为空，请先在建图/建表流程中准备资源。</div>`
+    : '';
+  return `
+    <div class="drawer-mask" id="aMask" data-action="admin-asset-close"></div>
+    <div class="drawer" id="aDrawer">
+      <div class="d-head">
+        <h2>插入图/表</h2>
+        <div class="d-head-actions">
+          <button type="button" class="admin-btn admin-btn-sm" data-action="admin-asset-new">+ 新建资源</button>
+          <button type="button" class="admin-btn admin-btn-sm" data-action="admin-asset-close">关闭</button>
+        </div>
+      </div>
+      <div class="d-body">
+        <div class="d-tip">点击资源下方的「插入」按钮，将把 [图:id] 或 [表:id] 引用插入到正文光标处。</div>
+        ${empty}
+        <div class="asset-grid">
+          ${assets.map(a => `
+            <div class="asset-card">
+              <div class="asset-preview">${a.kind === 'table' ? (a.content || '') : (a.content || '')}</div>
+              <div class="asset-meta">
+                <span class="asset-name">${escapeHtml(a.name || a.id)}</span>
+                <span class="asset-kind">${a.kind === 'table' ? '表' : '图'}</span>
+                <code class="asset-id">[${a.kind === 'table' ? '表' : '图'}:${escapeHtml(a.id)}]</code>
+              </div>
+              <button type="button" class="admin-btn admin-btn-sm admin-btn-primary" data-action="admin-asset-insert" data-id="${escapeHtml(a.id)}" data-kind="${a.kind}">插入</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── 方案3: 资源库弹层逻辑 ───
+function assetOpen() {
+  adminState.assetOpen = true;
+  rerender();
+}
+
+// 把 [图:id] / [表:id] 引用插入到正文 EasyMDE 光标处
+function insertAssetRef(id, kind) {
+  const key = kind === 'table' ? '表' : '图';
+  const ref = `\n\n[${key}:${id}]`;
+  const editor = adminState.editorInstances.easyMDEMap['theory-content'];
+  if (editor) {
+    editor.codemirror.replaceSelection(ref);
+    editor.codemirror.focus();
+  } else {
+    const el = document.getElementById('theory-content');
+    if (el) {
+      const start = el.selectionStart ?? el.value.length;
+      const end = el.selectionEnd ?? start;
+      el.value = el.value.slice(0, start) + ref + el.value.slice(end);
+      el.focus();
+    }
+  }
+  // 同步正文状态并刷新预览
+  adminState.assetOpen = false;
+  syncTheoryFormToState();
+  updateTheoryPreview();
+  rerender();
+}
+
+// 新建资源：弹 prompt 简化录入（后续可扩展为表单）
+async function assetNew() {
+  const kind = window.prompt('新建资源类型？\n\n输入 "figure" 建图(SVG)，或 "table" 建表(HTML)\n默认 figure') || 'figure';
+  const k = kind === 'table' ? 'table' : 'figure';
+  const name = window.prompt('资源名称（如：位置矢量）');
+  if (!name) return;
+  const id = window.prompt('资源 ID（英文/连字符，如 p1b-m1-fig-position-vector）');
+  if (!id) return;
+  const content = window.prompt(`粘贴 ${k === 'table' ? 'HTML 表格' : 'SVG'} 内容`);
+  if (!content) return;
+  try {
+    const created = await adminApi.createAsset({ id, name, kind: k, alt: name, content });
+    adminState.feedback = { type: 'success', message: `资源 ${created.name || created.id} 已创建` };
+    // 刷新编辑器 assets
+    if (adminState.theoryEditor) {
+      const theory = await adminApi.getItemContent(adminState.theoryEditor.itemId);
+      adminState.theoryEditor.assets = (theory && theory.assets) || [];
+    }
+    rerender();
+  } catch (e) {
+    adminState.feedback = { type: 'error', message: `创建资源失败: ${e.message}` };
+    rerender();
+  }
+}
+
 function renderPreviewOverlay() {
   return `
     <div class="preview-mask" id="pvMask" data-action="admin-preview-close"></div>
@@ -3389,6 +3524,26 @@ export async function handleAdminAction(action, el) {
     }
     case 'admin-save-theory': {
       await saveTheory();
+      break;
+    }
+    case 'admin-insert-asset': {
+      assetOpen();
+      break;
+    }
+    case 'admin-asset-close': {
+      adminState.assetOpen = false;
+      rerender();
+      break;
+    }
+    case 'admin-asset-insert': {
+      const id = el.dataset.id;
+      const kind = el.dataset.kind;
+      if (!id) return;
+      insertAssetRef(id, kind);
+      break;
+    }
+    case 'admin-asset-new': {
+      await assetNew();
       break;
     }
     case 'admin-practice-select': {

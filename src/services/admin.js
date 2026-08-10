@@ -278,7 +278,7 @@ export async function getItemContent(itemId) {
   if (linkRes.error) throw linkRes.error;
   const examples = (linkRes.data || []).map(l => l.questions).filter(Boolean);
 
-  // 图/表占位符内容（content_figures），供后台预览替换展示
+  // 图/表占位符内容（content_figures），供后台预览替换展示（兼容旧数据）
   let figures = [];
   const figRes = await supabase
     .from('content_figures')
@@ -290,7 +290,19 @@ export async function getItemContent(itemId) {
     figures = figRes.data || [];
   }
 
-  return { content: item ? (item.content || '') : '', examples, figures };
+  // 方案3: 全局资源库 content_assets，供后台预览 [图:asset_id] 引用替换
+  let assets = [];
+  const assetRes = await supabase
+    .from('content_assets')
+    .select('id, name, kind, alt, content')
+    .order('name');
+  if (assetRes.error) {
+    console.error('loadContentAssets failed', assetRes.error);
+  } else {
+    assets = assetRes.data || [];
+  }
+
+  return { content: item ? (item.content || '') : '', examples, figures, assets };
 }
 
 // 批量读全部小节的 theory_example 关联，供内容树一次性展示例题数
@@ -357,6 +369,51 @@ export async function saveTheoryContent({ itemId, content, examples }) {
         .eq('role', 'theory_example');
     }
   }
+}
+
+// ─── Content Assets（全局图片/表格资源库，方案3）───
+
+// 读全局资源库全部资源（供后台「插入图片/表格」弹层选择）
+export async function listAssets() {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('content_assets')
+    .select('*')
+    .order('name');
+  if (error) throw error;
+  return data || [];
+}
+
+export async function createAsset(asset) {
+  ensureAdmin();
+  const { data, error } = await supabase
+    .from('content_assets')
+    .insert(asset)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateAsset(id, updates) {
+  ensureAdmin();
+  const { data, error } = await supabase
+    .from('content_assets')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteAsset(id) {
+  ensureAdmin();
+  const { error } = await supabase
+    .from('content_assets')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
 }
 
 // ─── Exam Papers ───

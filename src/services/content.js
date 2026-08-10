@@ -45,7 +45,7 @@ export async function loadTheoryContent(itemId) {
     item_id: itemId,
   }));
 
-  // v2: 图/表占位符内容（content_figures），前端按 [图N:名称]/[表N:名称] 替换展示
+  // v2: 图/表占位符内容（content_figures），前端按 [图N:名称]/[表N:名称] 替换展示（兼容旧数据）
   const { data: figures, error: figErr } = await supabase
     .from('content_figures')
     .select('placeholder, kind, alt, content')
@@ -54,7 +54,16 @@ export async function loadTheoryContent(itemId) {
     console.error('loadContentFigures failed', figErr);
   }
 
-  return snakeToCamel({ content, examples, figures: figures || [] });
+  // 方案3: 全局资源库 content_assets，前端按 [图:asset_id]/[表:asset_id] 替换展示
+  const { data: assets, error: assetErr } = await supabase
+    .from('content_assets')
+    .select('id, name, kind, alt, content')
+    .order('name');
+  if (assetErr) {
+    console.error('loadContentAssets failed', assetErr);
+  }
+
+  return snakeToCamel({ content, examples, figures: figures || [], assets: assets || [] });
 }
 
 // v2: 训练题经 item_questions(role='practice') join questions
