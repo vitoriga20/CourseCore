@@ -97,6 +97,25 @@ export function saveProgress() {
 }
 
 // 记录最近一次练习会话（供首页"继续上次"）
+export async function syncUserData(userId) {
+  if (!userId || !isSupabaseConfigured()) return;
+  try {
+    const remote = await sync.pullProgress(userId);
+    const merged = await sync.mergeAndPushLocal(
+      userId,
+      state.progress,
+      state.completedQuestions,
+      remote.answers,
+      remote.progress
+    );
+    state.progress = merged.progress;
+    state.completedQuestions = merged.completedQuestions;
+    saveProgress();
+  } catch (e) {
+    console.error('syncUserData failed', e);
+  }
+}
+
 export function setLastSession(session) {
   state.lastSession = session ? { ...session, updatedAt: Date.now() } : null;
   saveProgress();

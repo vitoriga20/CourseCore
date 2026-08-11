@@ -1,4 +1,4 @@
-import { state } from '../state.js';
+import { state, syncUserData } from '../state.js';
 import { supabase, isSupabaseConfigured } from './supabase.js';
 import { getDefaultAvatar } from '../utils/avatars.js';
 
@@ -97,6 +97,10 @@ export async function initAuth() {
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
       const profile = await fetchProfile(session.user.id);
       setAuthUser(buildUser(session.user, profile));
+      if (event === 'SIGNED_IN') {
+        await syncUserData(session.user.id);
+        window.dispatchEvent(new CustomEvent('cc-data-change'));
+      }
     }
   });
 }
