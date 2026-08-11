@@ -26,6 +26,7 @@
 - 刷题中心交卷后错题/记录同步约定（含错题薄弱点总结门槛）见 `DOMAINS/practice-session-sync.md`。
 - 错题复习会话加载链路（render/init 时序 + snake_case 归一化 + BFF 答案字段）见 `DOMAINS/review-session-loading.md`。
 - 理论正文图/表占位符机制（方案3 content_assets 全局资源库 + [图:asset_id] 替换链路 + 旧 content_figures 兼容）见 `DOMAINS/content-figures.md`。
+- 刷题进度跨设备同步链路（只写不读教训 + syncUserData 拉取入口）见 `DOMAINS/progress-sync.md`。
 - 错题驱动的今日复习主线与错因标记约定见 `DECISIONS/2026-08-08-wrong-answer-review-mainline.md`。
 - 历史平台私有记忆（`.workbuddy/memory/`）仅作迁移/追溯来源，新内容一律写入 Memory/。
-- 最近更新：2026-08-10。
+- 最近更新：2026-08-11。

@@ -1,5 +1,5 @@
 import './style.css';
-import { state, loadProgress, saveProgress, setInlineAnswer } from './state.js';
+import { state, loadProgress, saveProgress, setInlineAnswer, syncUserData } from './state.js';
 import { setTheme } from './theme.js';
 import { initBackground } from './background.js';
 import { COURSES } from './data/courses.js';
@@ -685,7 +685,12 @@ async function init() {
     updateStaggeredMenuAuth();
   });
 
+  window.addEventListener('cc-data-change', async () => {
+    await restoreLocation();
+  });
+
   await initAuth();
+  if (state.user) await syncUserData(state.user.id);
   updateUserMenu();
   await restoreLocation();
 
