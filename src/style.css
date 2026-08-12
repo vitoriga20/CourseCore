@@ -2302,6 +2302,34 @@ body[data-bg="geo"] #bg-canvas {
   border-color: var(--practice-accent);
   transform: translateY(-1px);
 }
+/* 错题库：单流水网格，薄弱点排行嵌右上，错题卡绕行 */
+.wrong-flow-grid {
+  display: grid;
+  grid-auto-flow: dense;
+  gap: 0.75rem;
+}
+.wrong-flow-cards {
+  display: contents;
+}
+.wrong-empty {
+  grid-column: 1 / -1;
+}
+@media (min-width: 768px) {
+  .wrong-flow-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .weakness-ranking {
+    grid-column: 4 / 6;
+  }
+}
+@media (max-width: 767px) {
+  .wrong-flow-grid {
+    grid-template-columns: 1fr;
+  }
+  .weakness-ranking {
+    grid-column: auto;
+  }
+}
 .weakness-ranking-row + .weakness-ranking-row {
   margin-top: 0.7rem;
 }

@@ -21,7 +21,7 @@ import { renderExamDetail } from './views/examDetail.js';
 import {
   renderPracticeOverview, renderPracticeExams, renderPracticeTypes,
   renderCommunity, renderCommunityDetail,
-  renderUserRecords
+  renderUserRecords, initUserRecords
 } from './views/practice/index.js';
 import { renderReviewSession, initReviewSession } from './views/practice/review-session.js';
 import { renderPracticeSession, initPracticeSession } from './views/practice/practice-session.js';
@@ -772,6 +772,7 @@ export function renderMain() {
       break;
     case "user-records":
       main.innerHTML = renderUserRecords();
+      initUserRecords();
       break;
     case "privacy":
       main.innerHTML = renderPrivacy();
