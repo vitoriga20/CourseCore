@@ -113,20 +113,13 @@ function _renderWrongTabBody() {
 
     <div id="wrong-subjects" class="flex gap-2 mb-6 flex-wrap"></div>
 
-    <div class="today-review-grid grid grid-cols-1 md:grid-cols-[minmax(0,1.45fr)_minmax(250px,0.8fr)] gap-5 mb-6">
-      <div>
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-bold" style="color: var(--practice-text);">待巩固错题</h2>
-          <span class="text-xs" style="color: var(--practice-muted);">按复习顺序排列</span>
-        </div>
-        <div id="wrong-queue" class="today-review-grid-cards grid grid-cols-1 xl:grid-cols-2 gap-3">
-          <div class="text-center py-8" style="color: var(--practice-muted);">
-            <div class="flex justify-center mb-2" style="opacity: 0.3; color: var(--practice-muted);">${icon('clock')}</div>
-            <p class="text-sm">加载中...</p>
-          </div>
-        </div>
-      </div>
-      <aside class="weakness-ranking card" style="background: var(--practice-card); border-color: var(--practice-border); padding: 1rem; align-self: start;">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-bold" style="color: var(--practice-text);">待巩固错题</h2>
+      <span class="text-xs" style="color: var(--practice-muted);">按复习顺序排列</span>
+    </div>
+
+    <div id="wrong-area" class="wrong-flow-grid mb-6">
+      <aside id="weakness-ranking" class="weakness-ranking card" style="background: var(--practice-card); border-color: var(--practice-border); padding: 1rem; align-self: start;">
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-lg font-bold" style="color: var(--practice-text);">薄弱点排行</h2>
           <span class="text-xs" style="color: var(--practice-muted);">按错题数</span>
@@ -135,6 +128,12 @@ function _renderWrongTabBody() {
           <p class="text-sm" style="color: var(--practice-muted);">加载中...</p>
         </div>
       </aside>
+      <div id="wrong-queue" class="wrong-flow-cards">
+        <div class="wrong-empty text-center py-8" style="color: var(--practice-muted);">
+          <div class="flex justify-center mb-2" style="opacity: 0.3; color: var(--practice-muted);">${icon('clock')}</div>
+          <p class="text-sm">加载中...</p>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -244,7 +243,7 @@ function _renderWrongQueue(entries) {
   if (!el) return;
   if (entries.length === 0) {
     el.innerHTML = `
-      <div class="text-center py-8">
+      <div class="wrong-empty text-center py-8">
         <div class="flex justify-center mb-2" style="opacity: 0.3; color: var(--practice-muted);">${icon('clipboard')}</div>
         <p class="text-sm font-semibold mb-1" style="color: var(--practice-text);">错题库为空</p>
         <p class="text-xs" style="color: var(--practice-muted);">刷题时答错的题会自动收录</p>

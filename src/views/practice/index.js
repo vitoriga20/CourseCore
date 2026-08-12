@@ -998,7 +998,6 @@ async function _initPostForm() {
 }
 
 export function renderUserRecords() {
-  _loadUserRecords();
   return pageShell(`
     <h1 class="text-2xl font-extrabold mb-6" style="color: var(--practice-text);">我的·刷题记录</h1>
 
@@ -1039,6 +1038,11 @@ export function renderUserRecords() {
 }
 
 let _recordsState = { all: [], filter: 'all' };
+
+// 挂载后单独调用（render 只返回 HTML，避免 getElementById 拿到 null 早退）
+export function initUserRecords() {
+  _loadUserRecords();
+}
 
 async function _loadUserRecords() {
   const userId = state.user?.id;
